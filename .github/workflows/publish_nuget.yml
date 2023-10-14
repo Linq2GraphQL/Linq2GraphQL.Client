@@ -17,5 +17,6 @@ jobs:
       run: dotnet build -c Release
     - name: Test
       run: dotnet test -c Release --no-build
-    - name: Pack nugets
-      run: dotnet pack -c Release --no-build --output 
+    - name: Pack Linq2GraphQL.Client nugets
+      run: dotnet pack src/Linq2GraphQL.Client/Linq2GraphQL.Client.csproj -c Release --no-build --output -p:Version=${GITHUB_REF##*/v}
+    
