@@ -1,0 +1,71 @@
+﻿<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="Linq2GraphQL.Client" #>
+using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using Linq2GraphQL.Client;
+
+namespace <#= namespaceName #>;
+
+public static class IF 
+{ 
+<#
+    foreach (var field in inputs)
+    {
+#>
+	public static <#= field.CSharpName #> <#= field.CSharpName.RemoveFromEnd("Input") #>() 
+	{
+		return new <#= field.CSharpName #>();
+	}
+<#
+    }
+#>
+}
+
+
+<#
+    foreach (var input in inputs.Where(x => x.AllFields.Any()))
+    {
+#>
+
+public static class <#= input.CSharpName #>Extensions
+{ 
+	<#
+        foreach (var field in input.AllFields)
+        {
+            var fieldInfo = field.FieldInfo;
+#>
+<#
+            if (fieldInfo.CSharpType.IsValueTypeOrString() || fieldInfo.IsEnum)
+            {
+#>
+
+    public static <#= input.CSharpName #> <#= field.CSharpName #>(this <#= input.CSharpName #> input, <#= fieldInfo.CSharpTypeNameFull #> val)
+    {
+         input.<#= field.CSharpName #> = val;
+         return input;
+    }
+
+<#
+            }
+            else
+            {
+#>
+    public static <#= input.CSharpName #> <#= field.CSharpName #>(this <#= input.CSharpName #> input, Action<<#= fieldInfo.CSharpTypeNameFull #>> mod)
+    {
+        var filter = new <#= fieldInfo.CSharpTypeNameFull #>();
+        mod ??= _ => { };
+        mod(filter); 
+        input.<#= field.CSharpName #> = filter;
+        return input;
+    }
+
+<#
+            }
+        }
+#>
+}
+<#
+    }
+#>

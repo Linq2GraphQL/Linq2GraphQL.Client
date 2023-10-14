@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "Linq2GraphQL.TestServerNullable": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "graphql",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:50741;http://localhost:50742"
+    }
+  }
+}

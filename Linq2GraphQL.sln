@@ -1,0 +1,102 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33627.172
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Generation", "Generation", "{F646B02D-53FC-4C88-8941-2255A2F4DAF6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".items", ".items", "{7A8567FE-C13A-434E-AFA6-5A8F55F2C6B5}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		ci.yml = ci.yml
+		nuget.config = nuget.config
+		pack-and-push.yml = pack-and-push.yml
+		version.json = version.json
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Linq2GraphQL.TestServer", "test\Linq2GraphQL.TestServer\Linq2GraphQL.TestServer.csproj", "{AD8291B6-5979-4C43-B785-EAD4FF93C564}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{5BE1963B-E57D-4CF5-B03E-644D8F39B4D2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Linq2GraphQL.TestClient", "test\Linq2GraphQL.TestClient\Linq2GraphQL.TestClient.csproj", "{F412B4C3-F872-483C-A55D-B49782ACAAFE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Linq2GraphQL.Tests", "test\Linq2GraphQL.Tests\Linq2GraphQL.Tests.csproj", "{F9EAFD31-9AF1-47DF-9C78-003C7AC67C5D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Linq2GraphQL.TestServerNullable", "test\Linq2GraphQL.TestServerNullable\Linq2GraphQL.TestServerNullable.csproj", "{F0D6061C-3D3F-4323-AE4F-39737F5E2247}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Linq2GraphQL.TestServer.Shared", "test\Linq2GraphQL.TestServer.Shared\Linq2GraphQL.TestServer.Shared.csproj", "{C1908816-34E7-4B41-9E39-2283C59DB017}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Linq2GraphQL.TestClientNullable", "test\Linq2GraphQL.TestClientNullable\Linq2GraphQL.TestClientNullable.csproj", "{8083E0AF-8429-4EA1-9BC9-8B6EE5EFB9B2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Linq2GraphQL.Console", "test\Linq2GraphQL.Console\Linq2GraphQL.Console.csproj", "{058B468F-CE72-4CFF-8847-87CEED642C4E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Linq2GraphQL.Generator", "src\Linq2GraphQL.Generator\Linq2GraphQL.Generator.csproj", "{C0E1A444-A834-4FC0-8436-38066EA8D37D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Linq2GraphQL.Client", "src\Linq2GraphQL.Client\Linq2GraphQL.Client.csproj", "{B2EAACC4-0B04-458B-B425-DE83BED807EA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Linq2GraphQL.Client.Subscriptions", "src\Linq2GraphQL.Client.Subscriptions\Linq2GraphQL.Client.Subscriptions.csproj", "{AC313F3E-1224-423F-877D-496F47FA707A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AD8291B6-5979-4C43-B785-EAD4FF93C564}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD8291B6-5979-4C43-B785-EAD4FF93C564}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD8291B6-5979-4C43-B785-EAD4FF93C564}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD8291B6-5979-4C43-B785-EAD4FF93C564}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F412B4C3-F872-483C-A55D-B49782ACAAFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F412B4C3-F872-483C-A55D-B49782ACAAFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F412B4C3-F872-483C-A55D-B49782ACAAFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F412B4C3-F872-483C-A55D-B49782ACAAFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9EAFD31-9AF1-47DF-9C78-003C7AC67C5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9EAFD31-9AF1-47DF-9C78-003C7AC67C5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9EAFD31-9AF1-47DF-9C78-003C7AC67C5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9EAFD31-9AF1-47DF-9C78-003C7AC67C5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0D6061C-3D3F-4323-AE4F-39737F5E2247}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0D6061C-3D3F-4323-AE4F-39737F5E2247}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0D6061C-3D3F-4323-AE4F-39737F5E2247}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0D6061C-3D3F-4323-AE4F-39737F5E2247}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1908816-34E7-4B41-9E39-2283C59DB017}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1908816-34E7-4B41-9E39-2283C59DB017}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1908816-34E7-4B41-9E39-2283C59DB017}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1908816-34E7-4B41-9E39-2283C59DB017}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8083E0AF-8429-4EA1-9BC9-8B6EE5EFB9B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8083E0AF-8429-4EA1-9BC9-8B6EE5EFB9B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8083E0AF-8429-4EA1-9BC9-8B6EE5EFB9B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8083E0AF-8429-4EA1-9BC9-8B6EE5EFB9B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{058B468F-CE72-4CFF-8847-87CEED642C4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{058B468F-CE72-4CFF-8847-87CEED642C4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{058B468F-CE72-4CFF-8847-87CEED642C4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{058B468F-CE72-4CFF-8847-87CEED642C4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0E1A444-A834-4FC0-8436-38066EA8D37D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0E1A444-A834-4FC0-8436-38066EA8D37D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0E1A444-A834-4FC0-8436-38066EA8D37D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0E1A444-A834-4FC0-8436-38066EA8D37D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2EAACC4-0B04-458B-B425-DE83BED807EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2EAACC4-0B04-458B-B425-DE83BED807EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2EAACC4-0B04-458B-B425-DE83BED807EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2EAACC4-0B04-458B-B425-DE83BED807EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC313F3E-1224-423F-877D-496F47FA707A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC313F3E-1224-423F-877D-496F47FA707A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC313F3E-1224-423F-877D-496F47FA707A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC313F3E-1224-423F-877D-496F47FA707A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AD8291B6-5979-4C43-B785-EAD4FF93C564} = {5BE1963B-E57D-4CF5-B03E-644D8F39B4D2}
+		{F412B4C3-F872-483C-A55D-B49782ACAAFE} = {5BE1963B-E57D-4CF5-B03E-644D8F39B4D2}
+		{F9EAFD31-9AF1-47DF-9C78-003C7AC67C5D} = {5BE1963B-E57D-4CF5-B03E-644D8F39B4D2}
+		{F0D6061C-3D3F-4323-AE4F-39737F5E2247} = {5BE1963B-E57D-4CF5-B03E-644D8F39B4D2}
+		{C1908816-34E7-4B41-9E39-2283C59DB017} = {5BE1963B-E57D-4CF5-B03E-644D8F39B4D2}
+		{8083E0AF-8429-4EA1-9BC9-8B6EE5EFB9B2} = {5BE1963B-E57D-4CF5-B03E-644D8F39B4D2}
+		{058B468F-CE72-4CFF-8847-87CEED642C4E} = {5BE1963B-E57D-4CF5-B03E-644D8F39B4D2}
+		{C0E1A444-A834-4FC0-8436-38066EA8D37D} = {F646B02D-53FC-4C88-8941-2255A2F4DAF6}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {01DC7AB7-9900-4FCA-BACB-7DAAE825E25E}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,28 @@
+﻿<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using Linq2GraphQL.Client;
+
+namespace <#= namespaceName #>;
+
+[JsonConverter(typeof(GraphInputConverter<<#= classType.Name #>>))]
+public partial class <#= classType.Name #> : GraphInputBase
+{
+<#
+    foreach (var field in classType.AllFields)
+    {
+        var fieldInfo = field.FieldInfo;
+#>
+	[JsonPropertyName("<#= field.Name #>")]
+	public <#= fieldInfo.CSharpTypeNameFull #> <#= field.CSharpName #> 
+	{
+		get => GetValue<<#= fieldInfo.CSharpTypeNameFull #>>("<#= field.Name #>");
+    	set => SetValue("<#= field.Name #>", value);
+	}
+
+<#
+    }
+#>
+}

@@ -1,0 +1,22 @@
+using Linq2GraphQL.Client;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+
+namespace Linq2GraphQL.TestClient;
+
+public class SampleClient
+{
+    public SampleClient(HttpClient httpClient, IOptions<GraphClientOptions> options, IServiceProvider provider)
+    {
+        var client = new GraphClient(httpClient, options, provider);
+        Query = new QueryMethods(client);
+        Mutation = new MutationMethods(client);
+        Subscription = new SubscriptionMethods(client); 
+    }
+
+    public QueryMethods Query { get; private set; }
+    public MutationMethods Mutation { get; private set; }
+    public SubscriptionMethods Subscription { get; private set; }
+    
+}

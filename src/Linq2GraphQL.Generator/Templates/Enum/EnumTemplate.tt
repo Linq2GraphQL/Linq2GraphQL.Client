@@ -1,0 +1,21 @@
+﻿<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+using Linq2GraphQL.Client;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+
+namespace <#= namespaceName #>;
+
+[JsonConverter(typeof(JsonStringEnumMemberConverter))]
+public enum <#= enumType.Name #>
+{
+<#
+    foreach (var enumValue in enumType.EnumValues)
+    {
+#>
+    [EnumMember(Value = "<#= enumValue.Name #>")]
+    <#= enumValue.GetCSharpName() #>,
+<#
+    }
+#>
+}

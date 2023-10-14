@@ -1,0 +1,36 @@
+﻿<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+using Linq2GraphQL.Client;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+
+namespace <#= namespaceName #>;
+
+public class <#= clientName #>
+{
+    public <#= clientName #>(HttpClient httpClient, IOptions<GraphClientOptions> options, IServiceProvider provider)
+    {
+        var client = new GraphClient(httpClient, options, provider);
+<# if (includeQuery) { #>
+        Query = new QueryMethods(client);
+<# }#>
+<# if (includeMutation) { #>
+        Mutation = new MutationMethods(client);
+<# }#>
+<# if (includeSubscriptions) { #>
+        Subscription = new SubscriptionMethods(client); 
+<# }#>
+    }
+
+<# if (includeQuery) { #>
+    public QueryMethods Query { get; private set; }
+<# } #>
+<# if (includeMutation) { #>
+    public MutationMethods Mutation { get; private set; }
+<# } #>
+<# if (includeSubscriptions) { #>
+    public SubscriptionMethods Subscription { get; private set; }
+<# } #>
+    
+}

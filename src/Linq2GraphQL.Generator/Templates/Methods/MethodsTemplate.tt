@@ -1,0 +1,51 @@
+﻿<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+using System.Collections.Generic;
+using System;
+using Linq2GraphQL.Client;
+<#
+    if (isSubscription)
+    {
+#>
+using Linq2GraphQL.Client.Subscriptions;
+<#
+    }
+#>
+
+namespace <#= namespaceName #>;
+
+public class <#= ClassName #>
+{
+    private readonly GraphClient client;
+
+    public <#= ClassName #>(GraphClient client)
+    {
+        this.client = client;
+    }
+
+    <#
+    foreach (var field in methodsType.AllFields)
+    {
+        var fieldInfo = field.FieldInfo;
+#>
+public <#= GetReturnTypeString(field) #> <#= field.CSharpName #>(<#= field.GetArgString(false) #>)
+    {
+	    var arguments = new List<ArgumentValue>
+        {
+    <#
+        foreach (var arg in field.Args)
+        {
+#>
+	    new("<#= arg.Name #>","<#= arg.FieldInfo.GraphTypeDefinition #>", <#= arg.Name.ToCamelCase() #>),
+    <#
+        }
+#>
+    };
+
+        return <#= GetReturnBuilderString(field) #>(client,  "<#= field.Name #>", <#= operationType #>, arguments); 
+    }
+
+    <#
+    }
+#>
+}

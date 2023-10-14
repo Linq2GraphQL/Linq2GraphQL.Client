@@ -1,0 +1,104 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <PackAsTool>true</PackAsTool>
+        <ToolCommandName>Linq2GraphQL</ToolCommandName>
+
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="System.CodeDom" Version="7.0.0" />
+        <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+        <PackageReference Include="Macross.Json.Extensions" Version="2.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="Templates\Class\InputClassTemplate.tt">
+            <LastGenOutput>InputClassTemplate.cs</LastGenOutput>
+            <Generator>TextTemplatingFilePreprocessor</Generator>
+        </None>
+        <None Update="Templates\Class\ClassTemplate.tt">
+            <Generator>TextTemplatingFilePreprocessor</Generator>
+            <LastGenOutput>ClassTemplate.cs</LastGenOutput>
+        </None>
+        <None Update="Templates\Client\ClientTemplate.tt">
+            <Generator>TextTemplatingFilePreprocessor</Generator>
+            <LastGenOutput>ClientTemplate.cs</LastGenOutput>
+        </None>
+        <None Update="Templates\Enum\EnumTemplate.tt">
+            <Generator>TextTemplatingFilePreprocessor</Generator>
+            <LastGenOutput>EnumTemplate.cs</LastGenOutput>
+        </None>
+        <None Update="Templates\Interface\InterfaceTemplate.tt">
+          <LastGenOutput>InterfaceTemplate.cs</LastGenOutput>
+          <Generator>TextTemplatingFilePreprocessor</Generator>
+        </None>
+        <None Update="Templates\Methods\MethodsTemplate.tt">
+            <Generator>TextTemplatingFilePreprocessor</Generator>
+            <LastGenOutput>MethodsTemplate.cs</LastGenOutput>
+        </None>
+        <None Update="Templates\Class\InputFactoryClassTemplate.tt">
+            <LastGenOutput>InputFactoryClassTemplate.cs</LastGenOutput>
+            <Generator>TextTemplatingFilePreprocessor</Generator>
+        </None>
+        <None Update="Templates\Client\ClientExtensionsTemplate.tt">
+            <Generator>TextTemplatingFilePreprocessor</Generator>
+            <LastGenOutput>ClientExtensionsTemplate.cs</LastGenOutput>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="Templates\Class\InputClassTemplate.cs">
+            <DependentUpon>InputClassTemplate.tt</DependentUpon>
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+        </Compile>
+        <Compile Update="Templates\Class\ClassTemplate.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>ClassTemplate.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Templates\Client\ClientTemplate.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>ClientTemplate.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Templates\Enum\EnumTemplate.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>EnumTemplate.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Templates\Interface\InterfaceTemplate.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>InterfaceTemplate.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Templates\Methods\MethodsTemplate.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>MethodsTemplate.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Templates\Class\InputFactoryClassTemplate.cs">
+            <AutoGen>True</AutoGen>
+            <DesignTime>True</DesignTime>
+            <DependentUpon>InputFactoryClassTemplate.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Templates\Client\ClientExtensionsTemplate.cs">
+            <AutoGen>True</AutoGen>
+            <DesignTime>True</DesignTime>
+            <DependentUpon>ClientExtensionsTemplate.tt</DependentUpon>
+        </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Linq2GraphQL.Client\Linq2GraphQL.Client.csproj" />
+    </ItemGroup>
+
+</Project>

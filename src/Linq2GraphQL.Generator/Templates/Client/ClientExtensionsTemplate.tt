@@ -1,0 +1,35 @@
+﻿<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+using Linq2GraphQL.Client;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+
+namespace <#= namespaceName #>;
+
+public static class <#= clientName #>Extensions 
+{
+    private const string ClientName = "<#= clientName #>";
+        
+    public static IGraphClientBuilder<<#= clientName #>> Add<#= clientName #>(this IServiceCollection services)
+    {
+        var graphClientOptions = new GraphClientOptions();
+        return GraphClientBuilder(services, graphClientOptions);
+    }
+    
+    public static IGraphClientBuilder<<#= clientName #>> Add<#= clientName #>(this IServiceCollection services, Action<GraphClientOptions> opts)
+    {
+        var graphClientOptions = new GraphClientOptions();
+        opts(graphClientOptions);
+        
+        return GraphClientBuilder(services, graphClientOptions);
+    }
+
+    private static IGraphClientBuilder<<#= clientName #>> GraphClientBuilder(IServiceCollection services,
+        GraphClientOptions graphClientOptions)
+    {
+        var opts = Options.Create(graphClientOptions);
+        services.AddSingleton(opts);
+        services.AddMemoryCache();        
+        return new ClientBuilder<<#= clientName #>>(ClientName, services);
+    }
+}
