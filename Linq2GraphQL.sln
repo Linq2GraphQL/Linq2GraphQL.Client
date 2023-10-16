@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".items", ".items", "{7A8567
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		nuget.config = nuget.config
+		Directory.Build.props = Directory.Build.props
+		version.json = version.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Linq2GraphQL.TestServer", "test\Linq2GraphQL.TestServer\Linq2GraphQL.TestServer.csproj", "{AD8291B6-5979-4C43-B785-EAD4FF93C564}"
@@ -32,6 +34,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Linq2GraphQL.Client", "src\Linq2GraphQL.Client\Linq2GraphQL.Client.csproj", "{B2EAACC4-0B04-458B-B425-DE83BED807EA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Linq2GraphQL.Client.Subscriptions", "src\Linq2GraphQL.Client.Subscriptions\Linq2GraphQL.Client.Subscriptions.csproj", "{AC313F3E-1224-423F-877D-496F47FA707A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".workflows", ".workflows", "{081DFEA1-B5EE-4559-AA99-E55C7399CFF4}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\ci.yml = .github\workflows\ci.yml
+		.github\workflows\release.yml = .github\workflows\release.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
