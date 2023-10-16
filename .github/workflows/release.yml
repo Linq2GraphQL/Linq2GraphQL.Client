@@ -44,7 +44,7 @@ jobs:
         run: dotnet pack -c Release
 
       - name: Dotnet Push Linq2GraphQL.Generator
-        working-directory: src/Linq2GraphQL.Generators/bin/Release
+        working-directory: src/Linq2GraphQL.Generator/bin/Release
         run: dotnet nuget push *.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
 
       - name: Create Release
