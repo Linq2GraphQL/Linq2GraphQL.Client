@@ -23,21 +23,29 @@ jobs:
         id: nbgv
       - run: echo 'SemVer2=${{ steps.nbgv.outputs.SemVer2 }}'
 
-      - name: Dotnet Pack Client
+      - name: Dotnet Pack Linq2GraphQL.Client
         working-directory: src/Linq2GraphQL.Client
         run: dotnet pack -c Release
+
+      - name: Dotnet Push Linq2GraphQL.Client
+        working-directory: src/Linq2GraphQL.Client/bin/Release
+        run: dotnet nuget push Linq2GraphQL.Client.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
       
-      - name: Dotnet Pack Subscriptions
+      - name: Dotnet Pack Linq2GraphQL.Client.Subscriptions
         working-directory: src/Linq2GraphQL.Client.Subscriptions
         run: dotnet pack -c Release
-      
-      - name: Dotnet Pack Generator
+
+      - name: Dotnet Push Linq2GraphQL.Client.Subscriptions
+        working-directory: src/Linq2GraphQL.Client.Subscriptions/bin/Release
+        run: dotnet nuget push Linq2GraphQL.Client.Subscriptions.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
+
+      - name: Dotnet Pack Linq2GraphQL.Generator
         working-directory: src/Linq2GraphQL.Generator
         run: dotnet pack -c Release
 
-      - name: Dotnet Nuget Push        
-        run: dotnet nuget push Linq2GraphQL.*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
-        continue-on-error: true
+      - name: Dotnet Push Linq2GraphQL.Generator
+        working-directory: src/Linq2GraphQL.Generators/bin/Release
+        run: dotnet nuget push Linq2GraphQL.Generator.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
 
       - name: Create Release
         uses: actions/create-release@master
