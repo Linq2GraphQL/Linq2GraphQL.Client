@@ -1,6 +1,3 @@
-# This is ".github/workflows/gh-pages.yml" file.
-# This is an EXAMPLE of "GitHub Actions Workflow file".
-
 name: github pages
 
 on:
@@ -12,21 +9,19 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      # Checkout the code
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-      # Install .NET Core SDK
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 7.0.x
 
-      # Publish the site
       - name: Publish
         working-directory: docs/Linq2GraphQL.Docs
         run: dotnet publish -c:Release -o:publish -p:GHPages=true
 
-      # Deploy the site
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
