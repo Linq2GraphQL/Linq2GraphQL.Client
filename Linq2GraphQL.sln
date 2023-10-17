@@ -42,7 +42,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".workflows", ".workflows", 
 		.github\workflows\release.yml = .github\workflows\release.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Linq2GraphQL.Docs", "docs\Linq2GraphQL.Docs\Linq2GraphQL.Docs.csproj", "{A941BD4C-8B04-4273-AC0B-CF86D71D7E0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Linq2GraphQL.Docs", "docs\Linq2GraphQL.Docs\Linq2GraphQL.Docs.csproj", "{A941BD4C-8B04-4273-AC0B-CF86D71D7E0B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{884758A6-B667-4CA0-B186-AFB6331A24A5}"
 EndProject
