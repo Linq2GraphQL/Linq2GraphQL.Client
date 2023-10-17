@@ -8,8 +8,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".items", ".items", "{7A8567FE-C13A-434E-AFA6-5A8F55F2C6B5}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		nuget.config = nuget.config
 		Directory.Build.props = Directory.Build.props
+		nuget.config = nuget.config
 		version.json = version.json
 	EndProjectSection
 EndProject
@@ -38,8 +38,13 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".workflows", ".workflows", "{081DFEA1-B5EE-4559-AA99-E55C7399CFF4}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\ci.yml = .github\workflows\ci.yml
+		.github\workflows\docs.yml = .github\workflows\docs.yml
 		.github\workflows\release.yml = .github\workflows\release.yml
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Linq2GraphQL.Docs", "docs\Linq2GraphQL.Docs\Linq2GraphQL.Docs.csproj", "{A941BD4C-8B04-4273-AC0B-CF86D71D7E0B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{884758A6-B667-4CA0-B186-AFB6331A24A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,6 +92,10 @@ Global
 		{AC313F3E-1224-423F-877D-496F47FA707A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC313F3E-1224-423F-877D-496F47FA707A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC313F3E-1224-423F-877D-496F47FA707A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A941BD4C-8B04-4273-AC0B-CF86D71D7E0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A941BD4C-8B04-4273-AC0B-CF86D71D7E0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A941BD4C-8B04-4273-AC0B-CF86D71D7E0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A941BD4C-8B04-4273-AC0B-CF86D71D7E0B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -100,6 +109,7 @@ Global
 		{8083E0AF-8429-4EA1-9BC9-8B6EE5EFB9B2} = {5BE1963B-E57D-4CF5-B03E-644D8F39B4D2}
 		{058B468F-CE72-4CFF-8847-87CEED642C4E} = {5BE1963B-E57D-4CF5-B03E-644D8F39B4D2}
 		{C0E1A444-A834-4FC0-8436-38066EA8D37D} = {F646B02D-53FC-4C88-8941-2255A2F4DAF6}
+		{A941BD4C-8B04-4273-AC0B-CF86D71D7E0B} = {884758A6-B667-4CA0-B186-AFB6331A24A5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {01DC7AB7-9900-4FCA-BACB-7DAAE825E25E}
