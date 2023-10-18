@@ -20,7 +20,7 @@ jobs:
 
       - name: Publish
         working-directory: docs/Linq2GraphQL.Docs
-        run: dotnet publish -c:Release -o:publish -p:GHPages=true
+        run: dotnet publish -c:Release -o:publish
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
