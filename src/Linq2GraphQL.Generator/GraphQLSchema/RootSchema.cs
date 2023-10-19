@@ -281,6 +281,7 @@ public class BaseType
     public string Description { get; set; }
 
     public string CSharpName => Name?.ToPascalCase();
+    public string FileName => CSharpName + ".cs";
 
     public BaseType OfType { get; set; }
 

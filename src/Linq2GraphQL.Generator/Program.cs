@@ -48,7 +48,7 @@ internal class Program
                 var authTokenValue = result.GetValueForOption(authToken);
                 var includeSubscriptionsValue = result.GetValueForOption(includeSubscriptions);
 
-                await GenerateClient(uriValue, outputFolderValue, namespaceValue, clientNameValue,
+                await GenerateClientAsync(uriValue, outputFolderValue, namespaceValue, clientNameValue,
                     includeSubscriptionsValue, authTokenValue, context.Console);
             }
         );
@@ -66,11 +66,10 @@ internal class Program
 
     }
 
-    private static async Task GenerateClient(Uri uri, string outputFolder, string namespaceName, string name,
+    private static async Task GenerateClientAsync(Uri uri, string outputFolder, string namespaceName, string name,
         bool includeSubscriptions, string authToken, IConsole console)
     {
         console.WriteLine($"Start generating client for endpoint {uri.AbsoluteUri}");
-
         using var httpClient = new HttpClient();
 
         if (!string.IsNullOrWhiteSpace(authToken))
@@ -79,7 +78,6 @@ internal class Program
         }
 
         using var response = await httpClient.PostAsJsonAsync(uri, new { query = General.IntrospectionQuery });
-
         if (!response.IsSuccessStatusCode)
         {
             throw new Exception(
