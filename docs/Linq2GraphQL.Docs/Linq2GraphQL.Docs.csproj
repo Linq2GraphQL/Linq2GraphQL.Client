@@ -18,7 +18,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\src\Linq2GraphQL.Generator\Linq2GraphQL.Generator.csproj" />
-	  <ProjectReference Include="..\..\StarWars.Client\StarWars.Client.csproj" />
+	  <ProjectReference Include="..\StarWars.Client\StarWars.Client.csproj" />
 	</ItemGroup>
 
 </Project>
