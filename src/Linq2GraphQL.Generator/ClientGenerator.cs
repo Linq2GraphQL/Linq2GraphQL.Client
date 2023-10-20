@@ -3,48 +3,34 @@ using Linq2GraphQL.Generator.Templates.Client;
 using Linq2GraphQL.Generator.Templates.Enum;
 using Linq2GraphQL.Generator.Templates.Interface;
 using Linq2GraphQL.Generator.Templates.Methods;
-using System;
-using System.Collections.Generic;
-using System.CommandLine;
-using System.IO.Compression;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Net.Sockets;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Linq2GraphQL.Generator
 {
-    public class ClientGenerator : IDisposable
+    public class ClientGenerator 
     {
-        private readonly ZipArchive zipArchive;
         private readonly string namespaceName;
         private readonly string clientName;
         private readonly bool includeSubscriptions;
         // private readonly IConsole console;
 
-        public ClientGenerator(ZipArchive zipArchive, string namespaceName, string clientName, bool includeSubscriptions)
-        {
+        private readonly List<FileEntry> entries = new();
 
-            this.zipArchive = zipArchive;
+        public ClientGenerator(string namespaceName, string clientName, bool includeSubscriptions)
+        {
             this.namespaceName = namespaceName;
             this.clientName = clientName;
             this.includeSubscriptions = includeSubscriptions;
         }
 
-        private void AddFile(string path, string fileName, string content)
+        private void AddFile(string directory, string fileName, string content)
         {
-            var file = zipArchive.CreateEntry(path + "/" + fileName);
-
-            using var entryStream = file.Open();
-            using var streamWriter = new StreamWriter(entryStream);
-            streamWriter.Write(content);
-
+            entries.Add(new FileEntry { Content = content, DirectoryName = directory, FileName = fileName });
         }
 
-        public async Task GenerateAsync(Uri uri, string authToken)
+        public async Task<List<FileEntry>> GenerateAsync(Uri uri, string authToken = null)
         {
             Console.WriteLine($"Start generating client for endpoint {uri.AbsoluteUri}");
             using var httpClient = new HttpClient();
@@ -64,11 +50,12 @@ namespace Linq2GraphQL.Generator
             Console.WriteLine("Reading and deserializing schema information ...");
             var schemaJson = await response.Content.ReadAsStringAsync();
 
-            Generate(schemaJson);
+            return Generate(schemaJson);
         }
 
-        public void Generate(string schemaJson)
+        public List<FileEntry> Generate(string schemaJson)
         {
+            entries.Clear();
             var rootSchema = JsonSerializer.Deserialize<RootSchema>(schemaJson,
             new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 
@@ -149,7 +136,8 @@ namespace Linq2GraphQL.Generator
                 new ClientExtensionsTemplate(namespaceName, clientName, includeSubscriptions).TransformText();
             fileName = clientName + "ClientExtensions" + ".cs";
             AddFile(clientDirName, fileName, clientExtensionsTemplateText);
-            //await File.WriteAllTextAsync(filePath, clientExtensionsTemplateText);
+
+            return entries;
         }
 
         private static async Task GenerateInputFactory(string namespaceName, List<GraphqlType> inputs, string outputPath)
@@ -178,10 +166,6 @@ namespace Linq2GraphQL.Generator
 
 
 
-        public void Dispose()
-        {
-            //GC.SuppressFinalize(this);
-            zipArchive?.Dispose();
-        }
+      
     }
 }

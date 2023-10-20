@@ -2,4 +2,47 @@
 
 <h3>GenerateClient</h3>
 
-<Button OnClick="GenerateClientAsync">Generate</Button>
+<Card>
+    <CardBody>
+        <DataGrid>
+            <DataGridItem Title="Name">
+                <InputText class="form-control" @bind-Value="options.ClientName" />
+            </DataGridItem>
+            <DataGridItem Title="Namespace">
+                <InputText class="form-control" @bind-Value="options.Namespace" />
+            </DataGridItem>
+            <DataGridItem Title="Include subscriptions">
+                <Checkbox Switch @bind-Value="options.IncludeSubscriptions" />
+             </DataGridItem>
+         </DataGrid>
+
+         <div class="mt-3" />
+         <Tabs>
+             <Tab Title="Url">
+                 <DataGrid>
+                     <DataGridItem Title="Url">
+                         <InputText class="form-control" @bind-Value="options.Url" />
+                     </DataGridItem>
+                     <DataGridItem Title="Token">
+                         <InputText class="form-control" @bind-Value="options.Token" />
+                     </DataGridItem>
+                 </DataGrid>
+
+
+                 <Button class="mt-3" BackgroundColor="TablerColor.Primary" OnClick="GenerateClientAsync">Generate</Button>
+
+             </Tab>
+
+             <Tab Title="Schema">
+
+                 <InputTextArea class="form-control" @bind-Value="options.Schema" />
+
+             </Tab>
+
+         </Tabs>
+
+
+     </CardBody>
+ </Card>
+
+
