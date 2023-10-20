@@ -177,11 +177,8 @@ internal class Program
                 "OperationType.Subscription");
         }
 
-        var includeQuery = queryType != null;
-        var includeMutation = mutationType != null;
-
         console.WriteLine("Generate Client...");
-        var templateText = new ClientTemplate(namespaceName, name, includeQuery, includeMutation, includeSubscriptions).TransformText();
+        var templateText = new ClientTemplate(namespaceName, name, queryType, mutationType, subscriptionType).TransformText();
         var filePath = Path.Combine(contextDirectory, name + "Client" + ".cs");
         await File.WriteAllTextAsync(filePath, templateText);
 

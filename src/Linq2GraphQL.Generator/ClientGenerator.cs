@@ -23,7 +23,7 @@ namespace Linq2GraphQL.Generator
         private readonly string namespaceName;
         private readonly string clientName;
         private readonly bool includeSubscriptions;
-       // private readonly IConsole console;
+        // private readonly IConsole console;
 
         public ClientGenerator(ZipArchive zipArchive, string namespaceName, string clientName, bool includeSubscriptions)
         {
@@ -41,7 +41,7 @@ namespace Linq2GraphQL.Generator
             using var entryStream = file.Open();
             using var streamWriter = new StreamWriter(entryStream);
             streamWriter.Write(content);
-            
+
         }
 
         public async Task GenerateAsync(Uri uri, string authToken)
@@ -92,7 +92,11 @@ namespace Linq2GraphQL.Generator
                 Console.WriteLine("");
             }
 
-            var includeSubs = includeSubscriptions && subscriptionsCount > 0;
+            if (!includeSubscriptions)
+            {
+                subscriptionType = null;
+            }
+
             schema.PopulateFieldTypes();
 
 
@@ -102,8 +106,6 @@ namespace Linq2GraphQL.Generator
                 var classText = new InterfaceTemplate(classType, namespaceName).TransformText();
                 AddFile("Interfaces", classType.FileName, classText);
             }
-
-
 
             Console.WriteLine("Generate Types...");
             foreach (var classType in schema.GetClassTypes().Where(e => e.Kind != TypeKind.InputObject && !e.IsPageInfo()))
@@ -117,42 +119,27 @@ namespace Linq2GraphQL.Generator
             {
                 var classText = new InputClassTemplate(classType, namespaceName).TransformText();
                 AddFile("Inputs", classType.FileName, classText);
-
             }
 
-            //await GenerateInputFactory(namespaceName, inputs, outputPath);
-
             Console.WriteLine("Generate Enums...");
-            //var enumDirectory = Path.Combine(outputPath, "Enums");
-            // Directory.CreateDirectory(enumDirectory);
             foreach (var enumType in schema.GetEnums())
             {
                 var enumText = new EnumTemplate(enumType, namespaceName).TransformText();
-                AddFile("Enums", enumType.FileName, enumText);
-
-                //var enumFilePath = Path.Combine(enumDirectory, enumType.Name.ToPascalCase() + ".cs");
-                //await File.WriteAllTextAsync(enumFilePath, enumTemplate);
             }
 
             Console.WriteLine("Generate Methods...");
             var clientDirName = "Client";
-            // var contextDirectory = Path.Combine(outputPath, "Client");
-            //  Directory.CreateDirectory(contextDirectory);
 
             GenerateContextMethods(namespaceName, clientDirName, queryType, "OperationType.Query");
             GenerateContextMethods(namespaceName, clientDirName, mutationType, "OperationType.Mutation");
+            GenerateContextMethods(namespaceName, clientDirName, subscriptionType, "OperationType.Subscription");
 
-            if (includeSubscriptions)
-            {
-                 GenerateContextMethods(namespaceName, clientDirName, subscriptionType,
-                    "OperationType.Subscription");
-            }
 
             var includeQuery = queryType != null;
             var includeMutation = mutationType != null;
 
             Console.WriteLine("Generate Client...");
-            var templateText = new ClientTemplate(namespaceName, clientName, includeQuery, includeMutation, includeSubscriptions).TransformText();
+            var templateText = new ClientTemplate(namespaceName, clientName, queryType, mutationType, subscriptionType).TransformText();
             var fileName = clientName + "Client" + ".cs";
             AddFile(clientDirName, fileName, templateText);
             //await File.WriteAllTextAsync(filePath, templateText);
@@ -160,7 +147,7 @@ namespace Linq2GraphQL.Generator
             Console.WriteLine("Generate Client Extensions...");
             var clientExtensionsTemplateText =
                 new ClientExtensionsTemplate(namespaceName, clientName, includeSubscriptions).TransformText();
-            fileName= clientName + "ClientExtensions" + ".cs";
+            fileName = clientName + "ClientExtensions" + ".cs";
             AddFile(clientDirName, fileName, clientExtensionsTemplateText);
             //await File.WriteAllTextAsync(filePath, clientExtensionsTemplateText);
         }

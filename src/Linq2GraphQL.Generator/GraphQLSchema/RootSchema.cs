@@ -65,7 +65,7 @@ public class GraphqlType : BaseType
     {
         if (CSharpName != "PageInfo") { return false; }
         if (InputFields != null && InputFields.Any()) { return false; }
-        //TODO Fix
+        //TODO Fix this
         foreach (var field in Fields)
         {
 
