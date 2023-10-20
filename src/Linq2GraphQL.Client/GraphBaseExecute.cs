@@ -30,19 +30,25 @@ public abstract class GraphBaseExecute<T, TResult>
 
     private string GetQueryArgumentString()
     {
-        var text = "";
+        var args = QueryNode.GetAllActiveArguments();
 
-        foreach (var argument in QueryNode.GetAllActiveArguments())
+        if (!args.Any())
+        {
+            return "";
+        }
+
+        var text = "";
+        foreach (var argument in args)
         {
             text += $"{argument.VariableName}: {argument.GraphType} ";
         }
 
-        return text;
+        return $"({text})";
     }
 
     public string GetGraphQLQuery()
     {
-        return GetOperationType() + "(" + GetQueryArgumentString() + "){ " + Environment.NewLine +
+        return GetOperationType() +  GetQueryArgumentString() + "{ " + Environment.NewLine +
                QueryNode.GetQueryString() + Environment.NewLine + "}";
     }
 

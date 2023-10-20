@@ -17,9 +17,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\src\Linq2GraphQL.Client.Subscriptions\Linq2GraphQL.Client.Subscriptions.csproj" />
-	  <ProjectReference Include="..\..\src\Linq2GraphQL.Client\Linq2GraphQL.Client.csproj" />
 	  <ProjectReference Include="..\..\src\Linq2GraphQL.Generator\Linq2GraphQL.Generator.csproj" />
+	  <ProjectReference Include="..\..\StarWars.Client\StarWars.Client.csproj" />
 	</ItemGroup>
 
 </Project>

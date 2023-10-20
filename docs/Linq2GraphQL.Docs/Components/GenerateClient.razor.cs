@@ -1,5 +1,5 @@
-using Linq2GraphQL.StarWars;
 using Microsoft.AspNetCore.Components;
+using StarWars.Client;
 using System.CommandLine;
 using System.CommandLine.IO;
 using System.ComponentModel;
@@ -23,7 +23,7 @@ namespace Linq2GraphQL.Docs.Components
             var films = await starWarsClient
                 .Query
                 .AllFilms()
-                .Select(e=> e.Films)
+                .Select(e => e.Films)
                 .ExecuteAsync();
 
 
@@ -36,30 +36,13 @@ namespace Linq2GraphQL.Docs.Components
             using var memoryStream = new MemoryStream();
             using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
             {
-                var generator = new Generator.ClientGenerator(archive, "Linq2GraphQL.StarWars", "StarWars", false);
+                var generator = new Generator.ClientGenerator(archive, "StarWars.Client", "StarWars", false);
                 await generator.GenerateAsync(new Uri("https://swapi-graphql.netlify.app/.netlify/functions/index"), null);
             }
             memoryStream.Seek(0, SeekOrigin.Begin);
             var bytes = memoryStream.ToArray();
             await tablerService.SaveAsBinary("test.zip", "application/zip", bytes);
 
-
-            //    using var memoryStream = new MemoryStream();
-            //    using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
-            //    {
-            //        var demoFile = archive.CreateEntry("jocke/foo.txt");
-
-            //        using var entryStream = demoFile.Open();
-            //        using var streamWriter = new StreamWriter(entryStream);
-            //        streamWriter.Write("Bar!");
-            //    }
-
-            //    memoryStream.Seek(0, SeekOrigin.Begin);
-            //    var bytes = memoryStream.ToArray();
-            //    await tablerService.SaveAsBinary("test.zip", "application/zip", bytes);
-
-            //}
-            //}
         }
     }
 }
