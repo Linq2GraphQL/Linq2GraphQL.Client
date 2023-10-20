@@ -3,15 +3,15 @@
 public partial class ClientExtensionsTemplate
 {
     private readonly bool includeSubscriptions;
-    private readonly string name;
+    private readonly string clientName;
     private readonly string namespaceName;
 
     public ClientExtensionsTemplate(string namespaceName, string name, bool includeSubscriptions)
     {
         this.namespaceName = namespaceName;
-        this.name = name;
+        this.clientName = name;
         this.includeSubscriptions = includeSubscriptions;
     }
 
-    private string clientName => name + "Client";
+    //private string clientName => clientName + "Client";
 }

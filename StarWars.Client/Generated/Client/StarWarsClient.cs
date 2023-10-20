@@ -10,7 +10,7 @@ public class StarWarsClient
     public StarWarsClient(HttpClient httpClient, IOptions<GraphClientOptions> options, IServiceProvider provider)
     {
         var client = new GraphClient(httpClient, options, provider);
-        Query = new  RootMethods(client);
+        Query = new RootMethods(client);
     }
 
     public RootMethods Query { get; private set; }

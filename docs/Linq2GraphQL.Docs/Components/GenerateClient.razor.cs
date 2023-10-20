@@ -1,51 +1,85 @@
 using Microsoft.AspNetCore.Components;
-using StarWars.Client;
-using System.CommandLine;
-using System.CommandLine.IO;
-using System.ComponentModel;
-using System.IO;
 using System.IO.Compression;
+using TabBlazor;
 using TabBlazor.Services;
 
 namespace Linq2GraphQL.Docs.Components
 {
 
-
     public partial class GenerateClient
     {
         [Inject] private TablerService tablerService { get; set; }
+        [Inject] private IModalService modalService { get; set; }
 
         private GenerateOptions options = new();
 
+        private List<GenerateOptions> demoOptions = new();
+
         protected override void OnInitialized()
         {
-            options.Namespace = "StarWars.Client";
-            options.ClientName = "StarWars";
+            demoOptions.Add(new GenerateOptions
+            {
+                Namespace = "MyNamespace",
+                ClientName = "MyClient"
+            });
 
-            options.Url = "https://swapi-graphql.netlify.app/.netlify/functions/index";
+            demoOptions.Add(new GenerateOptions
+            {
+                Url = "https://swapi-graphql.netlify.app/.netlify/functions/index",
+                Namespace = "StarWars.Client",
+                ClientName = "StarWarsClient"
+            });
+            demoOptions.Add(new GenerateOptions
+            {
+                Url = "https://spacex-production.up.railway.app/",
+                Namespace = "SpaceX",
+                ClientName = "SpaceXClient"
+            });
+            demoOptions.Add(new GenerateOptions
+            {
+                Url = "https://api.github.com/graphql",
+                Namespace = "Github",
+                ClientName = "GithubClient",
+                Token = "[Your Token]"
+            });
+
+            //
+
+            options = demoOptions.First();
         }
 
         private async Task GenerateClientAsync()
         {
-            var generator = new Generator.ClientGenerator(options.Namespace, options.ClientName, options.IncludeSubscriptions);
-            var enries = await generator.GenerateAsync(new Uri(options.Url), options.Token);
-
-            using var memoryStream = new MemoryStream();
-            using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+            try
             {
-                foreach (var entry in enries)
+
+
+                var generator = new Generator.ClientGenerator(options.Namespace, options.ClientName, options.IncludeSubscriptions);
+                var enries = await generator.GenerateAsync(new Uri(options.Url), options.Token);
+
+                using var memoryStream = new MemoryStream();
+                using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
                 {
-                    var file = archive.CreateEntry(entry.DirectoryName + "/" + entry.FileName);
-                    using var entryStream = file.Open();
-                    using var streamWriter = new StreamWriter(entryStream);
-                    streamWriter.Write(entry.Content);
+                    foreach (var entry in enries)
+                    {
+                        var file = archive.CreateEntry(entry.DirectoryName + "/" + entry.FileName);
+                        using var entryStream = file.Open();
+                        using var streamWriter = new StreamWriter(entryStream);
+                        streamWriter.Write(entry.Content);
+                    }
+
                 }
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                await tablerService.SaveAsBinary($"{options.ClientName}.zip", "application/zip", memoryStream.ToArray());
 
             }
-            memoryStream.Seek(0, SeekOrigin.Begin);
-            var bytes = memoryStream.ToArray();
-            await tablerService.SaveAsBinary($"{options.ClientName}.zip", "application/zip", bytes);
-
+            catch (Exception ex)
+            {
+                var component = new RenderComponent<ExceptionModal>().Set(e => e.Exception, ex);
+                var result = await modalService.ShowAsync("Error", component, new ModalOptions { Size = ModalSize.Large });
+                             
+               
+            }
         }
     }
 

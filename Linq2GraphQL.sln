@@ -46,7 +46,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Linq2GraphQL.Docs", "docs\L
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{884758A6-B667-4CA0-B186-AFB6331A24A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarWars.Client", "StarWars.Client\StarWars.Client.csproj", "{3BE5797C-C961-4CF6-81A3-552329347B54}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarWars.Client", "StarWars.Client\StarWars.Client.csproj", "{3BE5797C-C961-4CF6-81A3-552329347B54}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

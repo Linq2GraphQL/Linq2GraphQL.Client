@@ -25,5 +25,5 @@ public partial class ClientTemplate
     {
         return graphqlType.CSharpName + "Methods";
     }
-    private string clientName => name + "Client";
+    //private string clientName => clientName + "Client";
 }

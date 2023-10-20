@@ -28,7 +28,7 @@ public class GraphqlType : BaseType
     public List<Field> Fields { get; set; }
     public List<Field> InputFields { get; set; }
 
-    public List<Field> AllFields => Fields ?? InputFields;
+    public List<Field> AllFields => Fields ?? InputFields ?? new();
 
     public List<GraphqlType> Interfaces { get; set; }
 

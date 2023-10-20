@@ -7,9 +7,9 @@ using Microsoft.Extensions.Options;
 
 namespace <#= namespaceName #>;
 
-public class <#= clientName #>
+public class <#= name #>
 {
-    public <#= clientName #>(HttpClient httpClient, IOptions<GraphClientOptions> options, IServiceProvider provider)
+    public <#= name #>(HttpClient httpClient, IOptions<GraphClientOptions> options, IServiceProvider provider)
     {
         var client = new GraphClient(httpClient, options, provider);
 <# if (includeQuery) { #>

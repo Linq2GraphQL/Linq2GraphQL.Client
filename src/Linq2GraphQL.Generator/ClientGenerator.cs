@@ -9,13 +9,11 @@ using System.Text.Json;
 
 namespace Linq2GraphQL.Generator
 {
-    public class ClientGenerator 
+    public class ClientGenerator
     {
         private readonly string namespaceName;
         private readonly string clientName;
         private readonly bool includeSubscriptions;
-        // private readonly IConsole console;
-
         private readonly List<FileEntry> entries = new();
 
         public ClientGenerator(string namespaceName, string clientName, bool includeSubscriptions)
@@ -40,6 +38,7 @@ namespace Linq2GraphQL.Generator
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
             }
 
+            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Linq2GraphQL", "1.0"));
             using var response = await httpClient.PostAsJsonAsync(uri, new { query = General.IntrospectionQuery });
             if (!response.IsSuccessStatusCode)
             {
@@ -121,20 +120,18 @@ namespace Linq2GraphQL.Generator
             GenerateContextMethods(namespaceName, clientDirName, mutationType, "OperationType.Mutation");
             GenerateContextMethods(namespaceName, clientDirName, subscriptionType, "OperationType.Subscription");
 
-
             var includeQuery = queryType != null;
             var includeMutation = mutationType != null;
 
             Console.WriteLine("Generate Client...");
             var templateText = new ClientTemplate(namespaceName, clientName, queryType, mutationType, subscriptionType).TransformText();
-            var fileName = clientName + "Client" + ".cs";
+            var fileName = clientName + ".cs";
             AddFile(clientDirName, fileName, templateText);
-            //await File.WriteAllTextAsync(filePath, templateText);
 
             Console.WriteLine("Generate Client Extensions...");
             var clientExtensionsTemplateText =
                 new ClientExtensionsTemplate(namespaceName, clientName, includeSubscriptions).TransformText();
-            fileName = clientName + "ClientExtensions" + ".cs";
+            fileName = clientName + "Extensions" + ".cs";
             AddFile(clientDirName, fileName, clientExtensionsTemplateText);
 
             return entries;
@@ -158,14 +155,6 @@ namespace Linq2GraphQL.Generator
             var fileName = methodType.Name.ToPascalCase() + "Methods" + ".cs";
             var templateText = new MethodsTemplate(methodType, namespaceName, schemaType).TransformText();
             AddFile(directory, fileName, templateText);
-
-            //  await File.WriteAllTextAsync(filePath, templateText);
         }
-
-
-
-
-
-      
     }
 }

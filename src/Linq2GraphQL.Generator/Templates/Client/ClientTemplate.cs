@@ -37,14 +37,14 @@ namespace Linq2GraphQL.Generator.Templates.Client
             this.Write(";\r\n\r\npublic class ");
             
             #line 10 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(clientName));
+            this.Write(this.ToStringHelper.ToStringWithCulture(name));
             
             #line default
             #line hidden
             this.Write("\r\n{\r\n    public ");
             
             #line 12 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(clientName));
+            this.Write(this.ToStringHelper.ToStringWithCulture(name));
             
             #line default
             #line hidden
