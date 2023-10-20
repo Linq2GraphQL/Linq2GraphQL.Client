@@ -28,7 +28,7 @@ public class GraphqlType : BaseType
     public List<Field> Fields { get; set; }
     public List<Field> InputFields { get; set; }
 
-    public List<Field> AllFields => Fields ?? InputFields;
+    public List<Field> AllFields => Fields ?? InputFields ?? new();
 
     public List<GraphqlType> Interfaces { get; set; }
 
@@ -65,7 +65,7 @@ public class GraphqlType : BaseType
     {
         if (CSharpName != "PageInfo") { return false; }
         if (InputFields != null && InputFields.Any()) { return false; }
-        //TODO Fix
+        //TODO Fix this
         foreach (var field in Fields)
         {
 
@@ -281,6 +281,7 @@ public class BaseType
     public string Description { get; set; }
 
     public string CSharpName => Name?.ToPascalCase();
+    public string FileName => CSharpName + ".cs";
 
     public BaseType OfType { get; set; }
 

@@ -1,0 +1,8 @@
+﻿
+<Alert BackgroundColor="TablerColor.Danger" Important>
+    @Exception?.Message
+</Alert>
+
+@code {
+    [Parameter] public Exception Exception { get; set; }
+}

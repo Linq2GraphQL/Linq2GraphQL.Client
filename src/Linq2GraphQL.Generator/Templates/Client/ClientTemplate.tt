@@ -7,30 +7,30 @@ using Microsoft.Extensions.Options;
 
 namespace <#= namespaceName #>;
 
-public class <#= clientName #>
+public class <#= name #>
 {
-    public <#= clientName #>(HttpClient httpClient, IOptions<GraphClientOptions> options, IServiceProvider provider)
+    public <#= name #>(HttpClient httpClient, IOptions<GraphClientOptions> options, IServiceProvider provider)
     {
         var client = new GraphClient(httpClient, options, provider);
 <# if (includeQuery) { #>
-        Query = new QueryMethods(client);
+        Query = new <#= GetMehodName(queryType) #>(client);
 <# }#>
 <# if (includeMutation) { #>
-        Mutation = new MutationMethods(client);
+        Mutation = new <#= GetMehodName(mutationType) #>(client);
 <# }#>
 <# if (includeSubscriptions) { #>
-        Subscription = new SubscriptionMethods(client); 
+        Subscription = new <#= GetMehodName(subscriptionType) #>(client); 
 <# }#>
     }
 
 <# if (includeQuery) { #>
-    public QueryMethods Query { get; private set; }
+    public <#= GetMehodName(queryType) #> Query { get; private set; }
 <# } #>
 <# if (includeMutation) { #>
-    public MutationMethods Mutation { get; private set; }
+    public <#= GetMehodName(mutationType) #> Mutation { get; private set; }
 <# } #>
 <# if (includeSubscriptions) { #>
-    public SubscriptionMethods Subscription { get; private set; }
+    public <#= GetMehodName(subscriptionType) #> Subscription { get; private set; }
 <# } #>
     
 }

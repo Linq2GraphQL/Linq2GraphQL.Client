@@ -2,6 +2,7 @@
 using Linq2GraphQL.TestClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using StarWars.Client;
 
 var loggerFactory = LoggerFactory.Create(builder =>
 {
@@ -26,8 +27,23 @@ serviceProvider
             //Add stuff here
         });
 
-var services = serviceProvider.BuildServiceProvider();
+serviceProvider.AddStarWarsClient(x =>
+{
+    x.UseSafeMode = true;
+    x.SubscriptionProtocol = SubscriptionProtocol.ServerSentEvents;
+})
+   .WithHttpClient(
+       httpClient => { httpClient.BaseAddress = new Uri("https://swapi-graphql.netlify.app/.netlify/functions/index"); });
 
+
+var services = serviceProvider.BuildServiceProvider();
 var sampleClient = services.GetRequiredService<SampleClient>();
+var starWarsClient = services.GetRequiredService<StarWarsClient>();
+
+var films = await starWarsClient
+    .Query
+    .AllFilms()
+    .Select(e=> e.Films)
+    .ExecuteAsync();
 
 Console.WriteLine("Goodby, World!");

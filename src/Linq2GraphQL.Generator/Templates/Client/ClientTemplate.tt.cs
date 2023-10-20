@@ -2,20 +2,28 @@
 
 public partial class ClientTemplate
 {
-    private readonly bool includeSubscriptions;
     private readonly string name;
-    private readonly bool includeQuery;
-    private readonly bool includeMutation;
+    private readonly GraphqlType queryType;
+    private readonly GraphqlType mutationType;
+    private readonly GraphqlType subscriptionType;
+
+    private bool includeQuery => queryType != null;
+    private  bool includeMutation => mutationType != null;
+    private  bool includeSubscriptions => subscriptionType != null;
     private readonly string namespaceName;
 
-    public ClientTemplate(string namespaceName, string name, bool includeQuery, bool includeMutation, bool includeSubscriptions)
+    public ClientTemplate(string namespaceName, string name, GraphqlType queryType, GraphqlType mutationType, GraphqlType subscriptionType)
     {
         this.namespaceName = namespaceName;
         this.name = name;
-        this.includeQuery = includeQuery;
-        this.includeMutation = includeMutation;
-        this.includeSubscriptions = includeSubscriptions;
+        this.queryType = queryType;
+        this.mutationType = mutationType;
+        this.subscriptionType = subscriptionType;
     }
 
-    private string clientName => name + "Client";
+    private string GetMehodName(GraphqlType graphqlType)
+    {
+        return graphqlType.CSharpName + "Methods";
+    }
+    //private string clientName => clientName + "Client";
 }
