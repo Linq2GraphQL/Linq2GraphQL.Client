@@ -3,6 +3,16 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
+	
+		<Authors>Joakim Dangården,Magnus Ahlberg</Authors>
+		<Company>Linq2GraphQL</Company>
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/linq2graphql/linq2graphql.client</RepositoryUrl>
+		<PackageProjectUrl>https://linq2graphql.com/</PackageProjectUrl>
+		<Title>Linq2GraphQL.Client.Subscriptions</Title>
+		<Description>Linq2GraphQL Subscription support</Description>
+		<Copyright>Copyright 2023 (c) Joakim Dangården. All rights reserved.</Copyright>
+		<PackageTags>Linq GraphQL Client Subscriptions</PackageTags>
     </PropertyGroup>
 
     <ItemGroup>
