@@ -1,3 +1,4 @@
+using Linq2GraphQL.Generator;
 using Microsoft.AspNetCore.Components;
 using System.IO.Compression;
 using TabBlazor;
@@ -9,10 +10,11 @@ namespace Linq2GraphQL.Docs.Components
     public partial class GenerateClient
     {
         [Inject] private TablerService tablerService { get; set; }
+        [Inject] private ToastService toastService { get; set; }
         [Inject] private IModalService modalService { get; set; }
 
         private GenerateOptions options = new();
-
+        private bool isLoading;
         private List<GenerateOptions> demoOptions = new();
 
         protected override void OnInitialized()
@@ -48,37 +50,75 @@ namespace Linq2GraphQL.Docs.Components
             options = demoOptions.First();
         }
 
-        private async Task GenerateClientAsync()
+        private async Task CopyIntrospection()
+        {
+
+            await tablerService.CopyToClipboard(Generator.General.IntrospectionQuery);
+            await toastService.AddToastAsync(new ToastModel
+            {
+                Title = "Copy Complete",
+                Message = "Introspection query has been copied to the clipboard"
+            });
+
+        }
+
+        private async Task SaveEntriesAsync(List<FileEntry> entries)
+        {
+            using var memoryStream = new MemoryStream();
+            using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+            {
+                foreach (var entry in entries)
+                {
+                    var file = archive.CreateEntry(entry.DirectoryName + "/" + entry.FileName);
+                    using var entryStream = file.Open();
+                    using var streamWriter = new StreamWriter(entryStream);
+                    streamWriter.Write(entry.Content);
+                }
+
+            }
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            await tablerService.SaveAsBinary($"{options.ClientName}.zip", "application/zip", memoryStream.ToArray());
+
+        }
+
+        private async Task GenerateClientJson()
         {
             try
             {
-
-
+                isLoading = true;
                 var generator = new Generator.ClientGenerator(options.Namespace, options.ClientName, options.IncludeSubscriptions);
-                var enries = await generator.GenerateAsync(new Uri(options.Url), options.Token);
-
-                using var memoryStream = new MemoryStream();
-                using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
-                {
-                    foreach (var entry in enries)
-                    {
-                        var file = archive.CreateEntry(entry.DirectoryName + "/" + entry.FileName);
-                        using var entryStream = file.Open();
-                        using var streamWriter = new StreamWriter(entryStream);
-                        streamWriter.Write(entry.Content);
-                    }
-
-                }
-                memoryStream.Seek(0, SeekOrigin.Begin);
-                await tablerService.SaveAsBinary($"{options.ClientName}.zip", "application/zip", memoryStream.ToArray());
-
+                var entries = generator.Generate(options.Schema);
+                await SaveEntriesAsync(entries);
             }
             catch (Exception ex)
             {
                 var component = new RenderComponent<ExceptionModal>().Set(e => e.Exception, ex);
                 var result = await modalService.ShowAsync("Error", component, new ModalOptions { Size = ModalSize.Large });
-                             
-               
+            }
+            finally
+            {
+                isLoading = false;
+            }
+        }
+
+
+        private async Task GenerateClientAsync()
+        {
+            try
+            {
+                isLoading = true;
+                var generator = new ClientGenerator(options.Namespace, options.ClientName, options.IncludeSubscriptions);
+                var entries = await generator.GenerateAsync(new Uri(options.Url), options.Token);
+                await SaveEntriesAsync(entries);
+            }
+            catch (Exception ex)
+            {
+                var component = new RenderComponent<ExceptionModal>().Set(e => e.Exception, ex);
+                var result = await modalService.ShowAsync("Error", component, new ModalOptions { Size = ModalSize.Large });
+            }
+            finally
+            {
+                isLoading = false;
             }
         }
     }

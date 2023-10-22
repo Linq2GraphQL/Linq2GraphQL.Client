@@ -2,6 +2,8 @@
 
 <h3>Generate Client</h3>
 
+<Dimmer Active=isLoading>
+
 <ItemSelect  Items="demoOptions" @bind-SelectedValue="options" SelectedTextExpression="e=>e.ClientName">
     <ListTemplate>
         @context.ClientName
@@ -40,7 +42,12 @@
              </Tab>
 
              <Tab Title="Schema">
-                 <InputTextArea class="form-control" @bind-Value="options.Schema" />
+
+                 <div class="mb-2">Run this <Icon class="icon" IconType="Icons.Copy" OnClick="CopyIntrospection" /> query and paste the result below.</div>
+                
+                 <InputTextArea class="form-control" @bind-Value="options.Schema" rows="20" />
+
+                 <Button class="mt-3" BackgroundColor="TablerColor.Primary" OnClick="GenerateClientJson">Generate</Button>
              </Tab>
 
          </Tabs>
@@ -49,4 +56,4 @@
      </CardBody>
  </Card>
 
-
+ </Dimmer>
