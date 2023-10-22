@@ -43,23 +43,23 @@ public static class Utilities
                     ParseExpressionInternal(argument, parent);
                 }
 
-                    //foreach (var argument in newExpression.Arguments)
-                    //{
-                    //    switch (argument)
-                    //    {
-                    //        case MethodCallExpression methodCallExp:
-                    //            ParseMethodCallExpression(parent, methodCallExp);
-                    //            break;
-                    //    }
-                    //}
+                //foreach (var argument in newExpression.Arguments)
+                //{
+                //    switch (argument)
+                //    {
+                //        case MethodCallExpression methodCallExp:
+                //            ParseMethodCallExpression(parent, methodCallExp);
+                //            break;
+                //    }
+                //}
 
-                    //foreach (var argument in newExpression.Arguments.OfType<MemberExpression>())
-                    //{
-                    //    var (ParentNode, _) = GetMemberQueryNode(argument);
-                    //    parent.AddChildNode(ParentNode);
-                    //}
+                //foreach (var argument in newExpression.Arguments.OfType<MemberExpression>())
+                //{
+                //    var (ParentNode, _) = GetMemberQueryNode(argument);
+                //    parent.AddChildNode(ParentNode);
+                //}
 
-                    break;
+                break;
         }
     }
 
