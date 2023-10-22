@@ -7,6 +7,16 @@
         <PackAsTool>true</PackAsTool>
         <ToolCommandName>Linq2GraphQL</ToolCommandName>
 
+		<Authors>Joakim Dangården, Magnus Ahlberg</Authors>
+		<Company>Linq2GraphQL</Company>
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/linq2graphql/linq2graphql.client</RepositoryUrl>
+		<PackageProjectUrl>https://linq2graphql.com/</PackageProjectUrl>
+		<Title>Linq2GraphQL.Generator</Title>
+		<Description>Generates Linq2GraphQL Client</Description>
+		<Copyright>Copyright 2023 (c) Joakim Dangården. All rights reserved.</Copyright>
+		<PackageTags>Linq GraphQL Client Generator</PackageTags>
+
     </PropertyGroup>
 
     <ItemGroup>
