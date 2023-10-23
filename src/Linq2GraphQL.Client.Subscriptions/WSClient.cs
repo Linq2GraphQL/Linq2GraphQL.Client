@@ -9,7 +9,7 @@ namespace Linq2GraphQL.Client.Subscriptions;
 
 public class WSClient : IAsyncDisposable
 {
-    private readonly GraphRequest payload;
+    private readonly GraphQLRequest payload;
     private readonly SubscriptionProtocol subscriptionProtocol;
 
     private readonly Subject<string> subscriptionSubject = new();
@@ -18,7 +18,7 @@ public class WSClient : IAsyncDisposable
 
     private readonly JsonSerializerOptions jsonOptions;
 
-    public WSClient(string url, SubscriptionProtocol subprotocol, GraphRequest payload)
+    public WSClient(string url, SubscriptionProtocol subprotocol, GraphQLRequest payload)
     {
         this.url = url;
         subscriptionProtocol = subprotocol;

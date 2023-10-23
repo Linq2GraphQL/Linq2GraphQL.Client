@@ -9,12 +9,12 @@ namespace Linq2GraphQL.Client.Subscriptions;
 public class SSEClient : IDisposable
 {
     private readonly GraphClient graphClient;
-    private readonly GraphRequest payload;
+    private readonly GraphQLRequest payload;
     private readonly Subject<string> subscriptionSubject = new();
     private HttpResponseMessage response;
     private StreamReader streamReader;
 
-    public SSEClient(GraphClient graphClient, GraphRequest payload)
+    public SSEClient(GraphClient graphClient, GraphQLRequest payload)
     {
         this.graphClient = graphClient;
         this.payload = payload;

@@ -100,6 +100,7 @@ namespace Linq2GraphQL.Generator
                 AddFile("Types", classType.FileName, classText);
             }
 
+            Console.WriteLine("Generate Inputs...");
             var inputs = schema.GetClassTypes().Where(e => e.Kind == TypeKind.InputObject).ToList();
             foreach (var classType in inputs)
             {
@@ -107,10 +108,15 @@ namespace Linq2GraphQL.Generator
                 AddFile("Inputs", classType.FileName, classText);
             }
 
+            Console.WriteLine("Generate InputFactory...");
+            var inputFactoryText = new InputFactoryClassTemplate(inputs, namespaceName).TransformText();
+            AddFile("Inputs", "InputFactory.cs", inputFactoryText);
+
             Console.WriteLine("Generate Enums...");
             foreach (var enumType in schema.GetEnums())
             {
                 var enumText = new EnumTemplate(enumType, namespaceName).TransformText();
+                AddFile("Enums", enumType.FileName, enumText);
             }
 
             Console.WriteLine("Generate Methods...");
@@ -136,16 +142,7 @@ namespace Linq2GraphQL.Generator
 
             return entries;
         }
-
-        private static async Task GenerateInputFactory(string namespaceName, List<GraphqlType> inputs, string outputPath)
-        {
-            var inputFactoryTemplate = new InputFactoryClassTemplate(inputs, namespaceName).TransformText();
-            var directory = Path.Combine(outputPath, "Input");
-            Directory.CreateDirectory(directory);
-
-            var classFilePath = Path.Combine(directory, "InputFactory.cs");
-            await File.WriteAllTextAsync(classFilePath, inputFactoryTemplate);
-        }
+             
 
         private void GenerateContextMethods(string namespaceName, string directory, GraphqlType methodType,
             string schemaType)

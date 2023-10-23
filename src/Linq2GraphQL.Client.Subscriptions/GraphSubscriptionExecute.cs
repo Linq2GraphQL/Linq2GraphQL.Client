@@ -10,14 +10,7 @@ public class GraphSubscriptionExecute<T, TResult> : GraphBaseExecute<T, TResult>
 
     public async Task<IObservable<TResult>> StartAsync()
     {
-
-        await InitQueryAsync();
-
-        var payload = new GraphRequest
-        {
-            Query = GetGraphQLQuery(),
-            Variables = QueryNode.GetAllActiveArguments().ToDictionary(x => x.GraphName, e => e.Value)
-        };
+        var payload = await GetRequestAsync();
 
         if (string.IsNullOrWhiteSpace(client.SubscriptionUrl))
         {

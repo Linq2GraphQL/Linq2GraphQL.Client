@@ -14,11 +14,9 @@ public class Order
     public DateTimeOffset OrderDate { get; set; }
     public List<OrderLine> Lines { get; set; } = new();
 
-#pragma warning disable CA1822 // Mark members as static
-    public string GetOrderHello(string name)
-#pragma warning restore CA1822 // Mark members as static
+    public string GetOrderHello(string name, int first = 0)
     {
-        return $"Hello, {name}";
+        return $"Hello, {name} [{first}]";
     }
 
     public Address GetOrderAddress(AddressType addressType)

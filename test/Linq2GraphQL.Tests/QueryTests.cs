@@ -208,16 +208,14 @@ public class QueryTests : IClassFixture<SampleClientFixture>
     }
 
     [Fact]
-    public async Task Orders_ChainedSelect_New()
+    public async Task Orders_ChainedSelect_2()
     {
         var query = sampleClient
             .Query
             .Orders()
             .Select(e => e.Nodes.Select(e => e.Customer.Orders.Select(e => new { e.Address, e.OrderId })));
 
-        var quergraphQLy = query.GetGraphQLQuery();
         var result = await query.ExecuteAsync();
-        var quergraphQLy2 = query.GetGraphQLQuery();
         var baseType = query.BaseResult;
 
         Assert.Equal(default, baseType.Nodes.First().OrderDate);

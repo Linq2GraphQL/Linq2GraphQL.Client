@@ -7,11 +7,11 @@ public class ArgumentValue
         GraphType = graphType;
         Value = value;
         GraphName = graphName;
+        VariableName = graphName;
     }
 
     public string GraphName { get; set; }
     public string GraphType { get; set; }
     public object Value { get; set; }
-
-    public string VariableName => $"${GraphName}";
+    public string VariableName { get; set; }
 }

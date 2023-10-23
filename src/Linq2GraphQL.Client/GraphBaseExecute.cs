@@ -11,6 +11,9 @@ public abstract class GraphBaseExecute<T, TResult>
     protected readonly Func<T, TResult> mapper;
     protected readonly Expression<Func<T, TResult>> selector;
 
+    private readonly SemaphoreSlim _lock = new(1, 1);
+    private bool intialized;
+
     public GraphBaseExecute(GraphClient client, OperationType operationType, QueryNode queryNode,
         Expression<Func<T, TResult>> selector)
     {
@@ -22,13 +25,31 @@ public abstract class GraphBaseExecute<T, TResult>
         queryExecutor = new QueryExecutor<T>(client);
     }
 
-    public async Task InitQueryAsync()
+    private async Task InitQueryAsync()
     {
-        var schema = await client.GetSchemaForSafeModeAsync();
-        QueryNode.AddPrimitiveChildren(true, schema);
+        await _lock.WaitAsync();
+        try
+        {
+            if (!intialized)
+            {
+                var schema = await client.GetSchemaForSafeModeAsync();
+                QueryNode.SetAllUniqueVariableNames();
+                QueryNode.AddPrimitiveChildren(true, schema);
+                intialized = true;
+            }
+
+        }
+        finally
+        {
+            _lock.Release();
+        }
+
+
+
+
     }
 
-    private string GetQueryArgumentString()
+    private string GetQueryVariablesString()
     {
         var args = QueryNode.GetAllActiveArguments();
 
@@ -40,19 +61,30 @@ public abstract class GraphBaseExecute<T, TResult>
         var text = "";
         foreach (var argument in args)
         {
-            text += $"{argument.VariableName}: {argument.GraphType} ";
+            text += $"${argument.VariableName}: {argument.GraphType} ";
         }
 
         return $"({text})";
     }
 
-    public string GetGraphQLQuery()
+    public async Task<GraphQLRequest> GetRequestAsync()
     {
-        return GetOperationType() +  GetQueryArgumentString() + "{ " + Environment.NewLine +
+        await InitQueryAsync();
+
+        return new GraphQLRequest
+        {
+            Query = GetGraphQLQuery(),
+            Variables = QueryNode.GetAllActiveArguments().ToDictionary(x => x.VariableName, e => e.Value)
+        };
+    }
+
+    private string GetGraphQLQuery()
+    {
+        return GetOperationType() + GetQueryVariablesString() + "{ " + Environment.NewLine +
                QueryNode.GetQueryString() + Environment.NewLine + "}";
     }
 
-    protected string GetOperationType()
+    private string GetOperationType()
     {
         return operationType.ToString().ToLower();
     }

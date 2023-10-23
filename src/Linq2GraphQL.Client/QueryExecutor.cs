@@ -14,10 +14,8 @@ public class QueryExecutor<T>
         this.client = client;
     }
 
-    internal async Task<T> ExecuteRequestAsync(string query, string alias, List<ArgumentValue> arguments)
+    internal async Task<T> ExecuteRequestAsync(string alias, GraphQLRequest graphRequest)
     {
-        var graphRequest = new GraphRequest
-        { Query = query, Variables = arguments.ToDictionary(x => x.GraphName, e => e.Value) };
         var json = JsonSerializer.Serialize(graphRequest, client.SerializerOptions);
 
         using var response = await client.HttpClient.PostAsJsonAsync("", graphRequest, client.SerializerOptions);
@@ -26,12 +24,11 @@ public class QueryExecutor<T>
         {
             var content = await response.Content.ReadAsStringAsync();
             throw new GraphQueryRequestException($"Http error! Status code {response.StatusCode} Error: {content}",
-                query);
+                graphRequest.Query);
         }
 
         var con = await response.Content.ReadAsStringAsync();
-
-        return ProcessResponse(con, alias, query);
+        return ProcessResponse(con, alias, graphRequest.Query);
     }
 
     public T ProcessResponse(string con, string alias, string query)

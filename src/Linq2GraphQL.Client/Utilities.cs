@@ -77,9 +77,20 @@ public static class Utilities
                 var graphAtttribute = parameter.GetCustomAttribute<GraphArgumentAttribute>();
                 if (graphAtttribute != null)
                 {
-                    var argumentValue = (ConstantExpression)methodCallExp.Arguments[i];
+                    var arg = methodCallExp.Arguments[i];
+                    ConstantExpression argConstant;
+                    if (arg.NodeType == ExpressionType.Convert)
+                    {
+                        var unaryExpression = (UnaryExpression)arg;
+                        argConstant = (ConstantExpression)unaryExpression.Operand;
+                    }
+                    else
+                    {
+                        argConstant = (ConstantExpression)arg;
+                    }
+
                     arguments.Add(new ArgumentValue(parameter.Name, graphAtttribute.GraphType,
-                        argumentValue.Value));
+                        argConstant.Value));
                 }
 
                 i++;

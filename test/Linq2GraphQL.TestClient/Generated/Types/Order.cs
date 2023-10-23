@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 
@@ -6,7 +8,7 @@ namespace Linq2GraphQL.TestClient;
 public static class OrderExtensions
 {
     [GraphMethod("orderHello")]
-    public static string OrderHello(this Order  order, [GraphArgument("String!")] string name)
+    public static string OrderHello(this Order  order, [GraphArgument("String!")] string name, [GraphArgument("Int!")] int first)
     {
 	    return order?.OrderHello;
     }

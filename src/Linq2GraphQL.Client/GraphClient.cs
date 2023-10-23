@@ -67,7 +67,9 @@ public class GraphClient
         return await cache.GetOrCreateAsync("__schema", async entry =>
         {
             var executor = new QueryExecutor<GraphQLSchema>(this);
-            return await executor.ExecuteRequestAsync(Helpers.SchemaQuery, "__schema", new List<ArgumentValue>());
+
+            var graphRequest = new GraphQLRequest { Query = Helpers.SchemaQuery };
+            return await executor.ExecuteRequestAsync("__schema", graphRequest);
         });
     }
 }
