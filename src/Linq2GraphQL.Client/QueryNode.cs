@@ -24,6 +24,9 @@ public class QueryNode
     public List<ArgumentValue> Arguments { get; internal set; } = new();
     public bool IncludePrimitive { get; internal set; }
 
+    public QueryNode Parent { get; private set; }
+
+
     internal void IncludePrimitiveIfNoChildPrimitive()
     {
         if (!ChildNodes.Any(e => e.underlyingMemberType.IsValueTypeOrString()))
@@ -55,11 +58,16 @@ public class QueryNode
         AddChildNode(new QueryNode(member, alias));
     }
 
+    public int Level => Parent?.Level + 1 ?? 1;
+    public int Leaf { get; internal set; } = 1;
+
     public void AddChildNode(QueryNode childNode)
     {
         var currentNode = ChildNodes.FirstOrDefault(e => e.Alias == childNode.Alias);
         if (currentNode == null)
         {
+            childNode.Parent = this;
+            childNode.Leaf = ChildNodes.Count + 1;
             ChildNodes.Add(childNode);
             return;
         }
@@ -103,22 +111,10 @@ public class QueryNode
                     continue;
                 }
 
-                //if (propertyInfo.Name.Contains("hello", StringComparison.InvariantCultureIgnoreCase))
-                //{
-
-                //    var tt = propertyInfo.GetGetMethod();
-                //    if (propertyInfo.GetIndexParameters().Length > 0)
-                //    {
-                //        var ss = "asafs";
-                //    }
-
-                //}
-
                 if (!propertyInfo.PropertyType.IsValueTypeOrString() || propertyInfo.GetCustomAttribute<GraphQLShadowPropertyAttribute>() != null)
                 {
                     continue;
                 }
-
 
                 if (schema != null)
                 {
@@ -142,7 +138,21 @@ public class QueryNode
         }
     }
 
-    private List<ArgumentValue> GetActiveArguments()
+    internal void SetAllUniqueVariableNames()
+    {
+        foreach (var argument in Arguments)
+        {
+            argument.VariableName += $"_{Level}_{Leaf}";
+        }
+
+        foreach (var child in ChildNodes)
+        {
+            child.SetAllUniqueVariableNames();
+        }
+
+    }
+
+    public List<ArgumentValue> GetActiveArguments()
     {
         return Arguments.Where(e => e.Value != null).ToList();
     }
@@ -150,19 +160,16 @@ public class QueryNode
     public List<ArgumentValue> GetAllActiveArguments()
     {
         var allArguments = GetActiveArguments();
-
         foreach (var childNode in ChildNodes)
         {
             allArguments.AddRange(childNode.GetAllActiveArguments());
         }
-
         return allArguments;
     }
 
-
     private string GetArgumentString()
     {
-        var args = GetActiveArguments();
+        var args = GetActiveArguments(); ;
         if (!args.Any())
         {
             return "";
@@ -171,7 +178,7 @@ public class QueryNode
         var argString = "(";
         foreach (var arg in args)
         {
-            argString += arg.GraphName + ":" + arg.VariableName + " ";
+            argString += arg.GraphName + ":$" + arg.VariableName + " ";
         }
 
         argString += ")";
@@ -179,7 +186,7 @@ public class QueryNode
         return argString;
     }
 
-    public string GetQueryString()
+    internal string GetQueryString()
     {
         var memberType = Member.GetUnderlyingType();
         var query = Alias + GetArgumentString() + Environment.NewLine;

@@ -111,6 +111,7 @@ namespace Linq2GraphQL.Generator
             foreach (var enumType in schema.GetEnums())
             {
                 var enumText = new EnumTemplate(enumType, namespaceName).TransformText();
+                AddFile("Enums", enumType.FileName, enumText);
             }
 
             Console.WriteLine("Generate Methods...");

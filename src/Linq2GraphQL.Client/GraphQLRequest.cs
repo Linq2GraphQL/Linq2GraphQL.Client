@@ -2,7 +2,7 @@
 
 namespace Linq2GraphQL.Client;
 
-public class GraphRequest
+public class GraphQLRequest
 {
     [JsonPropertyName("query")] public string Query { get; set; }
 
