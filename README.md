@@ -1,6 +1,6 @@
 <div align='center'>
 
-<img src=https://raw.githubusercontent.com/Linq2GraphQL/Linq2GraphQL.Client/main/Linq2GrapgQL_Logo.svg alt="logo" width=300 height=300 />
+<img src=https://raw.githubusercontent.com/Linq2GraphQL/Linq2GraphQL.Client/main/Logo.svg alt="logo" width=300 height=300 />
 
 <h1>Linq2GraphQL.Client</h1>
 <p>A straightforward Linq to GraphQL Client</p>
