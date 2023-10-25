@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using System.Xml.Linq;
 
 namespace Linq2GraphQL.Client;
 

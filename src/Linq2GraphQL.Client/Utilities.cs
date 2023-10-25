@@ -42,23 +42,6 @@ public static class Utilities
                 {
                     ParseExpressionInternal(argument, parent);
                 }
-
-                //foreach (var argument in newExpression.Arguments)
-                //{
-                //    switch (argument)
-                //    {
-                //        case MethodCallExpression methodCallExp:
-                //            ParseMethodCallExpression(parent, methodCallExp);
-                //            break;
-                //    }
-                //}
-
-                //foreach (var argument in newExpression.Arguments.OfType<MemberExpression>())
-                //{
-                //    var (ParentNode, _) = GetMemberQueryNode(argument);
-                //    parent.AddChildNode(ParentNode);
-                //}
-
                 break;
         }
     }
@@ -105,7 +88,7 @@ public static class Utilities
             if (methodCallExp.Arguments[0] is MemberExpression memberExpr)
             {
                 var (ParentNode, LastNode) = GetMemberQueryNode(memberExpr);
-                ParseExpressionInternal(methodCallExp.Arguments[1], LastNode);
+                ParseExpressionInternal(methodCallExp.Arguments[1], LastNode); 
                 parent.AddChildNode(ParentNode);
             }
             else
