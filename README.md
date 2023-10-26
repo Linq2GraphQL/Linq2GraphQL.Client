@@ -73,7 +73,7 @@ Turning on *SafeMode* will make the client before the first request to do an int
 # Acknowledgments
 Linq2GraphQL is inspired by [GraphQLinq](https://github.com/Giorgi/GraphQLinq) , thank you [Giorgi](https://github.com/Giorgi)
 
-[![Stargazers repo roster for @Linq2GraphQL/Linq2GraphQL.Client](https://reporoster.com/stars/dark/Linq2GraphQL/Linq2GraphQL.Client)](https://github.com/Linq2GraphQL/Linq2GraphQL.Client/stargazers)
+[![Stargazers repo roster for @linq2graphql/linq2graphql.client](https://reporoster.com/stars/dark/linq2graphql/linq2graphql.client)](https://github.com/linq2graphql/linq2graphql.client/stargazers)
 
 
 
