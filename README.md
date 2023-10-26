@@ -21,7 +21,6 @@ A simple query that will get the first 10 orders with the primitive properties o
         .Select(e => e.Orders)
         .ExecuteAsync();
 
-In this example the client will automatically populate the primitive properties of  all orders and the connected Customer
 
 # Getting Started
 ## Generate Client code
