@@ -1,10 +1,4 @@
-﻿using GreenDonut;
-using Linq2GraphQL.TestClient;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Linq2GraphQL.TestClient;
 
 namespace Linq2GraphQL.Tests
 {
@@ -39,7 +33,7 @@ namespace Linq2GraphQL.Tests
             var query = sampleClient
                 .Query
                 .Orders(first: 1)
-                .Include(e => e.Nodes.Select(e => e.Customer)) //TODO Should this be loaded automatically because it is chained in orders?
+                .Include(e => e.Nodes.Select(e => e.Customer)) 
                 .Include(e => e.Nodes.Select(e => e.Customer.Orders))
                 .Select(e => e.Nodes);
 
