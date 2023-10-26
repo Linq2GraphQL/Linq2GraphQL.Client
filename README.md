@@ -70,11 +70,10 @@ As an example this would add SpaceXClient to the container:
 ## Safe Mode
 Turning on *SafeMode* will make the client before the first request to do an introspection query to the endpoint. The schema will be used to make sure that any auto included properties are available. This is an advanced feature that require the endpoint to support introspection. By default safe mode is turned of. 
 
-
-
-
 # Acknowledgments
 Linq2GraphQL is inspired by [GraphQLinq](https://github.com/Giorgi/GraphQLinq) , thank you [Giorgi](https://github.com/Giorgi)
+
+[![Stargazers repo roster for @Linq2GraphQL/Linq2GraphQL.Client](https://reporoster.com/stars/dark/Linq2GraphQL/Linq2GraphQL.Client)](https://github.com/Linq2GraphQL/Linq2GraphQL.Client/stargazers)
 
 
 
