@@ -180,7 +180,7 @@ public class QueryNode
         {
             argString += arg.GraphName + ":$" + arg.VariableName + " ";
         }
-
+        argString.TrimEnd();
         argString += ")";
 
         return argString;
@@ -189,25 +189,24 @@ public class QueryNode
 
 
 
-    internal string GetQueryString()
+    internal string GetQueryString(string indent = "")
     {
-        var indent = new string(' ', Level + 3);
-
         var memberType = Member.GetUnderlyingType();
         var query = Alias + GetArgumentString() + Environment.NewLine;
 
         if (memberType.IsListOfPrimitiveTypeOrString())
         {
-            return query;
+            return  indent + query;
         }
 
         query += indent + "{" + Environment.NewLine;
 
         if (ChildNodes.Any())
         {
+            var newIndent = "  " + indent;
             foreach (var childNode in ChildNodes)
             {
-                query += indent + childNode.GetQueryString();
+                query +=  childNode.GetQueryString(newIndent);
             }
         }
 

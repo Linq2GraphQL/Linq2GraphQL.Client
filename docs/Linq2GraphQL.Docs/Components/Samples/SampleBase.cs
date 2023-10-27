@@ -9,16 +9,10 @@ namespace Linq2GraphQL.Docs.Components.Samples
     {
         [Inject] public StarWarsClient starWarsClient { get; set; }
 
-
-
         public string GetTypeFullName()
         {
             return GetType().FullName;
         }
 
-        //public void SetGraphQLSample<T, TResult>(GraphQueryExecute<T, TResult> executor)
-        //{
-
-        //}
     }
 }

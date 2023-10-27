@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Linq2GraphQL.Client;
 using System.Text.Json;
 using TabBlazor;
+using StarWars.Client;
 
 namespace Linq2GraphQL.Docs.Components.Samples
 {
@@ -12,8 +13,10 @@ namespace Linq2GraphQL.Docs.Components.Samples
         private GraphQLRequest request;
         private string requestJson;
 
+        [Inject] private HttpClient httpClient { get; set; }
+
         [Parameter] public GraphQueryExecute<T, TResult> QueryExecute { get; set; }
-        [Parameter] public string Query { get; set; }
+        [Parameter] public string TypeFullName { get; set; }
         [Parameter] public string Title { get; set; }
         [Parameter] public RenderFragment Description { get; set; }
 
@@ -28,8 +31,7 @@ namespace Linq2GraphQL.Docs.Components.Samples
         protected override async Task OnInitializedAsync()
         {
             jsonOptions.WriteIndented = true;
-
-            queryHtml = FormatHtml(Query);
+            await LoadCodeAsync();
 
             request = await QueryExecute.GetRequestAsync();
             requestJson = JsonSerializer.Serialize(request, jsonOptions);
@@ -37,6 +39,27 @@ namespace Linq2GraphQL.Docs.Components.Samples
 
 
             await base.OnInitializedAsync();
+        }
+
+        private async Task LoadCodeAsync()
+        {
+            var basePath = "Components.Samples";
+            var index = TypeFullName.IndexOf(basePath);
+            var pp = (TypeFullName.Substring(index + basePath.Length + 1)).Replace(".", "/");
+
+            var path = "_content/razor_samples/" + pp + ".razor.cs";
+
+            //var path = "onlyfortest_99/razor_samples/BasicQuery/BasicQuery.razor.cs";
+
+            try
+            {
+                var code = await httpClient.GetStringAsync(path);
+                queryHtml = FormatHtml(code);
+            }
+            catch (Exception ex)
+            {
+                queryHtml = FormatHtml($"Unable to get code: Error {ex.Message}");
+            }
         }
 
 

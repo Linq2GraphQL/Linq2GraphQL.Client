@@ -1,5 +1,4 @@
 using Linq2GraphQL.Client;
-
 namespace Linq2GraphQL.Docs.Components.Samples.BasicQuery
 {
     public partial class BasicQuery
@@ -11,8 +10,6 @@ namespace Linq2GraphQL.Docs.Components.Samples.BasicQuery
                 .AllFilms(first: 3)
                 .Include(e => e.Films.Select(f => f.Producers))
                 .Select(e => e.Films);
-
         }
-
     }
 }
