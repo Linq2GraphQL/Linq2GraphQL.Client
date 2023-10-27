@@ -57,7 +57,7 @@ namespace Linq2GraphQL.Docs.Components
             await toastService.AddToastAsync(new ToastModel
             {
                 Title = "Copy Complete",
-                Message = "Introspection query has been copied to the clipboard"
+                Message = "Introspection queryExecute has been copied to the clipboard"
             });
 
         }

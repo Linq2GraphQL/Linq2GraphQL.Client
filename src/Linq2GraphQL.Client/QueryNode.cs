@@ -186,8 +186,13 @@ public class QueryNode
         return argString;
     }
 
+
+
+
     internal string GetQueryString()
     {
+        var indent = new string(' ', Level + 3);
+
         var memberType = Member.GetUnderlyingType();
         var query = Alias + GetArgumentString() + Environment.NewLine;
 
@@ -196,18 +201,17 @@ public class QueryNode
             return query;
         }
 
-        query += "{" + Environment.NewLine;
+        query += indent + "{" + Environment.NewLine;
 
         if (ChildNodes.Any())
         {
             foreach (var childNode in ChildNodes)
             {
-                query += childNode.GetQueryString();
+                query += indent + childNode.GetQueryString();
             }
         }
 
-
-        query += "}" + Environment.NewLine;
+        query += indent + "}" + Environment.NewLine;
         return query;
     }
 }
