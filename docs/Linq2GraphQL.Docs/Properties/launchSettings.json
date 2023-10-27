@@ -3,7 +3,7 @@
     "Docs": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "generate-client",
+      "launchUrl": "samples",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

@@ -1,3 +1,25 @@
+/*Code*/
+.keyword {
+    color: #93ddfd;
+}
+
+.number {
+    color: #ff8383;
+}
+
+.query {
+    color: #ffe484;
+}
+
+.select {
+    color: #ff8383;
+}
+
+
+/*Monaco Editor*/
+.monaco-editor-container { /* for all editor instances */
+    height: 100%;
+}
 
 
 #blazor-error-ui {

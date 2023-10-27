@@ -11,6 +11,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="BlazorMonaco" Version="3.1.0" />
+		<PackageReference Include="ColorCode.HTML" Version="2.0.15" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.12" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.12" PrivateAssets="all" />
 		<PackageReference Include="TabBlazor" Version="0.8.1.1-alpha" />
@@ -20,5 +22,16 @@
 	  <ProjectReference Include="..\..\src\Linq2GraphQL.Generator\Linq2GraphQL.Generator.csproj" />
 	  <ProjectReference Include="..\StarWars.Client\StarWars.Client.csproj" />
 	</ItemGroup>
+
+	<Target Name="BuildClientAssets" AfterTargets="ComputeFilesToPublish">
+		<ItemGroup>
+			<DistFiles Include="Components\Samples\**\*.razor.cs" />
+			<ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+				<RelativePath>wwwroot\_content\razor_source\%(DistFiles.RecursiveDir)%(DistFiles.Filename)%(DistFiles.Extension)</RelativePath>
+				<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+				<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			</ResolvedFileToPublish>
+		</ItemGroup>
+	</Target>
 
 </Project>
