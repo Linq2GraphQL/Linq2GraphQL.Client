@@ -20,6 +20,17 @@ public static class Utilities
 
     private static void ParseExpressionInternal(Expression body, QueryNode parent)
     {
+        if (body.NodeType == ExpressionType.MemberInit)
+        {
+            var exp = (MemberInitExpression)body;
+
+            foreach (MemberAssignment bining in exp.Bindings.Where(e => e.BindingType == MemberBindingType.Assignment))
+            {
+                ParseExpressionInternal(bining.Expression, parent);
+            }
+
+        }
+
         switch (body)
         {
             case LambdaExpression lambdaExpression:
@@ -38,11 +49,16 @@ public static class Utilities
                 break;
             case NewExpression newExpression:
 
+                var t = newExpression;
+
                 foreach (var argument in newExpression.Arguments)
                 {
                     ParseExpressionInternal(argument, parent);
                 }
                 break;
+
+
+
         }
     }
 
@@ -88,7 +104,7 @@ public static class Utilities
             if (methodCallExp.Arguments[0] is MemberExpression memberExpr)
             {
                 var (ParentNode, LastNode) = GetMemberQueryNode(memberExpr);
-                ParseExpressionInternal(methodCallExp.Arguments[1], LastNode); 
+                ParseExpressionInternal(methodCallExp.Arguments[1], LastNode);
                 parent.AddChildNode(ParentNode);
             }
             else
