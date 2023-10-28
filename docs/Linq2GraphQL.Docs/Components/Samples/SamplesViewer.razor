@@ -5,8 +5,8 @@
 <Card class="mb-3" Size="CardSize.Small">
     <CardBody>
 
-        
-            <h3>@Title  <Icon class="icon" IconType="Icons.Eye_exclamation" OnClick="ShowDetailsAsync" /></h3>
+
+        <h3>@Title  <Icon class="icon" IconType="@(isExpanded ? Icons.Layout_navbar_collapse: Icons.Layout_navbar_expand)" OnClick="ShowDetailsAsync" /></h3>
        
             <div class="mb-2">
                 @Description
