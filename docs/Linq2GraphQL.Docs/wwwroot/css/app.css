@@ -15,6 +15,12 @@
     color: #ff8383;
 }
 
+.csharp {
+    max-height: 300px;
+    overflow: auto;
+    margin-bottom: 0.5rem !important;
+    padding:5px
+}
 
 /*Monaco Editor*/
 .monaco-editor-container { /* for all editor instances */

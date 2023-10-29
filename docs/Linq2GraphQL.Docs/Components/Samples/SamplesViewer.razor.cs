@@ -12,8 +12,7 @@ namespace Linq2GraphQL.Docs.Components.Samples
     public partial class SamplesViewer<T, TResult>
     {
         private GraphQLRequest request;
-        private string requestJson;
-
+       
         [Inject] private HttpClient httpClient { get; set; }
         [Inject] private TablerService tablerService { get; set; }
 
@@ -34,12 +33,8 @@ namespace Linq2GraphQL.Docs.Components.Samples
         {
             jsonOptions.WriteIndented = true;
             await LoadCodeAsync();
-
             request = await QueryExecute.GetRequestAsync();
-            requestJson = JsonSerializer.Serialize(request, jsonOptions);
-
-
-
+      
             await base.OnInitializedAsync();
         }
 
@@ -59,6 +54,7 @@ namespace Linq2GraphQL.Docs.Components.Samples
             catch (Exception ex)
             {
                 queryHtml = FormatHtml($"Unable to get code: Error {ex.Message}");
+             
             }
         }
 
@@ -67,7 +63,7 @@ namespace Linq2GraphQL.Docs.Components.Samples
         {
             if (string.IsNullOrWhiteSpace(source))
             {
-                source = "No Code....";
+                source = @"No code..";
             }
 
             var formatter = new HtmlClassFormatter();
@@ -99,14 +95,10 @@ namespace Linq2GraphQL.Docs.Components.Samples
             {
                 isExecuting = true;
                 await QueryExecute.ExecuteAsync();
-
-
-
-
             }
             catch (Exception ex)
             {
-
+                //TODO add error modal
                 throw;
             }
             finally
