@@ -1,5 +1,5 @@
 using Linq2GraphQL.Client;
-namespace Linq2GraphQL.Docs.Components.Samples.BasicQuery
+namespace Linq2GraphQL.Docs.Components.Samples.Queries
 {
     public partial class BasicQuery
     {

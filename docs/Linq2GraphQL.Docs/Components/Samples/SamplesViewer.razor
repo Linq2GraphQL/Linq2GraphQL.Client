@@ -7,10 +7,10 @@
 
 
         <h3>@Title  <Icon class="icon" IconType="@(isExpanded ? Icons.Layout_navbar_collapse: Icons.Layout_navbar_expand)" OnClick="ShowDetailsAsync" /></h3>
-       
-            <div class="mb-2">
-                @Description
-            </div>
+
+        <div class="mb-2">
+            @Description
+        </div>
 
 
         <div>
@@ -22,41 +22,52 @@
             <Tabs @ref=tabs>
                 <Tab Title="Request">
 
-                    <div style="height:400px">
+                    <div style="height:300px">
                         <StandaloneCodeEditor Id="@(id + "_request")" ConstructionOptions="RequestConstructionOptions" />
                     </div>
 
                 </Tab>
                 <Tab Title="Query">
-                    <div style="height:400px">
+                    <div style="height:300px">
                         <StandaloneCodeEditor Id="@(id + "_query")" ConstructionOptions="QueryConstructionOptions" />
                     </div>
                 </Tab>
 
-                @if (QueryExecute.BaseResult == null)
-                {
-                    <Tab>
-                        <Header>
+
+                <Tab Title="Base Result">
+                    <Header>
+                        @if (QueryExecute.BaseResult == null)
+                        {
                             <Button Disabled=isExecuting Size=ButtonSize.Small BackgroundColor=TablerColor.Primary OnClick="ExecuteAsync">Execute</Button>
-                        </Header>
-                    </Tab>
+                        }
+                        else
+                        {
+                            <span>Base Result</span>
+                        }
 
-                }
-                else
-                {
-                    <Tab Title="Raw Response">
-                        <div style="height:400px">
-                            <StandaloneCodeEditor Id="@(id + "_response")" ConstructionOptions="ResponseConstructionOptions" />
+                    </Header>
+                    <ChildContent>
+                        <div style="height:300px">
+                            @if (QueryExecute.BaseResult != null)
+                            {
+                                <StandaloneCodeEditor Id="@(id + "_response")" ConstructionOptions="ResponseConstructionOptions" />
+                            }
                         </div>
-                    </Tab>
+                    </ChildContent>
 
+                </Tab>
+
+                @if (QueryExecute.BaseResult != null)
+                {
                     <Tab Title="Result">
-                        <div style="height:400px">
+                        <div style="height:300px">
                             <StandaloneCodeEditor Id="@(id + "_result")" ConstructionOptions="ResultConstructionOptions" />
                         </div>
                     </Tab>
-
                 }
+
+
+
 
             </Tabs>
         }
