@@ -2,7 +2,7 @@
 @typeparam TResult
 
 
-<Card class="mb-3" Size="CardSize.Small">
+<Card id="@id" class="mb-3" Size="CardSize.Small">
     <CardBody>
 
 
@@ -13,28 +13,27 @@
         </div>
 
 
-        <div>
+        <div style="max-height:200px">
             @((MarkupString)queryHtml)
         </div>
 
         @if (isExpanded)
         {
             <Tabs @ref=tabs>
-                <Tab Title="Request">
-
-                    <div style="height:300px">
-                        <StandaloneCodeEditor Id="@(id + "_request")" ConstructionOptions="RequestConstructionOptions" />
-                    </div>
-
-                </Tab>
+              
                 <Tab Title="Query">
                     <div style="height:300px">
                         <StandaloneCodeEditor Id="@(id + "_query")" ConstructionOptions="QueryConstructionOptions" />
                     </div>
                 </Tab>
 
+                <Tab Title="Variables">
+                    <div style="height:300px">
+                        <StandaloneCodeEditor Id="@(id + "_variables")" ConstructionOptions="VariableConstructionOptions" />
+                    </div>
+                </Tab>
 
-                <Tab Title="Base Result">
+                <Tab Title="Result">
                     <Header>
                         @if (QueryExecute.BaseResult == null)
                         {
@@ -42,7 +41,7 @@
                         }
                         else
                         {
-                            <span>Base Result</span>
+                            <span>Result</span>
                         }
 
                     </Header>
@@ -50,7 +49,8 @@
                         <div style="height:300px">
                             @if (QueryExecute.BaseResult != null)
                             {
-                                <StandaloneCodeEditor Id="@(id + "_response")" ConstructionOptions="ResponseConstructionOptions" />
+                                <StandaloneCodeEditor Id="@(id + "_result")" ConstructionOptions="ResultConstructionOptions" />
+
                             }
                         </div>
                     </ChildContent>
@@ -59,9 +59,10 @@
 
                 @if (QueryExecute.BaseResult != null)
                 {
-                    <Tab Title="Result">
+                    <Tab Title="Base Result">
                         <div style="height:300px">
-                            <StandaloneCodeEditor Id="@(id + "_result")" ConstructionOptions="ResultConstructionOptions" />
+                            <StandaloneCodeEditor Id="@(id + "_baseResult")" ConstructionOptions="ResponseConstructionOptions" />
+
                         </div>
                     </Tab>
                 }

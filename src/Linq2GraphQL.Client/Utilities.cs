@@ -5,6 +5,17 @@ namespace Linq2GraphQL.Client;
 
 public static class Utilities
 {
+    public static bool IsSelectOrSelectMany(this MethodCallExpression methodCallExpression)
+    {
+        if (methodCallExpression.Arguments.Count != 2) { return false; };
+
+        var methodName = methodCallExpression.Method.Name;
+
+        return (methodName == "Select" || methodName == "SelectMany");
+     
+
+    }
+
     public static void ParseExpression(Expression body, QueryNode parent)
     {
         var node = new QueryNode(parent.Member);
@@ -24,7 +35,7 @@ public static class Utilities
         {
             var exp = (MemberInitExpression)body;
 
-            foreach (MemberAssignment bining in exp.Bindings.Where(e => e.BindingType == MemberBindingType.Assignment))
+            foreach (MemberAssignment bining in exp.Bindings.Where(e => e.BindingType == MemberBindingType.Assignment).Cast<MemberAssignment>())
             {
                 ParseExpressionInternal(bining.Expression, parent);
             }
@@ -99,7 +110,7 @@ public static class Utilities
             parent.AddChildNode(queryNode);
 
         }
-        else if (methodCallExp.Method.Name == "Select" && methodCallExp.Arguments.Count == 2)
+        else if (methodCallExp.IsSelectOrSelectMany())
         {
             if (methodCallExp.Arguments[0] is MemberExpression memberExpr)
             {
