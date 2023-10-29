@@ -35,6 +35,7 @@ public class MutationTests : IClassFixture<SampleClientFixture>
             {
                 CustomerId = id,
                 CustomerName = "New Customer",
+                Orders = new List<OrderInput>(),
                 Status = CustomerStatus.Active
             })
             .Select(e=> e.CustomerId)

@@ -5,6 +5,7 @@ using Linq2GraphQL.Client;
 using System.Text.Json;
 using TabBlazor;
 using StarWars.Client;
+using TabBlazor.Services;
 
 namespace Linq2GraphQL.Docs.Components.Samples
 {
@@ -14,6 +15,7 @@ namespace Linq2GraphQL.Docs.Components.Samples
         private string requestJson;
 
         [Inject] private HttpClient httpClient { get; set; }
+        [Inject] private TablerService tablerService { get; set; }
 
         [Parameter] public GraphQueryExecute<T, TResult> QueryExecute { get; set; }
         [Parameter] public string TypeFullName { get; set; }
@@ -83,11 +85,11 @@ namespace Linq2GraphQL.Docs.Components.Samples
             return source.Replace(keyword, $@"<span class=""{cssClass}"">{keyword}</span>");
         }
 
-
-
         private async Task ShowDetailsAsync()
         {
             isExpanded = !isExpanded;
+            await Task.Yield();
+            await tablerService.ScrollToFragment(id);
         }
 
 
@@ -113,13 +115,13 @@ namespace Linq2GraphQL.Docs.Components.Samples
             }
         }
 
-        private StandaloneEditorConstructionOptions RequestConstructionOptions(StandaloneCodeEditor editor)
+        private StandaloneEditorConstructionOptions VariableConstructionOptions(StandaloneCodeEditor editor)
         {
             return new StandaloneEditorConstructionOptions
             {
                 AutomaticLayout = true,
                 Language = "json",
-                Value = requestJson,
+                Value = JsonSerializer.Serialize(request.Variables, jsonOptions),
                 WordWrap = "on"
             };
         }

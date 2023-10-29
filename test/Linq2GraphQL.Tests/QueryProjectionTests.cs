@@ -52,6 +52,19 @@ namespace Linq2GraphQL.Tests
 
         }
 
+        [Fact]
+        public async Task Project_SelectMany()
+        {
+            var query = sampleClient
+                .Query
+                .Customers()
+                .Select(e => e.SelectMany(e=> e.Orders));
+
+         //   var request = await query.GetRequestAsync();
+            var result = await query.ExecuteAsync();
+        
+
+        }
 
 
 
