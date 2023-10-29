@@ -24,4 +24,23 @@ public class MutationTests : IClassFixture<SampleClientFixture>
 
         Assert.Equal($"New Name is: {name}", result);
     }
+
+    [Fact]
+    public async Task Mutation_Multiple()
+    {
+        var id = Guid.NewGuid();
+        var customerId = await sampleClient
+            .Mutation
+            .AddCustomer(new CustomerInput
+            {
+                CustomerId = id,
+                CustomerName = "New Customer",
+                Status = CustomerStatus.Active
+            })
+            .Select(e=> e.CustomerId)
+            .ExecuteAsync();
+
+        Assert.Equal(id, customerId);
+    }
+
 }
