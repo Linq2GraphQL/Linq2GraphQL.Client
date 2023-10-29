@@ -13,14 +13,12 @@
         </div>
 
 
-        <div style="max-height:200px">
-            @((MarkupString)queryHtml)
-        </div>
+        @((MarkupString)queryHtml)
 
         @if (isExpanded)
         {
             <Tabs @ref=tabs>
-              
+
                 <Tab Title="Query">
                     <div style="height:300px">
                         <StandaloneCodeEditor Id="@(id + "_query")" ConstructionOptions="QueryConstructionOptions" />
