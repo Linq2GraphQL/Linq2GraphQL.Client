@@ -1,12 +1,76 @@
 ﻿@page "/"
 
 
+
 @* <PageTitle>Index</PageTitle> *@
 
-<h1>Linq2GraphQL Documentation</h1>
-
-<img src="img/logo.svg" alt="Logo">
 
 
 
 
+<div align='center'>
+
+    <img src="img/logo.svg" alt="logo" width=300 height=300 />
+
+    <h1>Linq2GraphQL.Client</h1>
+    <p>A straightforward Linq to GraphQL Client</p>
+
+    <h4> <a href="https://linq2graphql.com"> Documentation </a> <span> · </span> <a href="https://github.com/Linq2GraphQL/Linq2GraphQL.Client/issues"> Report Bug </a> <span> · </span> <a href="https://github.com/Linq2GraphQL/Linq2GraphQL.Client/issues"> Request Feature </a> </h4>
+</div>
+
+<h1 id="introduction">Introduction</h1>
+<p>Linq2GraphQL generates C# classes from the GraphQL schema and and togheter with the nuget package Linq2GraphQL.Client  it makes it possible to query the server using Linq expressions. </p>
+<p>A simple query that will get the first 10 orders with the primitive properties of orders and the connected customer</p>
+<pre><code> var orders = await sampleClient
+    .Query
+    .Orders(first: 10)
+    .Include(e =&gt; e.Orders.Select(e =&gt; e.Customer))
+    .Select(e =&gt; e.Orders)
+    .ExecuteAsync();
+</code></pre>
+<h1 id="getting-started">Getting Started</h1>
+<h2 id="generate-client-code">Generate Client code</h2>
+<p>
+    There are two options to generate the client code from the GraphQL schema.
+    Use the online tool to <a href="https://linq2graphql.com/generate-client"> generate</a> or install Linq2GraphQL.Generator as a tool.
+</p>
+<p>Install/Update Tool: </p>
+<pre><code>dotnet tool update Linq2GraphQL.Generator -g --prerelease
+</code></pre>
+<p>   Usage:</p>
+<pre><code>  Linq2GraphQL.Generator &lt;endpoint&gt; [options]
+
+Arguments:
+  &lt;endpoint&gt;  Endpoint of the GraphQL service
+
+Options:
+  -o, --output &lt;output&gt;        Output folder, relative to current location [default: Linq2GraphQL_Generated]
+  -n, --namespace &lt;namespace&gt;  Namespace of generated classes [default: YourNamespace]
+  -c, --client &lt;client&gt;        Name of the generated client [default: GraphQLClient]
+  -t, --token &lt;token&gt;          Bearertoken for authentication
+  -s, --subscriptions          Include subscriptions (Exprimental)
+</code></pre>
+<p>As an example:</p>
+<pre><code>Linq2GraphQL https://spacex-production.up.railway.app/ -c=&quot;SpaceXClient&quot; -n=&quot;SpaceX&quot; -o=&quot;Generated&quot;
+</code></pre>
+<p>Would generate a client from url <em><a href="https://spacex-production.up.railway.app/">https://spacex-production.up.railway.app/</a></em> with the name <em>SpaceXClient</em> in the namespace <em>SpaceX</em> to folder <em>Generated</em></p>
+<h2 id="add-nuget">Add Nuget</h2>
+<p>Add the Nuget Package <a href="https://www.nuget.org/packages/Linq2GraphQL.Client">Linq2GraphQL.Client</a></p>
+<pre><code>dotnet add package Linq2GraphQL.Client --prerelease
+</code></pre>
+<h2 id="dependency-injection">Dependency Injection</h2>
+<p>
+    The client adds a set of extensions to make it easier to add the client to dependency injection.
+    As an example this would add SpaceXClient to the container:
+</p>
+<pre><code>services.SpaceXClient(x =&gt;
+ {
+     x.UseSafeMode = false;
+ })
+   .WithHttpClient(
+       httpClient =&gt; { httpClient.BaseAddress = new Uri(&quot;https://spacex-production.up.railway.app/&quot;); });
+</code></pre>
+<h2 id="safe-mode">Safe Mode</h2>
+<p>Turning on <em>SafeMode</em> will make the client before the first request to do an introspection query to the endpoint. The schema will be used to make sure that any auto included properties are available. This is an advanced feature that require the endpoint to support introspection. By default safe mode is turned of. </p>
+<h1 id="acknowledgments">Acknowledgments</h1>
+<p>Linq2GraphQL is inspired by <a href="https://github.com/Giorgi/GraphQLinq">GraphQLinq</a> , thank you <a href="https://github.com/Giorgi">Giorgi</a></p>

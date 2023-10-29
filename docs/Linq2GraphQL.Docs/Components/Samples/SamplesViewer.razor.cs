@@ -49,8 +49,6 @@ namespace Linq2GraphQL.Docs.Components.Samples
 
             var path = "_content/razor_samples/" + pp + ".razor.cs";
 
-            //var path = "onlyfortest_99/razor_samples/BasicQuery/BasicQuery.razor.cs";
-
             try
             {
                 var code = await httpClient.GetStringAsync(path);
