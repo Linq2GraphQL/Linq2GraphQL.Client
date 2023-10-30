@@ -1,14 +1,47 @@
 ﻿<#@ template language="C#" #>
 <#@ assembly name="System.Core" #>
 using System;
-using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 using Linq2GraphQL.Client.Converters;
 
 namespace <#= namespaceName #>;
 
-[JsonConverter(typeof(InterfaceConverter<<#= GetInterfaceConcreteName() #>,  <#= classType.Name #>>))]
+public static class <#= classType.Name #>Extentions
+{
+
+<# foreach (var field in implementedBy) { #>
+
+    [GraphInterface]
+    public static <#= field #> <#= field #>(this <#= classType.Name #> value)
+    {
+        if (value.__TypeName == "<#= field #>")
+        {
+            return (<#= field #>)value;
+        }
+        return null;
+    }
+<# } #>
+}
+
+
+internal class <#= GetInterfaceConverterName() #> : InterfaceJsonConverter<<#= classType.Name #>>
+{
+    public override <#= classType.Name #> Deserialize(string typeName, JsonObject json) => typeName switch
+    {
+    <# foreach (var field in implementedBy) { #>
+      "<#= field #>" => json.Deserialize<<#= field #>>(),
+<# } #>
+        _ => json.Deserialize< <#= GetInterfaceConcreteName() #>>()
+    };
+}
+
+
+
+
+[JsonConverter(typeof(<#= GetInterfaceConverterName() #>))]
 public interface <#= classType.Name #> <#= classType.GetInterfacesString() #>
 {
 <#
