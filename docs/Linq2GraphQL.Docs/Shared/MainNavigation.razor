@@ -1,7 +1,7 @@
 ﻿﻿<Navbar Background="NavbarBackground.Dark" Direction="NavbarDirection.Vertical">
 
     <a href="https://github.com/linq2graphql/linq2graphql.client" class="navbar-brand navbar-brand-autodark">
-       
+
         <h2 class="text-secondary">Linq2GraphQL</h2>
     </a>
 
@@ -18,11 +18,17 @@
             </MenuItemIcon>
         </NavbarMenuItem>
 
-        <NavbarMenuItem Href="samples" Text="Samples">
+        <NavbarMenuItem Text="Samples">
             <MenuItemIcon>
                 <Icon class="icon" IconType="@Icons.Eye_exclamation" />
             </MenuItemIcon>
+
+            <SubMenu>
+                <NavbarMenuItem Href="samples/queries" Text="Queries" />
+                <NavbarMenuItem Href="samples/interfaces" Text="Interfaces" />
+            </SubMenu>
+
         </NavbarMenuItem>
 
-     </NavbarMenu>
-     </Navbar>
+    </NavbarMenu>
+</Navbar>
