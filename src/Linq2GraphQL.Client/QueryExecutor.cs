@@ -28,7 +28,6 @@ public class QueryExecutor<T>
         }
 
         var con = await response.Content.ReadAsStringAsync();
-        Console.WriteLine(con);
         return ProcessResponse(con, alias, graphRequest.Query);
     }
 
