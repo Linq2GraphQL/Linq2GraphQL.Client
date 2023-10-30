@@ -53,14 +53,14 @@ public partial class Planet : Node
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
-    [GraphQLShadowProperty]
+    [GraphShadowProperty]
 	[JsonPropertyName("residentConnection")]
 	public PlanetResidentsConnection ResidentConnection { get; set; }  
 
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
-    [GraphQLShadowProperty]
+    [GraphShadowProperty]
 	[JsonPropertyName("filmConnection")]
 	public PlanetFilmsConnection FilmConnection { get; set; }  
 

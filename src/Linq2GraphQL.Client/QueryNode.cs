@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Text.Json.Serialization;
+using Linq2GraphQL.Client;
 using Linq2GraphQL.Client.Schema;
 
 namespace Linq2GraphQL.Client;
@@ -9,15 +10,18 @@ public class QueryNode
     private readonly bool mustHaveChildren;
     private readonly Type underlyingMemberType;
 
-    public QueryNode(MemberInfo member, string alias = null, List<ArgumentValue> arguments = null)
+    public QueryNode(MemberInfo member, string alias = null, List<ArgumentValue> arguments = null, bool interfaceProperty = false)
     {
+        Alias = alias ?? member.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? member.Name.ToCamelCase();
         Member = member;
-        Alias = alias ?? member.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? Member.Name.ToCamelCase();
         Arguments = arguments ?? new List<ArgumentValue>();
         underlyingMemberType = member.GetUnderlyingType();
         mustHaveChildren = MustHaveChildren(underlyingMemberType);
+        InterfaceProperty = interfaceProperty;
+
     }
 
+    public bool InterfaceProperty { get; internal set; }
     public string Alias { get; internal set; }
     public MemberInfo Member { get; internal set; }
     public List<QueryNode> ChildNodes { get; internal set; } = new();
@@ -106,12 +110,12 @@ public class QueryNode
             var typeOrListType = underlyingMemberType.GetTypeOrListType();
             foreach (var propertyInfo in typeOrListType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
-                if (propertyInfo.GetCustomAttribute<GraphQLShadowPropertyAttribute>() != null)
+                if (propertyInfo.GetCustomAttribute<GraphShadowPropertyAttribute>() != null)
                 {
                     continue;
                 }
 
-                if (!propertyInfo.PropertyType.IsValueTypeOrString() || propertyInfo.GetCustomAttribute<GraphQLShadowPropertyAttribute>() != null)
+                if (!propertyInfo.PropertyType.IsValueTypeOrString() || propertyInfo.GetCustomAttribute<GraphShadowPropertyAttribute>() != null)
                 {
                     continue;
                 }
@@ -191,12 +195,23 @@ public class QueryNode
 
     internal string GetQueryString(string indent = "")
     {
+        string query;
         var memberType = Member.GetUnderlyingType();
-        var query = Alias + GetArgumentString() + Environment.NewLine;
+        
+        if (InterfaceProperty)
+        {
+            query = "... on " + Alias + GetArgumentString() + Environment.NewLine;
+
+        }
+        else
+        {
+            query = Alias + GetArgumentString() + Environment.NewLine;
+
+        }
 
         if (memberType.IsListOfPrimitiveTypeOrString())
         {
-            return  indent + query;
+            return indent + query;
         }
 
         query += indent + "{" + Environment.NewLine;
@@ -206,7 +221,7 @@ public class QueryNode
             var newIndent = "  " + indent;
             foreach (var childNode in ChildNodes)
             {
-                query +=  childNode.GetQueryString(newIndent);
+                query += childNode.GetQueryString(newIndent);
             }
         }
 

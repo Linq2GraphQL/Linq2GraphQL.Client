@@ -62,35 +62,35 @@ public partial class Film : Node
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
-    [GraphQLShadowProperty]
+    [GraphShadowProperty]
 	[JsonPropertyName("speciesConnection")]
 	public FilmSpeciesConnection SpeciesConnection { get; set; }  
 
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
-    [GraphQLShadowProperty]
+    [GraphShadowProperty]
 	[JsonPropertyName("starshipConnection")]
 	public FilmStarshipsConnection StarshipConnection { get; set; }  
 
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
-    [GraphQLShadowProperty]
+    [GraphShadowProperty]
 	[JsonPropertyName("vehicleConnection")]
 	public FilmVehiclesConnection VehicleConnection { get; set; }  
 
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
-    [GraphQLShadowProperty]
+    [GraphShadowProperty]
 	[JsonPropertyName("characterConnection")]
 	public FilmCharactersConnection CharacterConnection { get; set; }  
 
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
-    [GraphQLShadowProperty]
+    [GraphShadowProperty]
 	[JsonPropertyName("planetConnection")]
 	public FilmPlanetsConnection PlanetConnection { get; set; }  
 

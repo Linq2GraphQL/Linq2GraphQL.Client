@@ -65,14 +65,14 @@ public partial class Starship : Node
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
-    [GraphQLShadowProperty]
+    [GraphShadowProperty]
 	[JsonPropertyName("pilotConnection")]
 	public StarshipPilotsConnection PilotConnection { get; set; }  
 
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
-    [GraphQLShadowProperty]
+    [GraphShadowProperty]
 	[JsonPropertyName("filmConnection")]
 	public StarshipFilmsConnection FilmConnection { get; set; }  
 

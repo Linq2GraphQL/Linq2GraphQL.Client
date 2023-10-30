@@ -26,14 +26,14 @@ public partial class Order
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
-    [GraphQLShadowProperty]
+    [GraphShadowProperty]
 	[JsonPropertyName("orderHello")]
 	public string OrderHello { get; set; }  
 
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
-    [GraphQLShadowProperty]
+    [GraphShadowProperty]
 	[JsonPropertyName("orderAddress")]
 	public Address OrderAddress { get; set; }  
 

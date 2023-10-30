@@ -1,12 +1,52 @@
 using System;
-using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 using Linq2GraphQL.Client.Converters;
 
 namespace Linq2GraphQL.TestClient;
 
-[JsonConverter(typeof(InterfaceConverter<IAnimal__Concrete,  IAnimal>))]
+public static class IAnimalExtentions
+{
+
+
+    [GraphInterface]
+    public static Pig Pig(this IAnimal value)
+    {
+        if (value.__TypeName == "Pig")
+        {
+            return (Pig)value;
+        }
+        return null;
+    }
+
+    [GraphInterface]
+    public static Spider Spider(this IAnimal value)
+    {
+        if (value.__TypeName == "Spider")
+        {
+            return (Spider)value;
+        }
+        return null;
+    }
+}
+
+
+internal class IAnimalConverter : InterfaceJsonConverter<IAnimal>
+{
+    public override IAnimal Deserialize(string typeName, JsonObject json) => typeName switch
+    {
+          "Pig" => json.Deserialize<Pig>(),
+      "Spider" => json.Deserialize<Spider>(),
+        _ => json.Deserialize< IAnimal__Concrete>()
+    };
+}
+
+
+
+
+[JsonConverter(typeof(IAnimalConverter))]
 public interface IAnimal 
 {
 	[JsonPropertyName("name")]

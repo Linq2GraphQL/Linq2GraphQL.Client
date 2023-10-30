@@ -30,7 +30,7 @@ public partial class <#= classType.Name #> <#= classType.GetInterfacesString() #
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
-    [GraphQLShadowProperty]
+    [GraphShadowProperty]
 <# } #>
 	[JsonPropertyName("<#= field.Name #>")]
 	public <#= GetFieldCSharpName(field) #> <#= field.CSharpName #> { get; set; }  

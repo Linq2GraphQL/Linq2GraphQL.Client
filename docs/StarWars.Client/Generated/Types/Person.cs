@@ -59,7 +59,7 @@ public partial class Person : Node
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
-    [GraphQLShadowProperty]
+    [GraphShadowProperty]
 	[JsonPropertyName("filmConnection")]
 	public PersonFilmsConnection FilmConnection { get; set; }  
 
@@ -69,14 +69,14 @@ public partial class Person : Node
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
-    [GraphQLShadowProperty]
+    [GraphShadowProperty]
 	[JsonPropertyName("starshipConnection")]
 	public PersonStarshipsConnection StarshipConnection { get; set; }  
 
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
-    [GraphQLShadowProperty]
+    [GraphShadowProperty]
 	[JsonPropertyName("vehicleConnection")]
 	public PersonVehiclesConnection VehicleConnection { get; set; }  
 

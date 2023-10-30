@@ -8,12 +8,9 @@ public static class Utilities
     public static bool IsSelectOrSelectMany(this MethodCallExpression methodCallExpression)
     {
         if (methodCallExpression.Arguments.Count != 2) { return false; };
-
         var methodName = methodCallExpression.Method.Name;
-
         return (methodName == "Select" || methodName == "SelectMany");
-     
-
+    
     }
 
     public static void ParseExpression(Expression body, QueryNode parent)
@@ -75,8 +72,16 @@ public static class Utilities
 
     private static void ParseMethodCallExpression(QueryNode parent, MethodCallExpression methodCallExp)
     {
-        var graphMethodAttribute = methodCallExp.Method.GetCustomAttribute<GraphMethodAttribute>();
+        var grapInterfaceAttribute = methodCallExp.Method.GetCustomAttribute<GraphInterfaceAttribute>();
+        if (grapInterfaceAttribute != null)
+        {
+            var queryNode = new QueryNode(methodCallExp.Method, methodCallExp.Method.Name, null, true);
+            parent.AddChildNode(queryNode);
+            return;
+        }
 
+
+        var graphMethodAttribute = methodCallExp.Method.GetCustomAttribute<GraphMethodAttribute>();
         if (graphMethodAttribute != null)
         {
             var arguments = new List<ArgumentValue>();

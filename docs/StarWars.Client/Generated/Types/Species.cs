@@ -56,14 +56,14 @@ public partial class Species : Node
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
-    [GraphQLShadowProperty]
+    [GraphShadowProperty]
 	[JsonPropertyName("personConnection")]
 	public SpeciesPeopleConnection PersonConnection { get; set; }  
 
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
-    [GraphQLShadowProperty]
+    [GraphShadowProperty]
 	[JsonPropertyName("filmConnection")]
 	public SpeciesFilmsConnection FilmConnection { get; set; }  
 

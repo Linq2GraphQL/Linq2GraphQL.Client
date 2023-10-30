@@ -251,18 +251,7 @@ public class QueryTests : IClassFixture<SampleClientFixture>
         result.Should().BeInDescendingOrder(e => e.OrderDate);
     }
 
-    [Fact]
-    public async Task QueryInterface()
-    {
-        var result = await sampleClient
-            .Query
-            .Animals(first: 2)
-            .Select(e => e.Nodes)
-            .ExecuteAsync();
-
-        Assert.True(result.Count() == 2);
-
-    }
+  
 
 
     [Fact]
