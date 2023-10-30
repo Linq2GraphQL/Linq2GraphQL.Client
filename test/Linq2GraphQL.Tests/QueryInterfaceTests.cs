@@ -32,9 +32,29 @@ namespace Linq2GraphQL.Tests
                 .Query
                 .Animals()
                 .Include(e => e.Nodes.Select(e => e.Pig()))
-                .Include(e => e.Nodes.Select(e => e.Spider()))
+                //.Include(e => e.Nodes.Select(e => e.Spider()))
                 .Select(e=> e.Nodes)
                 ;
+
+
+            var request = await query.GetRequestAsync();
+            var result = await query.ExecuteAsync();
+
+            var baseType = query.BaseResult;
+            Assert.NotNull(result);
+
+        }
+
+
+        [Fact]
+        public async Task Interface_Projection()
+        {
+            var query = sampleClient
+                .Query
+                .Animals()
+                .Include(e => e.Nodes.Select(e => e.Pig()))
+                .Include(e => e.Nodes.Select(e => e.Spider()))
+                .Select(e => e.Nodes.Select(f => new { Pig = f.Pig(), Spider = f.Spider() }));                
 
 
             var request = await query.GetRequestAsync();

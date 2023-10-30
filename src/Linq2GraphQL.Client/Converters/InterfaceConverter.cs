@@ -56,8 +56,7 @@ namespace Linq2GraphQL.Client.Converters
                     break;
                 default:
                     {
-                        var type = value.GetType();
-                        JsonSerializer.Serialize(writer, value, type, options);
+                        JsonSerializer.Serialize(writer, value, value.GetType(), options);
                         break;
                     }
             }

@@ -72,7 +72,7 @@ public static class Utilities
 
     private static void ParseMethodCallExpression(QueryNode parent, MethodCallExpression methodCallExp)
     {
-        var grapInterfaceAttribute = methodCallExp.Method.GetCustomAttribute<GraphInterfacePropertyAttribute>();
+        var grapInterfaceAttribute = methodCallExp.Method.GetCustomAttribute<GraphInterfaceAttribute>();
         if (grapInterfaceAttribute != null)
         {
             var queryNode = new QueryNode(methodCallExp.Method, methodCallExp.Method.Name, null, true);

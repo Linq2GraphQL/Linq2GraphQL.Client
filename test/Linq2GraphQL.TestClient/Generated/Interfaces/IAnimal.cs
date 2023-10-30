@@ -11,7 +11,7 @@ namespace Linq2GraphQL.TestClient;
 
 public static class IAnimalExtentions
 {
-    [GraphInterfaceProperty]
+    [GraphInterface]
     public static Pig Pig(this IAnimal animal)
     {
         if (animal.__TypeName == "Pig")
@@ -21,7 +21,7 @@ public static class IAnimalExtentions
         return null;
     }
 
-    [GraphInterfaceProperty]
+    [GraphInterface]
     public static Spider Spider(this IAnimal animal)
     {
         if (animal.__TypeName == "Spider")
@@ -44,8 +44,6 @@ internal class IAnimalConverter : InterfaceJsonConverter<IAnimal>
 }
 
 
-//[JsonConverter(typeof(InterfaceConverter<IAnimal__Concrete,  IAnimal>))]
-//[JsonConverter(typeof(InterfaceTypeConverter<IAnimal>))]
 [JsonConverter(typeof(IAnimalConverter))]
 public interface IAnimal
 {
