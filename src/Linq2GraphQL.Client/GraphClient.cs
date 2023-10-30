@@ -41,7 +41,7 @@ public class GraphClient
         var baseUrl = HttpClient?.BaseAddress.ToString();
         if (string.IsNullOrWhiteSpace(baseUrl))
         {
-            throw new ArgumentNullException("HttpClient BaseAdsress must be set");
+            throw new ArgumentNullException("HttpClient BaseAddress must be set");
         }
 
         if (SubscriptionProtocol == SubscriptionProtocol.ServerSentEvents)

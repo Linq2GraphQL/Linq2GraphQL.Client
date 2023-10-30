@@ -19,7 +19,7 @@ public class SampleClientFixture : IDisposable
         sampleClient = new SampleClient(client, Options.Create(new GraphClientOptions
         {
             SubscriptionProtocol = SubscriptionProtocol.ServerSentEvents,
-            UseSafeMode = true
+            UseSafeMode = false
         }), application.Services);
         //Please note currently only ServerSentEvents work in test project
     }

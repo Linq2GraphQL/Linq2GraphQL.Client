@@ -59,14 +59,14 @@ public partial class Vehicle : Node
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
-    [GraphQLShadowProperty]
+    [GraphShadowProperty]
 	[JsonPropertyName("pilotConnection")]
 	public VehiclePilotsConnection PilotConnection { get; set; }  
 
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
-    [GraphQLShadowProperty]
+    [GraphShadowProperty]
 	[JsonPropertyName("filmConnection")]
 	public VehicleFilmsConnection FilmConnection { get; set; }  
 
