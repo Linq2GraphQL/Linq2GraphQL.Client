@@ -72,7 +72,7 @@ namespace Linq2GraphQL.Tests
             var query = sampleClient
                 .Query
                 .Orders()
-                .Include(e=> e.Nodes)
+                .Include(e => e.Nodes)
                 .Select(e => e.Nodes.Select(e => e.OrderHello("Jocke", 123)));
 
             var gQ = query.GetRequestAsync();
@@ -81,7 +81,30 @@ namespace Linq2GraphQL.Tests
             var result = await query.ExecuteAsync();
 
             Assert.NotNull(result.First());
-        
+
+        }
+
+        [Fact]
+        public async Task InQueryArguments_Multiple()
+        {
+            var query = sampleClient
+                .Query
+                .Orders()
+                .Select(e => e.Nodes.Select(f => new
+                {
+                    Delivery = f.OrderAddress(AddressType.Delivery),
+                    Invoice = f.OrderAddress(AddressType.Invoice)
+                })
+                );
+
+            var request = query.GetRequestAsync();
+            var result = await query.ExecuteAsync();
+
+            var addresses = result.First();
+
+            Assert.Equal("Delivery", addresses.Delivery.Name);
+            Assert.Equal("Invoice", addresses.Invoice.Name);
+
         }
 
 
