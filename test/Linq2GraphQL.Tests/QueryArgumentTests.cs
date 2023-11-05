@@ -92,8 +92,8 @@ namespace Linq2GraphQL.Tests
                 .Orders()
                 .Select(e => e.Nodes.Select(f => new
                 {
-                    Delivery = f.OrderAddress(AddressType.Delivery),
-                    Invoice = f.OrderAddress(AddressType.Invoice)
+                    Jocke = f.OrderHello("Jocke", 22),
+                    Kalle = f.OrderHello("Kalle", 11)
                 })
                 );
 
@@ -102,8 +102,8 @@ namespace Linq2GraphQL.Tests
 
             var addresses = result.First();
 
-            Assert.Equal("Delivery", addresses.Delivery.Name);
-            Assert.Equal("Invoice", addresses.Invoice.Name);
+            Assert.Equal("Hello, Jocke [22]", addresses.Jocke);
+            Assert.Equal("Hello, Kalle [11]", addresses.Kalle);
 
         }
 

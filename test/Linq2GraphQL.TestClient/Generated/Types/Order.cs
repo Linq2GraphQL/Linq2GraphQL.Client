@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 
@@ -10,7 +11,16 @@ public static class OrderExtensions
     [GraphMethod("orderHello")]
     public static string OrderHello(this Order  order, [GraphArgument("String!")] string name, [GraphArgument("Int!")] int first)
     {
-	    return order?.OrderHello;
+        var ll = "";
+        if (name != null) { ll += name.GetHashCode().ToString(); }
+        if(first != null) { ll += first.GetHashCode().ToString(); }    
+
+        var argHascode = ll.GetHashCode();
+        if (argHascode < 0) { argHascode = argHascode * -1; }
+
+        var vall = order.__AdditionalProperties["Arg" + argHascode];
+       return vall.Deserialize<string>();
+       
     }
 
     [GraphMethod("orderAddress")]
@@ -50,7 +60,9 @@ public partial class Order
 	public DateTimeOffset OrderDate { get; set; }  
 
 	[JsonPropertyName("lines")]
-	public List<OrderLine> Lines { get; set; }  
+	public List<OrderLine> Lines { get; set; }
 
+    [JsonExtensionData]
+    public Dictionary<string, JsonElement> __AdditionalProperties { get; set; }
 
 }
