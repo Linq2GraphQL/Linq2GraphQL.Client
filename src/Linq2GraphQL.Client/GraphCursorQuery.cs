@@ -5,7 +5,7 @@ namespace Linq2GraphQL.Client;
 
 public class GraphCursorQuery<T> : GraphBase<T, GraphCursorQuery<T>> where T : ICursorPaging
 {
-    public GraphCursorQuery(GraphClient client, string alias, OperationType operationType, List<ArgumentValue> arguments) : base(client, alias, operationType, arguments)
+    public GraphCursorQuery(GraphClient client, string name, OperationType operationType, List<ArgumentValue> arguments) : base(client, name, operationType, arguments)
     {
     }
 

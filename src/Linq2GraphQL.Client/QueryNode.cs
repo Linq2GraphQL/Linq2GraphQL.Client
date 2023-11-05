@@ -10,9 +10,9 @@ public class QueryNode
     private readonly bool mustHaveChildren;
     private readonly Type underlyingMemberType;
 
-    public QueryNode(MemberInfo member, string alias = null, List<ArgumentValue> arguments = null, bool interfaceProperty = false)
+    public QueryNode(MemberInfo member, string name = null, List<ArgumentValue> arguments = null, bool interfaceProperty = false)
     {
-        Alias = alias ?? member.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? member.Name.ToCamelCase();
+        Name = name ?? member.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? member.Name.ToCamelCase();
         Member = member;
         Arguments = arguments ?? new List<ArgumentValue>();
         underlyingMemberType = member.GetUnderlyingType();
@@ -22,7 +22,7 @@ public class QueryNode
     }
 
     public bool InterfaceProperty { get; internal set; }
-    public string Alias { get; internal set; }
+    public string Name { get; internal set; }
     public MemberInfo Member { get; internal set; }
     public List<QueryNode> ChildNodes { get; internal set; } = new();
     public List<ArgumentValue> Arguments { get; internal set; } = new();
@@ -57,9 +57,9 @@ public class QueryNode
         }
     }
 
-    public void AddChildNode(MemberInfo member, string alias = null)
+    public void AddChildNode(MemberInfo member, string name = null)
     {
-        AddChildNode(new QueryNode(member, alias));
+        AddChildNode(new QueryNode(member, name));
     }
 
     public int Level => Parent?.Level + 1 ?? 1;
@@ -67,7 +67,7 @@ public class QueryNode
 
     public void AddChildNode(QueryNode childNode)
     {
-        var currentNode = ChildNodes.FirstOrDefault(e => e.Alias == childNode.Alias);
+        var currentNode = ChildNodes.FirstOrDefault(e => e.Name == childNode.Name);
         if (currentNode == null)
         {
             childNode.Parent = this;
@@ -122,11 +122,11 @@ public class QueryNode
 
                 if (schema != null)
                 {
-                    var alias = propertyInfo.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ??
+                    var name = propertyInfo.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ??
                                 Member.Name.ToCamelCase();
-                    if (schema.TypePropertyExists(typeOrListType.Name, alias))
+                    if (schema.TypePropertyExists(typeOrListType.Name, name))
                     {
-                        AddChildNode(propertyInfo, alias);
+                        AddChildNode(propertyInfo, name);
                     }
                     else
                     {
@@ -200,12 +200,12 @@ public class QueryNode
         
         if (InterfaceProperty)
         {
-            query = "... on " + Alias + GetArgumentString() + Environment.NewLine;
+            query = "... on " + Name + GetArgumentString() + Environment.NewLine;
 
         }
         else
         {
-            query = Alias + GetArgumentString() + Environment.NewLine;
+            query = Name + GetArgumentString() + Environment.NewLine;
 
         }
 
