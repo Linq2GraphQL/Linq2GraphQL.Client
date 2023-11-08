@@ -11,6 +11,7 @@ public class GraphClient
 {
     private readonly IMemoryCache cache;
     private readonly IOptions<GraphClientOptions> options;
+    private Guid clientId = Guid.NewGuid();
 
     public GraphClient(HttpClient httpClient, IOptions<GraphClientOptions> options, IServiceProvider provider)
     {
@@ -64,7 +65,9 @@ public class GraphClient
             return null;
         }
 
-        return await cache.GetOrCreateAsync("__schema", async entry =>
+        var cackeKey = "Linq2GraphQL_Schema_" + clientId;
+
+        return await cache.GetOrCreateAsync(cackeKey, async entry =>
         {
             var executor = new QueryExecutor<GraphQLSchema>(this);
 

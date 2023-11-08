@@ -64,6 +64,8 @@ public class QueryTests : IClassFixture<SampleClientFixture>
 
         var result = await query.ExecuteAsync();
 
+        var schema = query.Schema;
+
         var customer1 = result[0];
         Assert.NotEqual(default, customer1.CustomerId);
         Assert.Equal(default, customer1.CustomerName);

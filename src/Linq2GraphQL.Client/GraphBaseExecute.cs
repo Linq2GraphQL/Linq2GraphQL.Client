@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using Linq2GraphQL.Client.Schema;
+using System.Linq.Expressions;
 
 namespace Linq2GraphQL.Client;
 
@@ -13,6 +14,7 @@ public abstract class GraphBaseExecute<T, TResult>
 
     private readonly SemaphoreSlim _lock = new(1, 1);
     private bool intialized;
+    private GraphQLSchema schema;
 
     public GraphBaseExecute(GraphClient client, OperationType operationType, QueryNode queryNode,
         Expression<Func<T, TResult>> selector)
@@ -32,7 +34,7 @@ public abstract class GraphBaseExecute<T, TResult>
         {
             if (!intialized)
             {
-                var schema = await client.GetSchemaForSafeModeAsync();
+                schema = await client.GetSchemaForSafeModeAsync();
                 QueryNode.SetAllUniqueVariableNames();
                 QueryNode.AddPrimitiveChildren(true, schema);
                 intialized = true;
@@ -43,11 +45,9 @@ public abstract class GraphBaseExecute<T, TResult>
         {
             _lock.Release();
         }
-
-
-
-
     }
+
+    public GraphQLSchema Schema => schema;
 
     private string GetQueryVariablesString()
     {
