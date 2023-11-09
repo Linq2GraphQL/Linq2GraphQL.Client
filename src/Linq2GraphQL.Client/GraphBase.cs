@@ -11,7 +11,8 @@ namespace Linq2GraphQL.Client
         {
             this.client = client;
             this.operationType = operationType;
-            QueryNode = new QueryNode(typeof(T), name, arguments);
+            QueryNode = new QueryNode(typeof(T), name, arguments, false, true);
+
         }
 
         public QueryNode QueryNode { get; }

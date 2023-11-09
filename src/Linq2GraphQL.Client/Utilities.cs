@@ -1,16 +1,37 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Linq2GraphQL.Client;
 
 public static class Utilities
 {
+
+    public static string GetArgumentsId(IEnumerable<object> objects)
+    {
+        if (objects == null) return null;
+        var objs = objects.Where(o => o != null);
+        if (!objs.Any()) return null;
+
+        unchecked
+        {
+            int hash = 19;
+            foreach (var obj in objs)
+            {
+                hash = hash * 31 + obj.GetHashCode();
+            }
+            var hashString = hash.ToString().Replace("-", "_");
+
+            return hashString;
+        }
+    }
+
     public static bool IsSelectOrSelectMany(this MethodCallExpression methodCallExpression)
     {
         if (methodCallExpression.Arguments.Count != 2) { return false; };
         var methodName = methodCallExpression.Method.Name;
         return (methodName == "Select" || methodName == "SelectMany");
-    
+
     }
 
     public static void ParseExpression(Expression body, QueryNode parent)

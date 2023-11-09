@@ -2,67 +2,61 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Xml.Linq;
 using Linq2GraphQL.Client;
+using Linq2GraphQL.Client.Common;
 
 namespace Linq2GraphQL.TestClient;
 
 public static class OrderExtensions
 {
     [GraphMethod("orderHello")]
-    public static string OrderHello(this Order  order, [GraphArgument("String!")] string name, [GraphArgument("Int!")] int first)
+    public static string OrderHello(this Order order, [GraphArgument("String!")] string name, [GraphArgument("Int!")] int first)
     {
-        var ll = "";
-        if (name != null) { ll += name.GetHashCode().ToString(); }
-        if(first != null) { ll += first.GetHashCode().ToString(); }    
-
-        var argHascode = ll.GetHashCode();
-        if (argHascode < 0) { argHascode = argHascode * -1; }
-
-        var vall = order.__AdditionalProperties["Arg" + argHascode];
-       return vall.Deserialize<string>();
-       
+        return order.GetMethodValue<string>("orderHello", name, first);
     }
 
     [GraphMethod("orderAddress")]
-    public static Address OrderAddress(this Order  order, [GraphArgument("AddressType!")] AddressType addressType)
+    public static Address OrderAddress(this Order order, [GraphArgument("AddressType!")] AddressType addressType)
     {
-	    return order?.OrderAddress;
+        return order.GetMethodValue<Address>("orderAddress", addressType);
     }
 
 }
 
-public partial class Order 
+public partial class Order : GraphQLTypeBase
 {
+   
+    private LazyProperty<string> _orderHello = new();
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
     [GraphShadowProperty]
-	[JsonPropertyName("orderHello")]
-	public string OrderHello { get; set; }  
+    public string OrderHello => _orderHello.Value(() => GetFirstMethodValue<string>("orderHello"));
 
+
+    private LazyProperty<Address> _orderAddress = new();
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
     [GraphShadowProperty]
-	[JsonPropertyName("orderAddress")]
-	public Address OrderAddress { get; set; }  
+    public Address OrderAddress => _orderAddress.Value(() => GetFirstMethodValue<Address>("orderAddress"));
 
-	[JsonPropertyName("orderId")]
-	public Guid OrderId { get; set; }  
+    [JsonPropertyName("orderId")]
+    public Guid OrderId { get; set; }
 
-	[JsonPropertyName("customer")]
-	public Customer Customer { get; set; }  
+    [JsonPropertyName("customer")]
+    public Customer Customer { get; set; }
 
-	[JsonPropertyName("address")]
-	public Address Address { get; set; }  
+    [JsonPropertyName("address")]
+    public Address Address { get; set; }
 
-	[JsonPropertyName("orderDate")]
-	public DateTimeOffset OrderDate { get; set; }  
+    [JsonPropertyName("orderDate")]
+    public DateTimeOffset OrderDate { get; set; }
 
-	[JsonPropertyName("lines")]
-	public List<OrderLine> Lines { get; set; }
+    [JsonPropertyName("lines")]
+    public List<OrderLine> Lines { get; set; }
 
-    [JsonExtensionData]
-    public Dictionary<string, JsonElement> __AdditionalProperties { get; set; }
+
 
 }

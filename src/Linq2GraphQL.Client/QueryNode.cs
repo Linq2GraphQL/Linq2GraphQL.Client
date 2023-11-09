@@ -10,30 +10,10 @@ public class QueryNode
 {
     private readonly bool mustHaveChildren;
     private readonly Type underlyingMemberType;
+    private string argumentHashCodeId;
 
-    public QueryNode(MemberInfo member, string name = null, List<ArgumentValue> arguments = null, bool interfaceProperty = false)
+    public QueryNode(MemberInfo member, string name = null, List<ArgumentValue> arguments = null, bool interfaceProperty = false, bool topLevel = false)
     {
-
-        //https://stackoverflow.com/questions/8094867/good-gethashcode-override-for-list-of-foo-objects-respecting-the-order
-        var argValues = arguments?.Where(e => e.Value != null).Select(e => e.Value).ToList();
-        if (argValues?.Any() == true)
-        {
-            var ll = "";
-            foreach (var arg in argValues)
-            {
-                ll += arg.GetHashCode().ToString();
-            }
-            var hashCode = ll.GetHashCode();
-
-            if (hashCode< 0)
-            {
-                hashCode = hashCode * -1;
-            }
-
-            ArgumentHashCode = hashCode;
-            Alias = "Arg" + hashCode.ToString();
-        }
-
         Name = name ?? member.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? member.Name.ToCamelCase();
         Member = member;
         Arguments = arguments ?? new List<ArgumentValue>();
@@ -41,12 +21,16 @@ public class QueryNode
         mustHaveChildren = MustHaveChildren(underlyingMemberType);
         InterfaceProperty = interfaceProperty;
 
+        if (!topLevel) {
+            SetArgumentHashCodeId();
+        }
+       
     }
 
     public bool InterfaceProperty { get; internal set; }
     public string Name { get; internal set; }
     public string Alias { get; internal set; }
-    public int ArgumentHashCode { get; internal set; }
+   
     public MemberInfo Member { get; internal set; }
     public List<QueryNode> ChildNodes { get; internal set; } = new();
     public List<ArgumentValue> Arguments { get; internal set; } = new();
@@ -62,6 +46,16 @@ public class QueryNode
             IncludePrimitive = true;
         }
     }
+
+    private void SetArgumentHashCodeId()
+    {
+       argumentHashCodeId = Utilities.GetArgumentsId(Arguments?.Select(e=> e.Value));
+        if (argumentHashCodeId != null)
+        {
+            Alias = Name + argumentHashCodeId;
+        }
+    }
+
 
     private static bool MustHaveChildren(Type type)
     {
@@ -91,14 +85,7 @@ public class QueryNode
 
     public void AddChildNode(QueryNode childNode)
     {
-
-       if (childNode.ArgumentHashCode != 0)
-        {
-            var tt = "ss";
-        }
-       
-
-        var currentNode = ChildNodes.FirstOrDefault(e => e.Name == childNode.Name && e.ArgumentHashCode == childNode.ArgumentHashCode);
+        var currentNode = ChildNodes.FirstOrDefault(e => e.Name == childNode.Name && e.argumentHashCodeId == childNode.argumentHashCodeId);
         if (currentNode == null)
         {
             childNode.Parent = this;
@@ -228,7 +215,7 @@ public class QueryNode
     {
         string query;
         var memberType = Member.GetUnderlyingType();
-        
+
         if (InterfaceProperty)
         {
             query = "... on " + Name + GetArgumentString() + Environment.NewLine;
@@ -237,11 +224,10 @@ public class QueryNode
         else if (!string.IsNullOrWhiteSpace(Alias))
         {
             query = Alias + ":" + Name + GetArgumentString() + Environment.NewLine;
-        } 
+        }
         else
         {
             query = Name + GetArgumentString() + Environment.NewLine;
-
         }
 
         if (memberType.IsListOfPrimitiveTypeOrString())
