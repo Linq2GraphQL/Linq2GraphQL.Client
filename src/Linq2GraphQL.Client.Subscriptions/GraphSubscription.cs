@@ -4,7 +4,7 @@ namespace Linq2GraphQL.Client.Subscriptions;
 
 public class GraphSubscription<T> : GraphBase<T, GraphSubscription<T>> 
 {
-    public GraphSubscription(GraphClient client, string alias, OperationType operationType, List<ArgumentValue> arguments) : base(client, alias, operationType, arguments)
+    public GraphSubscription(GraphClient client, string name, OperationType operationType, List<ArgumentValue> arguments) : base(client, name, operationType, arguments)
     {
     }
 

@@ -2,22 +2,30 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
+using Linq2GraphQL.Client.Common;
 
 namespace StarWars.Client;
 
-public partial class PlanetsConnection : Linq2GraphQL.Client.Common.ICursorPaging
+public partial class PlanetsConnection : GraphQLTypeBase, Linq2GraphQL.Client.Common.ICursorPaging
 {
-	[JsonPropertyName("pageInfo")]
+    [JsonPropertyName("pageInfo")]
 	public Linq2GraphQL.Client.Common.PageInfo PageInfo { get; set; }  
 
-	[JsonPropertyName("edges")]
+
+    [JsonPropertyName("edges")]
 	public List<PlanetsEdge> Edges { get; set; }  
 
-	[JsonPropertyName("totalCount")]
+
+    [JsonPropertyName("totalCount")]
 	public int? TotalCount { get; set; }  
 
-	[JsonPropertyName("planets")]
+
+    [JsonPropertyName("planets")]
 	public List<Planet> Planets { get; set; }  
+
+
+
+
 
 
 }

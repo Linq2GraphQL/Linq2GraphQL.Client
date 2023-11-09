@@ -2,16 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
+using Linq2GraphQL.Client.Common;
 
 namespace StarWars.Client;
 
-public partial class VehiclePilotsEdge 
+public partial class VehiclePilotsEdge : GraphQLTypeBase
 {
-	[JsonPropertyName("node")]
+    [JsonPropertyName("node")]
 	public Person Node { get; set; }  
 
-	[JsonPropertyName("cursor")]
+
+    [JsonPropertyName("cursor")]
 	public string Cursor { get; set; }  
+
+
+
+
 
 
 }

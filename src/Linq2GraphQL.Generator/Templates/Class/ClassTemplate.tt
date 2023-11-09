@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
+using Linq2GraphQL.Client.Common;
 
 namespace <#= namespaceName #>;
 
@@ -14,7 +15,7 @@ public static class <#= classType.Name #>Extensions
     [GraphMethod("<#= field.Name #>")]
     public static <#= GetFieldCSharpName(field) #> <#= field.CSharpName #>(this <#= classType.Name #>  <#= classType.Name.ToCamelCase() #>, <#= field.GetArgString(true) #>)
     {
-	    return <#= classType.Name.ToCamelCase() #>?.<#= field.CSharpName #>;
+	    return <#= classType.Name.ToCamelCase() #>.GetMethodValue<<#= GetFieldCSharpName(field) #>>("<#= field.Name #>", <#= field.GetArgNames() #>);
     }
 
 <# } #>
@@ -23,27 +24,25 @@ public static class <#= classType.Name #>Extensions
 <#
     }
 #>
-public partial class <#= classType.Name #> <#= classType.GetInterfacesString() #>
+public partial class <#= classType.Name #> <#= classType.GetInterfacesString("GraphQLTypeBase") #>
 {
 <# foreach (var field in classType.AllFields) { #>
 <# if (field.IsMethod) { #>
+    private LazyProperty<<#= GetFieldCSharpName(field) #>> _<#= field.Name #> = new();
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
     [GraphShadowProperty]
-<# } #>
-	[JsonPropertyName("<#= field.Name #>")]
+    public <#= GetFieldCSharpName(field) #> <#= field.CSharpName #> => _<#= field.Name #>.Value(() => GetFirstMethodValue<<#= GetFieldCSharpName(field) #>>("<#= field.Name #>"));
+
+<# } else { #>
+    [JsonPropertyName("<#= field.Name #>")]
 	public <#= GetFieldCSharpName(field) #> <#= field.CSharpName #> { get; set; }  
 
 <# } #>
-
-<#
-    if (classType.HasInterfaces)
-    {
-#>
+<# } #>
+<# if (classType.HasInterfaces) { #>
     [JsonPropertyName("__typename")]
     public string __TypeName { get; set; }
-    <#
-        }
-#>
+<# } #>
 }

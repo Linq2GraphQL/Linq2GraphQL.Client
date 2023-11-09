@@ -24,7 +24,7 @@ public class GraphQueryExecute<T, TResult> : GraphBaseExecute<T, TResult>
 
     public async Task<T> ExecuteBaseAsync()
     {
-        BaseResult = await queryExecutor.ExecuteRequestAsync(QueryNode.Alias, await GetRequestAsync());
+        BaseResult = await queryExecutor.ExecuteRequestAsync(QueryNode.Name, await GetRequestAsync());
         return BaseResult;
     }
 

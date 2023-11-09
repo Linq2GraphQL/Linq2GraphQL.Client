@@ -34,13 +34,22 @@ public class GraphqlType : BaseType
 
     public bool HasInterfaces => (Interfaces != null && Interfaces.Any());
 
-    public string GetInterfacesString()
+    public string GetInterfacesString(string baseClass = null)
     {
         var interfaces = "";
 
+        if (!string.IsNullOrWhiteSpace(baseClass))
+        {
+            interfaces += baseClass;
+        }
+
         if (HasInterfaces)
         {
-            interfaces = string.Join(", ", Interfaces.Select(e => e.Name));
+            if (!string.IsNullOrWhiteSpace(interfaces))
+            {
+                interfaces += ", ";
+            }
+            interfaces += string.Join(", ", Interfaces.Select(e => e.Name));
         }
 
         if (ContainPageInfo())
@@ -50,12 +59,14 @@ public class GraphqlType : BaseType
                 interfaces += ", ";
             }
 
-            interfaces = "Linq2GraphQL.Client.Common.ICursorPaging";
+            interfaces += "Linq2GraphQL.Client.Common.ICursorPaging";
         }
+
+       
 
         if (!string.IsNullOrWhiteSpace(interfaces))
         {
-           interfaces = ": " + interfaces;
+            interfaces = ": " + interfaces;
         }
 
         return interfaces;
@@ -78,7 +89,7 @@ public class GraphqlType : BaseType
         return Fields?.Any(e => e.GraphqlType.IsPageInfo()) == true;
     }
 
-    
+
 }
 
 [JsonConverter(typeof(JsonStringEnumMemberConverter))]
@@ -194,6 +205,12 @@ public class Field : BaseField
         if (Args?.FirstOrDefault(e => e.Name == "after" && e.FieldInfo.CSharpTypeName == "string") == null) { return false; }
         if (Args?.FirstOrDefault(e => e.Name == "before" && e.FieldInfo.CSharpTypeName == "string") == null) { return false; }
         return true;
+    }
+
+    public string GetArgNames()
+    {
+        if (Args == null) return null;
+        return string.Join(", ", Args.Select(e => e.Name));
     }
 
     public string GetArgString(bool addTypeAttribute)

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
+using Linq2GraphQL.Client.Common;
 
 namespace Linq2GraphQL.TestClient;
 
@@ -10,47 +11,61 @@ public static class OrderExtensions
     [GraphMethod("orderHello")]
     public static string OrderHello(this Order  order, [GraphArgument("String!")] string name, [GraphArgument("Int!")] int first)
     {
-	    return order?.OrderHello;
+	    return order.GetMethodValue<string>("orderHello", name, first);
     }
 
     [GraphMethod("orderAddress")]
     public static Address OrderAddress(this Order  order, [GraphArgument("AddressType!")] AddressType addressType)
     {
-	    return order?.OrderAddress;
+	    return order.GetMethodValue<Address>("orderAddress", addressType);
     }
 
 }
 
-public partial class Order 
+public partial class Order : GraphQLTypeBase
 {
+
+    private LazyProperty<string> _orderHello = new();
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
     [GraphShadowProperty]
-	[JsonPropertyName("orderHello")]
-	public string OrderHello { get; set; }  
+    public string OrderHello => _orderHello.Value(() => GetFirstMethodValue<string>("orderHello"));
+   // public string OrderHello { get; set; }  
 
+
+
+    private LazyProperty<Address> _orderAddress = new();
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
     [GraphShadowProperty]
-	[JsonPropertyName("orderAddress")]
-	public Address OrderAddress { get; set; }  
+    public Address OrderAddress => _orderAddress.Value(() => GetFirstMethodValue<Address>("orderAddress"));
+   // public Address OrderAddress { get; set; }  
 
-	[JsonPropertyName("orderId")]
+
+    [JsonPropertyName("orderId")]
 	public Guid OrderId { get; set; }  
 
-	[JsonPropertyName("customer")]
+
+    [JsonPropertyName("customer")]
 	public Customer Customer { get; set; }  
 
-	[JsonPropertyName("address")]
+
+    [JsonPropertyName("address")]
 	public Address Address { get; set; }  
 
-	[JsonPropertyName("orderDate")]
+
+    [JsonPropertyName("orderDate")]
 	public DateTimeOffset OrderDate { get; set; }  
 
-	[JsonPropertyName("lines")]
+
+    [JsonPropertyName("lines")]
 	public List<OrderLine> Lines { get; set; }  
+
+
+
+
 
 
 }

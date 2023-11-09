@@ -2,22 +2,30 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
+using Linq2GraphQL.Client.Common;
 
 namespace Linq2GraphQL.TestClient;
 
-public partial class Spider : IAnimal
+public partial class Spider : GraphQLTypeBase, IAnimal
 {
-	[JsonPropertyName("name")]
+    [JsonPropertyName("name")]
 	public string Name { get; set; }  
 
-	[JsonPropertyName("numberOfLegs")]
+
+    [JsonPropertyName("numberOfLegs")]
 	public int NumberOfLegs { get; set; }  
 
-	[JsonPropertyName("speed")]
+
+    [JsonPropertyName("speed")]
 	public int Speed { get; set; }  
 
-	[JsonPropertyName("poisonous")]
+
+    [JsonPropertyName("poisonous")]
 	public bool Poisonous { get; set; }  
+
+
+
+
 
 
     [JsonPropertyName("__typename")]

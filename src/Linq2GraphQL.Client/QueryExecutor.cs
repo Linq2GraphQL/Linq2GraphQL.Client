@@ -14,7 +14,7 @@ public class QueryExecutor<T>
         this.client = client;
     }
 
-    internal async Task<T> ExecuteRequestAsync(string alias, GraphQLRequest graphRequest)
+    internal async Task<T> ExecuteRequestAsync(string name, GraphQLRequest graphRequest)
     {
         var json = JsonSerializer.Serialize(graphRequest, client.SerializerOptions);
         using var response = await client.HttpClient.PostAsJsonAsync("", graphRequest, client.SerializerOptions);
@@ -27,10 +27,10 @@ public class QueryExecutor<T>
         }
 
         var con = await response.Content.ReadAsStringAsync();
-        return ProcessResponse(con, alias, graphRequest.Query);
+        return ProcessResponse(con, name, graphRequest.Query);
     }
 
-    public T ProcessResponse(string con, string alias, string query)
+    public T ProcessResponse(string con, string name, string query)
     {
         var document = JsonDocument.Parse(con);
         var hasError = document.RootElement.TryGetProperty(errorPathPropertyName, out var errorElement);
@@ -42,7 +42,7 @@ public class QueryExecutor<T>
         }
 
         var hasData = document.RootElement.TryGetProperty(dataPathPropertyName, out var dataElement);
-        var hasResult = dataElement.TryGetProperty(alias, out var resultElement);
+        var hasResult = dataElement.TryGetProperty(name, out var resultElement);
 
         if (resultElement.ValueKind == JsonValueKind.Null)
         {

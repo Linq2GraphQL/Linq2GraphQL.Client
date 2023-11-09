@@ -7,11 +7,12 @@ namespace Linq2GraphQL.Client
         protected readonly GraphClient client;
         protected readonly OperationType operationType;
 
-        public GraphBase(GraphClient client, string alias, OperationType operationType, List<ArgumentValue> arguments)
+        public GraphBase(GraphClient client, string name, OperationType operationType, List<ArgumentValue> arguments)
         {
             this.client = client;
             this.operationType = operationType;
-            QueryNode = new QueryNode(typeof(T), alias, arguments);
+            QueryNode = new QueryNode(typeof(T), name, arguments, false, true);
+
         }
 
         public QueryNode QueryNode { get; }

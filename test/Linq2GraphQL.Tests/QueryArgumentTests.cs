@@ -1,10 +1,4 @@
-﻿using GreenDonut;
-using Linq2GraphQL.TestClient;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Linq2GraphQL.TestClient;
 
 namespace Linq2GraphQL.Tests
 {
@@ -29,7 +23,6 @@ namespace Linq2GraphQL.Tests
                 .Select(e => e.Nodes);
 
             var request = await query.GetRequestAsync();
-
             var result = await query.ExecuteAsync();
 
             Assert.Single(result);
@@ -45,6 +38,10 @@ namespace Linq2GraphQL.Tests
 
             var request = await query.GetRequestAsync();
             var result = await query.ExecuteAsync();
+
+            var order = result.First();
+
+            var address = order.OrderAddress;
 
             Assert.Single(result);
         }
@@ -62,8 +59,10 @@ namespace Linq2GraphQL.Tests
 
             var result = await query.ExecuteAsync();
 
-            Assert.NotNull(result.First().OrderAddress);
-            Assert.Equal("Invoice", result.First().OrderAddress.Name);
+            var order = result.First();
+
+            Assert.NotNull(order.OrderAddress);
+            Assert.Equal("Invoice", result.First().OrderAddress?.Name);
         }
 
         [Fact]
@@ -71,17 +70,40 @@ namespace Linq2GraphQL.Tests
         {
             var query = sampleClient
                 .Query
-                .Orders()
-                .Include(e=> e.Nodes)
-                .Select(e => e.Nodes.Select(e => e.OrderHello("Jocke", 123)));
+                .Orders(first: 2)
+                .Include(e => e.Nodes)
+                .Select(e => e.Nodes.Select(e => e.OrderHello("Kalle", 123)));
 
-            var gQ = query.GetRequestAsync();
+            var gQ = await query.GetRequestAsync();
 
             var node = query.QueryNode;
             var result = await query.ExecuteAsync();
 
             Assert.NotNull(result.First());
-        
+
+        }
+
+        [Fact]
+        public async Task InQueryArguments_Multiple()
+        {
+            var query = sampleClient
+                .Query
+                .Orders()
+                .Select(e => e.Nodes.Select(f => new
+                {
+                    Jocke = f.OrderHello("Jocke", 22),
+                    Kalle = f.OrderHello("Kalle", 11)
+                })
+                );
+
+            var request = query.GetRequestAsync();
+            var result = await query.ExecuteAsync();
+
+            var addresses = result.First();
+
+            Assert.Equal("Hello, Jocke [22]", addresses.Jocke);
+            Assert.Equal("Hello, Kalle [11]", addresses.Kalle);
+
         }
 
 

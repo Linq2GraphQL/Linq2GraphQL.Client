@@ -4,7 +4,7 @@ namespace Linq2GraphQL.Client;
 
 public class GraphQuery<T> : GraphBase<T, GraphQuery<T>>
 {
-    public GraphQuery(GraphClient client, string alias, OperationType operationType, List<ArgumentValue> arguments) : base(client, alias, operationType, arguments)
+    public GraphQuery(GraphClient client, string name, OperationType operationType, List<ArgumentValue> arguments) : base(client, name, operationType, arguments)
     {
     }
 

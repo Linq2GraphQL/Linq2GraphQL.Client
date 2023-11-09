@@ -2,25 +2,34 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
+using Linq2GraphQL.Client.Common;
 
 namespace Linq2GraphQL.TestClient;
 
-public partial class OrderLine 
+public partial class OrderLine : GraphQLTypeBase
 {
-	[JsonPropertyName("lineNumber")]
+    [JsonPropertyName("lineNumber")]
 	public int LineNumber { get; set; }  
 
-	[JsonPropertyName("order")]
+
+    [JsonPropertyName("order")]
 	public Order Order { get; set; }  
 
-	[JsonPropertyName("item")]
+
+    [JsonPropertyName("item")]
 	public Item Item { get; set; }  
 
-	[JsonPropertyName("price")]
+
+    [JsonPropertyName("price")]
 	public decimal Price { get; set; }  
 
-	[JsonPropertyName("quantity")]
+
+    [JsonPropertyName("quantity")]
 	public float Quantity { get; set; }  
+
+
+
+
 
 
 }

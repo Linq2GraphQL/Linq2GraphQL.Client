@@ -23,11 +23,11 @@ public class GraphSubscriptionExecute<T, TResult> : GraphBaseExecute<T, TResult>
 #pragma warning disable CS4014
             Task.Run(sseClient.Start);
 #pragma warning restore CS4014
-            return sseClient.Subscription.Select(e => ConvertResult(queryExecutor.ProcessResponse(e, QueryNode.Alias, payload.Query)));
+            return sseClient.Subscription.Select(e => ConvertResult(queryExecutor.ProcessResponse(e, QueryNode.Name, payload.Query)));
         }
 
         var wsClient = new WSClient(client.SubscriptionUrl, client.SubscriptionProtocol, payload);
         await wsClient.Start();
-        return wsClient.Subscription.Select(e => ConvertResult(queryExecutor.ProcessResponse(e, QueryNode.Alias, payload.Query)));
+        return wsClient.Subscription.Select(e => ConvertResult(queryExecutor.ProcessResponse(e, QueryNode.Name, payload.Query)));
     }
 }
