@@ -49,7 +49,7 @@ public class GraphqlType : BaseType
             {
                 interfaces += ", ";
             }
-            interfaces = string.Join(", ", Interfaces.Select(e => e.Name));
+            interfaces += string.Join(", ", Interfaces.Select(e => e.Name));
         }
 
         if (ContainPageInfo())

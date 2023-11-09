@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
+using Linq2GraphQL.Client.Common;
 
 namespace StarWars.Client;
 
@@ -10,98 +11,125 @@ public static class FilmExtensions
     [GraphMethod("speciesConnection")]
     public static FilmSpeciesConnection SpeciesConnection(this Film  film, [GraphArgument("String")] string after = null, [GraphArgument("Int")] int? first = null, [GraphArgument("String")] string before = null, [GraphArgument("Int")] int? last = null)
     {
-	    return film?.SpeciesConnection;
+	    return film.GetMethodValue<FilmSpeciesConnection>("speciesConnection", after, first, before, last);
     }
 
     [GraphMethod("starshipConnection")]
     public static FilmStarshipsConnection StarshipConnection(this Film  film, [GraphArgument("String")] string after = null, [GraphArgument("Int")] int? first = null, [GraphArgument("String")] string before = null, [GraphArgument("Int")] int? last = null)
     {
-	    return film?.StarshipConnection;
+	    return film.GetMethodValue<FilmStarshipsConnection>("starshipConnection", after, first, before, last);
     }
 
     [GraphMethod("vehicleConnection")]
     public static FilmVehiclesConnection VehicleConnection(this Film  film, [GraphArgument("String")] string after = null, [GraphArgument("Int")] int? first = null, [GraphArgument("String")] string before = null, [GraphArgument("Int")] int? last = null)
     {
-	    return film?.VehicleConnection;
+	    return film.GetMethodValue<FilmVehiclesConnection>("vehicleConnection", after, first, before, last);
     }
 
     [GraphMethod("characterConnection")]
     public static FilmCharactersConnection CharacterConnection(this Film  film, [GraphArgument("String")] string after = null, [GraphArgument("Int")] int? first = null, [GraphArgument("String")] string before = null, [GraphArgument("Int")] int? last = null)
     {
-	    return film?.CharacterConnection;
+	    return film.GetMethodValue<FilmCharactersConnection>("characterConnection", after, first, before, last);
     }
 
     [GraphMethod("planetConnection")]
     public static FilmPlanetsConnection PlanetConnection(this Film  film, [GraphArgument("String")] string after = null, [GraphArgument("Int")] int? first = null, [GraphArgument("String")] string before = null, [GraphArgument("Int")] int? last = null)
     {
-	    return film?.PlanetConnection;
+	    return film.GetMethodValue<FilmPlanetsConnection>("planetConnection", after, first, before, last);
     }
 
 }
 
-public partial class Film : Node
+public partial class Film : GraphQLTypeBase, Node
 {
-	[JsonPropertyName("title")]
+    [JsonPropertyName("title")]
 	public string Title { get; set; }  
 
-	[JsonPropertyName("episodeID")]
+
+    [JsonPropertyName("episodeID")]
 	public int? EpisodeID { get; set; }  
 
-	[JsonPropertyName("openingCrawl")]
+
+    [JsonPropertyName("openingCrawl")]
 	public string OpeningCrawl { get; set; }  
 
-	[JsonPropertyName("director")]
+
+    [JsonPropertyName("director")]
 	public string Director { get; set; }  
 
-	[JsonPropertyName("producers")]
+
+    [JsonPropertyName("producers")]
 	public List<string> Producers { get; set; }  
 
-	[JsonPropertyName("releaseDate")]
+
+    [JsonPropertyName("releaseDate")]
 	public string ReleaseDate { get; set; }  
 
+
+
+    private LazyProperty<FilmSpeciesConnection> _speciesConnection = new();
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
     [GraphShadowProperty]
-	[JsonPropertyName("speciesConnection")]
-	public FilmSpeciesConnection SpeciesConnection { get; set; }  
+    public FilmSpeciesConnection SpeciesConnection => _speciesConnection.Value(() => GetFirstMethodValue<FilmSpeciesConnection>("speciesConnection"));
+   // public FilmSpeciesConnection SpeciesConnection { get; set; }  
 
+
+
+    private LazyProperty<FilmStarshipsConnection> _starshipConnection = new();
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
     [GraphShadowProperty]
-	[JsonPropertyName("starshipConnection")]
-	public FilmStarshipsConnection StarshipConnection { get; set; }  
+    public FilmStarshipsConnection StarshipConnection => _starshipConnection.Value(() => GetFirstMethodValue<FilmStarshipsConnection>("starshipConnection"));
+   // public FilmStarshipsConnection StarshipConnection { get; set; }  
 
+
+
+    private LazyProperty<FilmVehiclesConnection> _vehicleConnection = new();
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
     [GraphShadowProperty]
-	[JsonPropertyName("vehicleConnection")]
-	public FilmVehiclesConnection VehicleConnection { get; set; }  
+    public FilmVehiclesConnection VehicleConnection => _vehicleConnection.Value(() => GetFirstMethodValue<FilmVehiclesConnection>("vehicleConnection"));
+   // public FilmVehiclesConnection VehicleConnection { get; set; }  
 
+
+
+    private LazyProperty<FilmCharactersConnection> _characterConnection = new();
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
     [GraphShadowProperty]
-	[JsonPropertyName("characterConnection")]
-	public FilmCharactersConnection CharacterConnection { get; set; }  
+    public FilmCharactersConnection CharacterConnection => _characterConnection.Value(() => GetFirstMethodValue<FilmCharactersConnection>("characterConnection"));
+   // public FilmCharactersConnection CharacterConnection { get; set; }  
 
+
+
+    private LazyProperty<FilmPlanetsConnection> _planetConnection = new();
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
     [GraphShadowProperty]
-	[JsonPropertyName("planetConnection")]
-	public FilmPlanetsConnection PlanetConnection { get; set; }  
+    public FilmPlanetsConnection PlanetConnection => _planetConnection.Value(() => GetFirstMethodValue<FilmPlanetsConnection>("planetConnection"));
+   // public FilmPlanetsConnection PlanetConnection { get; set; }  
 
-	[JsonPropertyName("created")]
+
+    [JsonPropertyName("created")]
 	public string Created { get; set; }  
 
-	[JsonPropertyName("edited")]
+
+    [JsonPropertyName("edited")]
 	public string Edited { get; set; }  
 
-	[JsonPropertyName("id")]
+
+    [JsonPropertyName("id")]
 	public string Id { get; set; }  
+
+
+
+
 
 
     [JsonPropertyName("__typename")]

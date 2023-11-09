@@ -6,7 +6,7 @@ using Linq2GraphQL.Client.Common;
 
 namespace Linq2GraphQL.TestClient;
 
-public partial class Spider : IAnimal
+public partial class Spider : GraphQLTypeBase, IAnimal
 {
     [JsonPropertyName("name")]
 	public string Name { get; set; }  
