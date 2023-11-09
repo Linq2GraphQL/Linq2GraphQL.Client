@@ -17,7 +17,6 @@ public class QueryExecutor<T>
     internal async Task<T> ExecuteRequestAsync(string name, GraphQLRequest graphRequest)
     {
         var json = JsonSerializer.Serialize(graphRequest, client.SerializerOptions);
-
         using var response = await client.HttpClient.PostAsJsonAsync("", graphRequest, client.SerializerOptions);
 
         if (!response.IsSuccessStatusCode)
