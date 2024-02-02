@@ -8,7 +8,7 @@
 
 <h4> <a href="https://linq2graphql.com"> Documentation </a> <span> · </span> <a href="https://github.com/Linq2GraphQL/Linq2GraphQL.Client/issues"> Report Bug </a> <span> · </span> <a href="https://github.com/Linq2GraphQL/Linq2GraphQL.Client/issues"> Request Feature </a> </h4>
 
-[![Build](https://github.com/Linq2GraphQL/Linq2GraphQL.Client/actions/workflows/ci.yml/badge.svg)](hhttps://github.com/Linq2GraphQL/Linq2GraphQL.Client/actions/workflows/ci.yml?branch=master)
+[![Build](https://github.com/Linq2GraphQL/Linq2GraphQL.Client/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Linq2GraphQL/Linq2GraphQL.Client/actions/workflows/ci.yml)
 
 </div>
 
