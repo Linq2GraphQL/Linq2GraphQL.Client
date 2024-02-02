@@ -22,15 +22,15 @@ public class GraphQueryExecute<T, TResult> : GraphBaseExecute<T, TResult>
 
     public T BaseResult { get; set; }
 
-    public async Task<T> ExecuteBaseAsync()
+    public async Task<T> ExecuteBaseAsync(CancellationToken cancellationToken = default)
     {
-        BaseResult = await queryExecutor.ExecuteRequestAsync(QueryNode.Name, await GetRequestAsync());
+        BaseResult = await queryExecutor.ExecuteRequestAsync(QueryNode.Name, await GetRequestAsync(), cancellationToken);
         return BaseResult;
     }
 
-    public async Task<TResult> ExecuteAsync()
+    public async Task<TResult> ExecuteAsync(CancellationToken cancellationToken = default)
     {
-        return ConvertResult(await ExecuteBaseAsync());
+        return ConvertResult(await ExecuteBaseAsync(cancellationToken));
     }
 
 }

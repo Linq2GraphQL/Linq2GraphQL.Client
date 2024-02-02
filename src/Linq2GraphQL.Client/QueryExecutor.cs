@@ -14,19 +14,18 @@ public class QueryExecutor<T>
         this.client = client;
     }
 
-    internal async Task<T> ExecuteRequestAsync(string name, GraphQLRequest graphRequest)
+    internal async Task<T> ExecuteRequestAsync(string name, GraphQLRequest graphRequest, CancellationToken cancellationToken = default)
     {
-        var json = JsonSerializer.Serialize(graphRequest, client.SerializerOptions);
-        using var response = await client.HttpClient.PostAsJsonAsync("", graphRequest, client.SerializerOptions);
+        using var response = await client.HttpClient.PostAsJsonAsync("", graphRequest, client.SerializerOptions, cancellationToken: cancellationToken);
 
         if (!response.IsSuccessStatusCode)
         {
-            var content = await response.Content.ReadAsStringAsync();
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
             throw new GraphQueryRequestException($"Http error! Status code {response.StatusCode} Error: {content}",
                 graphRequest.Query);
         }
 
-        var con = await response.Content.ReadAsStringAsync();
+        var con = await response.Content.ReadAsStringAsync(cancellationToken);
         return ProcessResponse(con, name, graphRequest.Query);
     }
 
