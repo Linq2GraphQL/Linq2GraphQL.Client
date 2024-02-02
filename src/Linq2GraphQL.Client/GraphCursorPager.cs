@@ -21,23 +21,23 @@ public class GraphCursorPager<T, TResult> where T : ICursorPaging
         return this;
     }
 
-    private async Task<TResult> ExecutePagerAsync()
+    private async Task<TResult> ExecutePagerAsync(CancellationToken cancellationToken = default)
     {
-        var baseType = await query.ExecuteBaseAsync();
+        var baseType = await query.ExecuteBaseAsync(cancellationToken);
         return query.ConvertResult(baseType);
     }
 
-    public async Task<TResult> NextPageAsync()
+    public async Task<TResult> NextPageAsync(CancellationToken cancellationToken = default)
     {
         query.QueryNode.SetArgumentValue("after", query.BaseResult?.PageInfo?.EndCursor);
         query.QueryNode.SetArgumentValue("before", null);
-        return await ExecutePagerAsync();
+        return await ExecutePagerAsync(cancellationToken);
     }
 
-    public async Task<TResult> PreviousPageAsync()
+    public async Task<TResult> PreviousPageAsync(CancellationToken cancellationToken = default)
     {
         query.QueryNode.SetArgumentValue("after", null);
         query.QueryNode.SetArgumentValue("before", query.BaseResult?.PageInfo?.EndCursor);
-        return await ExecutePagerAsync();
+        return await ExecutePagerAsync(cancellationToken);
     }
 }
