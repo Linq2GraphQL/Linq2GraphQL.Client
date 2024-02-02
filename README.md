@@ -7,33 +7,37 @@
 <p>A straightforward Linq to GraphQL Client</p>
 
 <h4> <a href="https://linq2graphql.com"> Documentation </a> <span> · </span> <a href="https://github.com/Linq2GraphQL/Linq2GraphQL.Client/issues"> Report Bug </a> <span> · </span> <a href="https://github.com/Linq2GraphQL/Linq2GraphQL.Client/issues"> Request Feature </a> </h4>
+
+[![Build](https://github.com/Linq2GraphQL/Linq2GraphQL.Client/actions/workflows/ci.yml/badge.svg)](hhttps://github.com/Linq2GraphQL/Linq2GraphQL.Client/actions/workflows/ci.yml?branch=master)
+
 </div>
 
 # Introduction
 Linq2GraphQL generates C# classes from the GraphQL schema and and togheter with the nuget package Linq2GraphQL.Client  it makes it possible to query the server using Linq expressions. 
 
 A simple query that will get the first 10 orders with the primitive properties of orders and the connected customer.
-
-	 var orders = await sampleClient
-	.Query
+```cs
+var orders = await sampleClient
+    .Query
         .Orders(first: 10)
         .Include(e => e.Orders.Select(e => e.Customer))
         .Select(e => e.Orders)
         .ExecuteAsync();
+```
 
 A example mutation where we add a new customer and return the Customer Id.
-
-     var customerId = await sampleClient
-         .Mutation
-         .AddCustomer(new CustomerInput
-         {
-             CustomerId = Guid.NewGuid(),
-             CustomerName = "New Customer",
-             Status = CustomerStatus.Active
-         })
-         .Select(e=> e.CustomerId)
-         .ExecuteAsync();
-     
+```cs
+ var customerId = await sampleClient
+     .Mutation
+     .AddCustomer(new CustomerInput
+     {
+         CustomerId = Guid.NewGuid(),
+         CustomerName = "New Customer",
+         Status = CustomerStatus.Active
+     })
+     .Select(e=> e.CustomerId)
+     .ExecuteAsync();
+```     
 
 # Getting Started
 ## Generate Client code
@@ -65,23 +69,27 @@ As an example:
 Would generate a client from url *https://spacex-production.up.railway.app/* with the name *SpaceXClient* in the namespace *SpaceX* to folder *Generated*
 
 ## Add Nuget
-Add the Nuget Package [Linq2GraphQL.Client](https://www.nuget.org/packages/Linq2GraphQL.Client)
+Add the Nuget Package [![Nuget](https://img.shields.io/nuget/v/Linq2GraphQL.Client.svg)](https://www.nuget.org/packages/Linq2GraphQL.Client)
 
     dotnet add package Linq2GraphQL.Client --prerelease
 
 ## Dependency Injection
 The client adds a set of extensions to make it easier to add the client to dependency injection.
 As an example this would add SpaceXClient to the container:
-
-    services.SpaceXClient(x =>
+```cs
+services
+    .SpaceXClient(x =>
      {
          x.UseSafeMode = false;
      })
-       .WithHttpClient(
-           httpClient => { httpClient.BaseAddress = new Uri("https://spacex-production.up.railway.app/"); });
-
+    .WithHttpClient(
+        httpClient => 
+        { 
+            httpClient.BaseAddress = new Uri("https://spacex-production.up.railway.app/"); 
+        });
+```
 ## Safe Mode
-Turning on *SafeMode* will make the client before the first request to do an introspection query to the endpoint. The schema will be used to make sure that any auto included properties are available. This is an advanced feature that require the endpoint to support introspection. By default safe mode is turned of. 
+Turning on *SafeMode* will make the client before the first request to do an introspection query to the endpoint. The schema will be used to make sure that any auto included properties are available. This is an advanced feature that require the endpoint to support introspection. By default safe mode is turned of.
 
 # Acknowledgments
 Linq2GraphQL is inspired by [GraphQLinq](https://github.com/Giorgi/GraphQLinq) , thank you [Giorgi](https://github.com/Giorgi)
