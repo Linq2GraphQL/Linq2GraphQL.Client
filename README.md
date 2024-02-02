@@ -69,7 +69,10 @@ As an example:
 Would generate a client from url *https://spacex-production.up.railway.app/* with the name *SpaceXClient* in the namespace *SpaceX* to folder *Generated*
 
 ## Add Nuget
-Add the Nuget Package [![Nuget](https://img.shields.io/nuget/v/Linq2GraphQL.Client.svg)](https://www.nuget.org/packages/Linq2GraphQL.Client)
+
+Latest stable: [![Nuget](https://img.shields.io/nuget/v/Linq2GraphQL.Client.svg)](https://www.nuget.org/packages/Linq2GraphQL.Client)
+<br/>
+Latest prerelease: [![Nuget](https://img.shields.io/nuget/vpre/Linq2GraphQL.Client.svg)](https://www.nuget.org/packages/Linq2GraphQL.Client)
 
     dotnet add package Linq2GraphQL.Client --prerelease
 
