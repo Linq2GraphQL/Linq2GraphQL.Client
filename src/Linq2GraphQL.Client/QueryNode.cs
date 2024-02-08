@@ -24,7 +24,6 @@ public class QueryNode
         if (!topLevel) {
             SetArgumentHashCodeId();
         }
-       
     }
 
     public bool InterfaceProperty { get; internal set; }

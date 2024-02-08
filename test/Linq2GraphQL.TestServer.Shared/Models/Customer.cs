@@ -6,7 +6,7 @@ public class Customer
     public string CustomerName { get; set; } = "";
     public CustomerStatus Status { get; set; }
     public List<Order> Orders { get; set; } = new();
-    public Address Address { get; set; }
+    public Address? Address { get; set; }
 
 }
 
