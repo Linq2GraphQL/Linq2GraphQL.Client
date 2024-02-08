@@ -38,7 +38,8 @@ public static class SampleData
         {
             CustomerId = Guid.Parse("3b1761fb-6551-404e-80b0-a6c12f298a06"),
             CustomerName = "Jocke Pocke",
-            Status = CustomerStatus.Disabled
+            Status = CustomerStatus.Disabled,
+            Address = new Address(){ Name = "JockeAddr", PostalCode = "11111", Street = "Street 123"}
         };
 
         cust2.Orders.Add(GenerateOrder3(cust2));

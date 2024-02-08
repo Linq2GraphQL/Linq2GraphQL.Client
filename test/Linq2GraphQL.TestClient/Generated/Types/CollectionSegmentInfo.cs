@@ -11,13 +11,7 @@ public partial class CollectionSegmentInfo : GraphQLTypeBase
     [JsonPropertyName("hasNextPage")]
 	public bool HasNextPage { get; set; }  
 
-
     [JsonPropertyName("hasPreviousPage")]
 	public bool HasPreviousPage { get; set; }  
-
-
-
-
-
 
 }

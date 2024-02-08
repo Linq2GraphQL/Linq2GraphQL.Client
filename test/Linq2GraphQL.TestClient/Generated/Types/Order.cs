@@ -24,16 +24,12 @@ public static class OrderExtensions
 
 public partial class Order : GraphQLTypeBase
 {
-
     private LazyProperty<string> _orderHello = new();
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
     [GraphShadowProperty]
     public string OrderHello => _orderHello.Value(() => GetFirstMethodValue<string>("orderHello"));
-   // public string OrderHello { get; set; }  
-
-
 
     private LazyProperty<Address> _orderAddress = new();
     /// <summary>
@@ -41,31 +37,20 @@ public partial class Order : GraphQLTypeBase
     /// </summary>
     [GraphShadowProperty]
     public Address OrderAddress => _orderAddress.Value(() => GetFirstMethodValue<Address>("orderAddress"));
-   // public Address OrderAddress { get; set; }  
-
 
     [JsonPropertyName("orderId")]
 	public Guid OrderId { get; set; }  
 
-
     [JsonPropertyName("customer")]
 	public Customer Customer { get; set; }  
-
 
     [JsonPropertyName("address")]
 	public Address Address { get; set; }  
 
-
     [JsonPropertyName("orderDate")]
 	public DateTimeOffset OrderDate { get; set; }  
 
-
     [JsonPropertyName("lines")]
 	public List<OrderLine> Lines { get; set; }  
-
-
-
-
-
 
 }

@@ -29,4 +29,11 @@ public partial class CustomerSortInput : GraphInputBase
     	set => SetValue("status", value);
 	}
 
+	[JsonPropertyName("address")]
+	public AddressSortInput Address 
+	{
+		get => GetValue<AddressSortInput>("address");
+    	set => SetValue("address", value);
+	}
+
 }

@@ -11,21 +11,13 @@ public partial class OrdersConnection : GraphQLTypeBase, Linq2GraphQL.Client.Com
     [JsonPropertyName("pageInfo")]
 	public Linq2GraphQL.Client.Common.PageInfo PageInfo { get; set; }  
 
-
     [JsonPropertyName("edges")]
 	public List<OrdersEdge> Edges { get; set; }  
-
 
     [JsonPropertyName("nodes")]
 	public List<Order> Nodes { get; set; }  
 
-
     [JsonPropertyName("totalCount")]
 	public int TotalCount { get; set; }  
-
-
-
-
-
 
 }

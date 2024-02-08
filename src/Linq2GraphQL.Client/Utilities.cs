@@ -6,7 +6,6 @@ namespace Linq2GraphQL.Client;
 
 public static class Utilities
 {
-
     public static string GetArgumentsId(IEnumerable<object> objects)
     {
         if (objects == null) return null;
@@ -15,23 +14,26 @@ public static class Utilities
 
         unchecked
         {
-            int hash = 19;
+            var hash = 19;
             foreach (var obj in objs)
             {
                 hash = hash * 31 + obj.GetHashCode();
             }
-            var hashString = hash.ToString().Replace("-", "_");
 
-            return hashString;
+            return hash.ToString().Replace("-", "_");
         }
     }
 
-    public static bool IsSelectOrSelectMany(this MethodCallExpression methodCallExpression)
+    private static bool IsSelectOrSelectMany(this MethodCallExpression methodCallExpression)
     {
-        if (methodCallExpression.Arguments.Count != 2) { return false; };
+        if (methodCallExpression.Arguments.Count != 2)
+        {
+            return false;
+        }
+
+        ;
         var methodName = methodCallExpression.Method.Name;
         return (methodName == "Select" || methodName == "SelectMany");
-
     }
 
     public static void ParseExpression(Expression body, QueryNode parent)
@@ -44,7 +46,6 @@ public static class Utilities
         {
             parent.AddChildNode(childNode);
         }
-
     }
 
     private static void ParseExpressionInternal(Expression body, QueryNode parent)
@@ -52,12 +53,11 @@ public static class Utilities
         if (body.NodeType == ExpressionType.MemberInit)
         {
             var exp = (MemberInitExpression)body;
-
-            foreach (MemberAssignment bining in exp.Bindings.Where(e => e.BindingType == MemberBindingType.Assignment).Cast<MemberAssignment>())
+            foreach (var binding in exp.Bindings.Where(e => e.BindingType == MemberBindingType.Assignment)
+                         .Cast<MemberAssignment>())
             {
-                ParseExpressionInternal(bining.Expression, parent);
+                ParseExpressionInternal(binding.Expression, parent);
             }
-
         }
 
         switch (body)
@@ -72,35 +72,28 @@ public static class Utilities
                 break;
 
             case MethodCallExpression methodCallExp:
-
                 ParseMethodCallExpression(parent, methodCallExp);
-
                 break;
+
             case NewExpression newExpression:
-
-                var t = newExpression;
-
                 foreach (var argument in newExpression.Arguments)
                 {
-                    ParseExpressionInternal(argument, parent);
+                    ParseExpression(argument, parent);
                 }
+
                 break;
-
-
-
         }
     }
 
     private static void ParseMethodCallExpression(QueryNode parent, MethodCallExpression methodCallExp)
     {
-        var grapInterfaceAttribute = methodCallExp.Method.GetCustomAttribute<GraphInterfaceAttribute>();
-        if (grapInterfaceAttribute != null)
+        var graphInterfaceAttribute = methodCallExp.Method.GetCustomAttribute<GraphInterfaceAttribute>();
+        if (graphInterfaceAttribute != null)
         {
             var queryNode = new QueryNode(methodCallExp.Method, methodCallExp.Method.Name, null, true);
             parent.AddChildNode(queryNode);
             return;
         }
-
 
         var graphMethodAttribute = methodCallExp.Method.GetCustomAttribute<GraphMethodAttribute>();
         if (graphMethodAttribute != null)
@@ -110,8 +103,8 @@ public static class Utilities
             var i = 0;
             foreach (var parameter in methodCallExp.Method.GetParameters())
             {
-                var graphAtttribute = parameter.GetCustomAttribute<GraphArgumentAttribute>();
-                if (graphAtttribute != null)
+                var graphAttribute = parameter.GetCustomAttribute<GraphArgumentAttribute>();
+                if (graphAttribute != null)
                 {
                     var arg = methodCallExp.Arguments[i];
                     ConstantExpression argConstant;
@@ -125,7 +118,7 @@ public static class Utilities
                         argConstant = (ConstantExpression)arg;
                     }
 
-                    arguments.Add(new ArgumentValue(parameter.Name, graphAtttribute.GraphType,
+                    arguments.Add(new ArgumentValue(parameter.Name, graphAttribute.GraphType,
                         argConstant.Value));
                 }
 
@@ -134,7 +127,6 @@ public static class Utilities
 
             var queryNode = new QueryNode(methodCallExp.Method, graphMethodAttribute.GraphName, arguments);
             parent.AddChildNode(queryNode);
-
         }
         else if (methodCallExp.IsSelectOrSelectMany())
         {
@@ -151,7 +143,7 @@ public static class Utilities
         }
     }
 
-    public static (QueryNode ParentNode, QueryNode LastNode) GetMemberQueryNode(Expression expression)
+    private static (QueryNode ParentNode, QueryNode LastNode) GetMemberQueryNode(Expression expression)
     {
         var members = GetMembers(expression);
         if (members == null) return (null, null);
@@ -164,7 +156,6 @@ public static class Utilities
         foreach (var member in members)
         {
             var newNode = new QueryNode(member);
-
             if (parentNode == null)
             {
                 parentNode = newNode;
@@ -181,7 +172,7 @@ public static class Utilities
     }
 
 
-    public static List<MemberInfo> GetMembers(Expression expression)
+    private static List<MemberInfo> GetMembers(Expression expression)
     {
         var members = new List<MemberInfo>();
         if (expression.NodeType == ExpressionType.MemberAccess)
