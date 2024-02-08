@@ -11,21 +11,13 @@ public partial class AnimalsConnection : GraphQLTypeBase, Linq2GraphQL.Client.Co
     [JsonPropertyName("pageInfo")]
 	public Linq2GraphQL.Client.Common.PageInfo PageInfo { get; set; }  
 
-
     [JsonPropertyName("edges")]
 	public List<AnimalsEdge> Edges { get; set; }  
-
 
     [JsonPropertyName("nodes")]
 	public List<IAnimal> Nodes { get; set; }  
 
-
     [JsonPropertyName("totalCount")]
 	public int TotalCount { get; set; }  
-
-
-
-
-
 
 }

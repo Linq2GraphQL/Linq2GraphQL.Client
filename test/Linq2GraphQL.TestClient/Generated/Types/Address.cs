@@ -11,17 +11,10 @@ public partial class Address : GraphQLTypeBase
     [JsonPropertyName("name")]
 	public string Name { get; set; }  
 
-
     [JsonPropertyName("street")]
 	public string Street { get; set; }  
 
-
     [JsonPropertyName("postalCode")]
 	public string PostalCode { get; set; }  
-
-
-
-
-
 
 }

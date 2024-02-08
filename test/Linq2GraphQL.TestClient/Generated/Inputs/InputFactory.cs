@@ -262,6 +262,15 @@ public static class CustomerFilterInputExtensions
         return input;
     }
 
+    public static CustomerFilterInput Address(this CustomerFilterInput input, Action<AddressFilterInput> mod)
+    {
+        var filter = new AddressFilterInput();
+        mod ??= _ => { };
+        mod(filter); 
+        input.Address = filter;
+        return input;
+    }
+
 }
 
 public static class CustomerInputExtensions
@@ -296,6 +305,15 @@ public static class CustomerInputExtensions
         return input;
     }
 
+    public static CustomerInput Address(this CustomerInput input, Action<AddressInput> mod)
+    {
+        var filter = new AddressInput();
+        mod ??= _ => { };
+        mod(filter); 
+        input.Address = filter;
+        return input;
+    }
+
 }
 
 public static class CustomerSortInputExtensions
@@ -319,6 +337,15 @@ public static class CustomerSortInputExtensions
     {
          input.Status = val;
          return input;
+    }
+
+    public static CustomerSortInput Address(this CustomerSortInput input, Action<AddressSortInput> mod)
+    {
+        var filter = new AddressSortInput();
+        mod ??= _ => { };
+        mod(filter); 
+        input.Address = filter;
+        return input;
     }
 
 }

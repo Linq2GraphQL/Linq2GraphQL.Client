@@ -11,23 +11,15 @@ public partial class Spider : GraphQLTypeBase, IAnimal
     [JsonPropertyName("name")]
 	public string Name { get; set; }  
 
-
     [JsonPropertyName("numberOfLegs")]
 	public int NumberOfLegs { get; set; }  
-
 
     [JsonPropertyName("speed")]
 	public int Speed { get; set; }  
 
-
     [JsonPropertyName("poisonous")]
 	public bool Poisonous { get; set; }  
 
-
-
-
-
-
     [JsonPropertyName("__typename")]
     public string __TypeName { get; set; }
-    }
+}

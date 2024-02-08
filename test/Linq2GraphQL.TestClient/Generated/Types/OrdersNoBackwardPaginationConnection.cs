@@ -11,21 +11,13 @@ public partial class OrdersNoBackwardPaginationConnection : GraphQLTypeBase, Lin
     [JsonPropertyName("pageInfo")]
 	public Linq2GraphQL.Client.Common.PageInfo PageInfo { get; set; }  
 
-
     [JsonPropertyName("edges")]
 	public List<OrdersNoBackwardPaginationEdge> Edges { get; set; }  
-
 
     [JsonPropertyName("nodes")]
 	public List<Order> Nodes { get; set; }  
 
-
     [JsonPropertyName("totalCount")]
 	public int TotalCount { get; set; }  
-
-
-
-
-
 
 }

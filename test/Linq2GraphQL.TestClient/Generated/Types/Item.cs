@@ -11,13 +11,7 @@ public partial class Item : GraphQLTypeBase
     [JsonPropertyName("itemId")]
 	public string ItemId { get; set; }  
 
-
     [JsonPropertyName("itemName")]
 	public string ItemName { get; set; }  
-
-
-
-
-
 
 }

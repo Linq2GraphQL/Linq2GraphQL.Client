@@ -11,13 +11,7 @@ public partial class OrdersEdge : GraphQLTypeBase
     [JsonPropertyName("cursor")]
 	public string Cursor { get; set; }  
 
-
     [JsonPropertyName("node")]
 	public Order Node { get; set; }  
-
-
-
-
-
 
 }

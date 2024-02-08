@@ -50,4 +50,11 @@ public partial class CustomerFilterInput : GraphInputBase
     	set => SetValue("orders", value);
 	}
 
+	[JsonPropertyName("address")]
+	public AddressFilterInput Address 
+	{
+		get => GetValue<AddressFilterInput>("address");
+    	set => SetValue("address", value);
+	}
+
 }

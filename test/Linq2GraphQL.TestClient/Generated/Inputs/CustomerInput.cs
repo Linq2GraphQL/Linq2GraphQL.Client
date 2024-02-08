@@ -36,4 +36,11 @@ public partial class CustomerInput : GraphInputBase
     	set => SetValue("orders", value);
 	}
 
+	[JsonPropertyName("address")]
+	public AddressInput Address 
+	{
+		get => GetValue<AddressInput>("address");
+    	set => SetValue("address", value);
+	}
+
 }

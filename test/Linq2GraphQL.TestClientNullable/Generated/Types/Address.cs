@@ -2,16 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
+using Linq2GraphQL.Client.Common;
 
 namespace Linq2GraphQL.TestClientNullable;
 
-public partial class Address 
+public partial class Address : GraphQLTypeBase
 {
-	[JsonPropertyName("name")]
+    [JsonPropertyName("name")]
 	public string Name { get; set; }  
-	[JsonPropertyName("street")]
+
+    [JsonPropertyName("street")]
 	public string Street { get; set; }  
-	[JsonPropertyName("postalCode")]
+
+    [JsonPropertyName("postalCode")]
 	public string PostalCode { get; set; }  
 
 }

@@ -11,17 +11,10 @@ public partial class OrdersNoTotalCountConnection : GraphQLTypeBase, Linq2GraphQ
     [JsonPropertyName("pageInfo")]
 	public Linq2GraphQL.Client.Common.PageInfo PageInfo { get; set; }  
 
-
     [JsonPropertyName("edges")]
 	public List<OrdersNoTotalCountEdge> Edges { get; set; }  
 
-
     [JsonPropertyName("nodes")]
 	public List<Order> Nodes { get; set; }  
-
-
-
-
-
 
 }
