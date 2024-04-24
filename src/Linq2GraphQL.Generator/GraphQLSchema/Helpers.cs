@@ -6,7 +6,7 @@ public static class Helpers
         new(StringComparer.InvariantCultureIgnoreCase)
         {
             { "Int", new ValueTuple<string, Type>("int", typeof(int)) },
-            { "Float", new ValueTuple<string, Type>("float", typeof(float)) },
+            { "Float", new ValueTuple<string, Type>("double", typeof(double)) },
             { "String", new ValueTuple<string, Type>("string", typeof(string)) },
             { "ID", new ValueTuple<string, Type>("string", typeof(string)) },
             { "Date", new ValueTuple<string, Type>("DateTime", typeof(DateTime)) },
