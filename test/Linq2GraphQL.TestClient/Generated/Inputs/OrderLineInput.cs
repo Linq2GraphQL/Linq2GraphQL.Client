@@ -37,9 +37,9 @@ public partial class OrderLineInput : GraphInputBase
 	}
 
 	[JsonPropertyName("quantity")]
-	public float Quantity 
+	public double Quantity 
 	{
-		get => GetValue<float>("quantity");
+		get => GetValue<double>("quantity");
     	set => SetValue("quantity", value);
 	}
 

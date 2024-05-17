@@ -561,84 +561,84 @@ public static class DecimalOperationFilterInputExtensions
 public static class FloatOperationFilterInputExtensions
 { 
 	
-    public static FloatOperationFilterInput Eq(this FloatOperationFilterInput input, float? val)
+    public static FloatOperationFilterInput Eq(this FloatOperationFilterInput input, double? val)
     {
          input.Eq = val;
          return input;
     }
 
 
-    public static FloatOperationFilterInput Neq(this FloatOperationFilterInput input, float? val)
+    public static FloatOperationFilterInput Neq(this FloatOperationFilterInput input, double? val)
     {
          input.Neq = val;
          return input;
     }
 
 
-    public static FloatOperationFilterInput In(this FloatOperationFilterInput input, List<float?> val)
+    public static FloatOperationFilterInput In(this FloatOperationFilterInput input, List<double?> val)
     {
          input.In = val;
          return input;
     }
 
 
-    public static FloatOperationFilterInput Nin(this FloatOperationFilterInput input, List<float?> val)
+    public static FloatOperationFilterInput Nin(this FloatOperationFilterInput input, List<double?> val)
     {
          input.Nin = val;
          return input;
     }
 
 
-    public static FloatOperationFilterInput Gt(this FloatOperationFilterInput input, float? val)
+    public static FloatOperationFilterInput Gt(this FloatOperationFilterInput input, double? val)
     {
          input.Gt = val;
          return input;
     }
 
 
-    public static FloatOperationFilterInput Ngt(this FloatOperationFilterInput input, float? val)
+    public static FloatOperationFilterInput Ngt(this FloatOperationFilterInput input, double? val)
     {
          input.Ngt = val;
          return input;
     }
 
 
-    public static FloatOperationFilterInput Gte(this FloatOperationFilterInput input, float? val)
+    public static FloatOperationFilterInput Gte(this FloatOperationFilterInput input, double? val)
     {
          input.Gte = val;
          return input;
     }
 
 
-    public static FloatOperationFilterInput Ngte(this FloatOperationFilterInput input, float? val)
+    public static FloatOperationFilterInput Ngte(this FloatOperationFilterInput input, double? val)
     {
          input.Ngte = val;
          return input;
     }
 
 
-    public static FloatOperationFilterInput Lt(this FloatOperationFilterInput input, float? val)
+    public static FloatOperationFilterInput Lt(this FloatOperationFilterInput input, double? val)
     {
          input.Lt = val;
          return input;
     }
 
 
-    public static FloatOperationFilterInput Nlt(this FloatOperationFilterInput input, float? val)
+    public static FloatOperationFilterInput Nlt(this FloatOperationFilterInput input, double? val)
     {
          input.Nlt = val;
          return input;
     }
 
 
-    public static FloatOperationFilterInput Lte(this FloatOperationFilterInput input, float? val)
+    public static FloatOperationFilterInput Lte(this FloatOperationFilterInput input, double? val)
     {
          input.Lte = val;
          return input;
     }
 
 
-    public static FloatOperationFilterInput Nlte(this FloatOperationFilterInput input, float? val)
+    public static FloatOperationFilterInput Nlte(this FloatOperationFilterInput input, double? val)
     {
          input.Nlte = val;
          return input;
@@ -1140,7 +1140,7 @@ public static class OrderLineInputExtensions
     }
 
 
-    public static OrderLineInput Quantity(this OrderLineInput input, float val)
+    public static OrderLineInput Quantity(this OrderLineInput input, double val)
     {
          input.Quantity = val;
          return input;

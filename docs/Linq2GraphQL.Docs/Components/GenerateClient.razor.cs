@@ -86,7 +86,7 @@ namespace Linq2GraphQL.Docs.Components
             try
             {
                 isLoading = true;
-                var generator = new Generator.ClientGenerator(options.Namespace, options.ClientName, options.IncludeSubscriptions);
+                var generator = new Generator.ClientGenerator(options.Namespace, options.ClientName, options.IncludeSubscriptions, EnumGeneratorStrategy.FailIfMissing);
                 var entries = generator.Generate(options.Schema);
                 await SaveEntriesAsync(entries);
             }
@@ -107,7 +107,7 @@ namespace Linq2GraphQL.Docs.Components
             try
             {
                 isLoading = true;
-                var generator = new ClientGenerator(options.Namespace, options.ClientName, options.IncludeSubscriptions);
+                var generator = new ClientGenerator(options.Namespace, options.ClientName, options.IncludeSubscriptions, EnumGeneratorStrategy.FailIfMissing);
                 var entries = await generator.GenerateAsync(new Uri(options.Url), options.Token);
                 await SaveEntriesAsync(entries);
             }

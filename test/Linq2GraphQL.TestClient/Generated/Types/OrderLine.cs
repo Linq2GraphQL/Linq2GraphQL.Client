@@ -21,6 +21,6 @@ public partial class OrderLine : GraphQLTypeBase
 	public decimal Price { get; set; }  
 
     [JsonPropertyName("quantity")]
-	public float Quantity { get; set; }  
+	public double Quantity { get; set; }  
 
 }

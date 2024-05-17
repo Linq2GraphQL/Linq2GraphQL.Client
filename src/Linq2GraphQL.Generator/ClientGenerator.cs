@@ -14,13 +14,16 @@ namespace Linq2GraphQL.Generator
         private readonly string namespaceName;
         private readonly string clientName;
         private readonly bool includeSubscriptions;
+        private readonly EnumGeneratorStrategy enumGeneratorStrategy;
         private readonly List<FileEntry> entries = new();
 
-        public ClientGenerator(string namespaceName, string clientName, bool includeSubscriptions)
+        public ClientGenerator(string namespaceName, string clientName, bool includeSubscriptions,
+            EnumGeneratorStrategy enumGeneratorStrategy)
         {
             this.namespaceName = namespaceName;
             this.clientName = clientName;
             this.includeSubscriptions = includeSubscriptions;
+            this.enumGeneratorStrategy = enumGeneratorStrategy;
         }
 
         private void AddFile(string directory, string fileName, string content)
@@ -56,7 +59,7 @@ namespace Linq2GraphQL.Generator
         {
             entries.Clear();
             var rootSchema = JsonSerializer.Deserialize<RootSchema>(schemaJson,
-            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+                new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 
             var schema = rootSchema.Data.Schema;
             var queryType = schema.QueryType;
@@ -88,17 +91,21 @@ namespace Linq2GraphQL.Generator
 
             Console.WriteLine("Generate Interfaces");
 
-            var classInterfacesList = schema.GetClassTypes().Where(e => e.HasInterfaces).SelectMany(i => i.Interfaces.ToDictionary(e => i.Name, e => e.Name)).ToList();
+            var classInterfacesList = schema.GetClassTypes().Where(e => e.HasInterfaces)
+                .SelectMany(i => i.Interfaces.ToDictionary(e => i.Name, e => e.Name)).ToList();
             foreach (var interfaceType in schema.GetInterfaces())
             {
-                var implementedBy = classInterfacesList.Where(e => e.Value == interfaceType.Name).Select(e=> e.Key).ToList();
+                var implementedBy = classInterfacesList.Where(e => e.Value == interfaceType.Name).Select(e => e.Key)
+                    .ToList();
 
-                var interfaceTemplte = new InterfaceTemplate(interfaceType, namespaceName, implementedBy).TransformText();
+                var interfaceTemplte =
+                    new InterfaceTemplate(interfaceType, namespaceName, implementedBy).TransformText();
                 AddFile("Interfaces", interfaceType.FileName, interfaceTemplte);
             }
 
             Console.WriteLine("Generate Types...");
-            foreach (var classType in schema.GetClassTypes().Where(e => e.Kind != TypeKind.InputObject && !e.IsPageInfo()))
+            foreach (var classType in schema.GetClassTypes()
+                         .Where(e => e.Kind != TypeKind.InputObject && !e.IsPageInfo()))
             {
                 var classText = new ClassTemplate(classType, namespaceName).TransformText();
                 AddFile("Types", classType.FileName, classText);
@@ -119,7 +126,7 @@ namespace Linq2GraphQL.Generator
             Console.WriteLine("Generate Enums...");
             foreach (var enumType in schema.GetEnums())
             {
-                var enumText = new EnumTemplate(enumType, namespaceName).TransformText();
+                var enumText = new EnumTemplate(enumType, namespaceName, enumGeneratorStrategy).TransformText();
                 AddFile("Enums", enumType.FileName, enumText);
             }
 
@@ -134,7 +141,8 @@ namespace Linq2GraphQL.Generator
             var includeMutation = mutationType != null;
 
             Console.WriteLine("Generate Client...");
-            var templateText = new ClientTemplate(namespaceName, clientName, queryType, mutationType, subscriptionType).TransformText();
+            var templateText = new ClientTemplate(namespaceName, clientName, queryType, mutationType, subscriptionType)
+                .TransformText();
             var fileName = clientName + ".cs";
             AddFile(clientDirName, fileName, templateText);
 
@@ -146,16 +154,25 @@ namespace Linq2GraphQL.Generator
 
             return entries;
         }
-             
+
 
         private void GenerateContextMethods(string namespaceName, string directory, GraphqlType methodType,
             string schemaType)
         {
-            if (methodType == null) { return; }
+            if (methodType == null)
+            {
+                return;
+            }
 
             var fileName = methodType.Name.ToPascalCase() + "Methods" + ".cs";
             var templateText = new MethodsTemplate(methodType, namespaceName, schemaType).TransformText();
             AddFile(directory, fileName, templateText);
         }
     }
+}
+
+public enum EnumGeneratorStrategy
+{
+    FailIfMissing = 0,
+    AddUnknownOption = 1
 }

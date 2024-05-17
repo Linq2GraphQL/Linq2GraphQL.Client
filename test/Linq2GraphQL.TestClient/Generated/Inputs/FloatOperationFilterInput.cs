@@ -9,86 +9,86 @@ namespace Linq2GraphQL.TestClient;
 public partial class FloatOperationFilterInput : GraphInputBase
 {
 	[JsonPropertyName("eq")]
-	public float? Eq 
+	public double? Eq 
 	{
-		get => GetValue<float?>("eq");
+		get => GetValue<double?>("eq");
     	set => SetValue("eq", value);
 	}
 
 	[JsonPropertyName("neq")]
-	public float? Neq 
+	public double? Neq 
 	{
-		get => GetValue<float?>("neq");
+		get => GetValue<double?>("neq");
     	set => SetValue("neq", value);
 	}
 
 	[JsonPropertyName("in")]
-	public List<float?> In 
+	public List<double?> In 
 	{
-		get => GetValue<List<float?>>("in");
+		get => GetValue<List<double?>>("in");
     	set => SetValue("in", value);
 	}
 
 	[JsonPropertyName("nin")]
-	public List<float?> Nin 
+	public List<double?> Nin 
 	{
-		get => GetValue<List<float?>>("nin");
+		get => GetValue<List<double?>>("nin");
     	set => SetValue("nin", value);
 	}
 
 	[JsonPropertyName("gt")]
-	public float? Gt 
+	public double? Gt 
 	{
-		get => GetValue<float?>("gt");
+		get => GetValue<double?>("gt");
     	set => SetValue("gt", value);
 	}
 
 	[JsonPropertyName("ngt")]
-	public float? Ngt 
+	public double? Ngt 
 	{
-		get => GetValue<float?>("ngt");
+		get => GetValue<double?>("ngt");
     	set => SetValue("ngt", value);
 	}
 
 	[JsonPropertyName("gte")]
-	public float? Gte 
+	public double? Gte 
 	{
-		get => GetValue<float?>("gte");
+		get => GetValue<double?>("gte");
     	set => SetValue("gte", value);
 	}
 
 	[JsonPropertyName("ngte")]
-	public float? Ngte 
+	public double? Ngte 
 	{
-		get => GetValue<float?>("ngte");
+		get => GetValue<double?>("ngte");
     	set => SetValue("ngte", value);
 	}
 
 	[JsonPropertyName("lt")]
-	public float? Lt 
+	public double? Lt 
 	{
-		get => GetValue<float?>("lt");
+		get => GetValue<double?>("lt");
     	set => SetValue("lt", value);
 	}
 
 	[JsonPropertyName("nlt")]
-	public float? Nlt 
+	public double? Nlt 
 	{
-		get => GetValue<float?>("nlt");
+		get => GetValue<double?>("nlt");
     	set => SetValue("nlt", value);
 	}
 
 	[JsonPropertyName("lte")]
-	public float? Lte 
+	public double? Lte 
 	{
-		get => GetValue<float?>("lte");
+		get => GetValue<double?>("lte");
     	set => SetValue("lte", value);
 	}
 
 	[JsonPropertyName("nlte")]
-	public float? Nlte 
+	public double? Nlte 
 	{
-		get => GetValue<float?>("nlte");
+		get => GetValue<double?>("nlte");
     	set => SetValue("nlte", value);
 	}
 

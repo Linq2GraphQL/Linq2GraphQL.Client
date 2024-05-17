@@ -19,6 +19,7 @@ internal class Program
             "Name of the generated client");
         var authToken = new Option<string>(new[] { "--token", "-t" }, "Bearertoken for authentication");
         var includeSubscriptions = new Option<bool>(new[] { "--subscriptions", "-s" }, "Include subscriptions");
+        var enumStrategy = new Option<string>(new[] { "--enum-strategy", "-es" }, "Enum strategy");
 
         var rootCommand = new RootCommand("Generate GraphQL client")
         {
@@ -27,7 +28,8 @@ internal class Program
             namespaceName,
             clientName,
             authToken,
-            includeSubscriptions
+            includeSubscriptions,
+            enumStrategy
         };
 
         rootCommand.SetHandler(async context =>
@@ -39,9 +41,10 @@ internal class Program
                 var clientNameValue = result.GetValueForOption(clientName);
                 var authTokenValue = result.GetValueForOption(authToken);
                 var includeSubscriptionsValue = result.GetValueForOption(includeSubscriptions);
+                var enumStrategyValue = result.GetValueForOption(enumStrategy);
 
                 await GenerateClientAsync(uriValue, outputFolderValue, namespaceValue, clientNameValue,
-                    includeSubscriptionsValue, authTokenValue);
+                    includeSubscriptionsValue, authTokenValue, enumStrategyValue);
             }
         );
 
@@ -51,9 +54,13 @@ internal class Program
     }
 
     private static async Task GenerateClientAsync(Uri uri, string outputFolder, string namespaceName, string name,
-        bool includeSubscriptions, string authToken)
+        bool includeSubscriptions, string authToken, string enumStrategy)
     {
-        var generator = new ClientGenerator(namespaceName, name, includeSubscriptions);
+        var enumStrat = enumStrategy.Equals("AddUnknownOption", StringComparison.InvariantCultureIgnoreCase)
+            ? EnumGeneratorStrategy.AddUnknownOption
+            : EnumGeneratorStrategy.FailIfMissing;
+        
+        var generator = new ClientGenerator(namespaceName, name, includeSubscriptions, enumStrat);
         var entries = await generator.GenerateAsync(uri, authToken);
 
         var outputPath = Path.GetFullPath(outputFolder, Environment.CurrentDirectory);

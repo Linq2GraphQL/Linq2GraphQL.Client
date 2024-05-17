@@ -207,6 +207,11 @@ public class JsonStringEnumMemberConverter : JsonConverterFactory
                     }
                 }
 
+                if (_transformedToRaw.TryGetValue("", out var value))
+                {
+                    return value.EnumValue;
+                }
+
                 throw new NotSupportedException();
             }
 

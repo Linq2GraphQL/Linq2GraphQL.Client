@@ -11,4 +11,11 @@ public enum CustomerStatus
     Active,
     [EnumMember(Value = "DISABLED")]
     Disabled,
+    /// <summary>
+    /// Unknown values are mapped to this member. 
+    /// Generated via --es/-enum-strategy command line option upon generation. 
+    /// Don't set explicitly. 
+    /// </summary>
+    [EnumMember(Value = "")]
+    __Unknown
 }
