@@ -13,6 +13,7 @@ public class Order
     public Address? Address { get; set; }
     public DateTimeOffset OrderDate { get; set; }
     public List<OrderLine> Lines { get; set; } = new();
+    public TimeOnly? EntryTime { get; set; }
 
     public string GetOrderHello(string name, int first = 0)
     {

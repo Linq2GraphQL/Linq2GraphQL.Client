@@ -53,4 +53,7 @@ public partial class Order : GraphQLTypeBase
     [JsonPropertyName("lines")]
 	public List<OrderLine> Lines { get; set; }  
 
+    [JsonPropertyName("entryTime")]
+	public TimeSpan? EntryTime { get; set; }  
+
 }

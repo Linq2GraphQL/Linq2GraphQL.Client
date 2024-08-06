@@ -43,4 +43,11 @@ public partial class OrderInput : GraphInputBase
     	set => SetValue("lines", value);
 	}
 
+	[JsonPropertyName("entryTime")]
+	public TimeSpan? EntryTime 
+	{
+		get => GetValue<TimeSpan?>("entryTime");
+    	set => SetValue("entryTime", value);
+	}
+
 }

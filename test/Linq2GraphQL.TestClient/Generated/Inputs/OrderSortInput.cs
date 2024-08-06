@@ -36,4 +36,11 @@ public partial class OrderSortInput : GraphInputBase
     	set => SetValue("orderDate", value);
 	}
 
+	[JsonPropertyName("entryTime")]
+	public SortEnumType? EntryTime 
+	{
+		get => GetValue<SortEnumType?>("entryTime");
+    	set => SetValue("entryTime", value);
+	}
+
 }

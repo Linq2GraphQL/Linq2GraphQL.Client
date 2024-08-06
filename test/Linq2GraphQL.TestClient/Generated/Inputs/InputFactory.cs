@@ -99,6 +99,10 @@ public static class IF
 	{
 		return new StringOperationFilterInput();
 	}
+	public static TimeSpanOperationFilterInput TimeSpanOperationFilter() 
+	{
+		return new TimeSpanOperationFilterInput();
+	}
 	public static UuidOperationFilterInput UuidOperationFilter() 
 	{
 		return new UuidOperationFilterInput();
@@ -991,6 +995,15 @@ public static class OrderFilterInputExtensions
         return input;
     }
 
+    public static OrderFilterInput EntryTime(this OrderFilterInput input, Action<TimeSpanOperationFilterInput> mod)
+    {
+        var filter = new TimeSpanOperationFilterInput();
+        mod ??= _ => { };
+        mod(filter); 
+        input.EntryTime = filter;
+        return input;
+    }
+
 }
 
 public static class OrderInputExtensions
@@ -1034,6 +1047,13 @@ public static class OrderInputExtensions
         mod(filter); 
         input.Lines = filter;
         return input;
+    }
+
+
+    public static OrderInput EntryTime(this OrderInput input, TimeSpan? val)
+    {
+         input.EntryTime = val;
+         return input;
     }
 
 }
@@ -1182,6 +1202,13 @@ public static class OrderSortInputExtensions
          return input;
     }
 
+
+    public static OrderSortInput EntryTime(this OrderSortInput input, SortEnumType? val)
+    {
+         input.EntryTime = val;
+         return input;
+    }
+
 }
 
 public static class StringOperationFilterInputExtensions
@@ -1271,6 +1298,94 @@ public static class StringOperationFilterInputExtensions
     public static StringOperationFilterInput NendsWith(this StringOperationFilterInput input, string val)
     {
          input.NendsWith = val;
+         return input;
+    }
+
+}
+
+public static class TimeSpanOperationFilterInputExtensions
+{ 
+	
+    public static TimeSpanOperationFilterInput Eq(this TimeSpanOperationFilterInput input, TimeSpan? val)
+    {
+         input.Eq = val;
+         return input;
+    }
+
+
+    public static TimeSpanOperationFilterInput Neq(this TimeSpanOperationFilterInput input, TimeSpan? val)
+    {
+         input.Neq = val;
+         return input;
+    }
+
+
+    public static TimeSpanOperationFilterInput In(this TimeSpanOperationFilterInput input, List<TimeSpan?> val)
+    {
+         input.In = val;
+         return input;
+    }
+
+
+    public static TimeSpanOperationFilterInput Nin(this TimeSpanOperationFilterInput input, List<TimeSpan?> val)
+    {
+         input.Nin = val;
+         return input;
+    }
+
+
+    public static TimeSpanOperationFilterInput Gt(this TimeSpanOperationFilterInput input, TimeSpan? val)
+    {
+         input.Gt = val;
+         return input;
+    }
+
+
+    public static TimeSpanOperationFilterInput Ngt(this TimeSpanOperationFilterInput input, TimeSpan? val)
+    {
+         input.Ngt = val;
+         return input;
+    }
+
+
+    public static TimeSpanOperationFilterInput Gte(this TimeSpanOperationFilterInput input, TimeSpan? val)
+    {
+         input.Gte = val;
+         return input;
+    }
+
+
+    public static TimeSpanOperationFilterInput Ngte(this TimeSpanOperationFilterInput input, TimeSpan? val)
+    {
+         input.Ngte = val;
+         return input;
+    }
+
+
+    public static TimeSpanOperationFilterInput Lt(this TimeSpanOperationFilterInput input, TimeSpan? val)
+    {
+         input.Lt = val;
+         return input;
+    }
+
+
+    public static TimeSpanOperationFilterInput Nlt(this TimeSpanOperationFilterInput input, TimeSpan? val)
+    {
+         input.Nlt = val;
+         return input;
+    }
+
+
+    public static TimeSpanOperationFilterInput Lte(this TimeSpanOperationFilterInput input, TimeSpan? val)
+    {
+         input.Lte = val;
+         return input;
+    }
+
+
+    public static TimeSpanOperationFilterInput Nlte(this TimeSpanOperationFilterInput input, TimeSpan? val)
+    {
+         input.Nlte = val;
          return input;
     }
 

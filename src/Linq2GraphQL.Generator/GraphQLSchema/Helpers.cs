@@ -16,7 +16,8 @@ public static class Helpers
             { "timestamptz", new ValueTuple<string, Type>("DateTimeOffset", typeof(DateTimeOffset)) },
             { "Uri", new ValueTuple<string, Type>("Uri", typeof(Uri)) },
             { "DateTime", new ValueTuple<string, Type>("DateTimeOffset", typeof(DateTimeOffset)) },
-            { "Decimal", new ValueTuple<string, Type>("decimal", typeof(decimal)) }
+            { "Decimal", new ValueTuple<string, Type>("decimal", typeof(decimal)) },
+            { "TimeSpan", new ValueTuple<string, Type>("TimeSpan", typeof(TimeSpan)) }
         };
 
    

@@ -57,4 +57,11 @@ public partial class OrderFilterInput : GraphInputBase
     	set => SetValue("lines", value);
 	}
 
+	[JsonPropertyName("entryTime")]
+	public TimeSpanOperationFilterInput EntryTime 
+	{
+		get => GetValue<TimeSpanOperationFilterInput>("entryTime");
+    	set => SetValue("entryTime", value);
+	}
+
 }

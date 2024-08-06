@@ -56,7 +56,7 @@ internal class Program
     private static async Task GenerateClientAsync(Uri uri, string outputFolder, string namespaceName, string name,
         bool includeSubscriptions, string authToken, string enumStrategy)
     {
-        var enumStrat = enumStrategy.Equals("AddUnknownOption", StringComparison.InvariantCultureIgnoreCase)
+        var enumStrat = enumStrategy != null && enumStrategy.Equals("AddUnknownOption", StringComparison.InvariantCultureIgnoreCase)
             ? EnumGeneratorStrategy.AddUnknownOption
             : EnumGeneratorStrategy.FailIfMissing;
         
