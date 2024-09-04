@@ -47,10 +47,10 @@ public interface <#= classType.Name #> <#= classType.GetInterfacesString() #>
 <#
     foreach (var field in classType.AllFields)
     {
-        var fieldInfo = field.FieldInfo;
+        var coreType = field.CoreType;
 #>
 	[JsonPropertyName("<#= field.Name #>")]
-	public <#= fieldInfo.CSharpTypeNameFull #> <#= field.CSharpName #> { get; set; }  
+	public <#= coreType.CSharpTypeDefinition #> <#= field.CSharpName #> { get; set; }  
 <#
     }
 #>
@@ -64,10 +64,10 @@ internal class <#= GetInterfaceConcreteName() #> : <#= classType.Name #>
 <#
     foreach (var field in classType.AllFields)
     {
-        var fieldInfo = field.FieldInfo;
+         var coreType = field.CoreType;
 #>
 	[JsonPropertyName("<#= field.Name #>")]
-	public <#= fieldInfo.CSharpTypeNameFull #> <#= field.CSharpName #> { get; set; }  
+	public <#= coreType.CSharpTypeDefinition #> <#= field.CSharpName #> { get; set; }  
 <#
     }
 #>

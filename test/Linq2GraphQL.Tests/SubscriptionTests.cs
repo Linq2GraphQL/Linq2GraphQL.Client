@@ -12,7 +12,7 @@ public class SubscriptionTests : IClassFixture<SampleClientFixture>
     }
 
     [Fact]
-    public async void NoParameter()
+    public async Task NoParameter()
     {
         var customerName = "JockeD";
         var customerInput = new CustomerInput

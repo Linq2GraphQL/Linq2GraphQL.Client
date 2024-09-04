@@ -97,7 +97,7 @@ namespace Linq2GraphQL.Generator.Templates.Class
 
         foreach (var field in input.AllFields)
         {
-            var fieldInfo = field.FieldInfo;
+            var coreType = field.CoreType;
 
             
             #line default
@@ -105,7 +105,7 @@ namespace Linq2GraphQL.Generator.Templates.Class
             
             #line 39 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\InputFactoryClassTemplate.tt"
 
-            if (fieldInfo.CSharpType.IsValueTypeOrString() || fieldInfo.IsEnum)
+            if (coreType.CSharpType.IsValueTypeOrString() || coreType.IsEnum)
             {
 
             
@@ -135,7 +135,7 @@ namespace Linq2GraphQL.Generator.Templates.Class
             this.Write(" input, ");
             
             #line 44 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\InputFactoryClassTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(fieldInfo.CSharpTypeNameFull));
+            this.Write(this.ToStringHelper.ToStringWithCulture(coreType.CSharpTypeDefinition));
             
             #line default
             #line hidden
@@ -181,14 +181,14 @@ namespace Linq2GraphQL.Generator.Templates.Class
             this.Write(" input, Action<");
             
             #line 55 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\InputFactoryClassTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(fieldInfo.CSharpTypeNameFull));
+            this.Write(this.ToStringHelper.ToStringWithCulture(coreType.CSharpTypeDefinition));
             
             #line default
             #line hidden
             this.Write("> mod)\r\n    {\r\n        var filter = new ");
             
             #line 57 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\InputFactoryClassTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(fieldInfo.CSharpTypeNameFullNeverNull));
+            this.Write(this.ToStringHelper.ToStringWithCulture(coreType.CSharpTypeDefinitionNeverNull));
             
             #line default
             #line hidden

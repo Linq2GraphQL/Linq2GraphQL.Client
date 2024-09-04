@@ -22,7 +22,7 @@ public partial class ClassTemplate
         {
             return "Linq2GraphQL.Client.Common.PageInfo";
         }
-        return field.FieldInfo.CSharpTypeNameFull;
+        return field.CoreType.CSharpTypeDefinition;
     }
 
 
