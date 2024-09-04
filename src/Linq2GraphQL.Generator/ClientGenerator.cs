@@ -15,15 +15,17 @@ namespace Linq2GraphQL.Generator
         private readonly string clientName;
         private readonly bool includeSubscriptions;
         private readonly EnumGeneratorStrategy enumGeneratorStrategy;
+        private readonly bool nullable;
         private readonly List<FileEntry> entries = new();
 
         public ClientGenerator(string namespaceName, string clientName, bool includeSubscriptions,
-            EnumGeneratorStrategy enumGeneratorStrategy)
+            EnumGeneratorStrategy enumGeneratorStrategy, bool nullable)
         {
             this.namespaceName = namespaceName;
             this.clientName = clientName;
             this.includeSubscriptions = includeSubscriptions;
             this.enumGeneratorStrategy = enumGeneratorStrategy;
+            this.nullable = nullable;
         }
 
         private void AddFile(string directory, string fileName, string content)
@@ -58,6 +60,9 @@ namespace Linq2GraphQL.Generator
         public List<FileEntry> Generate(string schemaJson)
         {
             entries.Clear();
+
+            GeneratorSettings.Current = new GeneratorSettings { Nullable = this.nullable };
+
             var rootSchema = JsonSerializer.Deserialize<RootSchema>(schemaJson,
                 new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 
