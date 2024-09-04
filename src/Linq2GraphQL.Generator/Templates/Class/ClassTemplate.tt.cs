@@ -15,7 +15,7 @@ public partial class ClassTemplate
     public bool IsInput => classType.Kind == TypeKind.InputObject;
 
 
-    public string GetFieldCSharpName(Field field)
+    public string GetFieldCSharpName(Field field, bool addRequired = false)
     {
 
         if (field.GraphqlType.IsPageInfo())
@@ -24,7 +24,7 @@ public partial class ClassTemplate
         }
 
         var result = "";
-        if (GeneratorSettings.Current.Nullable && field.FieldInfo.IsNoneNull)
+        if (addRequired && GeneratorSettings.Current.Nullable && field.FieldInfo.IsNoneNull)
         {
             result += "required ";
         }

@@ -5,9 +5,9 @@ namespace Linq2GraphQL.TestServerNullable
     public class Mutation
     {
 
-        public Customer? UpdateCustomer(Guid customerId, string name)
+        public Customer? UpdateCustomer(Customer customer)
         {
-            return new Customer { CustomerId = customerId, CustomerName = name };
+            return customer;
         }
 
     }

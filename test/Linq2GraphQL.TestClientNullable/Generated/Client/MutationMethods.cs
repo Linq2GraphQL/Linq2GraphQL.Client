@@ -13,12 +13,11 @@ public class MutationMethods
         this.client = client;
     }
 
-    public GraphQuery<Customer?> UpdateCustomer(Guid customerId, string name)
+    public GraphQuery<Customer?> UpdateCustomer(CustomerInput customer)
     {
 	    var arguments = new List<ArgumentValue>
         {
-    	    new("customerId","UUID!", customerId),
-    	    new("name","String!", name),
+    	    new("customer","CustomerInput!", customer),
         };
 
         return new GraphQuery<Customer?>(client,  "updateCustomer", OperationType.Mutation, arguments); 

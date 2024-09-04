@@ -9,34 +9,34 @@ namespace Linq2GraphQL.TestClientNullable;
 public static class OrderExtensions
 {
     [GraphMethod("orderHello")]
-    public static required string OrderHello(this Order  order, [GraphArgument("String!")] string name, [GraphArgument("Int!")] int first)
+    public static string OrderHello(this Order  order, [GraphArgument("String!")] string name, [GraphArgument("Int!")] int first)
     {
-	    return order.GetMethodValue<required string>("orderHello", name, first);
+	    return order.GetMethodValue<string>("orderHello", name, first);
     }
 
     [GraphMethod("orderAddress")]
-    public static required Address OrderAddress(this Order  order, [GraphArgument("AddressType!")] AddressType addressType)
+    public static Address OrderAddress(this Order  order, [GraphArgument("AddressType!")] AddressType addressType)
     {
-	    return order.GetMethodValue<required Address>("orderAddress", addressType);
+	    return order.GetMethodValue<Address>("orderAddress", addressType);
     }
 
 }
 
 public partial class Order : GraphQLTypeBase
 {
-    private LazyProperty<required string> _orderHello = new();
+    private LazyProperty<string> _orderHello = new();
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
     [GraphShadowProperty]
-    public required string OrderHello => _orderHello.Value(() => GetFirstMethodValue<required string>("orderHello"));
+    public string OrderHello => _orderHello.Value(() => GetFirstMethodValue<string>("orderHello"));
 
-    private LazyProperty<required Address> _orderAddress = new();
+    private LazyProperty<Address> _orderAddress = new();
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
     [GraphShadowProperty]
-    public required Address OrderAddress => _orderAddress.Value(() => GetFirstMethodValue<required Address>("orderAddress"));
+    public Address OrderAddress => _orderAddress.Value(() => GetFirstMethodValue<Address>("orderAddress"));
 
     [JsonPropertyName("orderId")]
 	public required Guid OrderId { get; set; }  

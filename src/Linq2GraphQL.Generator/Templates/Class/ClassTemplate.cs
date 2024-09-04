@@ -235,7 +235,7 @@ namespace Linq2GraphQL.Generator.Templates.Class
             this.Write("\")]\r\n\tpublic ");
             
             #line 40 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(GetFieldCSharpName(field)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(GetFieldCSharpName(field, true)));
             
             #line default
             #line hidden

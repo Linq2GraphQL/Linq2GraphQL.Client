@@ -37,7 +37,7 @@ public partial class <#= classType.Name #> <#= classType.GetInterfacesString("Gr
 
 <# } else { #>
     [JsonPropertyName("<#= field.Name #>")]
-	public <#= GetFieldCSharpName(field) #> <#= field.CSharpName #> { get; set; }  
+	public <#= GetFieldCSharpName(field, true) #> <#= field.CSharpName #> { get; set; }  
 
 <# } #>
 <# } #>
