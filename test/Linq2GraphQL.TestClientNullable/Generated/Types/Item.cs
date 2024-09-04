@@ -6,12 +6,14 @@ using Linq2GraphQL.Client.Common;
 
 namespace Linq2GraphQL.TestClientNullable;
 
+#pragma warning disable CS8618
+
 public partial class Item : GraphQLTypeBase
 {
     [JsonPropertyName("itemId")]
-	public required string ItemId { get; set; }  
+	public string ItemId { get; set; }  
 
     [JsonPropertyName("itemName")]
-	public required string ItemName { get; set; }  
+	public string ItemName { get; set; }  
 
 }

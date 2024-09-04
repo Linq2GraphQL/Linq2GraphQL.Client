@@ -6,21 +6,23 @@ using Linq2GraphQL.Client.Common;
 
 namespace Linq2GraphQL.TestClientNullable;
 
+#pragma warning disable CS8618
+
 public partial class OrderLine : GraphQLTypeBase
 {
     [JsonPropertyName("lineNumber")]
-	public required int LineNumber { get; set; }  
+	public int LineNumber { get; set; }  
 
     [JsonPropertyName("order")]
-	public required Order Order { get; set; }  
+	public Order Order { get; set; }  
 
     [JsonPropertyName("item")]
 	public Item? Item { get; set; }  
 
     [JsonPropertyName("price")]
-	public required decimal Price { get; set; }  
+	public decimal Price { get; set; }  
 
     [JsonPropertyName("quantity")]
-	public required double Quantity { get; set; }  
+	public double Quantity { get; set; }  
 
 }

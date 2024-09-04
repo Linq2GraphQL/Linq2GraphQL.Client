@@ -6,19 +6,21 @@ using Linq2GraphQL.Client.Common;
 
 namespace Linq2GraphQL.TestClientNullable;
 
+#pragma warning disable CS8618
+
 public partial class Customer : GraphQLTypeBase
 {
     [JsonPropertyName("customerId")]
-	public required Guid CustomerId { get; set; }  
+	public Guid CustomerId { get; set; }  
 
     [JsonPropertyName("customerName")]
-	public required string CustomerName { get; set; }  
+	public string CustomerName { get; set; }  
 
     [JsonPropertyName("status")]
-	public required CustomerStatus Status { get; set; }  
+	public CustomerStatus Status { get; set; }  
 
     [JsonPropertyName("orders")]
-	public required List<Order> Orders { get; set; }  
+	public List<Order> Orders { get; set; }  
 
     [JsonPropertyName("address")]
 	public Address? Address { get; set; }  

@@ -6,6 +6,8 @@ using Linq2GraphQL.Client.Common;
 
 namespace Linq2GraphQL.TestClientNullable;
 
+#pragma warning disable CS8618
+
 public static class OrderExtensions
 {
     [GraphMethod("orderHello")]
@@ -39,19 +41,19 @@ public partial class Order : GraphQLTypeBase
     public Address OrderAddress => _orderAddress.Value(() => GetFirstMethodValue<Address>("orderAddress"));
 
     [JsonPropertyName("orderId")]
-	public required Guid OrderId { get; set; }  
+	public Guid OrderId { get; set; }  
 
     [JsonPropertyName("customer")]
-	public required Customer Customer { get; set; }  
+	public Customer Customer { get; set; }  
 
     [JsonPropertyName("address")]
 	public Address? Address { get; set; }  
 
     [JsonPropertyName("orderDate")]
-	public required DateTimeOffset OrderDate { get; set; }  
+	public DateTimeOffset OrderDate { get; set; }  
 
     [JsonPropertyName("lines")]
-	public required List<OrderLine> Lines { get; set; }  
+	public List<OrderLine> Lines { get; set; }  
 
     [JsonPropertyName("entryTime")]
 	public TimeSpan? EntryTime { get; set; }  
