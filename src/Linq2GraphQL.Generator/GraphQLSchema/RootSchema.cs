@@ -367,8 +367,7 @@ public class BaseType
     public CoreType GetCoreType()
     {  
         var result = new CoreType();
-           
-
+        
         bool currentNoneNull = false;
 
         foreach (var type in GetAllTypes())
@@ -428,9 +427,9 @@ public class CoreType
     public string CSharpTypeName { get; set; }
     public Type CSharpType { get; set; }
     public List<CoreTypeList> Lists { get; set; } = [];
+    public bool IsInList => Lists.Count != 0;
 
 
-   
 
     public string GetGraphQLTypeDefinition()
     {
@@ -448,16 +447,30 @@ public class CoreType
 
     }
 
+    private bool UseSharpNoneNull()
+    {
+        if (GeneratorSettings.Current.Nullable)
+        {
+            return NoneNull;
+        }
+        else
+        {
+            return NoneNull && !(BaseType.Kind == TypeKind.Enum || (CSharpType != null && CSharpTypeName != "string"));
+        }
+
+    }
+
+
     public string GetCSharpTypeDefinition()
     {
         var result = CSharpTypeName;
 
-        if (!NoneNull) { result += "?"; }
+        if (UseSharpNoneNull()) { result += "?"; }
 
         foreach (var list in Lists)
         {
             result = $"List<{result}>";
-            if (!list.NoneNull) { result += "?"; }
+            if (!list.NoneNull && GeneratorSettings.Current.Nullable) { result += "?"; }
         }
 
         return result;
