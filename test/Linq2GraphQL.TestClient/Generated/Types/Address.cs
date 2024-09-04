@@ -6,6 +6,7 @@ using Linq2GraphQL.Client.Common;
 
 namespace Linq2GraphQL.TestClient;
 
+
 public partial class Address : GraphQLTypeBase
 {
     [JsonPropertyName("name")]
