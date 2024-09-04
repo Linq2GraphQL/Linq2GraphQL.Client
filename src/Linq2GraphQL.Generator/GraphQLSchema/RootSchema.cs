@@ -275,6 +275,21 @@ public class TypeInfo
 
     }
 
+    public string CSharpTypeNameFullNeverNull
+    {
+        get
+        {
+            var result = CSharpTypeName;
+
+            if (IsList)
+            {
+                return $"List<{result}>";
+            }
+
+            return result;
+        }
+    }
+
     public string CSharpTypeNameFull
     {
         get

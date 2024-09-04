@@ -90,7 +90,7 @@ public static class CustomerInputExtensions
 
     public static CustomerInput Address(this CustomerInput input, Action<AddressInput?> mod)
     {
-        var filter = new AddressInput?();
+        var filter = new AddressInput();
         mod ??= _ => { };
         mod(filter); 
         input.Address = filter;
@@ -137,7 +137,7 @@ public static class OrderInputExtensions
 
     public static OrderInput Address(this OrderInput input, Action<AddressInput?> mod)
     {
-        var filter = new AddressInput?();
+        var filter = new AddressInput();
         mod ??= _ => { };
         mod(filter); 
         input.Address = filter;
@@ -189,7 +189,7 @@ public static class OrderLineInputExtensions
 
     public static OrderLineInput Item(this OrderLineInput input, Action<ItemInput?> mod)
     {
-        var filter = new ItemInput?();
+        var filter = new ItemInput();
         mod ??= _ => { };
         mod(filter); 
         input.Item = filter;
