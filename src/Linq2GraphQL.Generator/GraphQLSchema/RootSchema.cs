@@ -62,7 +62,7 @@ public class GraphqlType : BaseType
             interfaces += "Linq2GraphQL.Client.Common.ICursorPaging";
         }
 
-       
+
 
         if (!string.IsNullOrWhiteSpace(interfaces))
         {
@@ -145,6 +145,18 @@ public class BaseField
         }
     }
 
+    private CoreType coreType;
+    public CoreType CoreType
+    {
+        get
+        {
+            coreType ??= Type.GetCoreType();
+            return coreType;
+        }
+    }
+
+
+
     private TypeInfo GetFieldTypeInfo()
     {
 
@@ -168,25 +180,29 @@ public class BaseField
         }
 
 
+        var coreType = Type.GetCoreType();
+
         var isList = allTypes.Any(e => e.Kind == TypeKind.List);
         var isNoneNull = allTypes.Any(e => e.Kind == TypeKind.NonNull);
-      
+
         var graphTypeDefinition = isNoneNull ? baseFieldType.Name + "!" : baseFieldType.Name;
         if (isList)
         {
             graphTypeDefinition = $"[{graphTypeDefinition}]";
+            var gr = coreType.GetGraphQLTypeDefinition();
+            var cs = coreType.GetCSharpTypeDefinition();
         }
 
         return new TypeInfo
         {
-            
+
             Kind = baseFieldType.Kind,
             IsList = isList,
             IsNoneNull = isNoneNull,
             CSharpType = csharpType,
             CSharpTypeName = csharpTypeName,
             GraphTypeDefinition = graphTypeDefinition,
-            IsEnum = baseFieldType.Kind == TypeKind.Enum          
+            IsEnum = baseFieldType.Kind == TypeKind.Enum
         };
     }
 
@@ -345,6 +361,107 @@ public class BaseType
     {
         if (OfType == null) return this;
         return OfType.GetBaseBaseType();
+    }
+
+
+    public CoreType GetCoreType()
+    {  
+        var result = new CoreType();
+           
+
+        bool currentNoneNull = false;
+
+        foreach (var type in GetAllTypes())
+        {
+
+            switch (type.Kind)
+            {
+                case TypeKind.NonNull:
+                    currentNoneNull = true;
+                    break;
+                case TypeKind.List:
+                    result.Lists.Add(new CoreTypeList { NoneNull = currentNoneNull });
+                    currentNoneNull = false;
+                    break;
+                default:
+
+                    result.NoneNull = currentNoneNull;
+                    result.BaseType = type;
+                    currentNoneNull = false;
+                    break;
+
+            }
+        }
+
+        result.Lists.Reverse();
+
+         if (Helpers.TypeMapping.TryGetValue(result.BaseType.Name, out var typeMapping))
+        {
+            result.CSharpTypeName = typeMapping.Name;
+            result.CSharpType = typeMapping.type;
+        }
+        else
+        {
+            result.CSharpTypeName = result.BaseType.Name.ToPascalCase(); 
+        }
+
+        result.OuterNoneNull = result.Lists.FirstOrDefault()?.NoneNull ?? result.NoneNull;
+
+        return result;
+
+    }
+
+
+}
+
+
+public class CoreTypeList
+{
+    public bool NoneNull { get; set; }
+}
+
+public class CoreType
+{
+    public BaseType BaseType { get; set; }
+    public bool NoneNull { get; set; }
+    public bool OuterNoneNull { get; set; }
+    public string CSharpTypeName { get; set; }
+    public Type CSharpType { get; set; }
+    public List<CoreTypeList> Lists { get; set; } = [];
+
+
+   
+
+    public string GetGraphQLTypeDefinition()
+    {
+        var result = BaseType.Name;
+
+        if (NoneNull) { result += "!"; }
+
+        foreach (var list in Lists)
+        {
+            result = $"[{result}]";
+            if (list.NoneNull) { result += "!"; }
+        }
+
+        return result;
+
+    }
+
+    public string GetCSharpTypeDefinition()
+    {
+        var result = CSharpTypeName;
+
+        if (!NoneNull) { result += "?"; }
+
+        foreach (var list in Lists)
+        {
+            result = $"List<{result}>";
+            if (!list.NoneNull) { result += "?"; }
+        }
+
+        return result;
+
     }
 
 }

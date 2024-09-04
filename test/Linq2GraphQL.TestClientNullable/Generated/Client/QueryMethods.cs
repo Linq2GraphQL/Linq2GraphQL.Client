@@ -49,4 +49,13 @@ public class QueryMethods
         return new GraphQuery<List<Customer>>(client,  "customerListNullable", OperationType.Query, arguments); 
     }
 
+    public GraphQuery<List<Customer>> CustomerListInList()
+    {
+	    var arguments = new List<ArgumentValue>
+        {
+        };
+
+        return new GraphQuery<List<Customer>>(client,  "customerListInList", OperationType.Query, arguments); 
+    }
+
     }
