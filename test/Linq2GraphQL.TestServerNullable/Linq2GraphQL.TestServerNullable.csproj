@@ -2,14 +2,14 @@
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="HotChocolate.AspNetCore" Version="13.2.1" />
-		<PackageReference Include="HotChocolate.Data" Version="13.4.0" />
+		<PackageReference Include="HotChocolate.AspNetCore" Version="13.9.11" />
+		<PackageReference Include="HotChocolate.Data" Version="13.9.11" />
 	</ItemGroup>
 
 	<ItemGroup>
