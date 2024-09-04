@@ -22,13 +22,13 @@ public class QueryMethods
         return new GraphQuery<List<Customer>>(client,  "customerList", OperationType.Query, arguments); 
     }
 
-    public GraphQuery<Customer> CustomerNullable()
+    public GraphQuery<Customer?> CustomerNullable()
     {
 	    var arguments = new List<ArgumentValue>
         {
         };
 
-        return new GraphQuery<Customer>(client,  "customerNullable", OperationType.Query, arguments); 
+        return new GraphQuery<Customer?>(client,  "customerNullable", OperationType.Query, arguments); 
     }
 
     }

@@ -45,12 +45,15 @@ public partial class Order : GraphQLTypeBase
 	public Customer Customer { get; set; }  
 
     [JsonPropertyName("address")]
-	public Address Address { get; set; }  
+	public Address? Address { get; set; }  
 
     [JsonPropertyName("orderDate")]
 	public DateTimeOffset OrderDate { get; set; }  
 
     [JsonPropertyName("lines")]
 	public List<OrderLine> Lines { get; set; }  
+
+    [JsonPropertyName("entryTime")]
+	public TimeSpan? EntryTime { get; set; }  
 
 }
