@@ -4,56 +4,67 @@
 
 <Dimmer Active=isLoading>
 
-<ItemSelect  Items="demoOptions" @bind-SelectedValue="options" SelectedTextExpression="e=>e.ClientName">
-    <ListTemplate>
-        @context.ClientName
-    </ListTemplate>
-</ItemSelect>
+    <ItemSelect Items="demoOptions" @bind-SelectedValue="options" SelectedTextExpression="e=>e.ClientName">
+        <ListTemplate>
+            @context.ClientName
+        </ListTemplate>
+    </ItemSelect>
 
-<Card class="mt-3">
-    <CardBody>
-        <DataGrid>
-            <DataGridItem Title="Name">
-                <InputText class="form-control" @bind-Value="options.ClientName" />
-            </DataGridItem>
-            <DataGridItem Title="Namespace">
-                <InputText class="form-control" @bind-Value="options.Namespace" />
-            </DataGridItem>
-            <DataGridItem Title="Include subscriptions">
-                <Checkbox Switch @bind-Value="options.IncludeSubscriptions" />
-             </DataGridItem>
-         </DataGrid>
+    <Card class="mt-3">
+        <CardBody>
+            <DataGrid>
+                <DataGridItem Title="Name">
+                    <InputText class="form-control" @bind-Value="options.ClientName" />
+                </DataGridItem>
+                <DataGridItem Title="Namespace">
+                    <InputText class="form-control" @bind-Value="options.Namespace" />
+                </DataGridItem>
 
-         <div class="mt-3" />
-         <Tabs>
-             <Tab Title="Url">
-                 <DataGrid>
-                     <DataGridItem Title="Url">
-                         <InputText class="form-control" @bind-Value="options.Url" />
-                     </DataGridItem>
-                     <DataGridItem Title="Token">
-                         <InputText class="form-control" @bind-Value="options.Token" />
-                     </DataGridItem>
-                 </DataGrid>
+                <DataGridItem Title="Enum Strategy">
+                    <ItemSelect Items="EnumHelper.GetList<EnumGeneratorStrategy>()" @bind-SelectedValue="options.EnumGeneratorStrategy" />
+                </DataGridItem>
 
+                <DataGridItem Title="Include subscriptions">
+                    <Checkbox Switch @bind-Value="options.IncludeSubscriptions" />
+                </DataGridItem>
+            
+                <DataGridItem Title="Nullable client">
+                    <Checkbox Switch @bind-Value="options.Nullable" />
+                </DataGridItem>
+         
+            
+            </DataGrid>
 
-                 <Button class="mt-3" BackgroundColor="TablerColor.Primary" OnClick="GenerateClientAsync">Generate</Button>
-
-             </Tab>
-
-             <Tab Title="Schema">
-
-                 <div class="mb-2">Run this <Icon class="icon" IconType="Icons.Copy" OnClick="CopyIntrospection" /> query and paste the result below.</div>
-                
-                 <InputTextArea class="form-control" @bind-Value="options.Schema" rows="20" />
-
-                 <Button class="mt-3" BackgroundColor="TablerColor.Primary" OnClick="GenerateClientJson">Generate</Button>
-             </Tab>
-
-         </Tabs>
+            <div class="mt-3" />
+            <Tabs>
+                <Tab Title="Url">
+                    <DataGrid>
+                        <DataGridItem Title="Url">
+                            <InputText class="form-control" @bind-Value="options.Url" />
+                        </DataGridItem>
+                        <DataGridItem Title="Token">
+                            <InputText class="form-control" @bind-Value="options.Token" />
+                        </DataGridItem>
+                    </DataGrid>
 
 
-     </CardBody>
- </Card>
+                    <Button class="mt-3" BackgroundColor="TablerColor.Primary" OnClick="GenerateClientAsync">Generate</Button>
 
- </Dimmer>
+                </Tab>
+
+                <Tab Title="Schema">
+
+                    <div class="mb-2">Run this <Icon class="icon" IconType="Icons.Copy" OnClick="CopyIntrospection" /> query and paste the result below.</div>
+
+                    <InputTextArea class="form-control" @bind-Value="options.Schema" rows="20" />
+
+                    <Button class="mt-3" BackgroundColor="TablerColor.Primary" OnClick="GenerateClientJson">Generate</Button>
+                </Tab>
+
+            </Tabs>
+
+
+        </CardBody>
+    </Card>
+
+</Dimmer>
