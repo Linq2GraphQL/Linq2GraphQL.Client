@@ -9,16 +9,16 @@ namespace Linq2GraphQL.TestClientNullable;
 public partial class Customer : GraphQLTypeBase
 {
     [JsonPropertyName("customerId")]
-	public Guid CustomerId { get; set; }  
+	public required Guid CustomerId { get; set; }  
 
     [JsonPropertyName("customerName")]
-	public string CustomerName { get; set; }  
+	public required string CustomerName { get; set; }  
 
     [JsonPropertyName("status")]
-	public CustomerStatus Status { get; set; }  
+	public required CustomerStatus Status { get; set; }  
 
     [JsonPropertyName("orders")]
-	public List<Order> Orders { get; set; }  
+	public required List<Order> Orders { get; set; }  
 
     [JsonPropertyName("address")]
 	public Address? Address { get; set; }  

@@ -11,8 +11,10 @@ public class SampleNullableClient
     {
         var client = new GraphClient(httpClient, options, provider);
         Query = new QueryMethods(client);
+        Mutation = new MutationMethods(client);
     }
 
     public QueryMethods Query { get; private set; }
+    public MutationMethods Mutation { get; private set; }
     
 }

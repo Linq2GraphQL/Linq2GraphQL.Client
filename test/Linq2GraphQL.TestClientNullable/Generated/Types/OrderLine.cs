@@ -9,18 +9,18 @@ namespace Linq2GraphQL.TestClientNullable;
 public partial class OrderLine : GraphQLTypeBase
 {
     [JsonPropertyName("lineNumber")]
-	public int LineNumber { get; set; }  
+	public required int LineNumber { get; set; }  
 
     [JsonPropertyName("order")]
-	public Order Order { get; set; }  
+	public required Order Order { get; set; }  
 
     [JsonPropertyName("item")]
 	public Item? Item { get; set; }  
 
     [JsonPropertyName("price")]
-	public decimal Price { get; set; }  
+	public required decimal Price { get; set; }  
 
     [JsonPropertyName("quantity")]
-	public double Quantity { get; set; }  
+	public required double Quantity { get; set; }  
 
 }

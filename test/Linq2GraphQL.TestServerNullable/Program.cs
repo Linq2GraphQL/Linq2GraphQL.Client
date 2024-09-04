@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddGraphQLServer()
     .AddInMemorySubscriptions()
     .AddQueryType<Query>()
-    //.AddMutationType<Mutation>()
+    .AddMutationType<Mutation>()
     //.AddSubscriptionType<Subscription>()
     //.AddType<Pig>()
     //.AddType<Spider>()
