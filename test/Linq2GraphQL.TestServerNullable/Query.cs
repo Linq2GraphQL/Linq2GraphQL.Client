@@ -8,7 +8,8 @@ namespace Linq2GraphQL.TestServerNullable
     {
         public List<Customer> GetCustomerList()
         {
-            return SampleData.GetCustomers();
+            var customers = SampleData.GetCustomers();
+            return customers;
         }
 
         public Customer? GetCustomerNullable()
@@ -16,5 +17,14 @@ namespace Linq2GraphQL.TestServerNullable
             return null;
         }
 
+        public List<Customer?>? GetCustomerListAllNullable()
+        {
+            return null;
+        }
+
+        public List<Customer>? GetCustomerListNullable()
+        {
+            return null;
+        }
     }
 }

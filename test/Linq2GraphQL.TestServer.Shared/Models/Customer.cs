@@ -3,7 +3,7 @@
 public class Customer
 {
     public Guid CustomerId { get; set; }
-    public string CustomerName { get; set; } = "";
+    public required string CustomerName { get; set; } 
     public CustomerStatus Status { get; set; }
     public List<Order> Orders { get; set; } = new();
     public Address? Address { get; set; }

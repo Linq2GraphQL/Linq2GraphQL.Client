@@ -10,4 +10,7 @@ public partial class InputFactoryClassTemplate
         this.inputs = inputs;
         this.namespaceName = namespaceName;
     }
+
+   
+
 }

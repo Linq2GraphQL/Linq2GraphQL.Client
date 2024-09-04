@@ -6,6 +6,7 @@ using Linq2GraphQL.Client.Common;
 
 namespace Linq2GraphQL.TestClient;
 
+
 public partial class OrdersNoBackwardPaginationConnection : GraphQLTypeBase, Linq2GraphQL.Client.Common.ICursorPaging
 {
     [JsonPropertyName("pageInfo")]

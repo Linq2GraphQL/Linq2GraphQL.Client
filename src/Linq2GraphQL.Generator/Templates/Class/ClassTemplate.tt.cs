@@ -14,7 +14,7 @@ public partial class ClassTemplate
 
     public bool IsInput => classType.Kind == TypeKind.InputObject;
 
-   
+
     public string GetFieldCSharpName(Field field)
     {
 
@@ -23,10 +23,13 @@ public partial class ClassTemplate
             return "Linq2GraphQL.Client.Common.PageInfo";
         }
         return field.FieldInfo.CSharpTypeNameFull;
-
-
     }
 
-   
+
+    public bool NullableEnabled()
+    {
+        return GeneratorSettings.Current.Nullable;
+    }
+
 
 }

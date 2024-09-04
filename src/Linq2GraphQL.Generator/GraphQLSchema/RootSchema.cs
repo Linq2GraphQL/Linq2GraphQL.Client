@@ -170,8 +170,7 @@ public class BaseField
 
         var isList = allTypes.Any(e => e.Kind == TypeKind.List);
         var isNoneNull = allTypes.Any(e => e.Kind == TypeKind.NonNull);
-        var csharpNullable = !isNoneNull && csharpType != null && csharpTypeName != "string";
-
+      
         var graphTypeDefinition = isNoneNull ? baseFieldType.Name + "!" : baseFieldType.Name;
         if (isList)
         {
@@ -180,13 +179,14 @@ public class BaseField
 
         return new TypeInfo
         {
+            
             Kind = baseFieldType.Kind,
             IsList = isList,
             IsNoneNull = isNoneNull,
             CSharpType = csharpType,
             CSharpTypeName = csharpTypeName,
             GraphTypeDefinition = graphTypeDefinition,
-            IsEnum = baseFieldType.Kind == TypeKind.Enum
+            IsEnum = baseFieldType.Kind == TypeKind.Enum          
         };
     }
 
@@ -261,7 +261,7 @@ public class TypeInfo
     public bool IsNoneNull { get; set; }
     public bool IsList { get; set; }
 
-   
+
     private bool CSharpNullQuestion()
     {
         if (GeneratorSettings.Current.Nullable)
@@ -273,6 +273,21 @@ public class TypeInfo
             return !IsNoneNull && (Kind == TypeKind.Enum || (CSharpType != null && CSharpTypeName != "string"));
         }
 
+    }
+
+    public string CSharpTypeNameFullNeverNull
+    {
+        get
+        {
+            var result = CSharpTypeName;
+
+            if (IsList)
+            {
+                return $"List<{result}>";
+            }
+
+            return result;
+        }
     }
 
     public string CSharpTypeNameFull

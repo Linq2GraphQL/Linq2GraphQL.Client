@@ -54,7 +54,7 @@ public static class <#= input.CSharpName #>Extensions
 #>
     public static <#= input.CSharpName #> <#= field.CSharpName #>(this <#= input.CSharpName #> input, Action<<#= fieldInfo.CSharpTypeNameFull #>> mod)
     {
-        var filter = new <#= fieldInfo.CSharpTypeNameFull #>();
+        var filter = new <#= fieldInfo.CSharpTypeNameFullNeverNull #>();
         mod ??= _ => { };
         mod(filter); 
         input.<#= field.CSharpName #> = filter;

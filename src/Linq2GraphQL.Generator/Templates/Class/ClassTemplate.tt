@@ -8,6 +8,10 @@ using Linq2GraphQL.Client.Common;
 
 namespace <#= namespaceName #>;
 
+<# if (NullableEnabled()) { #>
+#pragma warning disable CS8618
+<# } #>
+
 <# if (classType.AllFields.Any(e => e.IsMethod)) { #>
 public static class <#= classType.Name #>Extensions
 {
