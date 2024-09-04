@@ -238,7 +238,7 @@ public class Field : BaseField
             return result;
         }
 
-        foreach (var arg in Args.OrderBy(x => x.CoreType.OuterNoneNull))
+        foreach (var arg in Args.OrderByDescending(x => x.CoreType.OuterNoneNull))
         {
             var coreType = arg.CoreType;
             if (result != "")
@@ -265,64 +265,6 @@ public class Field : BaseField
         return result;
     }
 }
-
-//public class TypeInfo
-//{
-//    public TypeKind Kind { get; set; }
-
-//    public string GraphTypeDefinition { get; set; }
-
-//    public string CSharpTypeName { get; set; }
-//    public Type CSharpType { get; set; }
-//    public bool IsNoneNull { get; set; }
-//    public bool IsList { get; set; }
-
-
-//    private bool CSharpNullQuestion()
-//    {
-//        if (GeneratorSettings.Current.Nullable)
-//        {
-//            return !IsNoneNull;
-//        }
-//        else
-//        {
-//            return !IsNoneNull && (Kind == TypeKind.Enum || (CSharpType != null && CSharpTypeName != "string"));
-//        }
-
-//    }
-
-//    public string CSharpTypeNameFullNeverNull
-//    {
-//        get
-//        {
-//            var result = CSharpTypeName;
-
-//            if (IsList)
-//            {
-//                return $"List<{result}>";
-//            }
-
-//            return result;
-//        }
-//    }
-
-//    public string CSharpTypeNameFull
-//    {
-//        get
-//        {
-//            var result = CSharpTypeName + (CSharpNullQuestion() ? "?" : "");
-
-//            if (IsList)
-//            {
-//                return $"List<{result}>";
-//            }
-
-//            return result;
-//        }
-//    }
-
-//    public bool IsEnum { get; set; }
-//}
 
 
 public class Arg : BaseField
