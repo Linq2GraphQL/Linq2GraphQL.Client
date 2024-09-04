@@ -261,15 +261,25 @@ public class TypeInfo
     public bool IsNoneNull { get; set; }
     public bool IsList { get; set; }
 
-    private bool csharpNullQuestion =>
-        !IsNoneNull && (Kind == TypeKind.Enum || (CSharpType != null && CSharpTypeName != "string"));
+   
+    private bool CSharpNullQuestion()
+    {
+        if (GeneratorSettings.Current.Nullable)
+        {
+            return !IsNoneNull;
+        }
+        else
+        {
+            return !IsNoneNull && (Kind == TypeKind.Enum || (CSharpType != null && CSharpTypeName != "string"));
+        }
 
+    }
 
     public string CSharpTypeNameFull
     {
         get
         {
-            var result = CSharpTypeName + (csharpNullQuestion ? "?" : "");
+            var result = CSharpTypeName + (CSharpNullQuestion() ? "?" : "");
 
             if (IsList)
             {

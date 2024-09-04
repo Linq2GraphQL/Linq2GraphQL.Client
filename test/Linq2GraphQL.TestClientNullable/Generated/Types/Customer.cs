@@ -21,6 +21,6 @@ public partial class Customer : GraphQLTypeBase
 	public List<Order> Orders { get; set; }  
 
     [JsonPropertyName("address")]
-	public Address Address { get; set; }  
+	public Address? Address { get; set; }  
 
 }
