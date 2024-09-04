@@ -62,7 +62,7 @@ public class GraphqlType : BaseType
             interfaces += "Linq2GraphQL.Client.Common.ICursorPaging";
         }
 
-       
+
 
         if (!string.IsNullOrWhiteSpace(interfaces))
         {
@@ -135,60 +135,76 @@ public class BaseField
     public BaseType Type { get; set; }
 
 
-    private TypeInfo fieldInfo;
-    public TypeInfo FieldInfo
+    //private TypeInfo fieldInfo;
+    //public TypeInfo FieldInfo
+    //{
+    //    get
+    //    {
+    //        fieldInfo ??= GetFieldTypeInfo();
+    //        return fieldInfo;
+    //    }
+    //}
+
+    private CoreType coreType;
+    public CoreType CoreType
     {
         get
         {
-            fieldInfo ??= GetFieldTypeInfo();
-            return fieldInfo;
+            coreType ??= Type.GetCoreType();
+            return coreType;
         }
     }
 
-    private TypeInfo GetFieldTypeInfo()
-    {
-
-        if (Type == null) return null;
-
-        var allTypes = Type.GetAllTypes();
-
-        var baseFieldType = Type.GetBaseBaseType();
-
-        Type csharpType = null;
-
-        string csharpTypeName;
-        if (Helpers.TypeMapping.TryGetValue(baseFieldType.Name, out var typeMapping))
-        {
-            csharpTypeName = typeMapping.Name;
-            csharpType = typeMapping.type;
-        }
-        else
-        {
-            csharpTypeName = baseFieldType.Name.ToPascalCase();
-        }
 
 
-        var isList = allTypes.Any(e => e.Kind == TypeKind.List);
-        var isNoneNull = allTypes.Any(e => e.Kind == TypeKind.NonNull);
-      
-        var graphTypeDefinition = isNoneNull ? baseFieldType.Name + "!" : baseFieldType.Name;
-        if (isList)
-        {
-            graphTypeDefinition = $"[{graphTypeDefinition}]";
-        }
+    //private TypeInfo GetFieldTypeInfo()
+    //{
 
-        return new TypeInfo
-        {
-            
-            Kind = baseFieldType.Kind,
-            IsList = isList,
-            IsNoneNull = isNoneNull,
-            CSharpType = csharpType,
-            CSharpTypeName = csharpTypeName,
-            GraphTypeDefinition = graphTypeDefinition,
-            IsEnum = baseFieldType.Kind == TypeKind.Enum          
-        };
-    }
+    //    if (Type == null) return null;
+
+    //    var allTypes = Type.GetAllTypes();
+
+    //    var baseFieldType = Type.GetBaseBaseType();
+
+    //    Type csharpType = null;
+
+    //    string csharpTypeName;
+    //    if (Helpers.TypeMapping.TryGetValue(baseFieldType.Name, out var typeMapping))
+    //    {
+    //        csharpTypeName = typeMapping.Name;
+    //        csharpType = typeMapping.type;
+    //    }
+    //    else
+    //    {
+    //        csharpTypeName = baseFieldType.Name.ToPascalCase();
+    //    }
+
+
+    //    var coreType = Type.GetCoreType();
+
+    //    var isList = allTypes.Any(e => e.Kind == TypeKind.List);
+    //    var isNoneNull = allTypes.Any(e => e.Kind == TypeKind.NonNull);
+
+    //    var graphTypeDefinition = isNoneNull ? baseFieldType.Name + "!" : baseFieldType.Name;
+    //    if (isList)
+    //    {
+    //        graphTypeDefinition = $"[{graphTypeDefinition}]";
+    //        var gr = coreType.GetGraphQLTypeDefinition();
+    //        var cs = coreType.GetCSharpTypeDefinition();
+    //    }
+
+    //    return new TypeInfo
+    //    {
+
+    //        Kind = baseFieldType.Kind,
+    //        IsList = isList,
+    //        IsNoneNull = isNoneNull,
+    //        CSharpType = csharpType,
+    //        CSharpTypeName = csharpTypeName,
+    //        GraphTypeDefinition = graphTypeDefinition,
+    //        IsEnum = baseFieldType.Kind == TypeKind.Enum
+    //    };
+    //}
 
 }
 
@@ -202,8 +218,8 @@ public class Field : BaseField
     public bool SupportCursorPaging()
     {
         if (!GraphqlType.ContainPageInfo()) { return false; }
-        if (Args?.FirstOrDefault(e => e.Name == "after" && e.FieldInfo.CSharpTypeName == "string") == null) { return false; }
-        if (Args?.FirstOrDefault(e => e.Name == "before" && e.FieldInfo.CSharpTypeName == "string") == null) { return false; }
+        if (Args?.FirstOrDefault(e => e.Name == "after" && e.CoreType.CSharpTypeName == "string") == null) { return false; }
+        if (Args?.FirstOrDefault(e => e.Name == "before" && e.CoreType.CSharpTypeName == "string") == null) { return false; }
         return true;
     }
 
@@ -222,9 +238,9 @@ public class Field : BaseField
             return result;
         }
 
-        foreach (var arg in Args.OrderByDescending(x => x.FieldInfo.IsNoneNull))
+        foreach (var arg in Args.OrderByDescending(x => x.CoreType.OuterNoneNull))
         {
-            var baseType = arg.FieldInfo;
+            var coreType = arg.CoreType;
             if (result != "")
             {
                 result += ", ";
@@ -233,14 +249,14 @@ public class Field : BaseField
             if (addTypeAttribute)
             {
                 result +=
-                    $"[GraphArgument(\"{baseType.GraphTypeDefinition}\")] {baseType.CSharpTypeNameFull} {arg.Name.ToCamelCase()}";
+                    $"[GraphArgument(\"{arg.CoreType.GraphQLTypeDefinition}\")] {arg.CoreType.CSharpTypeDefinition} {arg.Name.ToCamelCase()}";
             }
             else
             {
-                result += $"{baseType.CSharpTypeNameFull} {arg.Name.ToCamelCase()}";
+                result += $"{arg.CoreType.CSharpTypeDefinition} {arg.Name.ToCamelCase()}";
             }
 
-            if (!baseType.IsNoneNull || baseType.IsList)
+            if (!arg.CoreType.OuterNoneNull)
             {
                 result += " = null";
             }
@@ -248,64 +264,6 @@ public class Field : BaseField
 
         return result;
     }
-}
-
-public class TypeInfo
-{
-    public TypeKind Kind { get; set; }
-
-    public string GraphTypeDefinition { get; set; }
-
-    public string CSharpTypeName { get; set; }
-    public Type CSharpType { get; set; }
-    public bool IsNoneNull { get; set; }
-    public bool IsList { get; set; }
-
-
-    private bool CSharpNullQuestion()
-    {
-        if (GeneratorSettings.Current.Nullable)
-        {
-            return !IsNoneNull;
-        }
-        else
-        {
-            return !IsNoneNull && (Kind == TypeKind.Enum || (CSharpType != null && CSharpTypeName != "string"));
-        }
-
-    }
-
-    public string CSharpTypeNameFullNeverNull
-    {
-        get
-        {
-            var result = CSharpTypeName;
-
-            if (IsList)
-            {
-                return $"List<{result}>";
-            }
-
-            return result;
-        }
-    }
-
-    public string CSharpTypeNameFull
-    {
-        get
-        {
-            var result = CSharpTypeName + (CSharpNullQuestion() ? "?" : "");
-
-            if (IsList)
-            {
-                return $"List<{result}>";
-            }
-
-            return result;
-        }
-    }
-
-    public bool IsEnum { get; set; }
 }
 
 
@@ -345,6 +303,142 @@ public class BaseType
     {
         if (OfType == null) return this;
         return OfType.GetBaseBaseType();
+    }
+
+
+    public CoreType GetCoreType()
+    {
+        var result = new CoreType();
+
+        bool currentNoneNull = false;
+
+        foreach (var type in GetAllTypes())
+        {
+            switch (type.Kind)
+            {
+                case TypeKind.NonNull:
+                    currentNoneNull = true;
+                    break;
+                case TypeKind.List:
+                    result.Lists.Add(new CoreTypeList { NoneNull = currentNoneNull });
+                    currentNoneNull = false;
+                    break;
+                default:
+
+                    result.NoneNull = currentNoneNull;
+                    result.BaseType = type;
+                    currentNoneNull = false;
+                    break;
+
+            }
+        }
+
+        result.Lists.Reverse();
+
+        if (Helpers.TypeMapping.TryGetValue(result.BaseType.Name, out var typeMapping))
+        {
+            result.CSharpTypeName = typeMapping.Name;
+            result.CSharpType = typeMapping.type;
+        }
+        else
+        {
+            result.CSharpTypeName = result.BaseType.Name.ToPascalCase();
+        }
+
+        result.OuterNoneNull = result.Lists.FirstOrDefault()?.NoneNull ?? result.NoneNull;
+
+        result.SetCSharpTypeDefinition();
+        result.SetGraphQLTypeDefinition();
+
+        return result;
+
+    }
+
+
+}
+
+
+public class CoreTypeList
+{
+    public bool NoneNull { get; set; }
+}
+
+public class CoreType
+{
+    public BaseType BaseType { get; set; }
+    public bool NoneNull { get; set; }
+    public bool OuterNoneNull { get; set; }
+    public string CSharpTypeName { get; set; }
+    public Type CSharpType { get; set; }
+    public List<CoreTypeList> Lists { get; set; } = [];
+    public bool IsInList => Lists.Count != 0;
+
+    public bool IsEnum => BaseType.Kind == TypeKind.Enum;
+
+    public string CSharpTypeDefinition { get; set; }
+    public string CSharpTypeDefinitionNeverNull
+    {
+        get
+        {
+            if (!string.IsNullOrWhiteSpace(CSharpTypeDefinition) && CSharpTypeDefinition.EndsWith('?'))
+            {
+                return CSharpTypeDefinition.RemoveFromEnd("?");
+            }
+            return CSharpTypeDefinition;
+        }
+    }
+    public string GraphQLTypeDefinition { get; set; }
+
+    public void SetGraphQLTypeDefinition()
+    {
+        var result = BaseType.Name;
+
+        if (NoneNull) { result += "!"; }
+
+        foreach (var list in Lists)
+        {
+            result = $"[{result}]";
+            if (list.NoneNull) { result += "!"; }
+        }
+
+        GraphQLTypeDefinition = result;
+
+    }
+
+    private bool UseSharpNoneNull()
+    {
+        
+        if (GeneratorSettings.Current.Nullable || NoneNull)
+        {
+            return NoneNull;
+        }
+
+        //If Nullable
+        if (BaseType.Kind == TypeKind.Enum || (CSharpType != null && CSharpTypeName != "string"))
+        {
+            return NoneNull;
+
+            //            return NoneNull && !(BaseType.Kind == TypeKind.Enum || (CSharpType != null && CSharpTypeName != "string"));
+        }
+
+        return true;
+    }
+
+
+    public void SetCSharpTypeDefinition()
+    {
+        var result = CSharpTypeName;
+
+        if (!UseSharpNoneNull()) { result += "?"; }
+
+        foreach (var list in Lists)
+        {
+            result = $"List<{result}>";
+            if (!list.NoneNull && GeneratorSettings.Current.Nullable) { result += "?"; }
+        }
+
+        CSharpTypeDefinition = result;
+
     }
 
 }

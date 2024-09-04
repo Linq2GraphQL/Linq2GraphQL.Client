@@ -173,7 +173,7 @@ namespace Linq2GraphQL.Generator.Templates.Interface
 
     foreach (var field in classType.AllFields)
     {
-        var fieldInfo = field.FieldInfo;
+        var coreType = field.CoreType;
 
             
             #line default
@@ -188,7 +188,7 @@ namespace Linq2GraphQL.Generator.Templates.Interface
             this.Write("\")]\r\n\tpublic ");
             
             #line 53 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Interface\InterfaceTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(fieldInfo.CSharpTypeNameFull));
+            this.Write(this.ToStringHelper.ToStringWithCulture(coreType.CSharpTypeDefinition));
             
             #line default
             #line hidden
@@ -229,7 +229,7 @@ namespace Linq2GraphQL.Generator.Templates.Interface
 
     foreach (var field in classType.AllFields)
     {
-        var fieldInfo = field.FieldInfo;
+         var coreType = field.CoreType;
 
             
             #line default
@@ -244,7 +244,7 @@ namespace Linq2GraphQL.Generator.Templates.Interface
             this.Write("\")]\r\n\tpublic ");
             
             #line 70 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Interface\InterfaceTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(fieldInfo.CSharpTypeNameFull));
+            this.Write(this.ToStringHelper.ToStringWithCulture(coreType.CSharpTypeDefinition));
             
             #line default
             #line hidden

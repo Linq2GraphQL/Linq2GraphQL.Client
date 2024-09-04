@@ -13,12 +13,12 @@ public partial class <#= classType.Name #> : GraphInputBase
 <#
     foreach (var field in classType.AllFields)
     {
-        var fieldInfo = field.FieldInfo;
+        var coreType = field.CoreType;
 #>
 	[JsonPropertyName("<#= field.Name #>")]
-	public <#= fieldInfo.CSharpTypeNameFull #> <#= field.CSharpName #> 
+	public <#= coreType.CSharpTypeDefinition #> <#= field.CSharpName #> 
 	{
-		get => GetValue<<#= fieldInfo.CSharpTypeNameFull #>>("<#= field.Name #>");
+		get => GetValue<<#= coreType.CSharpTypeDefinition #>>("<#= field.Name #>");
     	set => SetValue("<#= field.Name #>", value);
 	}
 

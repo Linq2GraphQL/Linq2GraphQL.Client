@@ -34,14 +34,14 @@ public static class <#= input.CSharpName #>Extensions
 	<#
         foreach (var field in input.AllFields)
         {
-            var fieldInfo = field.FieldInfo;
+            var coreType = field.CoreType;
 #>
 <#
-            if (fieldInfo.CSharpType.IsValueTypeOrString() || fieldInfo.IsEnum)
+            if (coreType.CSharpType.IsValueTypeOrString() || coreType.IsEnum)
             {
 #>
 
-    public static <#= input.CSharpName #> <#= field.CSharpName #>(this <#= input.CSharpName #> input, <#= fieldInfo.CSharpTypeNameFull #> val)
+    public static <#= input.CSharpName #> <#= field.CSharpName #>(this <#= input.CSharpName #> input, <#= coreType.CSharpTypeDefinition #> val)
     {
          input.<#= field.CSharpName #> = val;
          return input;
@@ -52,9 +52,9 @@ public static class <#= input.CSharpName #>Extensions
             else
             {
 #>
-    public static <#= input.CSharpName #> <#= field.CSharpName #>(this <#= input.CSharpName #> input, Action<<#= fieldInfo.CSharpTypeNameFull #>> mod)
+    public static <#= input.CSharpName #> <#= field.CSharpName #>(this <#= input.CSharpName #> input, Action<<#= coreType.CSharpTypeDefinition #>> mod)
     {
-        var filter = new <#= fieldInfo.CSharpTypeNameFullNeverNull #>();
+        var filter = new <#= coreType.CSharpTypeDefinitionNeverNull #>();
         mod ??= _ => { };
         mod(filter); 
         input.<#= field.CSharpName #> = filter;

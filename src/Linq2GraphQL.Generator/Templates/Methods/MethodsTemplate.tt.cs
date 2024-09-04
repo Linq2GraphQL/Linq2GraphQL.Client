@@ -22,12 +22,8 @@ public partial class MethodsTemplate
 
     private string GetReturnTypeString(Field field)
     {
-        var cSharpTypeNameFull = field.FieldInfo.CSharpTypeNameFull;
+        var cSharpTypeNameFull = field.CoreType.CSharpTypeDefinition;
 
-        if (cSharpTypeNameFull.Contains("Connection"))
-        {
-            var kalle = methodsType;
-        }
 
         if (isSubscription)
         {
@@ -45,17 +41,5 @@ public partial class MethodsTemplate
     private string GetReturnBuilderString(Field field)
     {
         return $"new {GetReturnTypeString(field)}";
-        //var cSharpTypeNameFull = field.FieldInfo.CSharpTypeNameFull;
-        //if (isSubscription)
-        //{
-        //    return $"new GraphSubscription<{cSharpTypeNameFull}>";
-        //}
-
-        //if (field.GraphqlType.SupportCursorPaging())
-        //{
-        //    return $"new GraphCursorQuery<{cSharpTypeNameFull}>";
-        //}
-
-        //return $"new GraphQuery<{cSharpTypeNameFull}>";
     }
 }

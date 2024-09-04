@@ -26,7 +26,7 @@ public class <#= ClassName #>
     <#
     foreach (var field in methodsType.AllFields)
     {
-        var fieldInfo = field.FieldInfo;
+        var coreType = field.CoreType;
 #>
 public <#= GetReturnTypeString(field) #> <#= field.CSharpName #>(<#= field.GetArgString(false) #>)
     {
@@ -36,7 +36,7 @@ public <#= GetReturnTypeString(field) #> <#= field.CSharpName #>(<#= field.GetAr
         foreach (var arg in field.Args)
         {
 #>
-	    new("<#= arg.Name #>","<#= arg.FieldInfo.GraphTypeDefinition #>", <#= arg.Name.ToCamelCase() #>),
+	    new("<#= arg.Name #>","<#= arg.CoreType.GraphQLTypeDefinition #>", <#= arg.Name.ToCamelCase() #>),
     <#
         }
 #>
