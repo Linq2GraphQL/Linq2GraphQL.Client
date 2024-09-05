@@ -32,7 +32,7 @@
 <h2 id="generate-client-code">Generate Client code</h2>
 <p>
     There are two options to generate the client code from the GraphQL schema.
-    Use the online tool to <a href="https://linq2graphql.com/generate-client"> generate</a> or install Linq2GraphQL.Generator as a tool.
+    Use the online tool to <a href="https://linq2graphql.com/generate-client"> generate</a> or install Linq2GraphQL.Generator as a .Net tool.
 </p>
 <p>Install/Update Tool: </p>
 <pre><code>dotnet tool update Linq2GraphQL.Generator -g --prerelease
@@ -48,7 +48,9 @@ Options:
   -n, --namespace &lt;namespace&gt;  Namespace of generated classes [default: YourNamespace]
   -c, --client &lt;client&gt;        Name of the generated client [default: GraphQLClient]
   -t, --token &lt;token&gt;          Bearertoken for authentication
-  -s, --subscriptions          Include subscriptions (Exprimental)
+  -nu --nullabel                     Nullable client [default: false]
+  -es --enum-strategy                If AddUnknownOption all enums will have an additional Unknown option
+  -s, --subscriptions                Include subscriptions (Exprimental)
 </code></pre>
 <p>As an example:</p>
 <pre><code>Linq2GraphQL https://spacex-production.up.railway.app/ -c=&quot;SpaceXClient&quot; -n=&quot;SpaceX&quot; -o=&quot;Generated&quot;
