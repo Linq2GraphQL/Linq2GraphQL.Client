@@ -6,33 +6,6 @@ using System.Text.Json.Serialization;
 
 namespace Linq2GraphQL.Client;
 
-//internal static class Program
-//{
-//    public static void Main(string[] args)
-//    {
-//        string json = JsonSerializer.Serialize(FlagDefinitions.One | FlagDefinitions.Two);
-//        FlagDefinitions flags = JsonSerializer.Deserialize<FlagDefinitions>(json);
-//    }
-//}
-
-//[JsonConverter(typeof(JsonStringEnumMemberConverter))]
-//[Flags]
-//public enum FlagDefinitions
-//{
-//    None = 0x00,
-
-//    [EnumMember(Value = "all values")]
-//    All = One | Two | Three | Four,
-
-//    [EnumMember(Value = "one value")]
-//    One = 0x01,
-//    [EnumMember(Value = "two value")]
-//    Two = 0x02,
-//    [EnumMember(Value = "three value")]
-//    Three = 0x04,
-//    [EnumMember(Value = "four value")]
-//    Four = 0x08,
-//}
 
 public class JsonStringEnumMemberConverter : JsonConverterFactory
 {

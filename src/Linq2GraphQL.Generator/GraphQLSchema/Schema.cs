@@ -65,6 +65,12 @@ public class Schema
         return GetAllTypesExceptSystemTypes().Where(e => e.Kind == TypeKind.Enum).ToList();
     }
 
+    public List<GraphqlType> GetCustomScalars()
+    {
+        var mappers = Helpers.TypeMapping;
+        return GetAllTypesExceptSystemTypes().Where(e => e.Kind == TypeKind.Scalar && !mappers.ContainsKey(e.Name)).ToList();
+    }
+
     public List<GraphqlType> GetInterfaces()
     {
         return GetAllTypesExceptSystemTypes().Where(e => e.Kind == TypeKind.Interface).ToList();

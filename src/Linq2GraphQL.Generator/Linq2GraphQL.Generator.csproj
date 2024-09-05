@@ -58,6 +58,10 @@
             <Generator>TextTemplatingFilePreprocessor</Generator>
             <LastGenOutput>ClientExtensionsTemplate.cs</LastGenOutput>
         </None>
+        <None Update="Templates\Scalars\ScalarTemplate.tt">
+          <Generator>TextTemplatingFilePreprocessor</Generator>
+          <LastGenOutput>ScalarTemplate.cs</LastGenOutput>
+        </None>
     </ItemGroup>
 
     <ItemGroup>
@@ -104,6 +108,11 @@
             <AutoGen>True</AutoGen>
             <DesignTime>True</DesignTime>
             <DependentUpon>ClientExtensionsTemplate.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Templates\Scalars\ScalarTemplate.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>ScalarTemplate.tt</DependentUpon>
         </Compile>
     </ItemGroup>
 

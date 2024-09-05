@@ -3,6 +3,7 @@ using Linq2GraphQL.Generator.Templates.Client;
 using Linq2GraphQL.Generator.Templates.Enum;
 using Linq2GraphQL.Generator.Templates.Interface;
 using Linq2GraphQL.Generator.Templates.Methods;
+using Linq2GraphQL.Generator.Templates.Scalars;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -145,7 +146,16 @@ namespace Linq2GraphQL.Generator
             var includeQuery = queryType != null;
             var includeMutation = mutationType != null;
 
-            Console.WriteLine("Generate Client...");
+            Console.WriteLine("Generate Scalars...");
+            foreach (var scalar in schema.GetCustomScalars())
+            {
+                var scalarText = new ScalarTemplate(scalar, namespaceName).TransformText();
+                AddFile("Scalars", scalar.FileName, scalarText);
+
+            }
+
+
+                Console.WriteLine("Generate Client...");
             var templateText = new ClientTemplate(namespaceName, clientName, queryType, mutationType, subscriptionType)
                 .TransformText();
             var fileName = clientName + ".cs";

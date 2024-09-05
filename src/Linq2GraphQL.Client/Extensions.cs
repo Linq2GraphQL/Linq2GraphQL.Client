@@ -12,7 +12,7 @@ internal static class Extensions
             return false;
         }
 
-        return type.IsValueType || type == typeof(string);
+        return type.IsValueType || type == typeof(string) || type.IsSubclassOf(typeof(CustomScalar)); ;
     }
 
     internal static bool IsListOfPrimitiveTypeOrString(this Type type)

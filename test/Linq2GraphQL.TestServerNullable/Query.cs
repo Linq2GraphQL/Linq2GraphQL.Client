@@ -32,5 +32,26 @@ namespace Linq2GraphQL.TestServerNullable
             return [SampleData.GetCustomers()];
         }
 
+        public Person GetPerson()
+        {
+            return new Person { Name = "Jocke D", MacAddress = "00-1B-63-84-45-E6", Longitude = 14.4 };
+
+        }
+
+       
+
+
     }
+
+    public class Person
+    {
+        public required string Name { get; set; }
+
+        [GraphQLType(typeof(MacAddressType))]
+        public required string MacAddress { get; set; }
+
+        [GraphQLType(typeof(LongitudeType))]
+        public double Longitude { get; set; }
+    }
+
 }
