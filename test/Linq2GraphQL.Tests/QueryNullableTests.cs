@@ -37,5 +37,20 @@ namespace Linq2GraphQL.Tests
 
             Assert.Null(result);
         }
+
+
+        [Fact]
+        public async Task GetCustomerListInList()
+        {
+            var result = await nullableClient
+                .Query
+                .CustomerListInList()
+                .Select()
+                .ExecuteAsync();
+
+            TestClientNullable.Customer? customer = result.FirstOrDefault()?.FirstOrDefault();
+            Assert.NotNull(customer);
+        }
+
     }
 }

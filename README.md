@@ -61,7 +61,8 @@ Install/Update Tool:
       -c, --client <client>        Name of the generated client [default: GraphQLClient]
       -t, --token <token>          Bearertoken for authentication
       -s, --subscriptions          Include subscriptions (Exprimental)
-      -es --enum-strategy          If AddUnknownOption all enums will have an additional Unknown option   
+      -es --enum-strategy          If AddUnknownOption all enums will have an additional Unknown option
+      -nu --nullabel               Nullable client [default: false]
 
 As an example:
 
