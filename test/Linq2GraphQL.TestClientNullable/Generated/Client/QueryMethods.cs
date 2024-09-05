@@ -58,4 +58,13 @@ public class QueryMethods
         return new GraphQuery<List<List<Customer>>>(client,  "customerListInList", OperationType.Query, arguments); 
     }
 
+    public GraphQuery<Person> Person()
+    {
+	    var arguments = new List<ArgumentValue>
+        {
+        };
+
+        return new GraphQuery<Person>(client,  "person", OperationType.Query, arguments); 
+    }
+
     }

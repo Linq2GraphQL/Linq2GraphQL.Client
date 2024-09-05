@@ -27,6 +27,10 @@ public static class IF
 	{
 		return new OrderLineInput();
 	}
+	public static PersonInput Person() 
+	{
+		return new PersonInput();
+	}
 }
 
 
@@ -208,6 +212,35 @@ public static class OrderLineInputExtensions
     {
          input.Quantity = val;
          return input;
+    }
+
+}
+
+public static class PersonInputExtensions
+{ 
+	
+    public static PersonInput Name(this PersonInput input, string val)
+    {
+         input.Name = val;
+         return input;
+    }
+
+    public static PersonInput MacAddress(this PersonInput input, Action<MacAddress?> mod)
+    {
+        var filter = new MacAddress();
+        mod ??= _ => { };
+        mod(filter); 
+        input.MacAddress = filter;
+        return input;
+    }
+
+    public static PersonInput Longitude(this PersonInput input, Action<Longitude?> mod)
+    {
+        var filter = new Longitude();
+        mod ??= _ => { };
+        mod(filter); 
+        input.Longitude = filter;
+        return input;
     }
 
 }
