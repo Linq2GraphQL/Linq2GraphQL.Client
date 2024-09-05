@@ -35,13 +35,13 @@ namespace Linq2GraphQL.Tests
         {
             var result = await sampleClient
           .Mutation
-          .UpdatePerson(person: new PersonInput { Name = "Peter", MacAddress= new MacAddress { Value = "01-23-45-67-89-ab" }  })
+          .UpdatePerson(person: new PersonInput { Name = "Peter", MacAddress = new MacAddress("01-23-45-67-89-ab") })
           .Select()
           .ExecuteAsync();
 
-            var macAddress = result.MacAddress;
 
-            Assert.NotNull(macAddress);
+
+            Assert.NotNull(result.MacAddress);
         }
 
 

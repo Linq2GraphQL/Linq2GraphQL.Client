@@ -9,15 +9,23 @@ namespace Linq2GraphQL.TestClientNullable
     public partial class MacAddress
     {
 
+        public MacAddress() { }
 
-        public string GetValue()
+        public MacAddress(string value)
         {
-
-            return "Value: " + Value;
-
+            Value = value;
         }
 
-
+        public override string Value
+        {
+            get { 
+                //Customer Code
+                return base.Value; }
+            set { 
+                //Custom code
+                
+                base.Value = value; }
+        }
 
 
 
