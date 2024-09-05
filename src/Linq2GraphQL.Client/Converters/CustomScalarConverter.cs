@@ -1,15 +1,25 @@
 ﻿using System.Text.Json.Serialization;
 using System.Text.Json;
+using Linq2GraphQL.Client;
 
 
 namespace Linq2GraphQL.Client
 {
     public class CustomScalar
     {
-        public string Value { get; set; }
+        internal string InternalValue { get; set; }
 
-        public override string ToString() => Value;
+
+        public virtual string Value
+        {
+            get { return InternalValue; }
+
+            set { InternalValue = value; }
+
+        }
     }
+
+
 
     public class CustomScalarConverter<TScalar> : JsonConverter<TScalar>
         where TScalar : CustomScalar, new()
@@ -24,7 +34,7 @@ namespace Linq2GraphQL.Client
 
             var scalar = new TScalar
             {
-                Value = value
+                InternalValue = value
             };
 
             return scalar;
@@ -32,7 +42,7 @@ namespace Linq2GraphQL.Client
 
         public override void Write(Utf8JsonWriter writer, TScalar value, JsonSerializerOptions options)
         {
-            writer.WriteStringValue(value.Value);
+            writer.WriteStringValue(value.InternalValue);
         }
 
     }
