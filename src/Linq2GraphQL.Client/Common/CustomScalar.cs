@@ -6,7 +6,7 @@
 
         public override string ToString()
         {
-            return base.ToString();
+            return InternalValue;
         }
 
         public virtual string Value
