@@ -96,7 +96,7 @@ namespace Linq2GraphQL.Docs.Components.Samples
                 isExecuting = true;
                 await QueryExecute.ExecuteAsync();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //TODO add error modal
                 throw;
