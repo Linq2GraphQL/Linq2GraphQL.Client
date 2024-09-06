@@ -18,7 +18,7 @@ namespace Linq2GraphQL.Generator.Templates.Scalars
         }
     
     private string className => scalarType.Name;
-    private string classDescription => scalarType.Description;
+    private string classDescription => scalarType.Description ?? className;
 
 
 
