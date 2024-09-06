@@ -18,13 +18,18 @@ namespace Linq2GraphQL.TestClientNullable
 
         public override string Value
         {
-            get { 
-                //Customer Code
-                return base.Value; }
-            set { 
+            get
+            {
+                //Custom Code
+              
+                return base.Value;
+            }
+            set
+            {
                 //Custom code
-                
-                base.Value = value; }
+
+                base.Value = value;
+            }
         }
 
 

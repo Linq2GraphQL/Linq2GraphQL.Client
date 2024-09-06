@@ -5,19 +5,7 @@ using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.Client
 {
-    public class CustomScalar
-    {
-        internal string InternalValue { get; set; }
-
-
-        public virtual string Value
-        {
-            get { return InternalValue; }
-
-            set { InternalValue = value; }
-
-        }
-    }
+  
 
 
 

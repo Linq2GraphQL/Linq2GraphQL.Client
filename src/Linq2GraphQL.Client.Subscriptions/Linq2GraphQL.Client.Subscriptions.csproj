@@ -16,11 +16,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Linq2GraphQL.Client\Linq2GraphQL.Client.csproj"/>
+        <ProjectReference Include="..\Linq2GraphQL.Client\Linq2GraphQL.Client.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Websocket.Client" Version="4.6.1"/>
+        <PackageReference Include="Websocket.Client" Version="5.1.2" />
     </ItemGroup>
 
 </Project>
