@@ -12,4 +12,15 @@ public partial class InputClassTemplate
     }
 
     public bool IsInput => classType.Kind == TypeKind.InputObject;
+
+    public string GetPropertyDefinition(Field field)
+    {
+        if (!GeneratorSettings.Current.Nullable || !field.CoreType.OuterNoneNull)
+        {
+            return field.CoreType.CSharpTypeDefinition;
+        }
+
+        return "required " + field.CoreType.CSharpTypeDefinition;
+
+    }
 }
