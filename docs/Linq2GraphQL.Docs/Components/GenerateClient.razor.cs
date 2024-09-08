@@ -57,7 +57,7 @@ namespace Linq2GraphQL.Docs.Components
             await toastService.AddToastAsync(new ToastModel
             {
                 Title = "Copy Complete",
-                Message = "Introspection queryExecute has been copied to the clipboard"
+                Message = "Introspection query has been copied to the clipboard"
             });
 
         }
@@ -79,6 +79,12 @@ namespace Linq2GraphQL.Docs.Components
             memoryStream.Seek(0, SeekOrigin.Begin);
             await tablerService.SaveAsBinary($"{options.ClientName}.zip", "application/zip", memoryStream.ToArray());
 
+            await toastService.AddToastAsync(new ToastModel
+            {
+                Title = "Generate Complete",
+                Message = $"{options.ClientName}.zip has been been created! Please check you downloads."
+            });
+
         }
 
         private async Task GenerateClientJson()
@@ -89,6 +95,7 @@ namespace Linq2GraphQL.Docs.Components
                 var generator = new Generator.ClientGenerator(options.Namespace, options.ClientName, options.IncludeSubscriptions, EnumGeneratorStrategy.FailIfMissing, options.Nullable);
                 var entries = generator.Generate(options.Schema);
                 await SaveEntriesAsync(entries);
+
             }
             catch (Exception ex)
             {
