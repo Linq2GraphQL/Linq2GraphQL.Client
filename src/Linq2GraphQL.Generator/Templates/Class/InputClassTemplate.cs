@@ -68,7 +68,7 @@ namespace Linq2GraphQL.Generator.Templates.Class
             this.Write("\")]\r\n\tpublic ");
             
             #line 19 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\InputClassTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(coreType.CSharpTypeDefinition));
+            this.Write(this.ToStringHelper.ToStringWithCulture(GetPropertyDefinition(field)));
             
             #line default
             #line hidden
