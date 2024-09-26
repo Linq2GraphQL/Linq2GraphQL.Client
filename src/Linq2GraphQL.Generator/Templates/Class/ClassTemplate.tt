@@ -19,7 +19,7 @@ public static class <#= classType.Name #>Extensions
     [GraphMethod("<#= field.Name #>")]
     public static <#= GetFieldCSharpName(field) #> <#= field.CSharpName #>(this <#= classType.Name #>  <#= classType.Name.ToCamelCase() #>, <#= field.GetArgString(true) #>)
     {
-	    return <#= classType.Name.ToCamelCase() #>.GetMethodValue<<#= GetFieldCSharpName(field) #>>("<#= field.Name #>", <#= field.GetArgNames() #>);
+        return <#= classType.Name.ToCamelCase() #>.GetMethodValue<<#= GetFieldCSharpName(field) #>>("<#= field.Name #>", <#= field.GetArgNames() #>);
     }
 
 <# } #>
@@ -27,6 +27,13 @@ public static class <#= classType.Name #>Extensions
 
 <#
     }
+#>
+<# if (classType.HasDescription) {#>
+/// <summary>
+/// <#= classType.Description #>
+/// </summary>
+<# 
+} 
 #>
 public partial class <#= classType.Name #> <#= classType.GetInterfacesString("GraphQLTypeBase") #>
 {
@@ -40,8 +47,13 @@ public partial class <#= classType.Name #> <#= classType.GetInterfacesString("Gr
     public <#= GetFieldCSharpName(field) #> <#= field.CSharpName #> => _<#= field.Name #>.Value(() => GetFirstMethodValue<<#= GetFieldCSharpName(field) #>>("<#= field.Name #>"));
 
 <# } else { #>
+<# if (field.HasDescription) { #>
+    /// <summary>
+    /// <#= field.Description #>
+    /// </summary>
+<# } #>
     [JsonPropertyName("<#= field.Name #>")]
-	public <#= GetFieldCSharpName(field) #> <#= field.CSharpName #> { get; set; }  
+    public <#= GetFieldCSharpName(field) #> <#= field.CSharpName #> { get; set; }
 
 <# } #>
 <# } #>
