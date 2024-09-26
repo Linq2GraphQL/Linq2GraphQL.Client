@@ -127,6 +127,8 @@ public class BaseField
     public string Name { get; set; }
     public string Description { get; set; }
 
+    public bool HasDescription => !string.IsNullOrEmpty(Description);
+
     public string CSharpName => Name?.ToPascalCase();
 
     public GraphqlType GraphqlType { get; set; }
@@ -280,6 +282,8 @@ public class BaseType
     public TypeKind Kind { get; set; }
     public string Description { get; set; }
 
+    public bool HasDescription => !string.IsNullOrEmpty(Description);
+
     public string CSharpName => Name?.ToPascalCase();
     public string FileName => CSharpName + ".cs";
 
@@ -407,7 +411,7 @@ public class CoreType
 
     private bool UseSharpNoneNull()
     {
-        
+
         if (GeneratorSettings.Current.Nullable || NoneNull)
         {
             return NoneNull;
