@@ -37,13 +37,11 @@ namespace Linq2GraphQL.Generator
 // Please don't edit this file
 // Github:https://github.com/linq2graphql/linq2graphql.client
 // Url: https://linq2graphql.com
-// Generation Date: {DateTimeOffset.Now.ToString("F")}
 //---------------------------------------------------------------------
 
 ";
 
             content = infoText + content;
-
             entries.Add(new FileEntry { Content = content, DirectoryName = directory, FileName = fileName });
         }
 
