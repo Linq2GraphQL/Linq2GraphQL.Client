@@ -6,6 +6,13 @@ namespace Linq2GraphQL.TestServerNullable
 {
     public class Query
     {
+
+        public Item GetItem()
+        {
+            return SampleData.GetItem("Test Item");
+        }
+
+
         public List<Customer> GetCustomerList()
         {
             var customers = SampleData.GetCustomers();

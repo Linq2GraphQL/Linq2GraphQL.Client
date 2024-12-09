@@ -1,5 +1,7 @@
 ﻿using Linq2GraphQL.TestClient;
 using Linq2GraphQL.TestClientNullable;
+using System.Collections;
+using System.Text;
 
 
 namespace Linq2GraphQL.Tests
@@ -23,6 +25,21 @@ namespace Linq2GraphQL.Tests
                 .ExecuteAsync();
 
             Assert.Equal(2, result.Count);
+        }
+
+        [Fact]
+        public async Task GetItemData()
+        {
+            var result = await nullableClient
+                .Query
+                .Item()
+                .Include(e=> e.Data)
+                .Select()
+                .ExecuteAsync();
+
+            var data = System.Text.Encoding.UTF8.GetString(result.Data!.ToArray());
+
+            Assert.Equal(result.ItemName, data);
         }
 
 

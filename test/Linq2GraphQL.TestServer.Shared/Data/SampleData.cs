@@ -1,4 +1,5 @@
 ﻿using Linq2GraphQL.TestServer.Models;
+using System.Text;
 
 namespace Linq2GraphQL.TestServer.Data;
 
@@ -13,9 +14,10 @@ public static class SampleData
     }
 
 
-    private static Item GetItem(string ItemId)
+    public static Item GetItem(string ItemId)
     {
-        return new Item { ItemId = ItemId, ItemName = $"Item: {ItemId}" };
+        var itemName = $"Item: {ItemId}";
+        return new Item { ItemId = ItemId, ItemName = itemName, Data = Encoding.ASCII.GetBytes(itemName) };
     }
 
     public static List<Customer> GetCustomers()
