@@ -9,7 +9,7 @@ namespace <#= namespaceName #>;
 
 public class <#= name #>
 {
-    public <#= name #>(HttpClient httpClient, IOptions<GraphClientOptions> options, IServiceProvider provider)
+    public <#= name #>(HttpClient httpClient, [FromKeyedServices("<#= name #>")]IOptions<GraphClientOptions> options, IServiceProvider provider)
     {
         var client = new GraphClient(httpClient, options, provider);
 <# if (includeQuery) { #>
