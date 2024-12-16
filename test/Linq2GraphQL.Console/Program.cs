@@ -38,13 +38,15 @@ serviceProvider.AddStarWarsClient(x =>
 
 var services = serviceProvider.BuildServiceProvider();
 var sampleClient = services.GetRequiredService<SampleClient>();
-var starWarsClient = services.GetRequiredService<StarWarsClient>();
 
-var films = await starWarsClient
-            .Query
-            .AllFilms(null, 2, null, null)
-            .Include(e => e.Films.Select(e => e.VehicleConnection(null, 2, null, null)))
-            .Select(e=> e.Films)
-            .ExecuteAsync();
+var animals = await sampleClient.Query.Animals().Select().ExecuteAsync();
+// var starWarsClient = services.GetRequiredService<StarWarsClient>();
+//
+// var films = await starWarsClient
+//             .Query
+//             .AllFilms(null, 2, null, null)
+//             .Include(e => e.Films.Select(e => e.VehicleConnection(null, 2, null, null)))
+//             .Select(e=> e.Films)
+//             .ExecuteAsync();
 
 Console.WriteLine("Goodby, World!");
