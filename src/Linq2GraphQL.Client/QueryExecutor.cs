@@ -40,8 +40,8 @@ public class QueryExecutor<T>
             throw new GraphQueryExecutionException(errors, query);
         }
 
-        var hasData = document.RootElement.TryGetProperty(dataPathPropertyName, out var dataElement);
-        var hasResult = dataElement.TryGetProperty(name, out var resultElement);
+        document.RootElement.TryGetProperty(dataPathPropertyName, out var dataElement);
+        dataElement.TryGetProperty(name, out var resultElement);
 
         if (resultElement.ValueKind == JsonValueKind.Null)
         {

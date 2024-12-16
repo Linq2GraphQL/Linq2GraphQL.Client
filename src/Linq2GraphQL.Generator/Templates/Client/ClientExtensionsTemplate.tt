@@ -28,7 +28,7 @@ public static class <#= clientName #>Extensions
         GraphClientOptions graphClientOptions)
     {
         var opts = Options.Create(graphClientOptions);
-        services.AddSingleton(opts);
+        services.AddKeyedSingleton(ClientName, opts);
         services.AddMemoryCache();        
         return new ClientBuilder<<#= clientName #>>(ClientName, services);
     }

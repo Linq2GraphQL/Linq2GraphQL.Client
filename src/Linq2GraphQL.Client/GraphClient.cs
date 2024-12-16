@@ -22,10 +22,10 @@ public class GraphClient
 
         HttpClient = httpClient;
 
-        SerializerOptions = new JsonSerializerOptions
+        SerializerOptions = new()
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            WriteIndented = true
+            Converters = {  }
         };
 
         SubscriptionUrl = GetSubscriptionUrl();
