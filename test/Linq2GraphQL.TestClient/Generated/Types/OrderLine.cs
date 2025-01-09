@@ -17,18 +17,23 @@ namespace Linq2GraphQL.TestClient;
 public partial class OrderLine : GraphQLTypeBase
 {
     [JsonPropertyName("lineNumber")]
+    [GraphQLMember("lineNumber")]
     public int LineNumber { get; set; }
 
     [JsonPropertyName("order")]
+    [GraphQLMember("order")]
     public Order Order { get; set; }
 
     [JsonPropertyName("item")]
+    [GraphQLMember("item")]
     public Item Item { get; set; }
 
     [JsonPropertyName("price")]
+    [GraphQLMember("price")]
     public decimal Price { get; set; }
 
     [JsonPropertyName("quantity")]
+    [GraphQLMember("quantity")]
     public double Quantity { get; set; }
 
 }

@@ -43,4 +43,11 @@ public partial class ItemFilterInput : GraphInputBase
     	set => SetValue("itemName", value);
 	}
 
+	[JsonPropertyName("data")]
+	public ListByteOperationFilterInput Data 
+	{
+		get => GetValue<ListByteOperationFilterInput>("data");
+    	set => SetValue("data", value);
+	}
+
 }

@@ -29,4 +29,11 @@ public partial class ItemInput : GraphInputBase
     	set => SetValue("itemName", value);
 	}
 
+	[JsonPropertyName("data")]
+	public List<byte> Data 
+	{
+		get => GetValue<List<byte>>("data");
+    	set => SetValue("data", value);
+	}
+
 }

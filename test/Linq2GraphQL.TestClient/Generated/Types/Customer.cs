@@ -17,18 +17,23 @@ namespace Linq2GraphQL.TestClient;
 public partial class Customer : GraphQLTypeBase
 {
     [JsonPropertyName("customerId")]
+    [GraphQLMember("customerId")]
     public Guid CustomerId { get; set; }
 
     [JsonPropertyName("customerName")]
+    [GraphQLMember("customerName")]
     public string CustomerName { get; set; }
 
     [JsonPropertyName("status")]
+    [GraphQLMember("status")]
     public CustomerStatus Status { get; set; }
 
     [JsonPropertyName("orders")]
+    [GraphQLMember("orders")]
     public List<Order> Orders { get; set; }
 
     [JsonPropertyName("address")]
+    [GraphQLMember("address")]
     public Address Address { get; set; }
 
 }

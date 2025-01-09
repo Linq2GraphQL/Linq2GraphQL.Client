@@ -1,6 +1,8 @@
-﻿using System.Linq.Expressions;
+﻿using Linq2GraphQL.Client.Visitors;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
+using VisitorPlayground.Visitors;
 
 namespace Linq2GraphQL.Client;
 
@@ -24,19 +26,30 @@ public static class Utilities
         }
     }
 
-    private static bool IsSelectOrSelectMany(this MethodCallExpression methodCallExpression)
-    {
-        if (methodCallExpression.Arguments.Count != 2)
-        {
-            return false;
-        }
 
-        ;
-        var methodName = methodCallExpression.Method.Name;
-        return (methodName == "Select" || methodName == "SelectMany");
-    }
 
     public static void ParseExpression(Expression body, QueryNode parent)
+    {
+
+        var parameterVisitor = new ParameterVisitor(new MemberNode(null, null));
+        var topNode = parameterVisitor.ParseExpression(body);
+        var tree = topNode.PrintMemberTree();
+
+
+
+        topNode.PopulateChildQueryNodes(parent);
+
+        parent.SetAddPrimitiveChildren();
+
+        //foreach (var childNode in node.ChildNodes)
+        //{
+        //    parent.AddChildNode(childNode);
+        //}
+    }
+
+
+
+    public static void ParseExpression_OLD(Expression body, QueryNode parent)
     {
         var node = new QueryNode(parent.Member);
         ParseExpressionInternal(body, node);
@@ -47,6 +60,19 @@ public static class Utilities
             parent.AddChildNode(childNode);
         }
     }
+
+    private static bool IsSelectOrSelectMany(this MethodCallExpression methodCallExpression)
+    {
+        if (methodCallExpression.Arguments.Count != 2)
+        {
+            return false;
+        }
+
+       ;
+        var methodName = methodCallExpression.Method.Name;
+        return (methodName == "Select" || methodName == "SelectMany");
+    }
+
 
     private static void ParseExpressionInternal(Expression body, QueryNode parent)
     {

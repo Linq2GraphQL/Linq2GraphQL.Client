@@ -23,12 +23,14 @@ public partial class OrdersNoBackwardPaginationEdge : GraphQLTypeBase
     /// A cursor for use in pagination.
     /// </summary>
     [JsonPropertyName("cursor")]
+    [GraphQLMember("cursor")]
     public string Cursor { get; set; }
 
     /// <summary>
     /// The item at the end of the edge.
     /// </summary>
     [JsonPropertyName("node")]
+    [GraphQLMember("node")]
     public Order Node { get; set; }
 
 }

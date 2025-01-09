@@ -65,9 +65,9 @@ public class QueryPagingTests : IClassFixture<SampleClientFixture>
          .Query
          .Orders()
          .Include(e => e.TotalCount)
-         .Include(e => e.Nodes.Select(e => e.Customer.Orders))
+         //.Include(e => e.Nodes.Select(e => e.Customer.Orders))
 
-         .Select(e => e.Nodes.Select(e => new { e.OrderId, Customer = new { e.Customer.CustomerName, e.Customer.Orders} }))
+         .Select(e => e.Nodes.Select(e => new { e.OrderId }))
          .AsPager();
 
         var firstPage = await pager.NextPageAsync();

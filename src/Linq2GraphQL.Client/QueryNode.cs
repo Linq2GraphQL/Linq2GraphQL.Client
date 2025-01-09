@@ -82,7 +82,7 @@ public class QueryNode
     public int Level => Parent?.Level + 1 ?? 1;
     public int Leaf { get; internal set; } = 1;
 
-    public void AddChildNode(QueryNode childNode)
+    public QueryNode AddChildNode(QueryNode childNode)
     {
         var currentNode = ChildNodes.FirstOrDefault(e => e.Name == childNode.Name && e.argumentHashCodeId == childNode.argumentHashCodeId);
         if (currentNode == null)
@@ -90,7 +90,7 @@ public class QueryNode
             childNode.Parent = this;
             childNode.Leaf = ChildNodes.Count + 1;
             ChildNodes.Add(childNode);
-            return;
+            return childNode;
         }
         else if (childNode.IncludePrimitive)
         {
@@ -101,6 +101,9 @@ public class QueryNode
         {
             currentNode.AddChildNode(child);
         }
+
+        return currentNode;
+
     }
 
     public void SetArgumentValue(string graphName, object value)
