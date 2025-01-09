@@ -16,6 +16,7 @@ namespace Linq2GraphQL.TestClient;
 public partial class AddressInput : GraphInputBase
 {
 	[GraphQLMember("name")]
+	[JsonPropertyName("name")]
 	public string Name 
 	{
 		get => GetValue<string>("name");
@@ -23,6 +24,7 @@ public partial class AddressInput : GraphInputBase
 	}
 
 	[GraphQLMember("street")]
+	[JsonPropertyName("street")]
 	public string Street 
 	{
 		get => GetValue<string>("street");
@@ -30,6 +32,7 @@ public partial class AddressInput : GraphInputBase
 	}
 
 	[GraphQLMember("postalCode")]
+	[JsonPropertyName("postalCode")]
 	public string PostalCode 
 	{
 		get => GetValue<string>("postalCode");

@@ -6,9 +6,6 @@ using Linq2GraphQL.Client;
 namespace Linq2GraphQL.Client
 {
   
-
-
-
     public class CustomScalarConverter<TScalar> : JsonConverter<TScalar>
         where TScalar : CustomScalar, new()
     {

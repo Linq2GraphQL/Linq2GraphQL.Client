@@ -17,17 +17,22 @@ namespace Linq2GraphQL.TestClient;
 public partial class Pig : GraphQLTypeBase, IAnimal
 {
     [GraphQLMember("name")]
+    [JsonPropertyName("name")]
     public string Name { get; set; }
 
     [GraphQLMember("numberOfLegs")]
+    [JsonPropertyName("numberOfLegs")]
     public int NumberOfLegs { get; set; }
 
     [GraphQLMember("speed")]
+    [JsonPropertyName("speed")]
     public int Speed { get; set; }
 
     [GraphQLMember("spices")]
+    [JsonPropertyName("spices")]
     public string Spices { get; set; }
 
     [GraphQLMember("__typename")]
+    [JsonPropertyName("__typename")]
     public string __TypeName { get; set; }
 }

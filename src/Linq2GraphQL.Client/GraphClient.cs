@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using Linq2GraphQL.Client.Converters;
 using Linq2GraphQL.Client.Schema;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +26,7 @@ public class GraphClient
         SerializerOptions = new()
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            Converters = {  }
+            Converters = { },
         };
 
         SubscriptionUrl = GetSubscriptionUrl();
@@ -35,6 +36,7 @@ public class GraphClient
     public SubscriptionProtocol SubscriptionProtocol => options.Value.SubscriptionProtocol;
     public HttpClient HttpClient { get; }
     public JsonSerializerOptions SerializerOptions { get; }
+ 
 
     private string GetSubscriptionUrl()
     {

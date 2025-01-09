@@ -16,6 +16,7 @@ namespace Linq2GraphQL.TestClient;
 public partial class ListFilterInputTypeOfOrderFilterInput : GraphInputBase
 {
 	[GraphQLMember("all")]
+	[JsonPropertyName("all")]
 	public OrderFilterInput All 
 	{
 		get => GetValue<OrderFilterInput>("all");
@@ -23,6 +24,7 @@ public partial class ListFilterInputTypeOfOrderFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("none")]
+	[JsonPropertyName("none")]
 	public OrderFilterInput None 
 	{
 		get => GetValue<OrderFilterInput>("none");
@@ -30,6 +32,7 @@ public partial class ListFilterInputTypeOfOrderFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("some")]
+	[JsonPropertyName("some")]
 	public OrderFilterInput Some 
 	{
 		get => GetValue<OrderFilterInput>("some");
@@ -37,6 +40,7 @@ public partial class ListFilterInputTypeOfOrderFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("any")]
+	[JsonPropertyName("any")]
 	public bool? Any 
 	{
 		get => GetValue<bool?>("any");

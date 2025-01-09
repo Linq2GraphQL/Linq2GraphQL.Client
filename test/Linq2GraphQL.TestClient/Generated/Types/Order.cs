@@ -45,21 +45,27 @@ public partial class Order : GraphQLTypeBase
     public Address OrderAddress => _orderAddress.Value(() => GetFirstMethodValue<Address>("orderAddress"));
 
     [GraphQLMember("orderId")]
+    [JsonPropertyName("orderId")]
     public Guid OrderId { get; set; }
 
     [GraphQLMember("customer")]
+    [JsonPropertyName("customer")]
     public Customer Customer { get; set; }
 
     [GraphQLMember("address")]
+    [JsonPropertyName("address")]
     public Address Address { get; set; }
 
     [GraphQLMember("orderDate")]
+    [JsonPropertyName("orderDate")]
     public DateTimeOffset OrderDate { get; set; }
 
     [GraphQLMember("lines")]
+    [JsonPropertyName("lines")]
     public List<OrderLine> Lines { get; set; }
 
     [GraphQLMember("entryTime")]
+    [JsonPropertyName("entryTime")]
     public TimeSpan? EntryTime { get; set; }
 
 }

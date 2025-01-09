@@ -16,6 +16,7 @@ namespace Linq2GraphQL.TestClient;
 public partial class ItemFilterInput : GraphInputBase
 {
 	[GraphQLMember("and")]
+	[JsonPropertyName("and")]
 	public List<ItemFilterInput> And 
 	{
 		get => GetValue<List<ItemFilterInput>>("and");
@@ -23,6 +24,7 @@ public partial class ItemFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("or")]
+	[JsonPropertyName("or")]
 	public List<ItemFilterInput> Or 
 	{
 		get => GetValue<List<ItemFilterInput>>("or");
@@ -30,6 +32,7 @@ public partial class ItemFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("itemId")]
+	[JsonPropertyName("itemId")]
 	public StringOperationFilterInput ItemId 
 	{
 		get => GetValue<StringOperationFilterInput>("itemId");
@@ -37,6 +40,7 @@ public partial class ItemFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("itemName")]
+	[JsonPropertyName("itemName")]
 	public StringOperationFilterInput ItemName 
 	{
 		get => GetValue<StringOperationFilterInput>("itemName");
@@ -44,6 +48,7 @@ public partial class ItemFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("data")]
+	[JsonPropertyName("data")]
 	public ListByteOperationFilterInput Data 
 	{
 		get => GetValue<ListByteOperationFilterInput>("data");

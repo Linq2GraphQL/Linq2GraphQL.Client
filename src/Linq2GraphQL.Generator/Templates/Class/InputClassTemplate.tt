@@ -16,6 +16,7 @@ public partial class <#= classType.Name #> : GraphInputBase
         var coreType = field.CoreType;
 #>
 	[GraphQLMember("<#= field.Name #>")]
+	[JsonPropertyName("<#= field.Name #>")]
 	public <#= GetPropertyDefinition(field) #> <#= field.CSharpName #> 
 	{
 		get => GetValue<<#= coreType.CSharpTypeDefinition #>>("<#= field.Name #>");

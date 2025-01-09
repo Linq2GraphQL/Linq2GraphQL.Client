@@ -16,6 +16,7 @@ namespace Linq2GraphQL.TestClient;
 public partial class ByteOperationFilterInput : GraphInputBase
 {
 	[GraphQLMember("eq")]
+	[JsonPropertyName("eq")]
 	public byte? Eq 
 	{
 		get => GetValue<byte?>("eq");
@@ -23,6 +24,7 @@ public partial class ByteOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("neq")]
+	[JsonPropertyName("neq")]
 	public byte? Neq 
 	{
 		get => GetValue<byte?>("neq");
@@ -30,6 +32,7 @@ public partial class ByteOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("in")]
+	[JsonPropertyName("in")]
 	public List<byte?> In 
 	{
 		get => GetValue<List<byte?>>("in");
@@ -37,6 +40,7 @@ public partial class ByteOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("nin")]
+	[JsonPropertyName("nin")]
 	public List<byte?> Nin 
 	{
 		get => GetValue<List<byte?>>("nin");
@@ -44,6 +48,7 @@ public partial class ByteOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("gt")]
+	[JsonPropertyName("gt")]
 	public byte? Gt 
 	{
 		get => GetValue<byte?>("gt");
@@ -51,6 +56,7 @@ public partial class ByteOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("ngt")]
+	[JsonPropertyName("ngt")]
 	public byte? Ngt 
 	{
 		get => GetValue<byte?>("ngt");
@@ -58,6 +64,7 @@ public partial class ByteOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("gte")]
+	[JsonPropertyName("gte")]
 	public byte? Gte 
 	{
 		get => GetValue<byte?>("gte");
@@ -65,6 +72,7 @@ public partial class ByteOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("ngte")]
+	[JsonPropertyName("ngte")]
 	public byte? Ngte 
 	{
 		get => GetValue<byte?>("ngte");
@@ -72,6 +80,7 @@ public partial class ByteOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("lt")]
+	[JsonPropertyName("lt")]
 	public byte? Lt 
 	{
 		get => GetValue<byte?>("lt");
@@ -79,6 +88,7 @@ public partial class ByteOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("nlt")]
+	[JsonPropertyName("nlt")]
 	public byte? Nlt 
 	{
 		get => GetValue<byte?>("nlt");
@@ -86,6 +96,7 @@ public partial class ByteOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("lte")]
+	[JsonPropertyName("lte")]
 	public byte? Lte 
 	{
 		get => GetValue<byte?>("lte");
@@ -93,6 +104,7 @@ public partial class ByteOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("nlte")]
+	[JsonPropertyName("nlte")]
 	public byte? Nlte 
 	{
 		get => GetValue<byte?>("nlte");

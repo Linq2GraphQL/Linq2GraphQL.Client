@@ -16,6 +16,7 @@ namespace Linq2GraphQL.TestClient;
 public partial class DateTimeOperationFilterInput : GraphInputBase
 {
 	[GraphQLMember("eq")]
+	[JsonPropertyName("eq")]
 	public DateTimeOffset? Eq 
 	{
 		get => GetValue<DateTimeOffset?>("eq");
@@ -23,6 +24,7 @@ public partial class DateTimeOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("neq")]
+	[JsonPropertyName("neq")]
 	public DateTimeOffset? Neq 
 	{
 		get => GetValue<DateTimeOffset?>("neq");
@@ -30,6 +32,7 @@ public partial class DateTimeOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("in")]
+	[JsonPropertyName("in")]
 	public List<DateTimeOffset?> In 
 	{
 		get => GetValue<List<DateTimeOffset?>>("in");
@@ -37,6 +40,7 @@ public partial class DateTimeOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("nin")]
+	[JsonPropertyName("nin")]
 	public List<DateTimeOffset?> Nin 
 	{
 		get => GetValue<List<DateTimeOffset?>>("nin");
@@ -44,6 +48,7 @@ public partial class DateTimeOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("gt")]
+	[JsonPropertyName("gt")]
 	public DateTimeOffset? Gt 
 	{
 		get => GetValue<DateTimeOffset?>("gt");
@@ -51,6 +56,7 @@ public partial class DateTimeOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("ngt")]
+	[JsonPropertyName("ngt")]
 	public DateTimeOffset? Ngt 
 	{
 		get => GetValue<DateTimeOffset?>("ngt");
@@ -58,6 +64,7 @@ public partial class DateTimeOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("gte")]
+	[JsonPropertyName("gte")]
 	public DateTimeOffset? Gte 
 	{
 		get => GetValue<DateTimeOffset?>("gte");
@@ -65,6 +72,7 @@ public partial class DateTimeOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("ngte")]
+	[JsonPropertyName("ngte")]
 	public DateTimeOffset? Ngte 
 	{
 		get => GetValue<DateTimeOffset?>("ngte");
@@ -72,6 +80,7 @@ public partial class DateTimeOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("lt")]
+	[JsonPropertyName("lt")]
 	public DateTimeOffset? Lt 
 	{
 		get => GetValue<DateTimeOffset?>("lt");
@@ -79,6 +88,7 @@ public partial class DateTimeOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("nlt")]
+	[JsonPropertyName("nlt")]
 	public DateTimeOffset? Nlt 
 	{
 		get => GetValue<DateTimeOffset?>("nlt");
@@ -86,6 +96,7 @@ public partial class DateTimeOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("lte")]
+	[JsonPropertyName("lte")]
 	public DateTimeOffset? Lte 
 	{
 		get => GetValue<DateTimeOffset?>("lte");
@@ -93,6 +104,7 @@ public partial class DateTimeOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("nlte")]
+	[JsonPropertyName("nlte")]
 	public DateTimeOffset? Nlte 
 	{
 		get => GetValue<DateTimeOffset?>("nlte");

@@ -16,6 +16,7 @@ namespace Linq2GraphQL.TestClient;
 public partial class AddressSortInput : GraphInputBase
 {
 	[GraphQLMember("name")]
+	[JsonPropertyName("name")]
 	public SortEnumType? Name 
 	{
 		get => GetValue<SortEnumType?>("name");
@@ -23,6 +24,7 @@ public partial class AddressSortInput : GraphInputBase
 	}
 
 	[GraphQLMember("street")]
+	[JsonPropertyName("street")]
 	public SortEnumType? Street 
 	{
 		get => GetValue<SortEnumType?>("street");
@@ -30,6 +32,7 @@ public partial class AddressSortInput : GraphInputBase
 	}
 
 	[GraphQLMember("postalCode")]
+	[JsonPropertyName("postalCode")]
 	public SortEnumType? PostalCode 
 	{
 		get => GetValue<SortEnumType?>("postalCode");

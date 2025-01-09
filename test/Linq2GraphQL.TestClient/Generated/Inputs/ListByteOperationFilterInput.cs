@@ -16,6 +16,7 @@ namespace Linq2GraphQL.TestClient;
 public partial class ListByteOperationFilterInput : GraphInputBase
 {
 	[GraphQLMember("all")]
+	[JsonPropertyName("all")]
 	public ByteOperationFilterInput All 
 	{
 		get => GetValue<ByteOperationFilterInput>("all");
@@ -23,6 +24,7 @@ public partial class ListByteOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("none")]
+	[JsonPropertyName("none")]
 	public ByteOperationFilterInput None 
 	{
 		get => GetValue<ByteOperationFilterInput>("none");
@@ -30,6 +32,7 @@ public partial class ListByteOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("some")]
+	[JsonPropertyName("some")]
 	public ByteOperationFilterInput Some 
 	{
 		get => GetValue<ByteOperationFilterInput>("some");
@@ -37,6 +40,7 @@ public partial class ListByteOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("any")]
+	[JsonPropertyName("any")]
 	public bool? Any 
 	{
 		get => GetValue<bool?>("any");

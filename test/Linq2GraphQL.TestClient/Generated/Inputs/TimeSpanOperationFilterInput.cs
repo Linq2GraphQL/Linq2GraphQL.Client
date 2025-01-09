@@ -16,6 +16,7 @@ namespace Linq2GraphQL.TestClient;
 public partial class TimeSpanOperationFilterInput : GraphInputBase
 {
 	[GraphQLMember("eq")]
+	[JsonPropertyName("eq")]
 	public TimeSpan? Eq 
 	{
 		get => GetValue<TimeSpan?>("eq");
@@ -23,6 +24,7 @@ public partial class TimeSpanOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("neq")]
+	[JsonPropertyName("neq")]
 	public TimeSpan? Neq 
 	{
 		get => GetValue<TimeSpan?>("neq");
@@ -30,6 +32,7 @@ public partial class TimeSpanOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("in")]
+	[JsonPropertyName("in")]
 	public List<TimeSpan?> In 
 	{
 		get => GetValue<List<TimeSpan?>>("in");
@@ -37,6 +40,7 @@ public partial class TimeSpanOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("nin")]
+	[JsonPropertyName("nin")]
 	public List<TimeSpan?> Nin 
 	{
 		get => GetValue<List<TimeSpan?>>("nin");
@@ -44,6 +48,7 @@ public partial class TimeSpanOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("gt")]
+	[JsonPropertyName("gt")]
 	public TimeSpan? Gt 
 	{
 		get => GetValue<TimeSpan?>("gt");
@@ -51,6 +56,7 @@ public partial class TimeSpanOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("ngt")]
+	[JsonPropertyName("ngt")]
 	public TimeSpan? Ngt 
 	{
 		get => GetValue<TimeSpan?>("ngt");
@@ -58,6 +64,7 @@ public partial class TimeSpanOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("gte")]
+	[JsonPropertyName("gte")]
 	public TimeSpan? Gte 
 	{
 		get => GetValue<TimeSpan?>("gte");
@@ -65,6 +72,7 @@ public partial class TimeSpanOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("ngte")]
+	[JsonPropertyName("ngte")]
 	public TimeSpan? Ngte 
 	{
 		get => GetValue<TimeSpan?>("ngte");
@@ -72,6 +80,7 @@ public partial class TimeSpanOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("lt")]
+	[JsonPropertyName("lt")]
 	public TimeSpan? Lt 
 	{
 		get => GetValue<TimeSpan?>("lt");
@@ -79,6 +88,7 @@ public partial class TimeSpanOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("nlt")]
+	[JsonPropertyName("nlt")]
 	public TimeSpan? Nlt 
 	{
 		get => GetValue<TimeSpan?>("nlt");
@@ -86,6 +96,7 @@ public partial class TimeSpanOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("lte")]
+	[JsonPropertyName("lte")]
 	public TimeSpan? Lte 
 	{
 		get => GetValue<TimeSpan?>("lte");
@@ -93,6 +104,7 @@ public partial class TimeSpanOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("nlte")]
+	[JsonPropertyName("nlte")]
 	public TimeSpan? Nlte 
 	{
 		get => GetValue<TimeSpan?>("nlte");

@@ -16,6 +16,7 @@ namespace Linq2GraphQL.TestClient;
 public partial class DecimalOperationFilterInput : GraphInputBase
 {
 	[GraphQLMember("eq")]
+	[JsonPropertyName("eq")]
 	public decimal? Eq 
 	{
 		get => GetValue<decimal?>("eq");
@@ -23,6 +24,7 @@ public partial class DecimalOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("neq")]
+	[JsonPropertyName("neq")]
 	public decimal? Neq 
 	{
 		get => GetValue<decimal?>("neq");
@@ -30,6 +32,7 @@ public partial class DecimalOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("in")]
+	[JsonPropertyName("in")]
 	public List<decimal?> In 
 	{
 		get => GetValue<List<decimal?>>("in");
@@ -37,6 +40,7 @@ public partial class DecimalOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("nin")]
+	[JsonPropertyName("nin")]
 	public List<decimal?> Nin 
 	{
 		get => GetValue<List<decimal?>>("nin");
@@ -44,6 +48,7 @@ public partial class DecimalOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("gt")]
+	[JsonPropertyName("gt")]
 	public decimal? Gt 
 	{
 		get => GetValue<decimal?>("gt");
@@ -51,6 +56,7 @@ public partial class DecimalOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("ngt")]
+	[JsonPropertyName("ngt")]
 	public decimal? Ngt 
 	{
 		get => GetValue<decimal?>("ngt");
@@ -58,6 +64,7 @@ public partial class DecimalOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("gte")]
+	[JsonPropertyName("gte")]
 	public decimal? Gte 
 	{
 		get => GetValue<decimal?>("gte");
@@ -65,6 +72,7 @@ public partial class DecimalOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("ngte")]
+	[JsonPropertyName("ngte")]
 	public decimal? Ngte 
 	{
 		get => GetValue<decimal?>("ngte");
@@ -72,6 +80,7 @@ public partial class DecimalOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("lt")]
+	[JsonPropertyName("lt")]
 	public decimal? Lt 
 	{
 		get => GetValue<decimal?>("lt");
@@ -79,6 +88,7 @@ public partial class DecimalOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("nlt")]
+	[JsonPropertyName("nlt")]
 	public decimal? Nlt 
 	{
 		get => GetValue<decimal?>("nlt");
@@ -86,6 +96,7 @@ public partial class DecimalOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("lte")]
+	[JsonPropertyName("lte")]
 	public decimal? Lte 
 	{
 		get => GetValue<decimal?>("lte");
@@ -93,6 +104,7 @@ public partial class DecimalOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("nlte")]
+	[JsonPropertyName("nlte")]
 	public decimal? Nlte 
 	{
 		get => GetValue<decimal?>("nlte");

@@ -16,6 +16,7 @@ namespace Linq2GraphQL.TestClient;
 public partial class ItemInput : GraphInputBase
 {
 	[GraphQLMember("itemId")]
+	[JsonPropertyName("itemId")]
 	public string ItemId 
 	{
 		get => GetValue<string>("itemId");
@@ -23,6 +24,7 @@ public partial class ItemInput : GraphInputBase
 	}
 
 	[GraphQLMember("itemName")]
+	[JsonPropertyName("itemName")]
 	public string ItemName 
 	{
 		get => GetValue<string>("itemName");
@@ -30,6 +32,7 @@ public partial class ItemInput : GraphInputBase
 	}
 
 	[GraphQLMember("data")]
+	[JsonPropertyName("data")]
 	public List<byte> Data 
 	{
 		get => GetValue<List<byte>>("data");

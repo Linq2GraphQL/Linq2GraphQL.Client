@@ -16,6 +16,7 @@ namespace Linq2GraphQL.TestClient;
 public partial class OrderLineFilterInput : GraphInputBase
 {
 	[GraphQLMember("and")]
+	[JsonPropertyName("and")]
 	public List<OrderLineFilterInput> And 
 	{
 		get => GetValue<List<OrderLineFilterInput>>("and");
@@ -23,6 +24,7 @@ public partial class OrderLineFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("or")]
+	[JsonPropertyName("or")]
 	public List<OrderLineFilterInput> Or 
 	{
 		get => GetValue<List<OrderLineFilterInput>>("or");
@@ -30,6 +32,7 @@ public partial class OrderLineFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("lineNumber")]
+	[JsonPropertyName("lineNumber")]
 	public IntOperationFilterInput LineNumber 
 	{
 		get => GetValue<IntOperationFilterInput>("lineNumber");
@@ -37,6 +40,7 @@ public partial class OrderLineFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("order")]
+	[JsonPropertyName("order")]
 	public OrderFilterInput Order 
 	{
 		get => GetValue<OrderFilterInput>("order");
@@ -44,6 +48,7 @@ public partial class OrderLineFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("item")]
+	[JsonPropertyName("item")]
 	public ItemFilterInput Item 
 	{
 		get => GetValue<ItemFilterInput>("item");
@@ -51,6 +56,7 @@ public partial class OrderLineFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("price")]
+	[JsonPropertyName("price")]
 	public DecimalOperationFilterInput Price 
 	{
 		get => GetValue<DecimalOperationFilterInput>("price");
@@ -58,6 +64,7 @@ public partial class OrderLineFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("quantity")]
+	[JsonPropertyName("quantity")]
 	public FloatOperationFilterInput Quantity 
 	{
 		get => GetValue<FloatOperationFilterInput>("quantity");

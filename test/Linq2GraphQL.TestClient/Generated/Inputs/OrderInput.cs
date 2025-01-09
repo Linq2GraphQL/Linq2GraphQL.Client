@@ -16,6 +16,7 @@ namespace Linq2GraphQL.TestClient;
 public partial class OrderInput : GraphInputBase
 {
 	[GraphQLMember("orderId")]
+	[JsonPropertyName("orderId")]
 	public Guid OrderId 
 	{
 		get => GetValue<Guid>("orderId");
@@ -23,6 +24,7 @@ public partial class OrderInput : GraphInputBase
 	}
 
 	[GraphQLMember("customer")]
+	[JsonPropertyName("customer")]
 	public CustomerInput Customer 
 	{
 		get => GetValue<CustomerInput>("customer");
@@ -30,6 +32,7 @@ public partial class OrderInput : GraphInputBase
 	}
 
 	[GraphQLMember("address")]
+	[JsonPropertyName("address")]
 	public AddressInput Address 
 	{
 		get => GetValue<AddressInput>("address");
@@ -37,6 +40,7 @@ public partial class OrderInput : GraphInputBase
 	}
 
 	[GraphQLMember("orderDate")]
+	[JsonPropertyName("orderDate")]
 	public DateTimeOffset OrderDate 
 	{
 		get => GetValue<DateTimeOffset>("orderDate");
@@ -44,6 +48,7 @@ public partial class OrderInput : GraphInputBase
 	}
 
 	[GraphQLMember("lines")]
+	[JsonPropertyName("lines")]
 	public List<OrderLineInput> Lines 
 	{
 		get => GetValue<List<OrderLineInput>>("lines");
@@ -51,6 +56,7 @@ public partial class OrderInput : GraphInputBase
 	}
 
 	[GraphQLMember("entryTime")]
+	[JsonPropertyName("entryTime")]
 	public TimeSpan? EntryTime 
 	{
 		get => GetValue<TimeSpan?>("entryTime");

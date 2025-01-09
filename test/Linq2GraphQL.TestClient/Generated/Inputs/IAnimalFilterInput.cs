@@ -16,6 +16,7 @@ namespace Linq2GraphQL.TestClient;
 public partial class IAnimalFilterInput : GraphInputBase
 {
 	[GraphQLMember("and")]
+	[JsonPropertyName("and")]
 	public List<IAnimalFilterInput> And 
 	{
 		get => GetValue<List<IAnimalFilterInput>>("and");
@@ -23,6 +24,7 @@ public partial class IAnimalFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("or")]
+	[JsonPropertyName("or")]
 	public List<IAnimalFilterInput> Or 
 	{
 		get => GetValue<List<IAnimalFilterInput>>("or");
@@ -30,6 +32,7 @@ public partial class IAnimalFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("name")]
+	[JsonPropertyName("name")]
 	public StringOperationFilterInput Name 
 	{
 		get => GetValue<StringOperationFilterInput>("name");
@@ -37,6 +40,7 @@ public partial class IAnimalFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("numberOfLegs")]
+	[JsonPropertyName("numberOfLegs")]
 	public IntOperationFilterInput NumberOfLegs 
 	{
 		get => GetValue<IntOperationFilterInput>("numberOfLegs");

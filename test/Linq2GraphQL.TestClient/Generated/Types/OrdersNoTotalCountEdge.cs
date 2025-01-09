@@ -23,12 +23,14 @@ public partial class OrdersNoTotalCountEdge : GraphQLTypeBase
     /// A cursor for use in pagination.
     /// </summary>
     [GraphQLMember("cursor")]
+    [JsonPropertyName("cursor")]
     public string Cursor { get; set; }
 
     /// <summary>
     /// The item at the end of the edge.
     /// </summary>
     [GraphQLMember("node")]
+    [JsonPropertyName("node")]
     public Order Node { get; set; }
 
 }

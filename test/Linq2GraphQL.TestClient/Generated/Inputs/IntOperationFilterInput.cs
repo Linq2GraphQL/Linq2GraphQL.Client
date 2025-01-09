@@ -16,6 +16,7 @@ namespace Linq2GraphQL.TestClient;
 public partial class IntOperationFilterInput : GraphInputBase
 {
 	[GraphQLMember("eq")]
+	[JsonPropertyName("eq")]
 	public int? Eq 
 	{
 		get => GetValue<int?>("eq");
@@ -23,6 +24,7 @@ public partial class IntOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("neq")]
+	[JsonPropertyName("neq")]
 	public int? Neq 
 	{
 		get => GetValue<int?>("neq");
@@ -30,6 +32,7 @@ public partial class IntOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("in")]
+	[JsonPropertyName("in")]
 	public List<int?> In 
 	{
 		get => GetValue<List<int?>>("in");
@@ -37,6 +40,7 @@ public partial class IntOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("nin")]
+	[JsonPropertyName("nin")]
 	public List<int?> Nin 
 	{
 		get => GetValue<List<int?>>("nin");
@@ -44,6 +48,7 @@ public partial class IntOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("gt")]
+	[JsonPropertyName("gt")]
 	public int? Gt 
 	{
 		get => GetValue<int?>("gt");
@@ -51,6 +56,7 @@ public partial class IntOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("ngt")]
+	[JsonPropertyName("ngt")]
 	public int? Ngt 
 	{
 		get => GetValue<int?>("ngt");
@@ -58,6 +64,7 @@ public partial class IntOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("gte")]
+	[JsonPropertyName("gte")]
 	public int? Gte 
 	{
 		get => GetValue<int?>("gte");
@@ -65,6 +72,7 @@ public partial class IntOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("ngte")]
+	[JsonPropertyName("ngte")]
 	public int? Ngte 
 	{
 		get => GetValue<int?>("ngte");
@@ -72,6 +80,7 @@ public partial class IntOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("lt")]
+	[JsonPropertyName("lt")]
 	public int? Lt 
 	{
 		get => GetValue<int?>("lt");
@@ -79,6 +88,7 @@ public partial class IntOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("nlt")]
+	[JsonPropertyName("nlt")]
 	public int? Nlt 
 	{
 		get => GetValue<int?>("nlt");
@@ -86,6 +96,7 @@ public partial class IntOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("lte")]
+	[JsonPropertyName("lte")]
 	public int? Lte 
 	{
 		get => GetValue<int?>("lte");
@@ -93,6 +104,7 @@ public partial class IntOperationFilterInput : GraphInputBase
 	}
 
 	[GraphQLMember("nlte")]
+	[JsonPropertyName("nlte")]
 	public int? Nlte 
 	{
 		get => GetValue<int?>("nlte");
