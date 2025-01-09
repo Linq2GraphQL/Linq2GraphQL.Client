@@ -58,7 +58,7 @@ namespace Linq2GraphQL.Generator.Templates.Class
             
             #line default
             #line hidden
-            this.Write("\t[JsonPropertyName(\"");
+            this.Write("\t[GraphQLMember(\"");
             
             #line 18 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\InputClassTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(field.Name));

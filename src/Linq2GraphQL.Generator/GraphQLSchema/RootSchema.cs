@@ -136,17 +136,6 @@ public class BaseField
 
     public BaseType Type { get; set; }
 
-
-    //private TypeInfo fieldInfo;
-    //public TypeInfo FieldInfo
-    //{
-    //    get
-    //    {
-    //        fieldInfo ??= GetFieldTypeInfo();
-    //        return fieldInfo;
-    //    }
-    //}
-
     private CoreType coreType;
     public CoreType CoreType
     {
@@ -202,7 +191,7 @@ public class Field : BaseField
             if (addTypeAttribute)
             {
                 result +=
-                    $"[GraphArgument(\"{arg.CoreType.GraphQLTypeDefinition}\")] {arg.CoreType.CSharpTypeDefinition} {arg.Name.ToCamelCase()}";
+                    $"[GraphQLArgument(\"{arg.Name}\", \"{arg.CoreType.GraphQLTypeDefinition}\")] {arg.CoreType.CSharpTypeDefinition} {arg.Name.ToCamelCase()}";
             }
             else
             {
