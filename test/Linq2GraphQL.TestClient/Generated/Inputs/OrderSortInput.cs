@@ -15,35 +15,35 @@ namespace Linq2GraphQL.TestClient;
 [JsonConverter(typeof(GraphInputConverter<OrderSortInput>))]
 public partial class OrderSortInput : GraphInputBase
 {
-	[JsonPropertyName("orderId")]
+	[GraphQLMember("orderId")]
 	public SortEnumType? OrderId 
 	{
 		get => GetValue<SortEnumType?>("orderId");
     	set => SetValue("orderId", value);
 	}
 
-	[JsonPropertyName("customer")]
+	[GraphQLMember("customer")]
 	public CustomerSortInput Customer 
 	{
 		get => GetValue<CustomerSortInput>("customer");
     	set => SetValue("customer", value);
 	}
 
-	[JsonPropertyName("address")]
+	[GraphQLMember("address")]
 	public AddressSortInput Address 
 	{
 		get => GetValue<AddressSortInput>("address");
     	set => SetValue("address", value);
 	}
 
-	[JsonPropertyName("orderDate")]
+	[GraphQLMember("orderDate")]
 	public SortEnumType? OrderDate 
 	{
 		get => GetValue<SortEnumType?>("orderDate");
     	set => SetValue("orderDate", value);
 	}
 
-	[JsonPropertyName("entryTime")]
+	[GraphQLMember("entryTime")]
 	public SortEnumType? EntryTime 
 	{
 		get => GetValue<SortEnumType?>("entryTime");

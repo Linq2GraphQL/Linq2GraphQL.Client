@@ -15,28 +15,28 @@ namespace Linq2GraphQL.TestClient;
 [JsonConverter(typeof(GraphInputConverter<CustomerStatusOperationFilterInput>))]
 public partial class CustomerStatusOperationFilterInput : GraphInputBase
 {
-	[JsonPropertyName("eq")]
+	[GraphQLMember("eq")]
 	public CustomerStatus? Eq 
 	{
 		get => GetValue<CustomerStatus?>("eq");
     	set => SetValue("eq", value);
 	}
 
-	[JsonPropertyName("neq")]
+	[GraphQLMember("neq")]
 	public CustomerStatus? Neq 
 	{
 		get => GetValue<CustomerStatus?>("neq");
     	set => SetValue("neq", value);
 	}
 
-	[JsonPropertyName("in")]
+	[GraphQLMember("in")]
 	public List<CustomerStatus> In 
 	{
 		get => GetValue<List<CustomerStatus>>("in");
     	set => SetValue("in", value);
 	}
 
-	[JsonPropertyName("nin")]
+	[GraphQLMember("nin")]
 	public List<CustomerStatus> Nin 
 	{
 		get => GetValue<List<CustomerStatus>>("nin");

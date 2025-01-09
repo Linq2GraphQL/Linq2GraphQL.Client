@@ -15,28 +15,28 @@ namespace Linq2GraphQL.TestClient;
 [JsonConverter(typeof(GraphInputConverter<IAnimalFilterInput>))]
 public partial class IAnimalFilterInput : GraphInputBase
 {
-	[JsonPropertyName("and")]
+	[GraphQLMember("and")]
 	public List<IAnimalFilterInput> And 
 	{
 		get => GetValue<List<IAnimalFilterInput>>("and");
     	set => SetValue("and", value);
 	}
 
-	[JsonPropertyName("or")]
+	[GraphQLMember("or")]
 	public List<IAnimalFilterInput> Or 
 	{
 		get => GetValue<List<IAnimalFilterInput>>("or");
     	set => SetValue("or", value);
 	}
 
-	[JsonPropertyName("name")]
+	[GraphQLMember("name")]
 	public StringOperationFilterInput Name 
 	{
 		get => GetValue<StringOperationFilterInput>("name");
     	set => SetValue("name", value);
 	}
 
-	[JsonPropertyName("numberOfLegs")]
+	[GraphQLMember("numberOfLegs")]
 	public IntOperationFilterInput NumberOfLegs 
 	{
 		get => GetValue<IntOperationFilterInput>("numberOfLegs");

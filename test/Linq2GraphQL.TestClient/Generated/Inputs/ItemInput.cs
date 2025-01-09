@@ -15,21 +15,21 @@ namespace Linq2GraphQL.TestClient;
 [JsonConverter(typeof(GraphInputConverter<ItemInput>))]
 public partial class ItemInput : GraphInputBase
 {
-	[JsonPropertyName("itemId")]
+	[GraphQLMember("itemId")]
 	public string ItemId 
 	{
 		get => GetValue<string>("itemId");
     	set => SetValue("itemId", value);
 	}
 
-	[JsonPropertyName("itemName")]
+	[GraphQLMember("itemName")]
 	public string ItemName 
 	{
 		get => GetValue<string>("itemName");
     	set => SetValue("itemName", value);
 	}
 
-	[JsonPropertyName("data")]
+	[GraphQLMember("data")]
 	public List<byte> Data 
 	{
 		get => GetValue<List<byte>>("data");

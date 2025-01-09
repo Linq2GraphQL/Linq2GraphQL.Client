@@ -15,14 +15,14 @@ namespace Linq2GraphQL.TestClient;
 [JsonConverter(typeof(GraphInputConverter<IAnimalSortInput>))]
 public partial class IAnimalSortInput : GraphInputBase
 {
-	[JsonPropertyName("name")]
+	[GraphQLMember("name")]
 	public SortEnumType? Name 
 	{
 		get => GetValue<SortEnumType?>("name");
     	set => SetValue("name", value);
 	}
 
-	[JsonPropertyName("numberOfLegs")]
+	[GraphQLMember("numberOfLegs")]
 	public SortEnumType? NumberOfLegs 
 	{
 		get => GetValue<SortEnumType?>("numberOfLegs");

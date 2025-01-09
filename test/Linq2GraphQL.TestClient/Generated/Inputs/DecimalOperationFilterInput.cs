@@ -15,84 +15,84 @@ namespace Linq2GraphQL.TestClient;
 [JsonConverter(typeof(GraphInputConverter<DecimalOperationFilterInput>))]
 public partial class DecimalOperationFilterInput : GraphInputBase
 {
-	[JsonPropertyName("eq")]
+	[GraphQLMember("eq")]
 	public decimal? Eq 
 	{
 		get => GetValue<decimal?>("eq");
     	set => SetValue("eq", value);
 	}
 
-	[JsonPropertyName("neq")]
+	[GraphQLMember("neq")]
 	public decimal? Neq 
 	{
 		get => GetValue<decimal?>("neq");
     	set => SetValue("neq", value);
 	}
 
-	[JsonPropertyName("in")]
+	[GraphQLMember("in")]
 	public List<decimal?> In 
 	{
 		get => GetValue<List<decimal?>>("in");
     	set => SetValue("in", value);
 	}
 
-	[JsonPropertyName("nin")]
+	[GraphQLMember("nin")]
 	public List<decimal?> Nin 
 	{
 		get => GetValue<List<decimal?>>("nin");
     	set => SetValue("nin", value);
 	}
 
-	[JsonPropertyName("gt")]
+	[GraphQLMember("gt")]
 	public decimal? Gt 
 	{
 		get => GetValue<decimal?>("gt");
     	set => SetValue("gt", value);
 	}
 
-	[JsonPropertyName("ngt")]
+	[GraphQLMember("ngt")]
 	public decimal? Ngt 
 	{
 		get => GetValue<decimal?>("ngt");
     	set => SetValue("ngt", value);
 	}
 
-	[JsonPropertyName("gte")]
+	[GraphQLMember("gte")]
 	public decimal? Gte 
 	{
 		get => GetValue<decimal?>("gte");
     	set => SetValue("gte", value);
 	}
 
-	[JsonPropertyName("ngte")]
+	[GraphQLMember("ngte")]
 	public decimal? Ngte 
 	{
 		get => GetValue<decimal?>("ngte");
     	set => SetValue("ngte", value);
 	}
 
-	[JsonPropertyName("lt")]
+	[GraphQLMember("lt")]
 	public decimal? Lt 
 	{
 		get => GetValue<decimal?>("lt");
     	set => SetValue("lt", value);
 	}
 
-	[JsonPropertyName("nlt")]
+	[GraphQLMember("nlt")]
 	public decimal? Nlt 
 	{
 		get => GetValue<decimal?>("nlt");
     	set => SetValue("nlt", value);
 	}
 
-	[JsonPropertyName("lte")]
+	[GraphQLMember("lte")]
 	public decimal? Lte 
 	{
 		get => GetValue<decimal?>("lte");
     	set => SetValue("lte", value);
 	}
 
-	[JsonPropertyName("nlte")]
+	[GraphQLMember("nlte")]
 	public decimal? Nlte 
 	{
 		get => GetValue<decimal?>("nlte");

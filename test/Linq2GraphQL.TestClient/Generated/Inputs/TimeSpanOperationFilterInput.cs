@@ -15,84 +15,84 @@ namespace Linq2GraphQL.TestClient;
 [JsonConverter(typeof(GraphInputConverter<TimeSpanOperationFilterInput>))]
 public partial class TimeSpanOperationFilterInput : GraphInputBase
 {
-	[JsonPropertyName("eq")]
+	[GraphQLMember("eq")]
 	public TimeSpan? Eq 
 	{
 		get => GetValue<TimeSpan?>("eq");
     	set => SetValue("eq", value);
 	}
 
-	[JsonPropertyName("neq")]
+	[GraphQLMember("neq")]
 	public TimeSpan? Neq 
 	{
 		get => GetValue<TimeSpan?>("neq");
     	set => SetValue("neq", value);
 	}
 
-	[JsonPropertyName("in")]
+	[GraphQLMember("in")]
 	public List<TimeSpan?> In 
 	{
 		get => GetValue<List<TimeSpan?>>("in");
     	set => SetValue("in", value);
 	}
 
-	[JsonPropertyName("nin")]
+	[GraphQLMember("nin")]
 	public List<TimeSpan?> Nin 
 	{
 		get => GetValue<List<TimeSpan?>>("nin");
     	set => SetValue("nin", value);
 	}
 
-	[JsonPropertyName("gt")]
+	[GraphQLMember("gt")]
 	public TimeSpan? Gt 
 	{
 		get => GetValue<TimeSpan?>("gt");
     	set => SetValue("gt", value);
 	}
 
-	[JsonPropertyName("ngt")]
+	[GraphQLMember("ngt")]
 	public TimeSpan? Ngt 
 	{
 		get => GetValue<TimeSpan?>("ngt");
     	set => SetValue("ngt", value);
 	}
 
-	[JsonPropertyName("gte")]
+	[GraphQLMember("gte")]
 	public TimeSpan? Gte 
 	{
 		get => GetValue<TimeSpan?>("gte");
     	set => SetValue("gte", value);
 	}
 
-	[JsonPropertyName("ngte")]
+	[GraphQLMember("ngte")]
 	public TimeSpan? Ngte 
 	{
 		get => GetValue<TimeSpan?>("ngte");
     	set => SetValue("ngte", value);
 	}
 
-	[JsonPropertyName("lt")]
+	[GraphQLMember("lt")]
 	public TimeSpan? Lt 
 	{
 		get => GetValue<TimeSpan?>("lt");
     	set => SetValue("lt", value);
 	}
 
-	[JsonPropertyName("nlt")]
+	[GraphQLMember("nlt")]
 	public TimeSpan? Nlt 
 	{
 		get => GetValue<TimeSpan?>("nlt");
     	set => SetValue("nlt", value);
 	}
 
-	[JsonPropertyName("lte")]
+	[GraphQLMember("lte")]
 	public TimeSpan? Lte 
 	{
 		get => GetValue<TimeSpan?>("lte");
     	set => SetValue("lte", value);
 	}
 
-	[JsonPropertyName("nlte")]
+	[GraphQLMember("nlte")]
 	public TimeSpan? Nlte 
 	{
 		get => GetValue<TimeSpan?>("nlte");

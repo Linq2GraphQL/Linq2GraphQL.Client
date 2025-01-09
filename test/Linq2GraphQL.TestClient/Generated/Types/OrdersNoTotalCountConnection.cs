@@ -22,21 +22,18 @@ public partial class OrdersNoTotalCountConnection : GraphQLTypeBase, Linq2GraphQ
     /// <summary>
     /// Information to aid in pagination.
     /// </summary>
-    [JsonPropertyName("pageInfo")]
     [GraphQLMember("pageInfo")]
     public Linq2GraphQL.Client.Common.PageInfo PageInfo { get; set; }
 
     /// <summary>
     /// A list of edges.
     /// </summary>
-    [JsonPropertyName("edges")]
     [GraphQLMember("edges")]
     public List<OrdersNoTotalCountEdge> Edges { get; set; }
 
     /// <summary>
     /// A flattened list of the nodes.
     /// </summary>
-    [JsonPropertyName("nodes")]
     [GraphQLMember("nodes")]
     public List<Order> Nodes { get; set; }
 

@@ -15,49 +15,49 @@ namespace Linq2GraphQL.TestClient;
 [JsonConverter(typeof(GraphInputConverter<CustomerFilterInput>))]
 public partial class CustomerFilterInput : GraphInputBase
 {
-	[JsonPropertyName("and")]
+	[GraphQLMember("and")]
 	public List<CustomerFilterInput> And 
 	{
 		get => GetValue<List<CustomerFilterInput>>("and");
     	set => SetValue("and", value);
 	}
 
-	[JsonPropertyName("or")]
+	[GraphQLMember("or")]
 	public List<CustomerFilterInput> Or 
 	{
 		get => GetValue<List<CustomerFilterInput>>("or");
     	set => SetValue("or", value);
 	}
 
-	[JsonPropertyName("customerId")]
+	[GraphQLMember("customerId")]
 	public UuidOperationFilterInput CustomerId 
 	{
 		get => GetValue<UuidOperationFilterInput>("customerId");
     	set => SetValue("customerId", value);
 	}
 
-	[JsonPropertyName("customerName")]
+	[GraphQLMember("customerName")]
 	public StringOperationFilterInput CustomerName 
 	{
 		get => GetValue<StringOperationFilterInput>("customerName");
     	set => SetValue("customerName", value);
 	}
 
-	[JsonPropertyName("status")]
+	[GraphQLMember("status")]
 	public CustomerStatusOperationFilterInput Status 
 	{
 		get => GetValue<CustomerStatusOperationFilterInput>("status");
     	set => SetValue("status", value);
 	}
 
-	[JsonPropertyName("orders")]
+	[GraphQLMember("orders")]
 	public ListFilterInputTypeOfOrderFilterInput Orders 
 	{
 		get => GetValue<ListFilterInputTypeOfOrderFilterInput>("orders");
     	set => SetValue("orders", value);
 	}
 
-	[JsonPropertyName("address")]
+	[GraphQLMember("address")]
 	public AddressFilterInput Address 
 	{
 		get => GetValue<AddressFilterInput>("address");

@@ -15,35 +15,35 @@ namespace Linq2GraphQL.TestClient;
 [JsonConverter(typeof(GraphInputConverter<CustomerInput>))]
 public partial class CustomerInput : GraphInputBase
 {
-	[JsonPropertyName("customerId")]
+	[GraphQLMember("customerId")]
 	public Guid CustomerId 
 	{
 		get => GetValue<Guid>("customerId");
     	set => SetValue("customerId", value);
 	}
 
-	[JsonPropertyName("customerName")]
+	[GraphQLMember("customerName")]
 	public string CustomerName 
 	{
 		get => GetValue<string>("customerName");
     	set => SetValue("customerName", value);
 	}
 
-	[JsonPropertyName("status")]
+	[GraphQLMember("status")]
 	public CustomerStatus Status 
 	{
 		get => GetValue<CustomerStatus>("status");
     	set => SetValue("status", value);
 	}
 
-	[JsonPropertyName("orders")]
+	[GraphQLMember("orders")]
 	public List<OrderInput> Orders 
 	{
 		get => GetValue<List<OrderInput>>("orders");
     	set => SetValue("orders", value);
 	}
 
-	[JsonPropertyName("address")]
+	[GraphQLMember("address")]
 	public AddressInput Address 
 	{
 		get => GetValue<AddressInput>("address");

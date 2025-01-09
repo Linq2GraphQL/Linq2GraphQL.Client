@@ -15,35 +15,35 @@ namespace Linq2GraphQL.TestClient;
 [JsonConverter(typeof(GraphInputConverter<ItemFilterInput>))]
 public partial class ItemFilterInput : GraphInputBase
 {
-	[JsonPropertyName("and")]
+	[GraphQLMember("and")]
 	public List<ItemFilterInput> And 
 	{
 		get => GetValue<List<ItemFilterInput>>("and");
     	set => SetValue("and", value);
 	}
 
-	[JsonPropertyName("or")]
+	[GraphQLMember("or")]
 	public List<ItemFilterInput> Or 
 	{
 		get => GetValue<List<ItemFilterInput>>("or");
     	set => SetValue("or", value);
 	}
 
-	[JsonPropertyName("itemId")]
+	[GraphQLMember("itemId")]
 	public StringOperationFilterInput ItemId 
 	{
 		get => GetValue<StringOperationFilterInput>("itemId");
     	set => SetValue("itemId", value);
 	}
 
-	[JsonPropertyName("itemName")]
+	[GraphQLMember("itemName")]
 	public StringOperationFilterInput ItemName 
 	{
 		get => GetValue<StringOperationFilterInput>("itemName");
     	set => SetValue("itemName", value);
 	}
 
-	[JsonPropertyName("data")]
+	[GraphQLMember("data")]
 	public ListByteOperationFilterInput Data 
 	{
 		get => GetValue<ListByteOperationFilterInput>("data");

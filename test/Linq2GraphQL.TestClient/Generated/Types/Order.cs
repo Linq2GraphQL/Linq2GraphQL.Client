@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.ExceptionServices;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 using Linq2GraphQL.Client.Common;
@@ -17,14 +16,12 @@ namespace Linq2GraphQL.TestClient;
 
 public static class OrderExtensions
 {
-    [GraphMethod("orderHello")]
     [GraphQLMember("orderHello")]
     public static string OrderHello(this Order  order, [GraphQLArgument("name", "String!")] string name, [GraphQLArgument("first", "Int!")] int first)
     {
         return order.GetMethodValue<string>("orderHello", name, first);
     }
 
-    [GraphMethod("orderAddress")]
     [GraphQLMember("orderAddress")]
     public static Address OrderAddress(this Order  order, [GraphQLArgument("addressType", "AddressType!")] AddressType addressType)
     {
@@ -39,37 +36,29 @@ public partial class Order : GraphQLTypeBase
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
-    [GraphShadowProperty]
     public string OrderHello => _orderHello.Value(() => GetFirstMethodValue<string>("orderHello"));
 
     private LazyProperty<Address> _orderAddress = new();
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
-    [GraphShadowProperty]
     public Address OrderAddress => _orderAddress.Value(() => GetFirstMethodValue<Address>("orderAddress"));
 
-    [JsonPropertyName("orderId")]
     [GraphQLMember("orderId")]
     public Guid OrderId { get; set; }
 
-    [JsonPropertyName("customer")]
     [GraphQLMember("customer")]
     public Customer Customer { get; set; }
 
-    [JsonPropertyName("address")]
     [GraphQLMember("address")]
     public Address Address { get; set; }
 
-    [JsonPropertyName("orderDate")]
     [GraphQLMember("orderDate")]
     public DateTimeOffset OrderDate { get; set; }
 
-    [JsonPropertyName("lines")]
     [GraphQLMember("lines")]
     public List<OrderLine> Lines { get; set; }
 
-    [JsonPropertyName("entryTime")]
     [GraphQLMember("entryTime")]
     public TimeSpan? EntryTime { get; set; }
 

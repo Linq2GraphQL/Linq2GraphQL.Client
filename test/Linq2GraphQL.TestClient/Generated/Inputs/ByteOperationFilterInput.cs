@@ -15,84 +15,84 @@ namespace Linq2GraphQL.TestClient;
 [JsonConverter(typeof(GraphInputConverter<ByteOperationFilterInput>))]
 public partial class ByteOperationFilterInput : GraphInputBase
 {
-	[JsonPropertyName("eq")]
+	[GraphQLMember("eq")]
 	public byte? Eq 
 	{
 		get => GetValue<byte?>("eq");
     	set => SetValue("eq", value);
 	}
 
-	[JsonPropertyName("neq")]
+	[GraphQLMember("neq")]
 	public byte? Neq 
 	{
 		get => GetValue<byte?>("neq");
     	set => SetValue("neq", value);
 	}
 
-	[JsonPropertyName("in")]
+	[GraphQLMember("in")]
 	public List<byte?> In 
 	{
 		get => GetValue<List<byte?>>("in");
     	set => SetValue("in", value);
 	}
 
-	[JsonPropertyName("nin")]
+	[GraphQLMember("nin")]
 	public List<byte?> Nin 
 	{
 		get => GetValue<List<byte?>>("nin");
     	set => SetValue("nin", value);
 	}
 
-	[JsonPropertyName("gt")]
+	[GraphQLMember("gt")]
 	public byte? Gt 
 	{
 		get => GetValue<byte?>("gt");
     	set => SetValue("gt", value);
 	}
 
-	[JsonPropertyName("ngt")]
+	[GraphQLMember("ngt")]
 	public byte? Ngt 
 	{
 		get => GetValue<byte?>("ngt");
     	set => SetValue("ngt", value);
 	}
 
-	[JsonPropertyName("gte")]
+	[GraphQLMember("gte")]
 	public byte? Gte 
 	{
 		get => GetValue<byte?>("gte");
     	set => SetValue("gte", value);
 	}
 
-	[JsonPropertyName("ngte")]
+	[GraphQLMember("ngte")]
 	public byte? Ngte 
 	{
 		get => GetValue<byte?>("ngte");
     	set => SetValue("ngte", value);
 	}
 
-	[JsonPropertyName("lt")]
+	[GraphQLMember("lt")]
 	public byte? Lt 
 	{
 		get => GetValue<byte?>("lt");
     	set => SetValue("lt", value);
 	}
 
-	[JsonPropertyName("nlt")]
+	[GraphQLMember("nlt")]
 	public byte? Nlt 
 	{
 		get => GetValue<byte?>("nlt");
     	set => SetValue("nlt", value);
 	}
 
-	[JsonPropertyName("lte")]
+	[GraphQLMember("lte")]
 	public byte? Lte 
 	{
 		get => GetValue<byte?>("lte");
     	set => SetValue("lte", value);
 	}
 
-	[JsonPropertyName("nlte")]
+	[GraphQLMember("nlte")]
 	public byte? Nlte 
 	{
 		get => GetValue<byte?>("nlte");

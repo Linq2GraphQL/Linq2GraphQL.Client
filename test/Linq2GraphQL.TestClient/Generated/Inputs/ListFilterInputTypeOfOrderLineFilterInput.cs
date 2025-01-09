@@ -15,28 +15,28 @@ namespace Linq2GraphQL.TestClient;
 [JsonConverter(typeof(GraphInputConverter<ListFilterInputTypeOfOrderLineFilterInput>))]
 public partial class ListFilterInputTypeOfOrderLineFilterInput : GraphInputBase
 {
-	[JsonPropertyName("all")]
+	[GraphQLMember("all")]
 	public OrderLineFilterInput All 
 	{
 		get => GetValue<OrderLineFilterInput>("all");
     	set => SetValue("all", value);
 	}
 
-	[JsonPropertyName("none")]
+	[GraphQLMember("none")]
 	public OrderLineFilterInput None 
 	{
 		get => GetValue<OrderLineFilterInput>("none");
     	set => SetValue("none", value);
 	}
 
-	[JsonPropertyName("some")]
+	[GraphQLMember("some")]
 	public OrderLineFilterInput Some 
 	{
 		get => GetValue<OrderLineFilterInput>("some");
     	set => SetValue("some", value);
 	}
 
-	[JsonPropertyName("any")]
+	[GraphQLMember("any")]
 	public bool? Any 
 	{
 		get => GetValue<bool?>("any");

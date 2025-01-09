@@ -22,14 +22,12 @@ public partial class CollectionSegmentInfo : GraphQLTypeBase
     /// <summary>
     /// Indicates whether more items exist following the set defined by the clients arguments.
     /// </summary>
-    [JsonPropertyName("hasNextPage")]
     [GraphQLMember("hasNextPage")]
     public bool HasNextPage { get; set; }
 
     /// <summary>
     /// Indicates whether more items exist prior the set defined by the clients arguments.
     /// </summary>
-    [JsonPropertyName("hasPreviousPage")]
     [GraphQLMember("hasPreviousPage")]
     public bool HasPreviousPage { get; set; }
 

@@ -15,28 +15,28 @@ namespace Linq2GraphQL.TestClient;
 [JsonConverter(typeof(GraphInputConverter<ListByteOperationFilterInput>))]
 public partial class ListByteOperationFilterInput : GraphInputBase
 {
-	[JsonPropertyName("all")]
+	[GraphQLMember("all")]
 	public ByteOperationFilterInput All 
 	{
 		get => GetValue<ByteOperationFilterInput>("all");
     	set => SetValue("all", value);
 	}
 
-	[JsonPropertyName("none")]
+	[GraphQLMember("none")]
 	public ByteOperationFilterInput None 
 	{
 		get => GetValue<ByteOperationFilterInput>("none");
     	set => SetValue("none", value);
 	}
 
-	[JsonPropertyName("some")]
+	[GraphQLMember("some")]
 	public ByteOperationFilterInput Some 
 	{
 		get => GetValue<ByteOperationFilterInput>("some");
     	set => SetValue("some", value);
 	}
 
-	[JsonPropertyName("any")]
+	[GraphQLMember("any")]
 	public bool? Any 
 	{
 		get => GetValue<bool?>("any");
