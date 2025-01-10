@@ -62,17 +62,6 @@ public class QueryNode
                !type.IsListOfPrimitiveTypeOrString();
     }
 
-    public void SetAddPrimitiveChildren()
-    {
-        if (!ChildNodes.Any())
-        {
-            IncludePrimitive = true;
-        }
-        foreach (var childNode in ChildNodes)
-        {
-            childNode.SetAddPrimitiveChildren();
-        }
-    }
 
     public void AddChildNode(MemberInfo member, string name = null)
     {
