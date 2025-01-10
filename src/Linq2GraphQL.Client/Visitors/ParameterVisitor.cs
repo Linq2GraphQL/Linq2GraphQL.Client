@@ -1,12 +1,11 @@
 ﻿using Linq2GraphQL.Client;
-using Linq2GraphQL.Client.Visitors;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 
-namespace VisitorPlayground.Visitors
+namespace Linq2GraphQL.Client.Visitors
 {
     public class ParameterVisitor(MemberNode memberNode) : ExpressionVisitor
     {
@@ -17,8 +16,6 @@ namespace VisitorPlayground.Visitors
             return memberNode;
         }
 
-
-
         protected override Expression VisitMember(MemberExpression node)
         {
             var attribute = node.Member.GetCustomAttribute<GraphQLMemberAttribute>();
@@ -26,27 +23,18 @@ namespace VisitorPlayground.Visitors
             if (attribute != null)
             {
                 var parameter = GetParameterExpression(node);
-
                 AddMemberNodes(parameter, node);
-
-                //  var targetNode = memberNode.GetMemberNodeFromParameterExpression(parameter);
-                //  targetNode.AddMembers(node);
             }
 
             return node;
-
         }
-
 
         public MemberNode AddMemberNodes(ParameterExpression targetParameter, Expression expression)
         {
             var targetNode = memberNode.GetMemberNodeFromParameterExpression(targetParameter);
             var newNode = targetNode.AddMembers(expression);
             return newNode;
-
         }
-
-
 
         protected override Expression VisitMethodCall(MethodCallExpression expression)
         {
@@ -54,7 +42,6 @@ namespace VisitorPlayground.Visitors
 
             if (attribute != null)
             {
-
                 var parExp = GetParameterExpression(expression);
                 var i = 0;
                 var argumentValues = new List<ArgumentValue>();
@@ -72,15 +59,12 @@ namespace VisitorPlayground.Visitors
                     i++;
                 }
 
-
-
                 var targetNode = memberNode.GetMemberNodeFromParameterExpression(parExp);
                 targetNode.AddChild(new MemberNode(expression.Method, argumentValues));
 
 
                 return expression;
             }
-
 
             if (IsLinqOperator(expression.Method))
             {
@@ -93,10 +77,7 @@ namespace VisitorPlayground.Visitors
 
                     var child = memberNode.AddMembers(memberExp);
                     child.SetParameterExpression(parameter);
-                  
 
-                    //var child = AddMemberNodes(parameter, memberExp);
-                    //child.IncludePrimitive = false;
 
                     var visitor = new ParameterVisitor(child);
                     visitor.ParseExpression(expression.Arguments[1]);

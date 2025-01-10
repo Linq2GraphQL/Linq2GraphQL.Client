@@ -33,7 +33,7 @@ public static class SampleNullableClientExtensions
         GraphClientOptions graphClientOptions)
     {
         var opts = Options.Create(graphClientOptions);
-        services.AddSingleton(opts);
+        services.AddKeyedSingleton(ClientName, opts); 
         services.AddMemoryCache();        
         return new ClientBuilder<SampleNullableClient>(ClientName, services);
     }

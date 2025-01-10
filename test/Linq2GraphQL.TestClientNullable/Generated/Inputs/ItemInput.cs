@@ -15,6 +15,7 @@ namespace Linq2GraphQL.TestClientNullable;
 [JsonConverter(typeof(GraphInputConverter<ItemInput>))]
 public partial class ItemInput : GraphInputBase
 {
+	[GraphQLMember("itemId")]
 	[JsonPropertyName("itemId")]
 	public required string ItemId 
 	{
@@ -22,6 +23,7 @@ public partial class ItemInput : GraphInputBase
     	set => SetValue("itemId", value);
 	}
 
+	[GraphQLMember("itemName")]
 	[JsonPropertyName("itemName")]
 	public required string ItemName 
 	{
@@ -29,6 +31,7 @@ public partial class ItemInput : GraphInputBase
     	set => SetValue("itemName", value);
 	}
 
+	[GraphQLMember("data")]
 	[JsonPropertyName("data")]
 	public List<byte>? Data 
 	{

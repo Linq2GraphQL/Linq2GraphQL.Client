@@ -71,23 +71,20 @@ namespace Linq2GraphQL.Tests
         [Fact]
         public async Task Project_Complex()
         {
-            //var query = sampleClient
-            //    .Query
-            //    .Customers()
-            //    .Select(e => new { Orders = e.SelectMany(e => e.Orders), Customers = e, CustomerIds =e.Select(e=> e.CustomerId).Distinct()  });
-
+           
 
             var query = sampleClient
                 .Query
                 .Customers()
-                .Select(e => new {  Customers = e  });
+                .Select(e => new {  Customers = e, Orders = e.SelectMany(e=> e.Orders)  });
 
             var request = await query.GetRequestAsync();
 
             var result = await query.ExecuteAsync();
 
-            var t = result.Customers;
+            var t = result.Customers.All(e => e.CustomerId != default);
         
+            Assert.True(result.Customers.All(e => e.CustomerId != default));
 
         }
 

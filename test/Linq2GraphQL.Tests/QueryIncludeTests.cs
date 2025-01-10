@@ -33,7 +33,7 @@ public class QueryIncludeTests : IClassFixture<SampleClientFixture>
         var query = sampleClient
             .Query
             .Orders(first: 1)
-           .Include(e => e.Nodes.Select(e => e.Customer))
+            .Include(e => e.Nodes.Select(e => e.Customer))
             .Include(e => e.Nodes.Select(e => e.Customer.Orders))
             .Select(e => e.Nodes);
 

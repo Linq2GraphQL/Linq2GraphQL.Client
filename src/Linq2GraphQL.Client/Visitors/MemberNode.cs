@@ -73,8 +73,6 @@ namespace Linq2GraphQL.Client.Visitors
 
         public void PopulateChildQueryNodes(QueryNode queryNode)
         {
-                     
-
             foreach (var child in Children)
             {
 
@@ -83,9 +81,6 @@ namespace Linq2GraphQL.Client.Visitors
                 var addedNode = queryNode.AddChildNode(childNode);
                 child.PopulateChildQueryNodes(addedNode);
             }
-
-
-
         }
 
 

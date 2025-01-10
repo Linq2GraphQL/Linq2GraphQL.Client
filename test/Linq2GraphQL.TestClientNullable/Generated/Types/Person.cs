@@ -17,12 +17,15 @@ namespace Linq2GraphQL.TestClientNullable;
 
 public partial class Person : GraphQLTypeBase
 {
+    [GraphQLMember("name")]
     [JsonPropertyName("name")]
     public string Name { get; set; }
 
+    [GraphQLMember("macAddress")]
     [JsonPropertyName("macAddress")]
     public MacAddress? MacAddress { get; set; }
 
+    [GraphQLMember("longitude")]
     [JsonPropertyName("longitude")]
     public Longitude? Longitude { get; set; }
 

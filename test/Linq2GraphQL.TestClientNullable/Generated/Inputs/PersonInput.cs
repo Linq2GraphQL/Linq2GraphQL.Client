@@ -15,6 +15,7 @@ namespace Linq2GraphQL.TestClientNullable;
 [JsonConverter(typeof(GraphInputConverter<PersonInput>))]
 public partial class PersonInput : GraphInputBase
 {
+	[GraphQLMember("name")]
 	[JsonPropertyName("name")]
 	public required string Name 
 	{
@@ -22,6 +23,7 @@ public partial class PersonInput : GraphInputBase
     	set => SetValue("name", value);
 	}
 
+	[GraphQLMember("macAddress")]
 	[JsonPropertyName("macAddress")]
 	public MacAddress? MacAddress 
 	{
@@ -29,6 +31,7 @@ public partial class PersonInput : GraphInputBase
     	set => SetValue("macAddress", value);
 	}
 
+	[GraphQLMember("longitude")]
 	[JsonPropertyName("longitude")]
 	public Longitude? Longitude 
 	{

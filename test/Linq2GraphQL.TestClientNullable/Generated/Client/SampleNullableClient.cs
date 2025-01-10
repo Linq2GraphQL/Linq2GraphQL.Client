@@ -14,7 +14,7 @@ namespace Linq2GraphQL.TestClientNullable;
 
 public class SampleNullableClient
 {
-    public SampleNullableClient(HttpClient httpClient, IOptions<GraphClientOptions> options, IServiceProvider provider)
+    public SampleNullableClient(HttpClient httpClient, [FromKeyedServices("SampleNullableClient")]IOptions<GraphClientOptions> options, IServiceProvider provider)
     {
         var client = new GraphClient(httpClient, options, provider);
         Query = new QueryMethods(client);
