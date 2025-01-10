@@ -35,16 +35,10 @@ public static class Utilities
         var topNode = parameterVisitor.ParseExpression(body);
         var tree = topNode.PrintMemberTree();
 
-
-
         topNode.PopulateChildQueryNodes(parent);
+       // parent.SetAddPrimitiveChildren();
 
-        parent.SetAddPrimitiveChildren();
-
-        //foreach (var childNode in node.ChildNodes)
-        //{
-        //    parent.AddChildNode(childNode);
-        //}
+        
     }
 
 

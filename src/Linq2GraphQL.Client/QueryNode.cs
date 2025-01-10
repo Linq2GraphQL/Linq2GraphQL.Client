@@ -131,8 +131,6 @@ public class QueryNode
             foreach (var propertyInfo in typeOrListType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
 
-              
-
                 if (!propertyInfo.PropertyType.IsValueTypeOrString())
                 {
                     continue;

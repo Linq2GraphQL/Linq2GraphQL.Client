@@ -15,7 +15,6 @@ namespace Linq2GraphQL.Client.Visitors
         public List<MemberNode> Children { get; set; } = [];
         public List<ArgumentValue> Arguments => arguments;
 
-
         public void SetParameterExpression(ParameterExpression param)
         {
             parameterExpression = param;
@@ -74,12 +73,13 @@ namespace Linq2GraphQL.Client.Visitors
 
         public void PopulateChildQueryNodes(QueryNode queryNode)
         {
-
+                     
 
             foreach (var child in Children)
             {
 
                 var childNode = new QueryNode(child.MemberInfo, null, child.Arguments);
+                childNode.IncludePrimitive = child.Children.Count == 0;
                 var addedNode = queryNode.AddChildNode(childNode);
                 child.PopulateChildQueryNodes(addedNode);
             }
@@ -92,9 +92,6 @@ namespace Linq2GraphQL.Client.Visitors
         public string PrintMemberTree(int level = 0)
         {
             var sb = new StringBuilder();
-            //var cc = Children.Select(e => new { e.MemberInfo, e.Arguments, e.MemberInfo.MetadataToken }).Distinct();
-            //var c = cc.Count();
-
             sb.AppendLine($"Level: {level}");
 
             level++;
@@ -103,17 +100,16 @@ namespace Linq2GraphQL.Client.Visitors
             {
                 var argumentList = $"({string.Join(", ", Arguments.Select(e => e.Value))})";
 
-                sb.AppendLine($"Member: {MemberInfo?.Name ?? "--------------"}{argumentList}");
+                sb.AppendLine($"Member: {MemberInfo?.Name}{argumentList}");
             }
             else
             {
-                sb.AppendLine($"Member: {MemberInfo?.Name ?? "--------------"} ");
+                sb.AppendLine($"Member: {MemberInfo?.Name} ");
             }
 
             sb.AppendLine($"Parent: {Parent?.MemberInfo?.Name}");
-
             sb.AppendLine($"Parameter: {parameterExpression?.Name}");
-
+           
             sb.AppendLine("");
 
             foreach (var child in Children)
@@ -121,7 +117,7 @@ namespace Linq2GraphQL.Client.Visitors
                 sb.Append(child.PrintMemberTree(level));
             }
 
-            sb.AppendLine("");
+            sb.AppendLine("".PadLeft(level, '-'));
 
             return sb.ToString();
 

@@ -27,7 +27,9 @@ public class QueryPagingTests : IClassFixture<SampleClientFixture>
             .Include(e => e.PageInfo)
             .Include(e => e.TotalCount)
             .Select(e => e.Nodes.Select(e => new { e.OrderId, e.OrderDate }));
-    
+
+        var request = await query.GetRequestAsync();
+
       await query.ExecuteBaseAsync();
 
         var result1 = query.ConvertResult(query.BaseResult);

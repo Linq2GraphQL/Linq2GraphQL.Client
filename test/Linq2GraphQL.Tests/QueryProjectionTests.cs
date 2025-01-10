@@ -60,12 +60,36 @@ namespace Linq2GraphQL.Tests
                 .Customers()
                 .Select(e => e.SelectMany(e=> e.Orders));
 
-         //   var request = await query.GetRequestAsync();
             var result = await query.ExecuteAsync();
         
 
+            Assert.True(result.All(e=> e.OrderId != default));
+
         }
 
+
+        [Fact]
+        public async Task Project_Complex()
+        {
+            //var query = sampleClient
+            //    .Query
+            //    .Customers()
+            //    .Select(e => new { Orders = e.SelectMany(e => e.Orders), Customers = e, CustomerIds =e.Select(e=> e.CustomerId).Distinct()  });
+
+
+            var query = sampleClient
+                .Query
+                .Customers()
+                .Select(e => new {  Customers = e  });
+
+            var request = await query.GetRequestAsync();
+
+            var result = await query.ExecuteAsync();
+
+            var t = result.Customers;
+        
+
+        }
 
 
     }
