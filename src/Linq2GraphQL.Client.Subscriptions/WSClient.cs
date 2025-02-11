@@ -99,10 +99,10 @@ public class WSClient : IAsyncDisposable
         switch (_graphClient.SubscriptionProtocol)
         {
             case SubscriptionProtocol.GraphQLWebSocket:
-                return SubscriptionProtocols.GraphQl_Transport_WS;
+                return SubscriptionProtocols.GRAPGQL_TRANSPORT_WS;
 
             case SubscriptionProtocol.ApolloWebSocket:
-                return SubscriptionProtocols.GraphQl_WS;
+                return SubscriptionProtocols.GRAPHQL_WS;
 
             default:
                 throw new Exception($"{_graphClient.SubscriptionProtocol} is unknown");
@@ -114,10 +114,10 @@ public class WSClient : IAsyncDisposable
         switch (_graphClient.SubscriptionProtocol)
         {
             case SubscriptionProtocol.GraphQLWebSocket:
-                return SubscribeCommands.Subscribe;
+                return SubscribeCommands.SUBSCRIBE;
 
             case SubscriptionProtocol.ApolloWebSocket:
-                return SubscribeCommands.Start;
+                return SubscribeCommands.START;
 
             default:
                 throw new Exception($"{_graphClient.SubscriptionProtocol} is unknown");

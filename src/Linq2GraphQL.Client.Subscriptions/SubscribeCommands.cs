@@ -2,7 +2,7 @@
 {
     internal class SubscribeCommands
     {
-        internal const string Subscribe = "subscribe";
-        internal const string Start = "start";
+        internal const string SUBSCRIBE = "subscribe";
+        internal const string START = "start";
     }
 }

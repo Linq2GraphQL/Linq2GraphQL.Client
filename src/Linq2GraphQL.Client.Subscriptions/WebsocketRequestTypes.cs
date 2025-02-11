@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Linq2GraphQL.Client.Subscriptions
+﻿namespace Linq2GraphQL.Client.Subscriptions
 {
     internal class WebsocketRequestTypes
     {
