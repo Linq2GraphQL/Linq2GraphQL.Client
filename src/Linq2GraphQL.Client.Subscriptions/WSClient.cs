@@ -73,17 +73,16 @@ public class WSClient : IAsyncDisposable
 
         await client.Start();
 
+        var initRequest = new WebsocketRequest("connection_init");
         if (_graphClient.WSConnectionInitPayload is not null) 
         {
             var initPayload = await _graphClient.WSConnectionInitPayload(_graphClient);
             if (initPayload is not null)
             {
-                SendRequest(new WebsocketRequest("connection_init")
-                {
-                    Payload = initPayload
-                });
+                initRequest.Payload = initPayload;
             }
         }
+        SendRequest(initRequest);
 
         var subscriptionRequest = new WebsocketRequest(GetSubscribeCommand())
         {
