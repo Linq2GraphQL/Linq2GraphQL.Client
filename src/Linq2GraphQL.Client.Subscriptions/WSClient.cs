@@ -1,4 +1,5 @@
-﻿using System.Net.WebSockets;
+﻿using System.Diagnostics;
+using System.Net.WebSockets;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text.Json;
@@ -64,7 +65,7 @@ public class WSClient : IAsyncDisposable
         //Filter General response
         var tt = client.MessageReceived.Select(m => JsonSerializer.Deserialize<WebsocketResponse>(m.ToString()));
 
-        tt.Where(e => e.Type == "ping").Subscribe(msg => SendRequest(new WebsocketRequest("pong")));
+        tt.Where(e => e.Type == WebsocketRequestTypes.PING).Subscribe(msg => SendRequest(new WebsocketRequest(WebsocketRequestTypes.PONG)));
 
         tt.Where(e => !string.IsNullOrEmpty(e?.Id)).Subscribe(r =>
         {
@@ -73,7 +74,7 @@ public class WSClient : IAsyncDisposable
 
         await client.Start();
 
-        var initRequest = new WebsocketRequest("connection_init");
+        var initRequest = new WebsocketRequest(WebsocketRequestTypes.CONNECTION_INIT);
         if (_graphClient.WSConnectionInitPayload is not null) 
         {
             var initPayload = await _graphClient.WSConnectionInitPayload(_graphClient);
@@ -98,10 +99,10 @@ public class WSClient : IAsyncDisposable
         switch (_graphClient.SubscriptionProtocol)
         {
             case SubscriptionProtocol.GraphQLWebSocket:
-                return "graphql-transport-ws";
+                return SubscriptionProtocols.GraphQl_Transport_WS;
 
             case SubscriptionProtocol.ApolloWebSocket:
-                return "graphql-ws";
+                return SubscriptionProtocols.GraphQl_WS;
 
             default:
                 throw new Exception($"{_graphClient.SubscriptionProtocol} is unknown");
@@ -113,19 +114,20 @@ public class WSClient : IAsyncDisposable
         switch (_graphClient.SubscriptionProtocol)
         {
             case SubscriptionProtocol.GraphQLWebSocket:
-                return "subscribe";
+                return SubscribeCommands.Subscribe;
 
             case SubscriptionProtocol.ApolloWebSocket:
-                return "start";
+                return SubscribeCommands.Start;
 
             default:
                 throw new Exception($"{_graphClient.SubscriptionProtocol} is unknown");
         }
     }
 
-    private void LogMessage(string message)
+    private static void LogMessage(string message)
     {
-        Console.WriteLine($"{message} - {DateTime.Now.ToString("T")}");
+        // Write logs to debug console
+        Debug.WriteLine($"{message} - {DateTime.Now.ToString("T")}");
     }
 
     private void SendRequest(WebsocketRequest request)
