@@ -26,7 +26,7 @@ public class GraphSubscriptionExecute<T, TResult> : GraphBaseExecute<T, TResult>
             return sseClient.Subscription.Select(e => ConvertResult(queryExecutor.ProcessResponse(e, QueryNode.Name, payload.Query)));
         }
 
-        var wsClient = new WSClient(client.SubscriptionUrl, client.SubscriptionProtocol, payload);
+        var wsClient = new WSClient(client, payload);
         await wsClient.Start();
         return wsClient.Subscription.Select(e => ConvertResult(queryExecutor.ProcessResponse(e, QueryNode.Name, payload.Query)));
     }

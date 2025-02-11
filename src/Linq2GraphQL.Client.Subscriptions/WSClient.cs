@@ -9,19 +9,17 @@ namespace Linq2GraphQL.Client.Subscriptions;
 
 public class WSClient : IAsyncDisposable
 {
+    private readonly GraphClient _graphClient;
     private readonly GraphQLRequest payload;
-    private readonly SubscriptionProtocol subscriptionProtocol;
 
     private readonly Subject<string> subscriptionSubject = new();
-    private readonly string url;
     private readonly WebsocketClient client;
 
     private readonly JsonSerializerOptions jsonOptions;
 
-    public WSClient(string url, SubscriptionProtocol subprotocol, GraphQLRequest payload)
+    public WSClient(GraphClient graphClient, GraphQLRequest payload)
     {
-        this.url = url;
-        subscriptionProtocol = subprotocol;
+        _graphClient = graphClient;
         this.payload = payload;
         jsonOptions = new JsonSerializerOptions
         {
@@ -35,7 +33,7 @@ public class WSClient : IAsyncDisposable
             return ws;
         });
 
-        client = new WebsocketClient(new Uri(url), factory)
+        client = new WebsocketClient(new Uri(_graphClient.SubscriptionUrl), factory)
         {
             ReconnectTimeout = TimeSpan.FromSeconds(30)
         };
@@ -74,7 +72,18 @@ public class WSClient : IAsyncDisposable
         });
 
         await client.Start();
-        SendRequest(new WebsocketRequest("connection_init"));
+
+        if (_graphClient.WSConnectionInitPayload is not null) 
+        {
+            var initPayload = _graphClient.WSConnectionInitPayload(_graphClient);
+            if (initPayload is not null)
+            {
+                SendRequest(new WebsocketRequest("connection_init")
+                {
+                    Payload = await _graphClient.WSConnectionInitPayload(_graphClient)
+                });
+            }
+        }
 
         var subscriptionRequest = new WebsocketRequest(GetSubscribeCommand())
         {
@@ -87,7 +96,7 @@ public class WSClient : IAsyncDisposable
 
     private string GetSubprotocolString()
     {
-        switch (subscriptionProtocol)
+        switch (_graphClient.SubscriptionProtocol)
         {
             case SubscriptionProtocol.GraphQLWebSocket:
                 return "graphql-transport-ws";
@@ -96,13 +105,13 @@ public class WSClient : IAsyncDisposable
                 return "graphql-ws";
 
             default:
-                throw new Exception($"{subscriptionProtocol} is unknown");
+                throw new Exception($"{_graphClient.SubscriptionProtocol} is unknown");
         }
     }
 
     private string GetSubscribeCommand()
     {
-        switch (subscriptionProtocol)
+        switch (_graphClient.SubscriptionProtocol)
         {
             case SubscriptionProtocol.GraphQLWebSocket:
                 return "subscribe";
@@ -111,7 +120,7 @@ public class WSClient : IAsyncDisposable
                 return "start";
 
             default:
-                throw new Exception($"{subscriptionProtocol} is unknown");
+                throw new Exception($"{_graphClient.SubscriptionProtocol} is unknown");
         }
     }
 
