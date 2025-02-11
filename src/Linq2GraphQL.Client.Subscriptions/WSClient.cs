@@ -75,12 +75,12 @@ public class WSClient : IAsyncDisposable
 
         if (_graphClient.WSConnectionInitPayload is not null) 
         {
-            var initPayload = _graphClient.WSConnectionInitPayload(_graphClient);
+            var initPayload = await _graphClient.WSConnectionInitPayload(_graphClient);
             if (initPayload is not null)
             {
                 SendRequest(new WebsocketRequest("connection_init")
                 {
-                    Payload = await _graphClient.WSConnectionInitPayload(_graphClient)
+                    Payload = initPayload
                 });
             }
         }
