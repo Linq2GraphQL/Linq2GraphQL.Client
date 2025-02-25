@@ -36,6 +36,7 @@ public class GraphClient
     public HttpClient HttpClient { get; }
     public JsonSerializerOptions SerializerOptions { get; }
 
+    public Func<GraphClient, Task<GraphQLRequest>> WSConnectionInitPayload => options.Value.WSConnectionInitPayload;
     private string GetSubscriptionUrl()
     {
         var baseUrl = HttpClient?.BaseAddress.ToString();

@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Headers;
+using System.Net.Mime;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
@@ -34,7 +35,7 @@ public class SSEClient : IDisposable
 
         var request = new HttpRequestMessage(HttpMethod.Post, "")
         {
-            Content = new StringContent(json, Encoding.UTF8, "application/json")
+            Content = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json)
         };
 
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/event-stream"));

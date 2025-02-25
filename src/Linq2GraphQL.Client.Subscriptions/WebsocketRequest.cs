@@ -13,7 +13,7 @@ public class WebsocketRequest
 
     [JsonPropertyName("type")] public string Type { get; set; }
 
-    [JsonPropertyName("payload")] public GraphQLRequest Payload { get; set; }
+    [JsonPropertyName("payload")] public object Payload { get; set; }
 }
 
 //public class WebsocketRequestPayload

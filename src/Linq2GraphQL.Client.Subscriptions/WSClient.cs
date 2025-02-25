@@ -1,4 +1,5 @@
-﻿using System.Net.WebSockets;
+﻿using System.Diagnostics;
+using System.Net.WebSockets;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text.Json;
@@ -9,19 +10,17 @@ namespace Linq2GraphQL.Client.Subscriptions;
 
 public class WSClient : IAsyncDisposable
 {
+    private readonly GraphClient _graphClient;
     private readonly GraphQLRequest payload;
-    private readonly SubscriptionProtocol subscriptionProtocol;
 
     private readonly Subject<string> subscriptionSubject = new();
-    private readonly string url;
     private readonly WebsocketClient client;
 
     private readonly JsonSerializerOptions jsonOptions;
 
-    public WSClient(string url, SubscriptionProtocol subprotocol, GraphQLRequest payload)
+    public WSClient(GraphClient graphClient, GraphQLRequest payload)
     {
-        this.url = url;
-        subscriptionProtocol = subprotocol;
+        _graphClient = graphClient;
         this.payload = payload;
         jsonOptions = new JsonSerializerOptions
         {
@@ -35,7 +34,7 @@ public class WSClient : IAsyncDisposable
             return ws;
         });
 
-        client = new WebsocketClient(new Uri(url), factory)
+        client = new WebsocketClient(new Uri(_graphClient.SubscriptionUrl), factory)
         {
             ReconnectTimeout = TimeSpan.FromSeconds(30)
         };
@@ -66,7 +65,7 @@ public class WSClient : IAsyncDisposable
         //Filter General response
         var tt = client.MessageReceived.Select(m => JsonSerializer.Deserialize<WebsocketResponse>(m.ToString()));
 
-        tt.Where(e => e.Type == "ping").Subscribe(msg => SendRequest(new WebsocketRequest("pong")));
+        tt.Where(e => e.Type == WebsocketRequestTypes.PING).Subscribe(msg => SendRequest(new WebsocketRequest(WebsocketRequestTypes.PONG)));
 
         tt.Where(e => !string.IsNullOrEmpty(e?.Id)).Subscribe(r =>
         {
@@ -74,7 +73,17 @@ public class WSClient : IAsyncDisposable
         });
 
         await client.Start();
-        SendRequest(new WebsocketRequest("connection_init"));
+
+        var initRequest = new WebsocketRequest(WebsocketRequestTypes.CONNECTION_INIT);
+        if (_graphClient.WSConnectionInitPayload is not null) 
+        {
+            var initPayload = await _graphClient.WSConnectionInitPayload(_graphClient);
+            if (initPayload is not null)
+            {
+                initRequest.Payload = initPayload;
+            }
+        }
+        SendRequest(initRequest);
 
         var subscriptionRequest = new WebsocketRequest(GetSubscribeCommand())
         {
@@ -87,37 +96,38 @@ public class WSClient : IAsyncDisposable
 
     private string GetSubprotocolString()
     {
-        switch (subscriptionProtocol)
+        switch (_graphClient.SubscriptionProtocol)
         {
             case SubscriptionProtocol.GraphQLWebSocket:
-                return "graphql-transport-ws";
+                return SubscriptionProtocols.GRAPGQL_TRANSPORT_WS;
 
             case SubscriptionProtocol.ApolloWebSocket:
-                return "graphql-ws";
+                return SubscriptionProtocols.GRAPHQL_WS;
 
             default:
-                throw new Exception($"{subscriptionProtocol} is unknown");
+                throw new Exception($"{_graphClient.SubscriptionProtocol} is unknown");
         }
     }
 
     private string GetSubscribeCommand()
     {
-        switch (subscriptionProtocol)
+        switch (_graphClient.SubscriptionProtocol)
         {
             case SubscriptionProtocol.GraphQLWebSocket:
-                return "subscribe";
+                return SubscribeCommands.SUBSCRIBE;
 
             case SubscriptionProtocol.ApolloWebSocket:
-                return "start";
+                return SubscribeCommands.START;
 
             default:
-                throw new Exception($"{subscriptionProtocol} is unknown");
+                throw new Exception($"{_graphClient.SubscriptionProtocol} is unknown");
         }
     }
 
-    private void LogMessage(string message)
+    private static void LogMessage(string message)
     {
-        Console.WriteLine($"{message} - {DateTime.Now.ToString("T")}");
+        // Write logs to debug console
+        Debug.WriteLine($"{message} - {DateTime.Now.ToString("T")}");
     }
 
     private void SendRequest(WebsocketRequest request)
