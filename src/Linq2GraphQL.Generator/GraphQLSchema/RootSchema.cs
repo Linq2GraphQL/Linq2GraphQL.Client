@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Security.AccessControl;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 
 namespace Linq2GraphQL.Generator;
 
@@ -110,6 +111,7 @@ public class EnumValue
 {
     public string Name { get; set; }
     public string Description { get; set; }
+   
 
     public string GetCSharpName()
     {
@@ -121,6 +123,8 @@ public class EnumValue
 }
 
 
+
+
 public class BaseField
 {
 
@@ -129,6 +133,8 @@ public class BaseField
 
     public bool HasDescription => !string.IsNullOrEmpty(Description);
 
+    public string SummaryDescription => Helpers.SummarySafe(Description);
+    
     public string CSharpName => Name?.ToPascalCase();
 
     public GraphqlType GraphqlType { get; set; }
@@ -146,7 +152,7 @@ public class BaseField
         }
     }
 
-      
+
 
 }
 
@@ -223,6 +229,8 @@ public class BaseType
     public string Description { get; set; }
 
     public bool HasDescription => !string.IsNullOrEmpty(Description);
+
+    public string SummaryDescription => Helpers.SummarySafe(Description);
 
     public string CSharpName => Name?.ToPascalCase();
     public string FileName => CSharpName + ".cs";

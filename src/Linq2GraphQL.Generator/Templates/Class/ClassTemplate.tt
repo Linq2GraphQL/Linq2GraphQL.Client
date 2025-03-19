@@ -30,7 +30,7 @@ public static class <#= classType.Name #>Extensions
 #>
 <# if (classType.HasDescription) {#>
 /// <summary>
-/// <#= classType.Description #>
+/// <#= classType.SummaryDescription #>
 /// </summary>
 <# 
 } 
@@ -48,7 +48,7 @@ public partial class <#= classType.Name #> <#= classType.GetInterfacesString("Gr
 <# } else { #>
 <# if (field.HasDescription) { #>
     /// <summary>
-    /// <#= field.Description #>
+    /// <#= field.SummaryDescription #>
     /// </summary>
 <# } #>
     [GraphQLMember("<#= field.Name #>")]
