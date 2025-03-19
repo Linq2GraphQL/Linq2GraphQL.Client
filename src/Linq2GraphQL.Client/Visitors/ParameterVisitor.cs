@@ -7,7 +7,7 @@ using System.Xml.Linq;
 
 namespace Linq2GraphQL.Client.Visitors
 {
-    public class ParameterVisitor(MemberNode memberNode) : ExpressionVisitor
+    internal class ParameterVisitor(MemberNode memberNode) : ExpressionVisitor
     {
 
         public MemberNode ParseExpression(Expression expression)
@@ -52,9 +52,7 @@ namespace Linq2GraphQL.Client.Visitors
                     {
                         var arg = expression.Arguments[i];
                         var v = GetArgumentValue(arg);
-
                         argumentValues.Add(new ArgumentValue(graphQLArgumentAttribute.GraphQLName, graphQLArgumentAttribute.GraphQLType, GetArgumentValue(arg)));
-
                     }
                     i++;
                 }
@@ -74,10 +72,8 @@ namespace Linq2GraphQL.Client.Visitors
                 if (attr != null)
                 {
                     var parameter = GetParameterExpression(expression.Arguments[1]);
-
                     var child = memberNode.AddMembers(memberExp);
                     child.SetParameterExpression(parameter);
-
 
                     var visitor = new ParameterVisitor(child);
                     visitor.ParseExpression(expression.Arguments[1]);
@@ -87,6 +83,29 @@ namespace Linq2GraphQL.Client.Visitors
             }
             return base.VisitMethodCall(expression);
         }
+
+
+
+        protected override Expression VisitLambda<T>(Expression<T> node)
+        {
+            var newExp = node.Body as NewExpression;
+            return base.VisitLambda(node);
+        }
+
+        //protected override Expression VisitNew(NewExpression node)
+        //{
+
+        //    if (memberNode.ParameterName != null && node.Arguments.Any(e=> e.NodeType == ExpressionType.Parameter))
+        //    {
+
+
+
+        //    }
+
+
+        //    return base.VisitNew(node);
+        //}
+
 
         private static object GetArgumentValue(Expression element)
         {

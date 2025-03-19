@@ -26,8 +26,7 @@ public static class Utilities
     {
         var parameterVisitor = new ParameterVisitor(new MemberNode(null, null));
         var topNode = parameterVisitor.ParseExpression(body);
-        var tree = topNode.PrintMemberTree();
-
+      
         topNode.PopulateChildQueryNodes(parent);
         
     }

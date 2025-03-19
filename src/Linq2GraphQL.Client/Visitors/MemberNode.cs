@@ -5,9 +5,8 @@ using System.Text;
 
 namespace Linq2GraphQL.Client.Visitors
 {
-    public class MemberNode(MemberInfo memberInfo, List<ArgumentValue> arguments = null, ParameterExpression parameterExpression = null)
+    internal class MemberNode(MemberInfo memberInfo, List<ArgumentValue> arguments = null, ParameterExpression parameterExpression = null)
     {
-
         public string ParameterName => parameterExpression?.Name;
 
         public MemberInfo MemberInfo => memberInfo;
@@ -67,7 +66,7 @@ namespace Linq2GraphQL.Client.Visitors
                 members.Add(memberExpression.Member);
                 members.AddRange(GetMembers(memberExpression.Expression));
             }
-
+          
             return members;
         }
 
@@ -75,7 +74,6 @@ namespace Linq2GraphQL.Client.Visitors
         {
             foreach (var child in Children)
             {
-
                 var childNode = new QueryNode(child.MemberInfo, null, child.Arguments);
                 childNode.IncludePrimitive = child.Children.Count == 0;
                 var addedNode = queryNode.AddChildNode(childNode);
