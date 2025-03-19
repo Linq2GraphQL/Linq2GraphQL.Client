@@ -15,6 +15,7 @@ namespace Linq2GraphQL.TestClient;
 [JsonConverter(typeof(GraphInputConverter<CustomerFilterInput>))]
 public partial class CustomerFilterInput : GraphInputBase
 {
+	[GraphQLMember("and")]
 	[JsonPropertyName("and")]
 	public List<CustomerFilterInput> And 
 	{
@@ -22,6 +23,7 @@ public partial class CustomerFilterInput : GraphInputBase
     	set => SetValue("and", value);
 	}
 
+	[GraphQLMember("or")]
 	[JsonPropertyName("or")]
 	public List<CustomerFilterInput> Or 
 	{
@@ -29,6 +31,7 @@ public partial class CustomerFilterInput : GraphInputBase
     	set => SetValue("or", value);
 	}
 
+	[GraphQLMember("customerId")]
 	[JsonPropertyName("customerId")]
 	public UuidOperationFilterInput CustomerId 
 	{
@@ -36,6 +39,7 @@ public partial class CustomerFilterInput : GraphInputBase
     	set => SetValue("customerId", value);
 	}
 
+	[GraphQLMember("customerName")]
 	[JsonPropertyName("customerName")]
 	public StringOperationFilterInput CustomerName 
 	{
@@ -43,6 +47,7 @@ public partial class CustomerFilterInput : GraphInputBase
     	set => SetValue("customerName", value);
 	}
 
+	[GraphQLMember("status")]
 	[JsonPropertyName("status")]
 	public CustomerStatusOperationFilterInput Status 
 	{
@@ -50,6 +55,7 @@ public partial class CustomerFilterInput : GraphInputBase
     	set => SetValue("status", value);
 	}
 
+	[GraphQLMember("orders")]
 	[JsonPropertyName("orders")]
 	public ListFilterInputTypeOfOrderFilterInput Orders 
 	{
@@ -57,6 +63,7 @@ public partial class CustomerFilterInput : GraphInputBase
     	set => SetValue("orders", value);
 	}
 
+	[GraphQLMember("address")]
 	[JsonPropertyName("address")]
 	public AddressFilterInput Address 
 	{

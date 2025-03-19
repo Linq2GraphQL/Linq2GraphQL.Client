@@ -17,14 +17,14 @@ namespace Linq2GraphQL.TestClientNullable;
 
 public static class OrderExtensions
 {
-    [GraphMethod("orderHello")]
-    public static string OrderHello(this Order  order, [GraphArgument("String!")] string name, [GraphArgument("Int!")] int first)
+    [GraphQLMember("orderHello")]
+    public static string OrderHello(this Order  order, [GraphQLArgument("name", "String!")] string name, [GraphQLArgument("first", "Int!")] int first)
     {
         return order.GetMethodValue<string>("orderHello", name, first);
     }
 
-    [GraphMethod("orderAddress")]
-    public static Address OrderAddress(this Order  order, [GraphArgument("AddressType!")] AddressType addressType)
+    [GraphQLMember("orderAddress")]
+    public static Address OrderAddress(this Order  order, [GraphQLArgument("addressType", "AddressType!")] AddressType addressType)
     {
         return order.GetMethodValue<Address>("orderAddress", addressType);
     }
@@ -37,31 +37,35 @@ public partial class Order : GraphQLTypeBase
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
-    [GraphShadowProperty]
     public string OrderHello => _orderHello.Value(() => GetFirstMethodValue<string>("orderHello"));
 
     private LazyProperty<Address> _orderAddress = new();
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
-    [GraphShadowProperty]
     public Address OrderAddress => _orderAddress.Value(() => GetFirstMethodValue<Address>("orderAddress"));
 
+    [GraphQLMember("orderId")]
     [JsonPropertyName("orderId")]
     public Guid OrderId { get; set; }
 
+    [GraphQLMember("customer")]
     [JsonPropertyName("customer")]
     public Customer Customer { get; set; }
 
+    [GraphQLMember("address")]
     [JsonPropertyName("address")]
     public Address? Address { get; set; }
 
+    [GraphQLMember("orderDate")]
     [JsonPropertyName("orderDate")]
     public DateTimeOffset OrderDate { get; set; }
 
+    [GraphQLMember("lines")]
     [JsonPropertyName("lines")]
     public List<OrderLine> Lines { get; set; }
 
+    [GraphQLMember("entryTime")]
     [JsonPropertyName("entryTime")]
     public TimeSpan? EntryTime { get; set; }
 

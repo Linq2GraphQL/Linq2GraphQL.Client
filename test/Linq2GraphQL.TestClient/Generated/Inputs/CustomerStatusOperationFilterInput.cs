@@ -15,6 +15,7 @@ namespace Linq2GraphQL.TestClient;
 [JsonConverter(typeof(GraphInputConverter<CustomerStatusOperationFilterInput>))]
 public partial class CustomerStatusOperationFilterInput : GraphInputBase
 {
+	[GraphQLMember("eq")]
 	[JsonPropertyName("eq")]
 	public CustomerStatus? Eq 
 	{
@@ -22,6 +23,7 @@ public partial class CustomerStatusOperationFilterInput : GraphInputBase
     	set => SetValue("eq", value);
 	}
 
+	[GraphQLMember("neq")]
 	[JsonPropertyName("neq")]
 	public CustomerStatus? Neq 
 	{
@@ -29,6 +31,7 @@ public partial class CustomerStatusOperationFilterInput : GraphInputBase
     	set => SetValue("neq", value);
 	}
 
+	[GraphQLMember("in")]
 	[JsonPropertyName("in")]
 	public List<CustomerStatus> In 
 	{
@@ -36,6 +39,7 @@ public partial class CustomerStatusOperationFilterInput : GraphInputBase
     	set => SetValue("in", value);
 	}
 
+	[GraphQLMember("nin")]
 	[JsonPropertyName("nin")]
 	public List<CustomerStatus> Nin 
 	{

@@ -15,6 +15,7 @@ namespace Linq2GraphQL.TestClient;
 [JsonConverter(typeof(GraphInputConverter<FloatOperationFilterInput>))]
 public partial class FloatOperationFilterInput : GraphInputBase
 {
+	[GraphQLMember("eq")]
 	[JsonPropertyName("eq")]
 	public double? Eq 
 	{
@@ -22,6 +23,7 @@ public partial class FloatOperationFilterInput : GraphInputBase
     	set => SetValue("eq", value);
 	}
 
+	[GraphQLMember("neq")]
 	[JsonPropertyName("neq")]
 	public double? Neq 
 	{
@@ -29,6 +31,7 @@ public partial class FloatOperationFilterInput : GraphInputBase
     	set => SetValue("neq", value);
 	}
 
+	[GraphQLMember("in")]
 	[JsonPropertyName("in")]
 	public List<double?> In 
 	{
@@ -36,6 +39,7 @@ public partial class FloatOperationFilterInput : GraphInputBase
     	set => SetValue("in", value);
 	}
 
+	[GraphQLMember("nin")]
 	[JsonPropertyName("nin")]
 	public List<double?> Nin 
 	{
@@ -43,6 +47,7 @@ public partial class FloatOperationFilterInput : GraphInputBase
     	set => SetValue("nin", value);
 	}
 
+	[GraphQLMember("gt")]
 	[JsonPropertyName("gt")]
 	public double? Gt 
 	{
@@ -50,6 +55,7 @@ public partial class FloatOperationFilterInput : GraphInputBase
     	set => SetValue("gt", value);
 	}
 
+	[GraphQLMember("ngt")]
 	[JsonPropertyName("ngt")]
 	public double? Ngt 
 	{
@@ -57,6 +63,7 @@ public partial class FloatOperationFilterInput : GraphInputBase
     	set => SetValue("ngt", value);
 	}
 
+	[GraphQLMember("gte")]
 	[JsonPropertyName("gte")]
 	public double? Gte 
 	{
@@ -64,6 +71,7 @@ public partial class FloatOperationFilterInput : GraphInputBase
     	set => SetValue("gte", value);
 	}
 
+	[GraphQLMember("ngte")]
 	[JsonPropertyName("ngte")]
 	public double? Ngte 
 	{
@@ -71,6 +79,7 @@ public partial class FloatOperationFilterInput : GraphInputBase
     	set => SetValue("ngte", value);
 	}
 
+	[GraphQLMember("lt")]
 	[JsonPropertyName("lt")]
 	public double? Lt 
 	{
@@ -78,6 +87,7 @@ public partial class FloatOperationFilterInput : GraphInputBase
     	set => SetValue("lt", value);
 	}
 
+	[GraphQLMember("nlt")]
 	[JsonPropertyName("nlt")]
 	public double? Nlt 
 	{
@@ -85,6 +95,7 @@ public partial class FloatOperationFilterInput : GraphInputBase
     	set => SetValue("nlt", value);
 	}
 
+	[GraphQLMember("lte")]
 	[JsonPropertyName("lte")]
 	public double? Lte 
 	{
@@ -92,6 +103,7 @@ public partial class FloatOperationFilterInput : GraphInputBase
     	set => SetValue("lte", value);
 	}
 
+	[GraphQLMember("nlte")]
 	[JsonPropertyName("nlte")]
 	public double? Nlte 
 	{

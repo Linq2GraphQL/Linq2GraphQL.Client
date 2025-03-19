@@ -15,6 +15,7 @@ namespace Linq2GraphQL.TestClient;
 [JsonConverter(typeof(GraphInputConverter<OrderSortInput>))]
 public partial class OrderSortInput : GraphInputBase
 {
+	[GraphQLMember("orderId")]
 	[JsonPropertyName("orderId")]
 	public SortEnumType? OrderId 
 	{
@@ -22,6 +23,7 @@ public partial class OrderSortInput : GraphInputBase
     	set => SetValue("orderId", value);
 	}
 
+	[GraphQLMember("customer")]
 	[JsonPropertyName("customer")]
 	public CustomerSortInput Customer 
 	{
@@ -29,6 +31,7 @@ public partial class OrderSortInput : GraphInputBase
     	set => SetValue("customer", value);
 	}
 
+	[GraphQLMember("address")]
 	[JsonPropertyName("address")]
 	public AddressSortInput Address 
 	{
@@ -36,6 +39,7 @@ public partial class OrderSortInput : GraphInputBase
     	set => SetValue("address", value);
 	}
 
+	[GraphQLMember("orderDate")]
 	[JsonPropertyName("orderDate")]
 	public SortEnumType? OrderDate 
 	{
@@ -43,6 +47,7 @@ public partial class OrderSortInput : GraphInputBase
     	set => SetValue("orderDate", value);
 	}
 
+	[GraphQLMember("entryTime")]
 	[JsonPropertyName("entryTime")]
 	public SortEnumType? EntryTime 
 	{

@@ -14,7 +14,7 @@ public class QueryNode
 
     public QueryNode(MemberInfo member, string name = null, List<ArgumentValue> arguments = null, bool interfaceProperty = false, bool topLevel = false)
     {
-        Name = name ?? member.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? member.Name.ToCamelCase();
+        Name = name ?? member.GetCustomAttribute<GraphQLMemberAttribute>()?.GraphQLName ?? member.Name.ToCamelCase();
         Member = member;
         Arguments = arguments ?? new List<ArgumentValue>();
         underlyingMemberType = member.GetUnderlyingType();
@@ -62,17 +62,6 @@ public class QueryNode
                !type.IsListOfPrimitiveTypeOrString();
     }
 
-    public void SetAddPrimitiveChildren()
-    {
-        if (!ChildNodes.Any())
-        {
-            IncludePrimitive = true;
-        }
-        foreach (var childNode in ChildNodes)
-        {
-            childNode.SetAddPrimitiveChildren();
-        }
-    }
 
     public void AddChildNode(MemberInfo member, string name = null)
     {
@@ -82,7 +71,7 @@ public class QueryNode
     public int Level => Parent?.Level + 1 ?? 1;
     public int Leaf { get; internal set; } = 1;
 
-    public void AddChildNode(QueryNode childNode)
+    public QueryNode AddChildNode(QueryNode childNode)
     {
         var currentNode = ChildNodes.FirstOrDefault(e => e.Name == childNode.Name && e.argumentHashCodeId == childNode.argumentHashCodeId);
         if (currentNode == null)
@@ -90,7 +79,7 @@ public class QueryNode
             childNode.Parent = this;
             childNode.Leaf = ChildNodes.Count + 1;
             ChildNodes.Add(childNode);
-            return;
+            return childNode;
         }
         else if (childNode.IncludePrimitive)
         {
@@ -101,6 +90,9 @@ public class QueryNode
         {
             currentNode.AddChildNode(child);
         }
+
+        return currentNode;
+
     }
 
     public void SetArgumentValue(string graphName, object value)
@@ -127,23 +119,25 @@ public class QueryNode
             var typeOrListType = underlyingMemberType.GetTypeOrListType();
             foreach (var propertyInfo in typeOrListType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
-                if (propertyInfo.GetCustomAttribute<GraphShadowPropertyAttribute>() != null)
+
+                if (!propertyInfo.PropertyType.IsValueTypeOrString())
                 {
                     continue;
                 }
 
-                if (!propertyInfo.PropertyType.IsValueTypeOrString() || propertyInfo.GetCustomAttribute<GraphShadowPropertyAttribute>() != null)
+
+                var memberAttribute = propertyInfo.GetCustomAttribute<GraphQLMemberAttribute>();
+                if (memberAttribute == null)
                 {
                     continue;
                 }
+
 
                 if (schema != null)
                 {
-                    var name = propertyInfo.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ??
-                                Member.Name.ToCamelCase();
-                    if (schema.TypePropertyExists(typeOrListType.Name, name))
+                    if (schema.TypePropertyExists(typeOrListType.Name, memberAttribute.GraphQLName))
                     {
-                        AddChildNode(propertyInfo, name);
+                        AddChildNode(propertyInfo, memberAttribute.GraphQLName);
                     }
                     else
                     {

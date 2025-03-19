@@ -17,6 +17,17 @@ namespace Linq2GraphQL.Client
 
         public QueryNode QueryNode { get; }
 
+      
+        /// <summary>
+        /// Include top node
+        /// </summary>
+        /// <returns></returns>
+        public TGraph Include()
+        {
+            QueryNode.IncludePrimitive = true;
+            return (TGraph)(object)this;
+        }
+
         public TGraph Include<TProperty>(Expression<Func<T, TProperty>> path)
         {
             Utilities.ParseExpression(path, QueryNode);

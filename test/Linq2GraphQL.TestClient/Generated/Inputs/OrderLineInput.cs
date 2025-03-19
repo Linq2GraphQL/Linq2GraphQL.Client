@@ -15,6 +15,7 @@ namespace Linq2GraphQL.TestClient;
 [JsonConverter(typeof(GraphInputConverter<OrderLineInput>))]
 public partial class OrderLineInput : GraphInputBase
 {
+	[GraphQLMember("lineNumber")]
 	[JsonPropertyName("lineNumber")]
 	public int LineNumber 
 	{
@@ -22,6 +23,7 @@ public partial class OrderLineInput : GraphInputBase
     	set => SetValue("lineNumber", value);
 	}
 
+	[GraphQLMember("order")]
 	[JsonPropertyName("order")]
 	public OrderInput Order 
 	{
@@ -29,6 +31,7 @@ public partial class OrderLineInput : GraphInputBase
     	set => SetValue("order", value);
 	}
 
+	[GraphQLMember("item")]
 	[JsonPropertyName("item")]
 	public ItemInput Item 
 	{
@@ -36,6 +39,7 @@ public partial class OrderLineInput : GraphInputBase
     	set => SetValue("item", value);
 	}
 
+	[GraphQLMember("price")]
 	[JsonPropertyName("price")]
 	public decimal Price 
 	{
@@ -43,6 +47,7 @@ public partial class OrderLineInput : GraphInputBase
     	set => SetValue("price", value);
 	}
 
+	[GraphQLMember("quantity")]
 	[JsonPropertyName("quantity")]
 	public double Quantity 
 	{

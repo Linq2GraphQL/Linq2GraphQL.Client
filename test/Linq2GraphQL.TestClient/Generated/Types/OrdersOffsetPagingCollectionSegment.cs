@@ -22,15 +22,18 @@ public partial class OrdersOffsetPagingCollectionSegment : GraphQLTypeBase
     /// <summary>
     /// Information to aid in pagination.
     /// </summary>
+    [GraphQLMember("pageInfo")]
     [JsonPropertyName("pageInfo")]
     public CollectionSegmentInfo PageInfo { get; set; }
 
     /// <summary>
     /// A flattened list of the items.
     /// </summary>
+    [GraphQLMember("items")]
     [JsonPropertyName("items")]
     public List<Order> Items { get; set; }
 
+    [GraphQLMember("totalCount")]
     [JsonPropertyName("totalCount")]
     public int TotalCount { get; set; }
 

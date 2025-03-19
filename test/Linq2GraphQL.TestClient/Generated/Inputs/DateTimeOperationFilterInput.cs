@@ -15,6 +15,7 @@ namespace Linq2GraphQL.TestClient;
 [JsonConverter(typeof(GraphInputConverter<DateTimeOperationFilterInput>))]
 public partial class DateTimeOperationFilterInput : GraphInputBase
 {
+	[GraphQLMember("eq")]
 	[JsonPropertyName("eq")]
 	public DateTimeOffset? Eq 
 	{
@@ -22,6 +23,7 @@ public partial class DateTimeOperationFilterInput : GraphInputBase
     	set => SetValue("eq", value);
 	}
 
+	[GraphQLMember("neq")]
 	[JsonPropertyName("neq")]
 	public DateTimeOffset? Neq 
 	{
@@ -29,6 +31,7 @@ public partial class DateTimeOperationFilterInput : GraphInputBase
     	set => SetValue("neq", value);
 	}
 
+	[GraphQLMember("in")]
 	[JsonPropertyName("in")]
 	public List<DateTimeOffset?> In 
 	{
@@ -36,6 +39,7 @@ public partial class DateTimeOperationFilterInput : GraphInputBase
     	set => SetValue("in", value);
 	}
 
+	[GraphQLMember("nin")]
 	[JsonPropertyName("nin")]
 	public List<DateTimeOffset?> Nin 
 	{
@@ -43,6 +47,7 @@ public partial class DateTimeOperationFilterInput : GraphInputBase
     	set => SetValue("nin", value);
 	}
 
+	[GraphQLMember("gt")]
 	[JsonPropertyName("gt")]
 	public DateTimeOffset? Gt 
 	{
@@ -50,6 +55,7 @@ public partial class DateTimeOperationFilterInput : GraphInputBase
     	set => SetValue("gt", value);
 	}
 
+	[GraphQLMember("ngt")]
 	[JsonPropertyName("ngt")]
 	public DateTimeOffset? Ngt 
 	{
@@ -57,6 +63,7 @@ public partial class DateTimeOperationFilterInput : GraphInputBase
     	set => SetValue("ngt", value);
 	}
 
+	[GraphQLMember("gte")]
 	[JsonPropertyName("gte")]
 	public DateTimeOffset? Gte 
 	{
@@ -64,6 +71,7 @@ public partial class DateTimeOperationFilterInput : GraphInputBase
     	set => SetValue("gte", value);
 	}
 
+	[GraphQLMember("ngte")]
 	[JsonPropertyName("ngte")]
 	public DateTimeOffset? Ngte 
 	{
@@ -71,6 +79,7 @@ public partial class DateTimeOperationFilterInput : GraphInputBase
     	set => SetValue("ngte", value);
 	}
 
+	[GraphQLMember("lt")]
 	[JsonPropertyName("lt")]
 	public DateTimeOffset? Lt 
 	{
@@ -78,6 +87,7 @@ public partial class DateTimeOperationFilterInput : GraphInputBase
     	set => SetValue("lt", value);
 	}
 
+	[GraphQLMember("nlt")]
 	[JsonPropertyName("nlt")]
 	public DateTimeOffset? Nlt 
 	{
@@ -85,6 +95,7 @@ public partial class DateTimeOperationFilterInput : GraphInputBase
     	set => SetValue("nlt", value);
 	}
 
+	[GraphQLMember("lte")]
 	[JsonPropertyName("lte")]
 	public DateTimeOffset? Lte 
 	{
@@ -92,6 +103,7 @@ public partial class DateTimeOperationFilterInput : GraphInputBase
     	set => SetValue("lte", value);
 	}
 
+	[GraphQLMember("nlte")]
 	[JsonPropertyName("nlte")]
 	public DateTimeOffset? Nlte 
 	{

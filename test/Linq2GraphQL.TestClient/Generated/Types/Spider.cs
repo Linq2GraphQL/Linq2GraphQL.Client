@@ -16,18 +16,23 @@ namespace Linq2GraphQL.TestClient;
 
 public partial class Spider : GraphQLTypeBase, IAnimal
 {
+    [GraphQLMember("name")]
     [JsonPropertyName("name")]
     public string Name { get; set; }
 
+    [GraphQLMember("numberOfLegs")]
     [JsonPropertyName("numberOfLegs")]
     public int NumberOfLegs { get; set; }
 
+    [GraphQLMember("speed")]
     [JsonPropertyName("speed")]
     public int Speed { get; set; }
 
+    [GraphQLMember("poisonous")]
     [JsonPropertyName("poisonous")]
     public bool Poisonous { get; set; }
 
+    [GraphQLMember("__typename")]
     [JsonPropertyName("__typename")]
     public string __TypeName { get; set; }
 }

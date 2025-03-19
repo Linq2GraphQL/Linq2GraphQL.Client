@@ -22,24 +22,28 @@ public partial class AnimalsConnection : GraphQLTypeBase, Linq2GraphQL.Client.Co
     /// <summary>
     /// Information to aid in pagination.
     /// </summary>
+    [GraphQLMember("pageInfo")]
     [JsonPropertyName("pageInfo")]
     public Linq2GraphQL.Client.Common.PageInfo PageInfo { get; set; }
 
     /// <summary>
     /// A list of edges.
     /// </summary>
+    [GraphQLMember("edges")]
     [JsonPropertyName("edges")]
     public List<AnimalsEdge> Edges { get; set; }
 
     /// <summary>
     /// A flattened list of the nodes.
     /// </summary>
+    [GraphQLMember("nodes")]
     [JsonPropertyName("nodes")]
     public List<IAnimal> Nodes { get; set; }
 
     /// <summary>
     /// Identifies the total count of items in the connection.
     /// </summary>
+    [GraphQLMember("totalCount")]
     [JsonPropertyName("totalCount")]
     public int TotalCount { get; set; }
 

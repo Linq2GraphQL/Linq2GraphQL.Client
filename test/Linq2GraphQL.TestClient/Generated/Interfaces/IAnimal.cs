@@ -56,23 +56,23 @@ internal class IAnimalConverter : InterfaceJsonConverter<IAnimal>
 [JsonConverter(typeof(IAnimalConverter))]
 public interface IAnimal 
 {
-	[JsonPropertyName("name")]
+	[GraphQLMember("name")]
 	public string Name { get; set; }  
-	[JsonPropertyName("numberOfLegs")]
+	[GraphQLMember("numberOfLegs")]
 	public int NumberOfLegs { get; set; }  
-    [JsonPropertyName("__typename")]
+    [GraphQLMember("__typename")]
     public string __TypeName { get; set; }
 
 }
 
 internal class IAnimal__Concrete : IAnimal
 {
-	[JsonPropertyName("name")]
+	[GraphQLMember("name")]
 	public string Name { get; set; }  
-	[JsonPropertyName("numberOfLegs")]
+	[GraphQLMember("numberOfLegs")]
 	public int NumberOfLegs { get; set; }  
 
-    [JsonPropertyName("__typename")]
+    [GraphQLMember("__typename")]
     public string __TypeName { get; set; }
 
 }

@@ -12,30 +12,30 @@ using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClient;
 
-[JsonConverter(typeof(GraphInputConverter<ListFilterInputTypeOfOrderLineFilterInput>))]
-public partial class ListFilterInputTypeOfOrderLineFilterInput : GraphInputBase
+[JsonConverter(typeof(GraphInputConverter<ListByteOperationFilterInput>))]
+public partial class ListByteOperationFilterInput : GraphInputBase
 {
 	[GraphQLMember("all")]
 	[JsonPropertyName("all")]
-	public OrderLineFilterInput All 
+	public ByteOperationFilterInput All 
 	{
-		get => GetValue<OrderLineFilterInput>("all");
+		get => GetValue<ByteOperationFilterInput>("all");
     	set => SetValue("all", value);
 	}
 
 	[GraphQLMember("none")]
 	[JsonPropertyName("none")]
-	public OrderLineFilterInput None 
+	public ByteOperationFilterInput None 
 	{
-		get => GetValue<OrderLineFilterInput>("none");
+		get => GetValue<ByteOperationFilterInput>("none");
     	set => SetValue("none", value);
 	}
 
 	[GraphQLMember("some")]
 	[JsonPropertyName("some")]
-	public OrderLineFilterInput Some 
+	public ByteOperationFilterInput Some 
 	{
-		get => GetValue<OrderLineFilterInput>("some");
+		get => GetValue<ByteOperationFilterInput>("some");
     	set => SetValue("some", value);
 	}
 

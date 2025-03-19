@@ -2,7 +2,7 @@
   "profiles": {
     "Linq2GraphQL.Generator": {
       "commandName": "Project",
-      "commandLineArgs": "https://localhost:7184/graphql/ -c=\"SampleClient\" -n=\"Linq2GraphQL.TestClient\" -o=\"C:\\Code\\Linq2GraphQL.Client\\test\\Linq2GraphQL.TestClient\\Generated\" -s=true"
+      "commandLineArgs": "https://localhost:50741/graphql/ -c=\"SampleNullableClient\" -n=\"Linq2GraphQL.TestClientNullable\" -o=\"C:\\Code\\Github\\Linq2GraphQL.Client\\test\\Linq2GraphQL.TestClientNullable\\Generated\" -s=true -nu=true"
     }
   }
 }

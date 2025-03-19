@@ -15,6 +15,7 @@ namespace Linq2GraphQL.TestClient;
 [JsonConverter(typeof(GraphInputConverter<AddressFilterInput>))]
 public partial class AddressFilterInput : GraphInputBase
 {
+	[GraphQLMember("and")]
 	[JsonPropertyName("and")]
 	public List<AddressFilterInput> And 
 	{
@@ -22,6 +23,7 @@ public partial class AddressFilterInput : GraphInputBase
     	set => SetValue("and", value);
 	}
 
+	[GraphQLMember("or")]
 	[JsonPropertyName("or")]
 	public List<AddressFilterInput> Or 
 	{
@@ -29,6 +31,7 @@ public partial class AddressFilterInput : GraphInputBase
     	set => SetValue("or", value);
 	}
 
+	[GraphQLMember("name")]
 	[JsonPropertyName("name")]
 	public StringOperationFilterInput Name 
 	{
@@ -36,6 +39,7 @@ public partial class AddressFilterInput : GraphInputBase
     	set => SetValue("name", value);
 	}
 
+	[GraphQLMember("street")]
 	[JsonPropertyName("street")]
 	public StringOperationFilterInput Street 
 	{
@@ -43,6 +47,7 @@ public partial class AddressFilterInput : GraphInputBase
     	set => SetValue("street", value);
 	}
 
+	[GraphQLMember("postalCode")]
 	[JsonPropertyName("postalCode")]
 	public StringOperationFilterInput PostalCode 
 	{

@@ -136,17 +136,6 @@ public class BaseField
 
     public BaseType Type { get; set; }
 
-
-    //private TypeInfo fieldInfo;
-    //public TypeInfo FieldInfo
-    //{
-    //    get
-    //    {
-    //        fieldInfo ??= GetFieldTypeInfo();
-    //        return fieldInfo;
-    //    }
-    //}
-
     private CoreType coreType;
     public CoreType CoreType
     {
@@ -157,56 +146,7 @@ public class BaseField
         }
     }
 
-
-
-    //private TypeInfo GetFieldTypeInfo()
-    //{
-
-    //    if (Type == null) return null;
-
-    //    var allTypes = Type.GetAllTypes();
-
-    //    var baseFieldType = Type.GetBaseBaseType();
-
-    //    Type csharpType = null;
-
-    //    string csharpTypeName;
-    //    if (Helpers.TypeMapping.TryGetValue(baseFieldType.Name, out var typeMapping))
-    //    {
-    //        csharpTypeName = typeMapping.Name;
-    //        csharpType = typeMapping.type;
-    //    }
-    //    else
-    //    {
-    //        csharpTypeName = baseFieldType.Name.ToPascalCase();
-    //    }
-
-
-    //    var coreType = Type.GetCoreType();
-
-    //    var isList = allTypes.Any(e => e.Kind == TypeKind.List);
-    //    var isNoneNull = allTypes.Any(e => e.Kind == TypeKind.NonNull);
-
-    //    var graphTypeDefinition = isNoneNull ? baseFieldType.Name + "!" : baseFieldType.Name;
-    //    if (isList)
-    //    {
-    //        graphTypeDefinition = $"[{graphTypeDefinition}]";
-    //        var gr = coreType.GetGraphQLTypeDefinition();
-    //        var cs = coreType.GetCSharpTypeDefinition();
-    //    }
-
-    //    return new TypeInfo
-    //    {
-
-    //        Kind = baseFieldType.Kind,
-    //        IsList = isList,
-    //        IsNoneNull = isNoneNull,
-    //        CSharpType = csharpType,
-    //        CSharpTypeName = csharpTypeName,
-    //        GraphTypeDefinition = graphTypeDefinition,
-    //        IsEnum = baseFieldType.Kind == TypeKind.Enum
-    //    };
-    //}
+      
 
 }
 
@@ -251,7 +191,7 @@ public class Field : BaseField
             if (addTypeAttribute)
             {
                 result +=
-                    $"[GraphArgument(\"{arg.CoreType.GraphQLTypeDefinition}\")] {arg.CoreType.CSharpTypeDefinition} {arg.Name.ToCamelCase()}";
+                    $"[GraphQLArgument(\"{arg.Name}\", \"{arg.CoreType.GraphQLTypeDefinition}\")] {arg.CoreType.CSharpTypeDefinition} {arg.Name.ToCamelCase()}";
             }
             else
             {

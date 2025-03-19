@@ -15,6 +15,7 @@ namespace Linq2GraphQL.TestClient;
 [JsonConverter(typeof(GraphInputConverter<StringOperationFilterInput>))]
 public partial class StringOperationFilterInput : GraphInputBase
 {
+	[GraphQLMember("and")]
 	[JsonPropertyName("and")]
 	public List<StringOperationFilterInput> And 
 	{
@@ -22,6 +23,7 @@ public partial class StringOperationFilterInput : GraphInputBase
     	set => SetValue("and", value);
 	}
 
+	[GraphQLMember("or")]
 	[JsonPropertyName("or")]
 	public List<StringOperationFilterInput> Or 
 	{
@@ -29,6 +31,7 @@ public partial class StringOperationFilterInput : GraphInputBase
     	set => SetValue("or", value);
 	}
 
+	[GraphQLMember("eq")]
 	[JsonPropertyName("eq")]
 	public string Eq 
 	{
@@ -36,6 +39,7 @@ public partial class StringOperationFilterInput : GraphInputBase
     	set => SetValue("eq", value);
 	}
 
+	[GraphQLMember("neq")]
 	[JsonPropertyName("neq")]
 	public string Neq 
 	{
@@ -43,6 +47,7 @@ public partial class StringOperationFilterInput : GraphInputBase
     	set => SetValue("neq", value);
 	}
 
+	[GraphQLMember("contains")]
 	[JsonPropertyName("contains")]
 	public string Contains 
 	{
@@ -50,6 +55,7 @@ public partial class StringOperationFilterInput : GraphInputBase
     	set => SetValue("contains", value);
 	}
 
+	[GraphQLMember("ncontains")]
 	[JsonPropertyName("ncontains")]
 	public string Ncontains 
 	{
@@ -57,6 +63,7 @@ public partial class StringOperationFilterInput : GraphInputBase
     	set => SetValue("ncontains", value);
 	}
 
+	[GraphQLMember("in")]
 	[JsonPropertyName("in")]
 	public List<string> In 
 	{
@@ -64,6 +71,7 @@ public partial class StringOperationFilterInput : GraphInputBase
     	set => SetValue("in", value);
 	}
 
+	[GraphQLMember("nin")]
 	[JsonPropertyName("nin")]
 	public List<string> Nin 
 	{
@@ -71,6 +79,7 @@ public partial class StringOperationFilterInput : GraphInputBase
     	set => SetValue("nin", value);
 	}
 
+	[GraphQLMember("startsWith")]
 	[JsonPropertyName("startsWith")]
 	public string StartsWith 
 	{
@@ -78,6 +87,7 @@ public partial class StringOperationFilterInput : GraphInputBase
     	set => SetValue("startsWith", value);
 	}
 
+	[GraphQLMember("nstartsWith")]
 	[JsonPropertyName("nstartsWith")]
 	public string NstartsWith 
 	{
@@ -85,6 +95,7 @@ public partial class StringOperationFilterInput : GraphInputBase
     	set => SetValue("nstartsWith", value);
 	}
 
+	[GraphQLMember("endsWith")]
 	[JsonPropertyName("endsWith")]
 	public string EndsWith 
 	{
@@ -92,6 +103,7 @@ public partial class StringOperationFilterInput : GraphInputBase
     	set => SetValue("endsWith", value);
 	}
 
+	[GraphQLMember("nendsWith")]
 	[JsonPropertyName("nendsWith")]
 	public string NendsWith 
 	{

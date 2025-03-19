@@ -178,7 +178,7 @@ namespace Linq2GraphQL.Generator.Templates.Interface
             
             #line default
             #line hidden
-            this.Write("\t[JsonPropertyName(\"");
+            this.Write("\t[GraphQLMember(\"");
             
             #line 52 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Interface\InterfaceTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(field.Name));
@@ -208,8 +208,8 @@ namespace Linq2GraphQL.Generator.Templates.Interface
             
             #line default
             #line hidden
-            this.Write("    [JsonPropertyName(\"__typename\")]\r\n    public string __TypeName { get; set; }\r" +
-                    "\n\r\n}\r\n\r\ninternal class ");
+            this.Write("    [GraphQLMember(\"__typename\")]\r\n    public string __TypeName { get; set; }\r\n\r\n" +
+                    "}\r\n\r\ninternal class ");
             
             #line 62 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Interface\InterfaceTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetInterfaceConcreteName()));
@@ -234,7 +234,7 @@ namespace Linq2GraphQL.Generator.Templates.Interface
             
             #line default
             #line hidden
-            this.Write("\t[JsonPropertyName(\"");
+            this.Write("\t[GraphQLMember(\"");
             
             #line 69 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Interface\InterfaceTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(field.Name));
@@ -264,8 +264,8 @@ namespace Linq2GraphQL.Generator.Templates.Interface
             
             #line default
             #line hidden
-            this.Write("\r\n    [JsonPropertyName(\"__typename\")]\r\n    public string __TypeName { get; set; " +
-                    "}\r\n\r\n}");
+            this.Write("\r\n    [GraphQLMember(\"__typename\")]\r\n    public string __TypeName { get; set; }\r\n" +
+                    "\r\n}");
             return this.GenerationEnvironment.ToString();
         }
     }

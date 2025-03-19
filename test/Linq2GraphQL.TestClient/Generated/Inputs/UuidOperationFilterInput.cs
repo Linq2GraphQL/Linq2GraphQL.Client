@@ -15,6 +15,7 @@ namespace Linq2GraphQL.TestClient;
 [JsonConverter(typeof(GraphInputConverter<UuidOperationFilterInput>))]
 public partial class UuidOperationFilterInput : GraphInputBase
 {
+	[GraphQLMember("eq")]
 	[JsonPropertyName("eq")]
 	public Guid? Eq 
 	{
@@ -22,6 +23,7 @@ public partial class UuidOperationFilterInput : GraphInputBase
     	set => SetValue("eq", value);
 	}
 
+	[GraphQLMember("neq")]
 	[JsonPropertyName("neq")]
 	public Guid? Neq 
 	{
@@ -29,6 +31,7 @@ public partial class UuidOperationFilterInput : GraphInputBase
     	set => SetValue("neq", value);
 	}
 
+	[GraphQLMember("in")]
 	[JsonPropertyName("in")]
 	public List<Guid?> In 
 	{
@@ -36,6 +39,7 @@ public partial class UuidOperationFilterInput : GraphInputBase
     	set => SetValue("in", value);
 	}
 
+	[GraphQLMember("nin")]
 	[JsonPropertyName("nin")]
 	public List<Guid?> Nin 
 	{
@@ -43,6 +47,7 @@ public partial class UuidOperationFilterInput : GraphInputBase
     	set => SetValue("nin", value);
 	}
 
+	[GraphQLMember("gt")]
 	[JsonPropertyName("gt")]
 	public Guid? Gt 
 	{
@@ -50,6 +55,7 @@ public partial class UuidOperationFilterInput : GraphInputBase
     	set => SetValue("gt", value);
 	}
 
+	[GraphQLMember("ngt")]
 	[JsonPropertyName("ngt")]
 	public Guid? Ngt 
 	{
@@ -57,6 +63,7 @@ public partial class UuidOperationFilterInput : GraphInputBase
     	set => SetValue("ngt", value);
 	}
 
+	[GraphQLMember("gte")]
 	[JsonPropertyName("gte")]
 	public Guid? Gte 
 	{
@@ -64,6 +71,7 @@ public partial class UuidOperationFilterInput : GraphInputBase
     	set => SetValue("gte", value);
 	}
 
+	[GraphQLMember("ngte")]
 	[JsonPropertyName("ngte")]
 	public Guid? Ngte 
 	{
@@ -71,6 +79,7 @@ public partial class UuidOperationFilterInput : GraphInputBase
     	set => SetValue("ngte", value);
 	}
 
+	[GraphQLMember("lt")]
 	[JsonPropertyName("lt")]
 	public Guid? Lt 
 	{
@@ -78,6 +87,7 @@ public partial class UuidOperationFilterInput : GraphInputBase
     	set => SetValue("lt", value);
 	}
 
+	[GraphQLMember("nlt")]
 	[JsonPropertyName("nlt")]
 	public Guid? Nlt 
 	{
@@ -85,6 +95,7 @@ public partial class UuidOperationFilterInput : GraphInputBase
     	set => SetValue("nlt", value);
 	}
 
+	[GraphQLMember("lte")]
 	[JsonPropertyName("lte")]
 	public Guid? Lte 
 	{
@@ -92,6 +103,7 @@ public partial class UuidOperationFilterInput : GraphInputBase
     	set => SetValue("lte", value);
 	}
 
+	[GraphQLMember("nlte")]
 	[JsonPropertyName("nlte")]
 	public Guid? Nlte 
 	{

@@ -15,6 +15,7 @@ namespace Linq2GraphQL.TestClientNullable;
 [JsonConverter(typeof(GraphInputConverter<CustomerInput>))]
 public partial class CustomerInput : GraphInputBase
 {
+	[GraphQLMember("customerId")]
 	[JsonPropertyName("customerId")]
 	public required Guid CustomerId 
 	{
@@ -22,6 +23,7 @@ public partial class CustomerInput : GraphInputBase
     	set => SetValue("customerId", value);
 	}
 
+	[GraphQLMember("customerName")]
 	[JsonPropertyName("customerName")]
 	public required string CustomerName 
 	{
@@ -29,6 +31,7 @@ public partial class CustomerInput : GraphInputBase
     	set => SetValue("customerName", value);
 	}
 
+	[GraphQLMember("status")]
 	[JsonPropertyName("status")]
 	public required CustomerStatus Status 
 	{
@@ -36,6 +39,7 @@ public partial class CustomerInput : GraphInputBase
     	set => SetValue("status", value);
 	}
 
+	[GraphQLMember("orders")]
 	[JsonPropertyName("orders")]
 	public required List<OrderInput> Orders 
 	{
@@ -43,6 +47,7 @@ public partial class CustomerInput : GraphInputBase
     	set => SetValue("orders", value);
 	}
 
+	[GraphQLMember("address")]
 	[JsonPropertyName("address")]
 	public AddressInput? Address 
 	{

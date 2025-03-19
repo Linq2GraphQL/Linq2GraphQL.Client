@@ -12,102 +12,102 @@ using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClient;
 
-[JsonConverter(typeof(GraphInputConverter<DecimalOperationFilterInput>))]
-public partial class DecimalOperationFilterInput : GraphInputBase
+[JsonConverter(typeof(GraphInputConverter<ByteOperationFilterInput>))]
+public partial class ByteOperationFilterInput : GraphInputBase
 {
 	[GraphQLMember("eq")]
 	[JsonPropertyName("eq")]
-	public decimal? Eq 
+	public byte? Eq 
 	{
-		get => GetValue<decimal?>("eq");
+		get => GetValue<byte?>("eq");
     	set => SetValue("eq", value);
 	}
 
 	[GraphQLMember("neq")]
 	[JsonPropertyName("neq")]
-	public decimal? Neq 
+	public byte? Neq 
 	{
-		get => GetValue<decimal?>("neq");
+		get => GetValue<byte?>("neq");
     	set => SetValue("neq", value);
 	}
 
 	[GraphQLMember("in")]
 	[JsonPropertyName("in")]
-	public List<decimal?> In 
+	public List<byte?> In 
 	{
-		get => GetValue<List<decimal?>>("in");
+		get => GetValue<List<byte?>>("in");
     	set => SetValue("in", value);
 	}
 
 	[GraphQLMember("nin")]
 	[JsonPropertyName("nin")]
-	public List<decimal?> Nin 
+	public List<byte?> Nin 
 	{
-		get => GetValue<List<decimal?>>("nin");
+		get => GetValue<List<byte?>>("nin");
     	set => SetValue("nin", value);
 	}
 
 	[GraphQLMember("gt")]
 	[JsonPropertyName("gt")]
-	public decimal? Gt 
+	public byte? Gt 
 	{
-		get => GetValue<decimal?>("gt");
+		get => GetValue<byte?>("gt");
     	set => SetValue("gt", value);
 	}
 
 	[GraphQLMember("ngt")]
 	[JsonPropertyName("ngt")]
-	public decimal? Ngt 
+	public byte? Ngt 
 	{
-		get => GetValue<decimal?>("ngt");
+		get => GetValue<byte?>("ngt");
     	set => SetValue("ngt", value);
 	}
 
 	[GraphQLMember("gte")]
 	[JsonPropertyName("gte")]
-	public decimal? Gte 
+	public byte? Gte 
 	{
-		get => GetValue<decimal?>("gte");
+		get => GetValue<byte?>("gte");
     	set => SetValue("gte", value);
 	}
 
 	[GraphQLMember("ngte")]
 	[JsonPropertyName("ngte")]
-	public decimal? Ngte 
+	public byte? Ngte 
 	{
-		get => GetValue<decimal?>("ngte");
+		get => GetValue<byte?>("ngte");
     	set => SetValue("ngte", value);
 	}
 
 	[GraphQLMember("lt")]
 	[JsonPropertyName("lt")]
-	public decimal? Lt 
+	public byte? Lt 
 	{
-		get => GetValue<decimal?>("lt");
+		get => GetValue<byte?>("lt");
     	set => SetValue("lt", value);
 	}
 
 	[GraphQLMember("nlt")]
 	[JsonPropertyName("nlt")]
-	public decimal? Nlt 
+	public byte? Nlt 
 	{
-		get => GetValue<decimal?>("nlt");
+		get => GetValue<byte?>("nlt");
     	set => SetValue("nlt", value);
 	}
 
 	[GraphQLMember("lte")]
 	[JsonPropertyName("lte")]
-	public decimal? Lte 
+	public byte? Lte 
 	{
-		get => GetValue<decimal?>("lte");
+		get => GetValue<byte?>("lte");
     	set => SetValue("lte", value);
 	}
 
 	[GraphQLMember("nlte")]
 	[JsonPropertyName("nlte")]
-	public decimal? Nlte 
+	public byte? Nlte 
 	{
-		get => GetValue<decimal?>("nlte");
+		get => GetValue<byte?>("nlte");
     	set => SetValue("nlte", value);
 	}
 

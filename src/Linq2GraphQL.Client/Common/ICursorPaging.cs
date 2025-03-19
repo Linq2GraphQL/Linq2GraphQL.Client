@@ -9,6 +9,8 @@ namespace Linq2GraphQL.Client.Common
 {
     public interface ICursorPaging
     {
+        [GraphQLMember("pageInfo")]
+        [JsonPropertyName("pageInfo")]
         public PageInfo PageInfo { get; set; }
       
     }
