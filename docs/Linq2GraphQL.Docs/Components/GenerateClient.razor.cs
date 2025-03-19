@@ -27,7 +27,7 @@ namespace Linq2GraphQL.Docs.Components
 
             demoOptions.Add(new GenerateOptions
             {
-                Url = "https://swapi-graphql.netlify.app/.netlify/functions/index",
+                Url = "https://swapi-graphql.netlify.app/graphql",
                 Namespace = "StarWars.Client",
                 ClientName = "StarWarsClient"
             });
