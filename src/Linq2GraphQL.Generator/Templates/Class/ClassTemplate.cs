@@ -164,7 +164,7 @@ namespace Linq2GraphQL.Generator.Templates.Class
             this.Write("/// <summary>\r\n/// ");
             
             #line 33 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(classType.Description));
+            this.Write(this.ToStringHelper.ToStringWithCulture(classType.SummaryDescription));
             
             #line default
             #line hidden
@@ -270,7 +270,7 @@ namespace Linq2GraphQL.Generator.Templates.Class
             this.Write("    /// <summary>\r\n    /// ");
             
             #line 51 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(field.Description));
+            this.Write(this.ToStringHelper.ToStringWithCulture(field.SummaryDescription));
             
             #line default
             #line hidden

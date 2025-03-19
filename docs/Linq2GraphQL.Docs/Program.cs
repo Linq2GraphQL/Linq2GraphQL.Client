@@ -18,6 +18,6 @@ builder.Services.AddStarWarsClient(x =>
      x.SubscriptionProtocol = SubscriptionProtocol.ServerSentEvents;
  })
    .WithHttpClient(
-       httpClient => { httpClient.BaseAddress = new Uri("https://swapi-graphql.netlify.app/.netlify/functions/index"); });
+       httpClient => { httpClient.BaseAddress = new Uri("https://swapi-graphql.netlify.app/graphql"); });
 
 await builder.Build().RunAsync();
