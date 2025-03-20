@@ -1,7 +1,3 @@
-using FluentAssertions;
-using GreenDonut;
-using HotChocolate.Types.Pagination;
-using Linq2GraphQL.Client;
 using Linq2GraphQL.TestClient;
 
 namespace Linq2GraphQL.Tests;
@@ -15,14 +11,13 @@ public class QueryPagingTests : IClassFixture<SampleClientFixture>
         this.sampleClient = sampleClient.sampleClient;
     }
 
-  
 
     [Fact]
     public async Task Orders_ManualPaging()
     {
         var query = sampleClient
             .Query
-            .OrdersNoBackwardPagination(first: 2)
+            .OrdersNoBackwardPagination(2)
             .Include(e => e.Nodes)
             .Include(e => e.PageInfo)
             .Include(e => e.TotalCount)
@@ -30,11 +25,11 @@ public class QueryPagingTests : IClassFixture<SampleClientFixture>
 
         var request = await query.GetRequestAsync();
 
-      await query.ExecuteBaseAsync();
+        await query.ExecuteBaseAsync();
 
         var result1 = query.ConvertResult(query.BaseResult);
         var result2 = result1;
-       
+
         if (query.BaseResult.PageInfo.HasNextPage)
         {
             query.QueryNode.SetArgumentValue("after", query.BaseResult.PageInfo.EndCursor);
@@ -42,21 +37,19 @@ public class QueryPagingTests : IClassFixture<SampleClientFixture>
         }
 
         Assert.NotEqual(result1.First().OrderId, result2.First().OrderId);
-
     }
 
     [Fact]
     public async Task Orders_NotIncludeTotalCount()
     {
         var query = sampleClient
-         .Query
-         .Orders()
-         .Select(e => e.Nodes);
+            .Query
+            .Orders()
+            .Select(e => e.Nodes);
 
         var result = await query.ExecuteAsync();
-        
-        Assert.Equal(0, query.BaseResult.TotalCount);
 
+        Assert.Equal(0, query.BaseResult.TotalCount);
     }
 
 
@@ -64,25 +57,20 @@ public class QueryPagingTests : IClassFixture<SampleClientFixture>
     public async Task Orders_Paging()
     {
         var pager = sampleClient
-         .Query
-         .Orders()
-         .Include(e => e.TotalCount)
-         //.Include(e => e.Nodes.Select(e => e.Customer.Orders))
-
-         .Select(e => e.Nodes.Select(e => new { e.OrderId }))
-         .AsPager();
+            .Query
+            .Orders()
+            .Include(e => e.TotalCount)
+            //.Include(e => e.Nodes.Select(e => e.Customer.Orders))
+            .Select(e => e.Nodes.Select(e => new { e.OrderId }))
+            .AsPager();
 
         var firstPage = await pager.NextPageAsync();
-         var totalCount = pager.PagerResult.TotalCount;
+        var totalCount = pager.PagerResult.TotalCount;
         var secondPage = await pager.NextPageAsync();
         var firstPageAgain = await pager.PreviousPageAsync();
 
 
         Assert.NotEqual(firstPage.First().OrderId, secondPage.First().OrderId);
         Assert.Equal(firstPage.First().OrderId, firstPageAgain.First().OrderId);
-
     }
-
-
-
 }

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
@@ -20,9 +20,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="System.CodeDom" Version="8.0.0" />
-        <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
-        <PackageReference Include="Macross.Json.Extensions" Version="3.0.0" />
+        <PackageReference Include="System.CodeDom" />
+        <PackageReference Include="System.CommandLine" />
+        <PackageReference Include="Macross.Json.Extensions" />
     </ItemGroup>
 
     <ItemGroup>

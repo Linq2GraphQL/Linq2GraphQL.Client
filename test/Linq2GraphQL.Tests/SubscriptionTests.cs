@@ -17,10 +17,7 @@ public class SubscriptionTests : IClassFixture<SampleClientFixture>
         var customerName = "JockeD";
         var customerInput = new CustomerInput
         {
-            CustomerName = customerName,
-            CustomerId = Guid.NewGuid(),
-            Status = CustomerStatus.Active,
-            Orders = new()
+            CustomerName = customerName, CustomerId = Guid.NewGuid(), Status = CustomerStatus.Active, Orders = new()
         };
 
         var subscription = await sampleClient

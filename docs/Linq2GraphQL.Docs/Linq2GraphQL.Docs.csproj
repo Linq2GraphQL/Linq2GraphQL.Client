@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
@@ -11,12 +11,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="System.Text.Json" Version="8.0.4" />
-		<PackageReference Include="BlazorMonaco" Version="3.2.0" />
-		<PackageReference Include="ColorCode.HTML" Version="2.0.15" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.8" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.8" PrivateAssets="all" />
-		<PackageReference Include="TabBlazor" Version="0.8.1.1-alpha" />
+		<PackageReference Include="System.Text.Json" />
+		<PackageReference Include="BlazorMonaco" />
+		<PackageReference Include="ColorCode.HTML" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" PrivateAssets="all" />
+		<PackageReference Include="TabBlazor" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -27,7 +27,7 @@
 	<Target Name="BuildClientAssets" AfterTargets="ComputeFilesToPublish">
 		<ItemGroup>
 			<DistFiles Include="Components\Samples\**\*.razor.cs" />
-			<ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+			<ResolvedFileToPublish Include="@(DistFiles-&gt;'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
 				<RelativePath>wwwroot\_content\razor_samples\%(DistFiles.RecursiveDir)%(DistFiles.Filename)%(DistFiles.Extension)</RelativePath>
 				<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 				<ExcludeFromSingleFile>true</ExcludeFromSingleFile>

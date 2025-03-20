@@ -14,15 +14,17 @@ public class SampleClientFixture : IDisposable
         var baseAddress = new Uri("https://localhost:7184/graphql/");
 
         var application = new WebApplicationFactory<Program>();
-        var client = application.CreateClient(new WebApplicationFactoryClientOptions { BaseAddress = baseAddress });
+        var client = application.CreateClient(new() { BaseAddress = baseAddress });
 
-        sampleClient = new SampleClient(client, Options.Create(new GraphClientOptions
-        {
-            SubscriptionProtocol = SubscriptionProtocol.ServerSentEvents,
-            UseSafeMode = true
-        }), application.Services);
+        sampleClient = new(client,
+            Options.Create(new GraphClientOptions
+            {
+                SubscriptionProtocol = SubscriptionProtocol.ServerSentEvents, UseSafeMode = true
+            }), application.Services);
         //Please note currently only ServerSentEvents work in test project
     }
 
-    public void Dispose() { }
+    public void Dispose()
+    {
+    }
 }

@@ -1,5 +1,5 @@
-using FluentAssertions;
 using Linq2GraphQL.TestClient;
+using Shouldly;
 
 namespace Linq2GraphQL.Tests;
 
@@ -59,7 +59,7 @@ public class QueryTests : IClassFixture<SampleClientFixture>
         var query = sampleClient
             .Query
             .Customers()
-            .Include(e => e.Select(e=> new { e.CustomerId, e.Status }))
+            .Include(e => e.Select(e => new { e.CustomerId, e.Status }))
             .Select();
 
         var result = await query.ExecuteAsync();
@@ -69,7 +69,6 @@ public class QueryTests : IClassFixture<SampleClientFixture>
         var customer1 = result[0];
         Assert.NotEqual(default, customer1.CustomerId);
         Assert.Equal(default, customer1.CustomerName);
-
     }
 
 
@@ -81,7 +80,7 @@ public class QueryTests : IClassFixture<SampleClientFixture>
             .Customers()
             .Include(e => e.Select(e => e.Orders))
             .Select();
-          
+
         var result = await query.ExecuteAsync();
 
         var customer1 = result[0];
@@ -110,7 +109,6 @@ public class QueryTests : IClassFixture<SampleClientFixture>
             .Customers()
             .Include(e => e.Select(e => e.Orders.Select(f => f.Address)))
             .Include(e => e.Select(e => e.Orders.Select(f => f.Customer)))
-           
             .Select()
             .ExecuteAsync();
 
@@ -138,7 +136,6 @@ public class QueryTests : IClassFixture<SampleClientFixture>
         Assert.NotNull(order.Customer?.CustomerName);
         Assert.Equal(default, order.Customer.CustomerId);
     }
-
 
     [Fact]
     public async Task Customers_WithSingleSelect()
@@ -182,7 +179,6 @@ public class QueryTests : IClassFixture<SampleClientFixture>
     }
 
 
-
     [Fact]
     public async Task Orders_WithSelectIncludeNodes()
     {
@@ -221,7 +217,6 @@ public class QueryTests : IClassFixture<SampleClientFixture>
         var baseType = query.BaseResult;
 
         Assert.Equal(default, baseType.Nodes.First().OrderDate);
-
     }
 
 
@@ -238,7 +233,6 @@ public class QueryTests : IClassFixture<SampleClientFixture>
         var orderAddresses = result.SelectMany(e => e.Customer.Orders.Select(a => a.Address));
 
         Assert.True(orderAddresses.All(e => e != null));
-
     }
 
     [Fact]
@@ -246,15 +240,12 @@ public class QueryTests : IClassFixture<SampleClientFixture>
     {
         var result = await sampleClient
             .Query
-            .Orders(order: new List<OrderSortInput> { new() { OrderDate = SortEnumType.Desc } })
+            .Orders(order: new() { new() { OrderDate = SortEnumType.Desc } })
             .Select(e => e.Nodes)
             .ExecuteAsync();
 
-        result.Should().BeInDescendingOrder(e => e.OrderDate);
+        result.OrderByDescending(x => x.OrderDate).ShouldBe(result);
     }
-
-  
-
 
     [Fact]
     public async Task QueryReturnNull_Object()
@@ -266,7 +257,6 @@ public class QueryTests : IClassFixture<SampleClientFixture>
             .ExecuteAsync();
 
         Assert.True(result == null);
-
     }
 
     [Fact]
@@ -279,7 +269,6 @@ public class QueryTests : IClassFixture<SampleClientFixture>
             .ExecuteAsync();
 
         Assert.True(result == null);
-
     }
 
     [Fact]
@@ -292,7 +281,6 @@ public class QueryTests : IClassFixture<SampleClientFixture>
             .ExecuteAsync();
 
         Assert.True(result == Guid.Empty);
-
     }
 
     [Fact]
@@ -305,7 +293,5 @@ public class QueryTests : IClassFixture<SampleClientFixture>
             .ExecuteAsync();
 
         Assert.True(result == null);
-
     }
-
 }

@@ -1,5 +1,4 @@
 ﻿using Linq2GraphQL.Client;
-using Linq2GraphQL.TestClient;
 using Linq2GraphQL.TestClientNullable;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Options;
@@ -15,15 +14,17 @@ public class SampleNullableClientFixture : IDisposable
         var baseAddress = new Uri("https://localhost:50741/graphql/");
 
         var application = new WebApplicationFactory<ProgramNullable>();
-        var client = application.CreateClient(new WebApplicationFactoryClientOptions { BaseAddress = baseAddress });
+        var client = application.CreateClient(new() { BaseAddress = baseAddress });
 
-        sampleClient = new SampleNullableClient(client, Options.Create(new GraphClientOptions
-        {
-            SubscriptionProtocol = SubscriptionProtocol.ServerSentEvents,
-            UseSafeMode = false,
-        }), application.Services);
+        sampleClient = new(client,
+            Options.Create(new GraphClientOptions
+            {
+                SubscriptionProtocol = SubscriptionProtocol.ServerSentEvents, UseSafeMode = false
+            }), application.Services);
         //Please note currently only ServerSentEvents work in test project
     }
 
-    public void Dispose() { }
+    public void Dispose()
+    {
+    }
 }
