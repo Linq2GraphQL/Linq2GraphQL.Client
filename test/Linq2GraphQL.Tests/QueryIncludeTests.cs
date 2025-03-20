@@ -1,5 +1,4 @@
-﻿using HotChocolate.Execution;
-using Linq2GraphQL.TestClient;
+﻿using Linq2GraphQL.TestClient;
 
 namespace Linq2GraphQL.Tests;
 
@@ -32,7 +31,7 @@ public class QueryIncludeTests : IClassFixture<SampleClientFixture>
     {
         var query = sampleClient
             .Query
-            .Orders(first: 1)
+            .Orders(1)
             .Include(e => e.Nodes.Select(e => e.Customer))
             .Include(e => e.Nodes.Select(e => e.Customer.Orders))
             .Select(e => e.Nodes);
@@ -62,11 +61,7 @@ public class QueryIncludeTests : IClassFixture<SampleClientFixture>
                 Hello = n.OrderHello("Peter", 1234),
                 DeliveryAddress = n.OrderAddress(AddressType.Delivery),
                 InvoiceAddress = n.OrderAddress(AddressType.Invoice),
-                Cust = new
-                {
-                    n.Customer.CustomerName,
-                    n.Customer.Orders
-                }
+                Cust = new { n.Customer.CustomerName, n.Customer.Orders }
             }));
 
         var q = await query.GetRequestAsync();
@@ -92,19 +87,9 @@ public class QueryIncludeTests : IClassFixture<SampleClientFixture>
             .Query
             .Orders(where: new()
             {
-                Customer = new()
-                {
-                    CustomerId = new()
-                    {
-                        Eq = Guid.Parse("3b1761fb-6551-404e-80b0-a6c12f298a06")
-                    }
-                }
+                Customer = new() { CustomerId = new() { Eq = Guid.Parse("3b1761fb-6551-404e-80b0-a6c12f298a06") } }
             })
-            .Select(e => e.Nodes.Select(n => new
-            {
-                n.Customer,
-                n.Customer.Orders
-            }))
+            .Select(e => e.Nodes.Select(n => new { n.Customer, n.Customer.Orders }))
             .ExecuteAsync();
 
 

@@ -31,17 +31,13 @@ public class MutationTests : IClassFixture<SampleClientFixture>
         var id = Guid.NewGuid();
         var customerId = await sampleClient
             .Mutation
-            .AddCustomer(new CustomerInput
+            .AddCustomer(new()
             {
-                CustomerId = id,
-                CustomerName = "New Customer",
-                Orders = new List<OrderInput>(),
-                Status = CustomerStatus.Active,
+                CustomerId = id, CustomerName = "New Customer", Orders = new(), Status = CustomerStatus.Active
             })
-            .Select(e=> e.CustomerId)
+            .Select(e => e.CustomerId)
             .ExecuteAsync();
 
         Assert.Equal(id, customerId);
     }
-
 }
