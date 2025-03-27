@@ -44,14 +44,18 @@ query Into {
       interfaces {
         name
       }
-      enumValues {
+      enumValues(includeDeprecated: true) {
         name
         description
+        isDeprecated
+        deprecationReason
       }
 
-      fields {
+      fields(includeDeprecated: true) {
         name
         description
+        isDeprecated
+        deprecationReason
         type {
           ...BaseType
         }
@@ -64,9 +68,11 @@ query Into {
           }
         }
       }
-      inputFields {
+      inputFields(includeDeprecated: true) {
         name
         description
+        isDeprecated
+        deprecationReason
         type {
           ...BaseType
         }

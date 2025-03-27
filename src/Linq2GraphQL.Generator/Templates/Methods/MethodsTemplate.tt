@@ -28,6 +28,9 @@ public class <#= ClassName #>
     {
         var coreType = field.CoreType;
 #>
+<# if (field.IsDeprecated) { #>
+[Obsolete("<#= field.DeprecationReason #>")]
+    <# } #>
 public <#= GetReturnTypeString(field) #> <#= field.CSharpName #>(<#= field.GetArgString(false) #>)
     {
 	    var arguments = new List<ArgumentValue>

@@ -1161,6 +1161,15 @@ public static class OrderFilterInputExtensions
         return input;
     }
 
+    public static OrderFilterInput Grade(this OrderFilterInput input, Action<StringOperationFilterInput> mod)
+    {
+        var filter = new StringOperationFilterInput();
+        mod ??= _ => { };
+        mod(filter); 
+        input.Grade = filter;
+        return input;
+    }
+
 }
 
 public static class OrderInputExtensions
@@ -1210,6 +1219,13 @@ public static class OrderInputExtensions
     public static OrderInput EntryTime(this OrderInput input, TimeSpan? val)
     {
          input.EntryTime = val;
+         return input;
+    }
+
+
+    public static OrderInput Grade(this OrderInput input, string val)
+    {
+         input.Grade = val;
          return input;
     }
 
@@ -1363,6 +1379,13 @@ public static class OrderSortInputExtensions
     public static OrderSortInput EntryTime(this OrderSortInput input, SortEnumType? val)
     {
          input.EntryTime = val;
+         return input;
+    }
+
+
+    public static OrderSortInput Grade(this OrderSortInput input, SortEnumType? val)
+    {
+         input.Grade = val;
          return input;
     }
 

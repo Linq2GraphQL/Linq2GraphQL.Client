@@ -16,6 +16,13 @@ namespace Linq2GraphQL.TestClient;
 
 public static class OrderExtensions
 {
+    [GraphQLMember("myGradeMethod")]
+    [Obsolete("This method should not be used anymore")]
+    public static string MyGradeMethod(this Order  order, [GraphQLArgument("name", "String!")] string name)
+    {
+        return order.GetMethodValue<string>("myGradeMethod", name);
+    }
+
     [GraphQLMember("orderHello")]
     public static string OrderHello(this Order  order, [GraphQLArgument("name", "String!")] string name, [GraphQLArgument("first", "Int!")] int first)
     {
@@ -32,6 +39,13 @@ public static class OrderExtensions
 
 public partial class Order : GraphQLTypeBase
 {
+    private LazyProperty<string> _myGradeMethod = new();
+    /// <summary>
+    /// Do not use in Query, only to retrive result
+    /// </summary>
+    [Obsolete("This method should not be used anymore")]
+    public string MyGradeMethod => _myGradeMethod.Value(() => GetFirstMethodValue<string>("myGradeMethod"));
+
     private LazyProperty<string> _orderHello = new();
     /// <summary>
     /// Do not use in Query, only to retrive result
@@ -67,5 +81,10 @@ public partial class Order : GraphQLTypeBase
     [GraphQLMember("entryTime")]
     [JsonPropertyName("entryTime")]
     public TimeSpan? EntryTime { get; set; }
+
+    [Obsolete("This propery is obsolete and should not be used!")]
+    [GraphQLMember("grade")]
+    [JsonPropertyName("grade")]
+    public string Grade { get; set; }
 
 }

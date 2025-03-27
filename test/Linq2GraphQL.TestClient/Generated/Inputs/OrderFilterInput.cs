@@ -79,4 +79,12 @@ public partial class OrderFilterInput : GraphInputBase
     	set => SetValue("entryTime", value);
 	}
 
+	[GraphQLMember("grade")]
+	[JsonPropertyName("grade")]
+	public StringOperationFilterInput Grade 
+	{
+		get => GetValue<StringOperationFilterInput>("grade");
+    	set => SetValue("grade", value);
+	}
+
 }

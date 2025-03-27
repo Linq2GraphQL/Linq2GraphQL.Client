@@ -55,4 +55,12 @@ public partial class OrderSortInput : GraphInputBase
     	set => SetValue("entryTime", value);
 	}
 
+	[GraphQLMember("grade")]
+	[JsonPropertyName("grade")]
+	public SortEnumType? Grade 
+	{
+		get => GetValue<SortEnumType?>("grade");
+    	set => SetValue("grade", value);
+	}
+
 }

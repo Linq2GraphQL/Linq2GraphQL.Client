@@ -12,6 +12,11 @@ namespace Linq2GraphQL.TestServerNullable
             return SampleData.GetItem("Test Item");
         }
 
+        [Obsolete("This is an really old method! please d not use it!!")]
+        public Item GetItemDraft()
+        {
+            return SampleData.GetItem("Test Item");
+        }
 
         public List<Customer> GetCustomerList()
         {

@@ -18,4 +18,7 @@ public enum CustomerStatus
     Active,
     [EnumMember(Value = "DISABLED")]
     Disabled,
+    [Obsolete("No longer in use, please use enum value Active instead")]
+    [EnumMember(Value = "IN_TRANSIT")]
+    InTransit,
 }
