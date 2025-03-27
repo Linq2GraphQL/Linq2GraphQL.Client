@@ -15,6 +15,16 @@ public class Order
     public List<OrderLine> Lines { get; set; } = new();
     public TimeOnly? EntryTime { get; set; }
 
+    [Obsolete("This propery is obsolete and should not be used!")]
+    public string? Grade { get; set; }
+
+
+    [Obsolete("This method should not be used anymore")]
+    public string? GetMyGradeMethod(string name)
+    {
+        return Grade;
+    }
+
     public string GetOrderHello(string name, int first = 0)
     {
         return $"Hello, {name} [{first}]";

@@ -13,6 +13,9 @@ public enum <#= enumType.Name #>
     foreach (var enumValue in enumType.EnumValues)
     {
 #>
+<# if (enumValue.IsDeprecated) { #>
+    [Obsolete("<#= enumValue.DeprecationReason #>")]
+<# } #>
     [EnumMember(Value = "<#= enumValue.Name #>")]
     <#= enumValue.GetCSharpName() #>,
 <#

@@ -63,4 +63,13 @@ public partial class OrderInput : GraphInputBase
     	set => SetValue("entryTime", value);
 	}
 
+    [Obsolete("This propery is obsolete and should not be used!")]
+	[GraphQLMember("grade")]
+	[JsonPropertyName("grade")]
+	public string? Grade 
+	{
+		get => GetValue<string?>("grade");
+    	set => SetValue("grade", value);
+	}
+
 }

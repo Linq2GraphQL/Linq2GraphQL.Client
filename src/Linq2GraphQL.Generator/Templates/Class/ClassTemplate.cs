@@ -76,79 +76,100 @@ namespace Linq2GraphQL.Generator.Templates.Class
             
             #line default
             #line hidden
-            this.Write("\")]\r\n    public static ");
+            this.Write("\")]\r\n");
             
             #line 20 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+ if (field.IsDeprecated) { 
+            
+            #line default
+            #line hidden
+            this.Write("    [Obsolete(\"");
+            
+            #line 21 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(field.DeprecationReason));
+            
+            #line default
+            #line hidden
+            this.Write("\")]\r\n");
+            
+            #line 22 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+ } 
+            
+            #line default
+            #line hidden
+            this.Write("    public static ");
+            
+            #line 23 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetFieldCSharpName(field)));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 20 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 23 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(field.CSharpName));
             
             #line default
             #line hidden
             this.Write("(this ");
             
-            #line 20 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 23 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(classType.Name));
             
             #line default
             #line hidden
             this.Write("  ");
             
-            #line 20 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 23 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(classType.Name.ToCamelCase()));
             
             #line default
             #line hidden
             this.Write(", ");
             
-            #line 20 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 23 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(field.GetArgString(true)));
             
             #line default
             #line hidden
             this.Write(")\r\n    {\r\n        return ");
             
-            #line 22 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 25 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(classType.Name.ToCamelCase()));
             
             #line default
             #line hidden
             this.Write(".GetMethodValue<");
             
-            #line 22 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 25 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetFieldCSharpName(field)));
             
             #line default
             #line hidden
             this.Write(">(\"");
             
-            #line 22 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 25 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(field.Name));
             
             #line default
             #line hidden
             this.Write("\", ");
             
-            #line 22 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 25 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(field.GetArgNames()));
             
             #line default
             #line hidden
             this.Write(");\r\n    }\r\n\r\n");
             
-            #line 25 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 28 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
  } 
             
             #line default
             #line hidden
             this.Write("}\r\n\r\n");
             
-            #line 28 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 31 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
 
     }
 
@@ -156,21 +177,21 @@ namespace Linq2GraphQL.Generator.Templates.Class
             #line default
             #line hidden
             
-            #line 31 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 34 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
  if (classType.HasDescription) {
             
             #line default
             #line hidden
             this.Write("/// <summary>\r\n/// ");
             
-            #line 33 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 36 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(classType.SummaryDescription));
             
             #line default
             #line hidden
             this.Write("\r\n/// </summary>\r\n");
             
-            #line 35 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 38 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
  
 } 
 
@@ -179,143 +200,123 @@ namespace Linq2GraphQL.Generator.Templates.Class
             #line hidden
             this.Write("public partial class ");
             
-            #line 38 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 41 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(classType.Name));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 38 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 41 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(classType.GetInterfacesString("GraphQLTypeBase")));
             
             #line default
             #line hidden
             this.Write("\r\n{\r\n");
             
-            #line 40 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 43 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
  foreach (var field in classType.AllFields) { 
             
             #line default
             #line hidden
             
-            #line 41 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 44 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
  if (field.IsMethod) { 
             
             #line default
             #line hidden
             this.Write("    private LazyProperty<");
             
-            #line 42 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 45 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetFieldCSharpName(field)));
             
             #line default
             #line hidden
             this.Write("> _");
             
-            #line 42 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 45 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(field.Name));
             
             #line default
             #line hidden
             this.Write(" = new();\r\n    /// <summary>\r\n    /// Do not use in Query, only to retrive result" +
-                    "\r\n    /// </summary>\r\n    public ");
+                    "\r\n    /// </summary>\r\n");
             
-            #line 46 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 49 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+ if (field.IsDeprecated) { 
+            
+            #line default
+            #line hidden
+            this.Write("    [Obsolete(\"");
+            
+            #line 50 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(field.DeprecationReason));
+            
+            #line default
+            #line hidden
+            this.Write("\")]\r\n");
+            
+            #line 51 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+ } 
+            
+            #line default
+            #line hidden
+            this.Write("    public ");
+            
+            #line 52 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetFieldCSharpName(field)));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 46 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 52 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(field.CSharpName));
             
             #line default
             #line hidden
             this.Write(" => _");
             
-            #line 46 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 52 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(field.Name));
             
             #line default
             #line hidden
             this.Write(".Value(() => GetFirstMethodValue<");
             
-            #line 46 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 52 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetFieldCSharpName(field)));
             
             #line default
             #line hidden
             this.Write(">(\"");
             
-            #line 46 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 52 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(field.Name));
             
             #line default
             #line hidden
             this.Write("\"));\r\n\r\n");
             
-            #line 48 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 54 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
  } else { 
             
             #line default
             #line hidden
             
-            #line 49 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 55 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
  if (field.HasDescription) { 
             
             #line default
             #line hidden
             this.Write("    /// <summary>\r\n    /// ");
             
-            #line 51 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 57 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(field.SummaryDescription));
             
             #line default
             #line hidden
             this.Write("\r\n    /// </summary>\r\n");
-            
-            #line 53 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
- } 
-            
-            #line default
-            #line hidden
-            this.Write("    [GraphQLMember(\"");
-            
-            #line 54 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(field.Name));
-            
-            #line default
-            #line hidden
-            this.Write("\")]\r\n    [JsonPropertyName(\"");
-            
-            #line 55 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(field.Name));
-            
-            #line default
-            #line hidden
-            this.Write("\")]\r\n    public ");
-            
-            #line 56 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(GetFieldCSharpName(field)));
-            
-            #line default
-            #line hidden
-            this.Write(" ");
-            
-            #line 56 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(field.CSharpName));
-            
-            #line default
-            #line hidden
-            this.Write(" { get; set; }\r\n\r\n");
-            
-            #line 58 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
- } 
-            
-            #line default
-            #line hidden
             
             #line 59 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
  } 
@@ -324,6 +325,67 @@ namespace Linq2GraphQL.Generator.Templates.Class
             #line hidden
             
             #line 60 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+ if (field.IsDeprecated) { 
+            
+            #line default
+            #line hidden
+            this.Write("    [Obsolete(\"");
+            
+            #line 61 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(field.DeprecationReason));
+            
+            #line default
+            #line hidden
+            this.Write("\")]\r\n");
+            
+            #line 62 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+ } 
+            
+            #line default
+            #line hidden
+            this.Write("    [GraphQLMember(\"");
+            
+            #line 63 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(field.Name));
+            
+            #line default
+            #line hidden
+            this.Write("\")]\r\n    [JsonPropertyName(\"");
+            
+            #line 64 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(field.Name));
+            
+            #line default
+            #line hidden
+            this.Write("\")]\r\n    public ");
+            
+            #line 65 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(GetFieldCSharpName(field)));
+            
+            #line default
+            #line hidden
+            this.Write(" ");
+            
+            #line 65 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(field.CSharpName));
+            
+            #line default
+            #line hidden
+            this.Write(" { get; set; }\r\n\r\n");
+            
+            #line 67 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+ } 
+            
+            #line default
+            #line hidden
+            
+            #line 68 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+ } 
+            
+            #line default
+            #line hidden
+            
+            #line 69 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
  if (classType.HasInterfaces) { 
             
             #line default
@@ -331,7 +393,7 @@ namespace Linq2GraphQL.Generator.Templates.Class
             this.Write("    [GraphQLMember(\"__typename\")]\r\n    [JsonPropertyName(\"__typename\")]\r\n    publ" +
                     "ic string __TypeName { get; set; }\r\n");
             
-            #line 64 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
+            #line 73 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
  } 
             
             #line default

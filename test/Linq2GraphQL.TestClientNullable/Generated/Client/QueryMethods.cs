@@ -29,6 +29,16 @@ public class QueryMethods
         return new GraphQuery<Item>(client,  "item", OperationType.Query, arguments); 
     }
 
+    [Obsolete("This is an really old method! please d not use it!!")]
+    public GraphQuery<Item> ItemDraft()
+    {
+	    var arguments = new List<ArgumentValue>
+        {
+        };
+
+        return new GraphQuery<Item>(client,  "itemDraft", OperationType.Query, arguments); 
+    }
+
     public GraphQuery<List<Customer>> CustomerList()
     {
 	    var arguments = new List<ArgumentValue>

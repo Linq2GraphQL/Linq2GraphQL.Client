@@ -1,9 +1,5 @@
-﻿using Linq2GraphQL.Client.Common;
-using System.Diagnostics;
-using System.Runtime.Serialization;
-using System.Security.AccessControl;
+﻿using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
 
 namespace Linq2GraphQL.Generator;
 
@@ -111,7 +107,10 @@ public class EnumValue
 {
     public string Name { get; set; }
     public string Description { get; set; }
-   
+
+    public bool IsDeprecated { get; set; }
+    public string DeprecationReason { get; set; }
+
 
     public string GetCSharpName()
     {
@@ -130,6 +129,9 @@ public class BaseField
 
     public string Name { get; set; }
     public string Description { get; set; }
+
+    public bool IsDeprecated { get; set; }
+    public string DeprecationReason { get; set; }
 
     public bool HasDescription => !string.IsNullOrEmpty(Description);
 

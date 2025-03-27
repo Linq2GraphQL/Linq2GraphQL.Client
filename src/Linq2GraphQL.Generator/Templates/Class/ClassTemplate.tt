@@ -17,6 +17,9 @@ public static class <#= classType.Name #>Extensions
 {
 <# foreach (var field in classType.AllFields.Where(e => e.IsMethod)) { #>
     [GraphQLMember("<#= field.Name #>")]
+<# if (field.IsDeprecated) { #>
+    [Obsolete("<#= field.DeprecationReason #>")]
+<# } #>
     public static <#= GetFieldCSharpName(field) #> <#= field.CSharpName #>(this <#= classType.Name #>  <#= classType.Name.ToCamelCase() #>, <#= field.GetArgString(true) #>)
     {
         return <#= classType.Name.ToCamelCase() #>.GetMethodValue<<#= GetFieldCSharpName(field) #>>("<#= field.Name #>", <#= field.GetArgNames() #>);
@@ -43,6 +46,9 @@ public partial class <#= classType.Name #> <#= classType.GetInterfacesString("Gr
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
+<# if (field.IsDeprecated) { #>
+    [Obsolete("<#= field.DeprecationReason #>")]
+<# } #>
     public <#= GetFieldCSharpName(field) #> <#= field.CSharpName #> => _<#= field.Name #>.Value(() => GetFirstMethodValue<<#= GetFieldCSharpName(field) #>>("<#= field.Name #>"));
 
 <# } else { #>
@@ -50,6 +56,9 @@ public partial class <#= classType.Name #> <#= classType.GetInterfacesString("Gr
     /// <summary>
     /// <#= field.SummaryDescription #>
     /// </summary>
+<# } #>
+<# if (field.IsDeprecated) { #>
+    [Obsolete("<#= field.DeprecationReason #>")]
 <# } #>
     [GraphQLMember("<#= field.Name #>")]
     [JsonPropertyName("<#= field.Name #>")]
