@@ -11,7 +11,7 @@ public class <#= name #>
 { 
     public <#= name #>(HttpClient httpClient, [FromKeyedServices("<#= name #>")]IOptions<GraphClientOptions> options, IServiceProvider provider)
     {
-        var client = new GraphClient(httpClient, options, provider);
+        var client = new GraphClient(httpClient, options, provider, <#= includeDeprecated.ToString().ToLower() #>);
 <# if (includeQuery) { #>
         Query = new <#= GetMehodName(queryType) #>(client);
 <# }#>

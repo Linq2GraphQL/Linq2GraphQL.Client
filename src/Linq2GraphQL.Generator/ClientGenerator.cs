@@ -10,24 +10,10 @@ using System.Text.Json;
 
 namespace Linq2GraphQL.Generator
 {
-    public class ClientGenerator
+    public class ClientGenerator(string namespaceName, string clientName, bool includeSubscriptions,
+        EnumGeneratorStrategy enumGeneratorStrategy, bool nullable, bool includeDeprecated)
     {
-        private readonly string namespaceName;
-        private readonly string clientName;
-        private readonly bool includeSubscriptions;
-        private readonly EnumGeneratorStrategy enumGeneratorStrategy;
-        private readonly bool nullable;
         private readonly List<FileEntry> entries = new();
-
-        public ClientGenerator(string namespaceName, string clientName, bool includeSubscriptions,
-            EnumGeneratorStrategy enumGeneratorStrategy, bool nullable)
-        {
-            this.namespaceName = namespaceName;
-            this.clientName = clientName;
-            this.includeSubscriptions = includeSubscriptions;
-            this.enumGeneratorStrategy = enumGeneratorStrategy;
-            this.nullable = nullable;
-        }
 
         private void AddFile(string directory, string fileName, string content)
         {
@@ -55,7 +41,18 @@ namespace Linq2GraphQL.Generator
             }
 
             httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Linq2GraphQL", "1.0"));
-            using var response = await httpClient.PostAsJsonAsync(uri, new { query = General.IntrospectionQuery });
+
+            string query = "";
+            if (includeDeprecated)
+            {
+                query = General.IntrospectionQueryIncludeDeprecated;
+            }
+            else
+            {
+                query = General.IntrospectionQuery;
+            }
+
+                using var response = await httpClient.PostAsJsonAsync(uri, new { query = query });
             if (!response.IsSuccessStatusCode)
             {
                 throw new Exception(
@@ -72,7 +69,7 @@ namespace Linq2GraphQL.Generator
         {
             entries.Clear();
 
-            GeneratorSettings.Current = new GeneratorSettings { Nullable = this.nullable };
+            GeneratorSettings.Current = new GeneratorSettings { Nullable = nullable };
 
             var rootSchema = JsonSerializer.Deserialize<RootSchema>(schemaJson,
                 new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
@@ -175,7 +172,7 @@ namespace Linq2GraphQL.Generator
 
 
             Console.WriteLine("Generate Client...");
-            var templateText = new ClientTemplate(namespaceName, clientName, queryType, mutationType, subscriptionType)
+            var templateText = new ClientTemplate(namespaceName, clientName, queryType, mutationType, subscriptionType, includeDeprecated)
                 .TransformText();
             var fileName = clientName + ".cs";
             AddFile(clientDirName, fileName, templateText);

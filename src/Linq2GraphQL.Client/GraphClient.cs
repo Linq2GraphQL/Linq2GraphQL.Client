@@ -12,10 +12,12 @@ public class GraphClient
 {
     private readonly IMemoryCache cache;
     private readonly IOptions<GraphClientOptions> options;
-   
-    public GraphClient(HttpClient httpClient, IOptions<GraphClientOptions> options, IServiceProvider provider)
+    private readonly bool includeDeprecated;
+
+    public GraphClient(HttpClient httpClient, IOptions<GraphClientOptions> options, IServiceProvider provider, bool includeDeprecated = false)
     {
         this.options = options;
+        this.includeDeprecated = includeDeprecated;
         if (options.Value.UseSafeMode)
         {
             cache = provider.GetRequiredService<IMemoryCache>();
@@ -73,7 +75,17 @@ public class GraphClient
         {
             var executor = new QueryExecutor<GraphQLSchema>(this);
 
-            var graphRequest = new GraphQLRequest { Query = Helpers.SchemaQueryIncludeDeprecated };
+            string query;
+            if (includeDeprecated)
+            {
+                query = Helpers.SchemaQueryIncludeDeprecated;
+            }
+            else
+            {
+                query = Helpers.SchemaQuery;
+            }
+
+                var graphRequest = new GraphQLRequest { Query = query };
             return await executor.ExecuteRequestAsync("__schema", graphRequest);
         });
     }

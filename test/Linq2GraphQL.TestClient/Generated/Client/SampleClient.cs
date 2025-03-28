@@ -13,10 +13,10 @@ using Microsoft.Extensions.Options;
 namespace Linq2GraphQL.TestClient;
 
 public class SampleClient
-{
+{ 
     public SampleClient(HttpClient httpClient, [FromKeyedServices("SampleClient")]IOptions<GraphClientOptions> options, IServiceProvider provider)
     {
-        var client = new GraphClient(httpClient, options, provider);
+        var client = new GraphClient(httpClient, options, provider, true);
         Query = new QueryMethods(client);
         Mutation = new MutationMethods(client);
         Subscription = new SubscriptionMethods(client); 

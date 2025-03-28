@@ -23,6 +23,8 @@ internal class Program
 
         var nullable = new Option<bool>(new[] { "--nullable", "-nu" }, "Nullable client");
 
+        var includeDeprecated = new Option<bool>(new[] { "--deprecated", "-d" }, "Include Deprecated as Obsolete");
+
         var rootCommand = new RootCommand("Generate GraphQL client")
         {
             uriArgument,
@@ -32,7 +34,8 @@ internal class Program
             authToken,
             includeSubscriptions,
             enumStrategy,
-            nullable
+            nullable,
+            includeDeprecated
         };
 
         rootCommand.SetHandler(async context =>
@@ -46,9 +49,10 @@ internal class Program
                 var includeSubscriptionsValue = result.GetValueForOption(includeSubscriptions);
                 var enumStrategyValue = result.GetValueForOption(enumStrategy);
                 var nullableValue = result.GetValueForOption(nullable);
+                var deprecatedValue = result.GetValueForOption(includeDeprecated);
 
                 await GenerateClientAsync(uriValue, outputFolderValue, namespaceValue, clientNameValue,
-                    includeSubscriptionsValue, authTokenValue, enumStrategyValue, nullableValue);
+                    includeSubscriptionsValue, authTokenValue, enumStrategyValue, nullableValue, deprecatedValue);
             }
         );
 
@@ -58,13 +62,13 @@ internal class Program
     }
 
     private static async Task GenerateClientAsync(Uri uri, string outputFolder, string namespaceName, string name,
-        bool includeSubscriptions, string authToken, string enumStrategy, bool nullable)
+        bool includeSubscriptions, string authToken, string enumStrategy, bool nullable, bool includeDeprecated)
     {
         var enumStrat = enumStrategy != null && enumStrategy.Equals("AddUnknownOption", StringComparison.InvariantCultureIgnoreCase)
             ? EnumGeneratorStrategy.AddUnknownOption
             : EnumGeneratorStrategy.FailIfMissing;
         
-        var generator = new ClientGenerator(namespaceName, name, includeSubscriptions, enumStrat, nullable);
+        var generator = new ClientGenerator(namespaceName, name, includeSubscriptions, enumStrat, nullable, includeDeprecated);
         var entries = await generator.GenerateAsync(uri, authToken);
 
         var outputPath = Path.GetFullPath(outputFolder, Environment.CurrentDirectory);

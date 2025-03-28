@@ -44,6 +44,93 @@ query Into {
       interfaces {
         name
       }
+      enumValues {
+        name
+        description
+        isDeprecated
+        deprecationReason
+      }
+
+      fields {
+        name
+        description
+        isDeprecated
+        deprecationReason
+        type {
+          ...BaseType
+        }
+
+        args {
+          name
+          description
+          type {
+            ...BaseType
+          }
+        }
+      }
+      inputFields {
+        name
+        description
+        isDeprecated
+        deprecationReason
+        type {
+          ...BaseType
+        }
+      }
+    }
+    queryType {
+      name
+    }
+    mutationType {
+      name
+    }
+    subscriptionType {
+      name
+    }
+  }
+}
+";
+
+    public const string IntrospectionQueryIncludeDeprecated = @"fragment OfTypeFields on __Type {
+  name
+  kind
+}
+
+fragment OfTypeReqursive on __Type {
+  ...OfTypeFields
+  ofType {
+    ...OfTypeFields
+    ofType {
+      ...OfTypeFields
+      ofType {
+        ...OfTypeFields
+        ofType {
+          ...OfTypeFields
+          ofType {
+            ...OfTypeFields
+          }
+        }
+      }
+    }
+  }
+}
+
+fragment BaseType on __Type {
+  name
+  description
+  kind
+
+  ...OfTypeReqursive
+}
+
+query Into {
+  __schema {
+    types {
+     ...BaseType
+
+      interfaces {
+        name
+      }
       enumValues(includeDeprecated: true) {
         name
         description
