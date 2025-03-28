@@ -130,6 +130,10 @@ public class BaseField
 {
 
     public string Name { get; set; }
+
+    public string SafeName => Helpers.SafeVariableName(Name);
+   
+
     public string Description { get; set; }
 
     public bool IsDeprecated { get; set; }
@@ -140,7 +144,7 @@ public class BaseField
     public bool HasDescription => !string.IsNullOrEmpty(Description);
 
     public string SummaryDescription => Helpers.SummarySafe(Description);
-    
+
     public string CSharpName => Name?.ToPascalCase();
 
     public GraphqlType GraphqlType { get; set; }
@@ -231,6 +235,7 @@ public class Arg : BaseField
 public class BaseType
 {
     public string Name { get; set; }
+    public string CSharpVariableName => Helpers.SafeVariableName(Name);
     public TypeKind Kind { get; set; }
     public string Description { get; set; }
 

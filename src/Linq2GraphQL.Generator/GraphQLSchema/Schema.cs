@@ -6,7 +6,7 @@ public class Schema
 {
     private static readonly List<string> BuiltInTypes = new()
     {
-        "ID",
+     //   "ID",
         "Int",
         "Float",
         "String",

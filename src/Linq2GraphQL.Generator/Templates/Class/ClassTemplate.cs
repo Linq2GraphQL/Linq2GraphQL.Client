@@ -121,7 +121,7 @@ namespace Linq2GraphQL.Generator.Templates.Class
             this.Write("  ");
             
             #line 23 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(classType.Name.ToCamelCase()));
+            this.Write(this.ToStringHelper.ToStringWithCulture(classType.CSharpVariableName));
             
             #line default
             #line hidden
@@ -135,7 +135,7 @@ namespace Linq2GraphQL.Generator.Templates.Class
             this.Write(")\r\n    {\r\n        return ");
             
             #line 25 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(classType.Name.ToCamelCase()));
+            this.Write(this.ToStringHelper.ToStringWithCulture(classType.CSharpVariableName));
             
             #line default
             #line hidden

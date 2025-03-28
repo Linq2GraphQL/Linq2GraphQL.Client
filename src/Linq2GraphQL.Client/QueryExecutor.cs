@@ -5,8 +5,10 @@ namespace Linq2GraphQL.Client;
 
 public class QueryExecutor<T>
 {
-    private const string errorPathPropertyName = "errors";
-    private const string dataPathPropertyName = "data";
+    private const string errorPropertyName = "errors";
+    private const string dataPropertyName = "data";
+    private const string extensionsPropertyName = "extensions";
+    
     private readonly GraphClient client;
 
     internal QueryExecutor(GraphClient client)
@@ -22,25 +24,26 @@ public class QueryExecutor<T>
         {
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
             throw new GraphQueryRequestException($"Http error! Status code {response.StatusCode} Error: {content}",
-                graphRequest.Query);
+                graphRequest.Query, graphRequest.Variables);
         }
 
         var con = await response.Content.ReadAsStringAsync(cancellationToken);
-        return ProcessResponse(con, name, graphRequest.Query);
+        return ProcessResponse(con, name, graphRequest);
     }
 
-    public T ProcessResponse(string con, string name, string query)
+    public T ProcessResponse(string con, string name, GraphQLRequest request)
     {
         var document = JsonDocument.Parse(con);
-        var hasError = document.RootElement.TryGetProperty(errorPathPropertyName, out var errorElement);
+        var hasError = document.RootElement.TryGetProperty(errorPropertyName, out var errorElement);
+        var hasExtensions = document.RootElement.TryGetProperty(extensionsPropertyName, out var extensionsElement);
 
         if (hasError)
         {
             var errors = errorElement.Deserialize<List<GraphQueryError>>(client.SerializerOptions);
-            throw new GraphQueryExecutionException(errors, query);
+            throw new GraphQueryExecutionException(errors, request.Query, request.Variables);
         }
 
-        document.RootElement.TryGetProperty(dataPathPropertyName, out var dataElement);
+        document.RootElement.TryGetProperty(dataPropertyName, out var dataElement);
         dataElement.TryGetProperty(name, out var resultElement);
 
         if (resultElement.ValueKind == JsonValueKind.Null)

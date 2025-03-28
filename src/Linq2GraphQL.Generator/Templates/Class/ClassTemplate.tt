@@ -20,9 +20,9 @@ public static class <#= classType.Name #>Extensions
 <# if (field.IsDeprecated) { #>
     [Obsolete("<#= field.SafeDeprecationReason #>")]
 <# } #>
-    public static <#= GetFieldCSharpName(field) #> <#= field.CSharpName #>(this <#= classType.Name #>  <#= classType.Name.ToCamelCase() #>, <#= field.GetArgString(true) #>)
+    public static <#= GetFieldCSharpName(field) #> <#= field.CSharpName #>(this <#= classType.Name #>  <#= classType.CSharpVariableName #>, <#= field.GetArgString(true) #>)
     {
-        return <#= classType.Name.ToCamelCase() #>.GetMethodValue<<#= GetFieldCSharpName(field) #>>("<#= field.Name #>", <#= field.GetArgNames() #>);
+        return <#= classType.CSharpVariableName #>.GetMethodValue<<#= GetFieldCSharpName(field) #>>("<#= field.Name #>", <#= field.GetArgNames() #>);
     }
 
 <# } #>

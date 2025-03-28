@@ -10,7 +10,7 @@ public class GraphSubscriptionExecute<T, TResult> : GraphBaseExecute<T, TResult>
 
     public async Task<IObservable<TResult>> StartAsync()
     {
-        var payload = await GetRequestAsync();
+        var request = await GetRequestAsync();
 
         if (string.IsNullOrWhiteSpace(client.SubscriptionUrl))
         {
@@ -19,15 +19,15 @@ public class GraphSubscriptionExecute<T, TResult> : GraphBaseExecute<T, TResult>
 
         if (client.SubscriptionProtocol == SubscriptionProtocol.ServerSentEvents)
         {
-            var sseClient = new SSEClient(client, payload);
+            var sseClient = new SSEClient(client, request);
 #pragma warning disable CS4014
             Task.Run(sseClient.Start);
 #pragma warning restore CS4014
-            return sseClient.Subscription.Select(e => ConvertResult(queryExecutor.ProcessResponse(e, QueryNode.Name, payload.Query)));
+            return sseClient.Subscription.Select(e => ConvertResult(queryExecutor.ProcessResponse(e, QueryNode.Name, request)));
         }
 
-        var wsClient = new WSClient(client, payload);
+        var wsClient = new WSClient(client, request);
         await wsClient.Start();
-        return wsClient.Subscription.Select(e => ConvertResult(queryExecutor.ProcessResponse(e, QueryNode.Name, payload.Query)));
+        return wsClient.Subscription.Select(e => ConvertResult(queryExecutor.ProcessResponse(e, QueryNode.Name, request)));
     }
 }

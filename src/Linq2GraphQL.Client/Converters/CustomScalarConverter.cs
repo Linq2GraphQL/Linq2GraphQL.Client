@@ -11,18 +11,30 @@ namespace Linq2GraphQL.Client
     {
         public override TScalar Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var value = reader.GetString();
-            if (value is null)
+            object value = null;
+            switch (reader.TokenType)
             {
-                return null;
+                case JsonTokenType.Null:
+                case JsonTokenType.None:
+                    return null;
+                case JsonTokenType.String:
+                    value = reader.GetString();
+                    break;
+                case JsonTokenType.Number:
+                    value = reader.GetDecimal();
+                    break;
+                case JsonTokenType.True:
+                    value = true;
+                    break;
+                case JsonTokenType.False:
+                    value = false;
+                    break;
+                default:
+                    value = JsonDocument.ParseValue(ref reader);
+                    break;
             }
 
-            var scalar = new TScalar
-            {
-                InternalValue = value
-            };
-
-            return scalar;
+            return  new TScalar { Value = value }; 
         }
 
         public override void Write(Utf8JsonWriter writer, TScalar value, JsonSerializerOptions options)
