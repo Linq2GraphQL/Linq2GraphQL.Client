@@ -52,8 +52,18 @@ namespace Linq2GraphQL.Docs.Components
 
         private async Task CopyIntrospection()
         {
+            string query;
+            if (options.IncludeDeprecated)
+            {
+                query = Generator.General.IntrospectionQueryIncludeDeprecated;
+            }
+            else
+            {
+                query = Generator.General.IntrospectionQuery;
+            }
 
-            await tablerService.CopyToClipboard(Generator.General.IntrospectionQuery);
+
+            await tablerService.CopyToClipboard(query);
             await toastService.AddToastAsync(new ToastModel
             {
                 Title = "Copy Complete",
@@ -92,7 +102,7 @@ namespace Linq2GraphQL.Docs.Components
             try
             {
                 isLoading = true;
-                var generator = new Generator.ClientGenerator(options.Namespace, options.ClientName, options.IncludeSubscriptions, EnumGeneratorStrategy.FailIfMissing, options.Nullable);
+                var generator = new Generator.ClientGenerator(options.Namespace, options.ClientName, options.IncludeSubscriptions, EnumGeneratorStrategy.FailIfMissing, options.Nullable, options.IncludeDeprecated);
                 var entries = generator.Generate(options.Schema);
                 await SaveEntriesAsync(entries);
 
@@ -114,7 +124,7 @@ namespace Linq2GraphQL.Docs.Components
             try
             {
                 isLoading = true;
-                var generator = new ClientGenerator(options.Namespace, options.ClientName, options.IncludeSubscriptions, options.EnumGeneratorStrategy, options.Nullable);
+                var generator = new ClientGenerator(options.Namespace, options.ClientName, options.IncludeSubscriptions, options.EnumGeneratorStrategy, options.Nullable, options.IncludeDeprecated);
                 var entries = await generator.GenerateAsync(new Uri(options.Url), options.Token);
                 await SaveEntriesAsync(entries);
             }
@@ -138,7 +148,7 @@ namespace Linq2GraphQL.Docs.Components
         public bool Nullable { get; set; }
         public string Url { get; set; }
         public string Token { get; set; }
-
+        public bool IncludeDeprecated { get; set; }
         public EnumGeneratorStrategy EnumGeneratorStrategy { get; set; }
 
         public string Schema { get; set; }
