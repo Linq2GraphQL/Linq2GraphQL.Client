@@ -2,14 +2,14 @@
 {
     public class CustomScalar
     {
-        internal string InternalValue { get; set; }
+        internal object InternalValue { get; set; }
 
         public override string ToString()
         {
-            return InternalValue;
+            return InternalValue?.ToString();
         }
 
-        public virtual string Value
+        public virtual object Value
         {
             get { return InternalValue; }
 
