@@ -73,7 +73,7 @@ public class GraphClient
         {
             var executor = new QueryExecutor<GraphQLSchema>(this);
 
-            var graphRequest = new GraphQLRequest { Query = Helpers.SchemaQuery };
+            var graphRequest = new GraphQLRequest { Query = Helpers.SchemaQueryIncludeDeprecated };
             return await executor.ExecuteRequestAsync("__schema", graphRequest);
         });
     }
