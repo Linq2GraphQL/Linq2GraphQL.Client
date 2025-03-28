@@ -111,6 +111,8 @@ public class EnumValue
     public bool IsDeprecated { get; set; }
     public string DeprecationReason { get; set; }
 
+    public string SafeDeprecationReason => Helpers.SafeDeprecationReason(DeprecationReason);
+
 
     public string GetCSharpName()
     {
@@ -132,6 +134,8 @@ public class BaseField
 
     public bool IsDeprecated { get; set; }
     public string DeprecationReason { get; set; }
+
+    public string SafeDeprecationReason => Helpers.SafeDeprecationReason(DeprecationReason);
 
     public bool HasDescription => !string.IsNullOrEmpty(Description);
 

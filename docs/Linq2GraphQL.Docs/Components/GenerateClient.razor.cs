@@ -44,6 +44,13 @@ namespace Linq2GraphQL.Docs.Components
                 ClientName = "GithubClient",
                 Token = "[Your Token]"
             });
+            demoOptions.Add(new GenerateOptions
+            {
+                Url = "https://api.start.gg/gql/alpha",
+                Namespace = "StartGG.Client",
+                ClientName = "StartGGClient",
+                Token = "[Your Token]"
+            });
 
             //
 

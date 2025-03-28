@@ -8,10 +8,15 @@ public static class Helpers
     internal static string SummarySafe(string text)
     {
         if (string.IsNullOrEmpty(text)) { return text; }
-
         return Regex.Replace(text, @"\r\n?|\n", Environment.NewLine + "/// ");
-
     }
+
+    internal static string SafeDeprecationReason(string text)
+    {
+        if (string.IsNullOrEmpty(text)) { return text; }
+        return text.Replace("\"", "'");
+    }
+
 
     public static readonly Dictionary<string, (string Name, Type type)> TypeMapping =
         new(StringComparer.InvariantCultureIgnoreCase)

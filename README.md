@@ -63,7 +63,8 @@ Install/Update Tool:
       -s, --subscriptions          Include subscriptions (Exprimental)
       -es --enum-strategy          If AddUnknownOption all enums will have an additional Unknown option
       -nu --nullabel               Nullable client [default: false]
-
+	  -d  --deprecated			   Include Deprecated as Obsolete
+	
 As an example:
 
     Linq2GraphQL https://spacex-production.up.railway.app/ -c="SpaceXClient" -n="SpaceX" -o="Generated"

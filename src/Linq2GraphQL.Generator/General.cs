@@ -47,15 +47,11 @@ query Into {
       enumValues {
         name
         description
-        isDeprecated
-        deprecationReason
       }
 
       fields {
         name
         description
-        isDeprecated
-        deprecationReason
         type {
           ...BaseType
         }
@@ -71,8 +67,6 @@ query Into {
       inputFields {
         name
         description
-        isDeprecated
-        deprecationReason
         type {
           ...BaseType
         }

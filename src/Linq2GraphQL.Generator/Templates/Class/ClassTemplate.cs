@@ -86,7 +86,7 @@ namespace Linq2GraphQL.Generator.Templates.Class
             this.Write("    [Obsolete(\"");
             
             #line 21 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(field.DeprecationReason));
+            this.Write(this.ToStringHelper.ToStringWithCulture(field.SafeDeprecationReason));
             
             #line default
             #line hidden
@@ -250,7 +250,7 @@ namespace Linq2GraphQL.Generator.Templates.Class
             this.Write("    [Obsolete(\"");
             
             #line 50 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(field.DeprecationReason));
+            this.Write(this.ToStringHelper.ToStringWithCulture(field.SafeDeprecationReason));
             
             #line default
             #line hidden
@@ -332,7 +332,7 @@ namespace Linq2GraphQL.Generator.Templates.Class
             this.Write("    [Obsolete(\"");
             
             #line 61 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Class\ClassTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(field.DeprecationReason));
+            this.Write(this.ToStringHelper.ToStringWithCulture(field.SafeDeprecationReason));
             
             #line default
             #line hidden

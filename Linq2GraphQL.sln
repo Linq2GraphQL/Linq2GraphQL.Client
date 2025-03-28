@@ -8,10 +8,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".items", ".items", "{7A8567FE-C13A-434E-AFA6-5A8F55F2C6B5}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		Directory.Packages.props = Directory.Packages.props
 		nuget.config = nuget.config
 		README.md = README.md
 		version.json = version.json
-		Directory.Packages.props = Directory.Packages.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Linq2GraphQL.TestServer", "test\Linq2GraphQL.TestServer\Linq2GraphQL.TestServer.csproj", "{AD8291B6-5979-4C43-B785-EAD4FF93C564}"
@@ -53,6 +53,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StartGG", "StartGG\StartGG.csproj", "{B59EEB8E-8B81-4470-9295-86DF27A769D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -108,6 +110,10 @@ Global
 		{3C66EF43-E66D-46DE-B2BB-434E7FC20487}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C66EF43-E66D-46DE-B2BB-434E7FC20487}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C66EF43-E66D-46DE-B2BB-434E7FC20487}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B59EEB8E-8B81-4470-9295-86DF27A769D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B59EEB8E-8B81-4470-9295-86DF27A769D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B59EEB8E-8B81-4470-9295-86DF27A769D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B59EEB8E-8B81-4470-9295-86DF27A769D2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -123,6 +129,7 @@ Global
 		{C0E1A444-A834-4FC0-8436-38066EA8D37D} = {F646B02D-53FC-4C88-8941-2255A2F4DAF6}
 		{A941BD4C-8B04-4273-AC0B-CF86D71D7E0B} = {884758A6-B667-4CA0-B186-AFB6331A24A5}
 		{3C66EF43-E66D-46DE-B2BB-434E7FC20487} = {884758A6-B667-4CA0-B186-AFB6331A24A5}
+		{B59EEB8E-8B81-4470-9295-86DF27A769D2} = {884758A6-B667-4CA0-B186-AFB6331A24A5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {01DC7AB7-9900-4FCA-BACB-7DAAE825E25E}
