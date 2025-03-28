@@ -27,7 +27,7 @@ namespace Linq2GraphQL.Client
 
         public override void Write(Utf8JsonWriter writer, TScalar value, JsonSerializerOptions options)
         {
-            writer.WriteStringValue(value.InternalValue);
+            writer.WriteStringValue(value.InternalValue?.ToString());
         }
 
     }

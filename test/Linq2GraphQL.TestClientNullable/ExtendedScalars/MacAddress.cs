@@ -16,7 +16,10 @@ namespace Linq2GraphQL.TestClientNullable
             Value = value;
         }
 
-        public override string Value
+
+
+
+        public override object Value
         {
             get
             {
