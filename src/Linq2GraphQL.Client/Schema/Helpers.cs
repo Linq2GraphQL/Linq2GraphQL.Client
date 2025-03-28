@@ -12,4 +12,15 @@ internal static class Helpers
                                             }
                                           }
                                         }";
+
+    internal const string SchemaQueryIncludeDeprecated = @"{
+                                          __schema {
+                                            types {
+                                              name
+                                              fields(includeDeprecated: true) {
+                                                name
+                                              }
+                                            }
+                                          }
+                                        }";
 }
