@@ -14,6 +14,22 @@ using Linq2GraphQL.Client.Common;
 namespace Linq2GraphQL.TestClient;
 
 
+public static class CustomerExtensions
+{
+    [GraphQLMember("relatedCustomers")]
+    public static List<Customer> RelatedCustomers(this Customer  customer, [GraphQLArgument("relationType", "Int!")] int relationType)
+    {
+        return customer.GetMethodValue<List<Customer>>("relatedCustomers", relationType);
+    }
+
+    [GraphQLMember("relatedCustomer")]
+    public static Customer RelatedCustomer(this Customer  customer, [GraphQLArgument("relationType", "Int!")] int relationType)
+    {
+        return customer.GetMethodValue<Customer>("relatedCustomer", relationType);
+    }
+
+}
+
 public partial class Customer : GraphQLTypeBase
 {
     [GraphQLMember("customerId")]
@@ -35,5 +51,17 @@ public partial class Customer : GraphQLTypeBase
     [GraphQLMember("address")]
     [JsonPropertyName("address")]
     public Address Address { get; set; }
+
+    private LazyProperty<List<Customer>> _relatedCustomers = new();
+    /// <summary>
+    /// Do not use in Query, only to retrive result
+    /// </summary>
+    public List<Customer> RelatedCustomers => _relatedCustomers.Value(() => GetFirstMethodValue<List<Customer>>("relatedCustomers"));
+
+    private LazyProperty<Customer> _relatedCustomer = new();
+    /// <summary>
+    /// Do not use in Query, only to retrive result
+    /// </summary>
+    public Customer RelatedCustomer => _relatedCustomer.Value(() => GetFirstMethodValue<Customer>("relatedCustomer"));
 
 }

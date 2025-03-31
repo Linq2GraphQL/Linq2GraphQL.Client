@@ -39,7 +39,7 @@ namespace Linq2GraphQL.Generator.Templates.Scalars
             this.Write(";\r\n\r\n    /// <summary>\r\n    /// ");
             
             #line 13 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Scalars\ScalarTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(classDescription));
+            this.Write(this.ToStringHelper.ToStringWithCulture(scalarType.SummaryDescription));
             
             #line default
             #line hidden

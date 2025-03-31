@@ -8,10 +8,25 @@ public static class Helpers
     internal static string SummarySafe(string text)
     {
         if (string.IsNullOrEmpty(text)) { return text; }
-
         return Regex.Replace(text, @"\r\n?|\n", Environment.NewLine + "/// ");
-
     }
+
+    internal static string SafeDeprecationReason(string text)
+    {
+        if (string.IsNullOrEmpty(text)) { return text; }
+        return text.Replace("\"", "'");
+    }
+
+    internal static string SafeVariableName(string name)
+    {
+        if (string.IsNullOrEmpty(name)) { return name; }
+        var newName = name.ToCamelCase();
+        if (Keywords.Contains(newName)) { return "@" + newName; }
+        return newName;
+    }
+
+    public static readonly HashSet<string> Keywords = ["event"];
+
 
     public static readonly Dictionary<string, (string Name, Type type)> TypeMapping =
         new(StringComparer.InvariantCultureIgnoreCase)
@@ -19,7 +34,7 @@ public static class Helpers
             { "Int", new ValueTuple<string, Type>("int", typeof(int)) },
             { "Float", new ValueTuple<string, Type>("double", typeof(double)) },
             { "String", new ValueTuple<string, Type>("string", typeof(string)) },
-            { "ID", new ValueTuple<string, Type>("string", typeof(string)) },
+          //  { "ID", new ValueTuple<string, Type>("string", typeof(string)) },
             { "Date", new ValueTuple<string, Type>("DateTime", typeof(DateTime)) },
             { "Boolean", new ValueTuple<string, Type>("bool", typeof(bool)) },
             { "Long", new ValueTuple<string, Type>("long", typeof(long)) },

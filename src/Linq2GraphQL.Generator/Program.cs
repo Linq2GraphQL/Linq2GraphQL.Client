@@ -20,9 +20,7 @@ internal class Program
         var authToken = new Option<string>(new[] { "--token", "-t" }, "Bearertoken for authentication");
         var includeSubscriptions = new Option<bool>(new[] { "--subscriptions", "-s" }, "Include subscriptions");
         var enumStrategy = new Option<string>(new[] { "--enum-strategy", "-es" }, "Enum strategy");
-
         var nullable = new Option<bool>(new[] { "--nullable", "-nu" }, "Nullable client");
-
         var includeDeprecated = new Option<bool>(new[] { "--deprecated", "-d" }, "Include Deprecated as Obsolete");
 
         var rootCommand = new RootCommand("Generate GraphQL client")

@@ -59,7 +59,7 @@ namespace Linq2GraphQL.Generator.Templates.Enum
             this.Write("    [Obsolete(\"");
             
             #line 17 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(enumValue.DeprecationReason));
+            this.Write(this.ToStringHelper.ToStringWithCulture(enumValue.SafeDeprecationReason));
             
             #line default
             #line hidden

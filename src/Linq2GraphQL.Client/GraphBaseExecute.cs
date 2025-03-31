@@ -1,5 +1,6 @@
 ﻿using Linq2GraphQL.Client.Schema;
 using System.Linq.Expressions;
+using System.Text.Json;
 
 namespace Linq2GraphQL.Client;
 
@@ -66,6 +67,23 @@ public abstract class GraphBaseExecute<T, TResult>
 
         return $"({text})";
     }
+
+    public async Task<string> GetRequestAsJsonAsync()
+    {
+        
+
+        var request = await GetRequestAsync();
+
+
+        var result = request.Query;
+
+        result += Environment.NewLine;
+        result += Environment.NewLine;
+        result += JsonSerializer.Serialize(request.Variables, client.SerializerOptions);
+
+        return result;
+    }
+
 
     public async Task<GraphQLRequest> GetRequestAsync()
     {
