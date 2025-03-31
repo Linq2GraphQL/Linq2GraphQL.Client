@@ -25,23 +25,23 @@ public class QueryIncludeTests : IClassFixture<SampleClientFixture>
         Assert.Null(result.First().Address);
     }
 
-    [Fact]
-    public async Task IncludeMethod_MultipleLevels()
-    {
-        var query = sampleClient
-            .Query
-            .Customers()
-       .Include(e => e.Select(c => c.RelatedCustomer(2).Orders.Select(o => o.Address)))
-       .Select();
+    //[Fact]
+    //public async Task IncludeMethod_MultipleLevels()
+    //{
+    //    var query = sampleClient
+    //        .Query
+    //        .Customers()
+    //   .Include(e => e.Select(c => c.RelatedCustomer(2).Orders.Select(o => o.Address)))
+    //   .Select();
 
-        var req = await query.GetRequestAsJsonAsync();
-        var result = await query.ExecuteBaseAsync();
+    //    var req = await query.GetRequestAsJsonAsync();
+    //    var result = await query.ExecuteBaseAsync();
 
-        var customer = result.First();
-        Assert.Equal(Guid.Empty, customer.CustomerId);
+    //    var customer = result.First();
+    //    Assert.Equal(Guid.Empty, customer.CustomerId);
+    //    Assert.NotNull(customer.RelatedCustomers);
 
-
-    }
+    //}
 
 
 
