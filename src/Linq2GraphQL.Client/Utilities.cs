@@ -24,11 +24,18 @@ public static class Utilities
 
     public static void ParseExpression(Expression body, QueryNode parent)
     {
-        var parameterVisitor = new ParameterVisitor(new MemberNode(null, null));
-        var topNode = parameterVisitor.ParseExpression(body);
-      
-        topNode.PopulateChildQueryNodes(parent);
-        
+
+        var nn = new ExpressionParser();
+        var node = nn.Parse(body);
+        node.PopulateQueryNode(parent);
+
+
+
+        //var parameterVisitor = new ParameterVisitor(new MemberNode(null, null));
+        //var topNode = parameterVisitor.ParseExpression(body);
+
+        //topNode.PopulateChildQueryNodes(parent);
+
     }
 
 }

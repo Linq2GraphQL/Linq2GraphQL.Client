@@ -1,11 +1,13 @@
-﻿using System.Reflection;
+﻿using Linq2GraphQL.Client;
+using Linq2GraphQL.Client.Schema;
+using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
-using Linq2GraphQL.Client;
-using Linq2GraphQL.Client.Schema;
 
 namespace Linq2GraphQL.Client;
 
+[DebuggerDisplay("Name = {Name}, Args = {Arguments}")]
 public class QueryNode
 {
     private readonly bool mustHaveChildren;
@@ -63,9 +65,9 @@ public class QueryNode
     }
 
 
-    public void AddChildNode(MemberInfo member, string name = null)
+    public QueryNode AddChildNode(MemberInfo member, string name = null, List<ArgumentValue> arguments = null)
     {
-        AddChildNode(new QueryNode(member, name));
+        return AddChildNode(new QueryNode(member, name, arguments));
     }
 
     public int Level => Parent?.Level + 1 ?? 1;

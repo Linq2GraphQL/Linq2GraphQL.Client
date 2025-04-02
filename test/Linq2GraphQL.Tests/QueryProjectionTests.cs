@@ -12,14 +12,14 @@ public class QueryProjectionTests : IClassFixture<SampleClientFixture>
     }
 
     [Fact]
-    public async Task ProjectingAnomousObject()
+    public async Task ProjectToObject()
     {
         var query = sampleClient
             .Query
             .Orders()
-            .Select(e => e.Nodes.Select(o => new OrderIdAddress { OrderId = o.OrderId, Address = o.Address }));
+            .Select(e => e.Nodes.Select(o => new OrderIdAddress { OrderId = o.OrderId, Address = o.Address, Hello = o.OrderHello("Kalle", 1) }));
 
-        var request = await query.GetRequestAsync();
+        var request = await query.GetRequestAsJsonAsync();
         var result = await query.ExecuteAsync();
         Assert.NotEqual(Guid.Empty, result.First().OrderId);
         Assert.NotNull(result.First().Address);
@@ -85,4 +85,6 @@ public class OrderIdAddress
 {
     public Guid OrderId { get; set; }
     public Address? Address { get; set; }
+
+    public string Hello { get; set; }
 }

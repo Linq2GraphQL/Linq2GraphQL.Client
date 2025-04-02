@@ -73,7 +73,7 @@ public class QueryArgumentTests : IClassFixture<SampleClientFixture>
             .Include(e => e.Nodes)
             .Select(e => e.Nodes.Select(e => e.OrderHello("Kalle", 123)));
 
-        var gQ = await query.GetRequestAsync();
+        var gQ = await query.GetRequestAsJsonAsync();
 
         var node = query.QueryNode;
         var result = await query.ExecuteAsync();

@@ -98,8 +98,10 @@ public abstract class GraphBaseExecute<T, TResult>
 
     private string GetGraphQLQuery()
     {
-        return GetOperationType() + GetQueryVariablesString() + "{ " + Environment.NewLine +
+        var query = GetOperationType() + GetQueryVariablesString() + "{ " + Environment.NewLine +
                QueryNode.GetQueryString() + Environment.NewLine + "}";
+
+        return query;
     }
 
     private string GetOperationType()
