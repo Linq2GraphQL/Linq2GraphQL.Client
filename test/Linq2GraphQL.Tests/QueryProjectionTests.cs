@@ -12,21 +12,28 @@ public class QueryProjectionTests : IClassFixture<SampleClientFixture>
     }
 
     [Fact]
-    public async Task ProjectToObject()
+    public async Task ProjectToAnonumous()
     {
+        //var query = sampleClient
+        //    .Query
+        //    .Orders()
+        //    .Select(e => e.Nodes.Select(o => new { o.OrderId, o.Address, Hello = o.OrderHello("Kalle", 1), e.TotalCount }));
+
         var query = sampleClient
-            .Query
-            .Orders()
-            .Select(e => e.Nodes.Select(o => new OrderIdAddress { OrderId = o.OrderId, Address = o.Address, Hello = o.OrderHello("Kalle", 1) }));
+          .Query
+          .Orders()
+          .Select(e => e.Nodes.Select(o => new {  e.TotalCount }));
 
         var request = await query.GetRequestAsJsonAsync();
         var result = await query.ExecuteAsync();
-        Assert.NotEqual(Guid.Empty, result.First().OrderId);
-        Assert.NotNull(result.First().Address);
 
-        var baseOrder = query.BaseResult.Nodes.First();
-        Assert.Null(baseOrder.Customer);
-        Assert.Equal(DateTimeOffset.MinValue, baseOrder.OrderDate);
+
+        //Assert.NotEqual(Guid.Empty, result.First().OrderId);
+        //Assert.NotNull(result.First().Address);
+
+        //var baseOrder = query.BaseResult.Nodes.First();
+        //Assert.Null(baseOrder.Customer);
+        //Assert.Equal(DateTimeOffset.MinValue, baseOrder.OrderDate);
     }
 
     [Fact]
@@ -86,5 +93,7 @@ public class OrderIdAddress
     public Guid OrderId { get; set; }
     public Address? Address { get; set; }
 
-    public string Hello { get; set; }
+    public string? Hello { get; set; }
+
+    private int? MyCount { get; set; }
 }

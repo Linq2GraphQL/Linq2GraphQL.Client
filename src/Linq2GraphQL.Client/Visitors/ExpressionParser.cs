@@ -14,6 +14,9 @@ namespace Linq2GraphQL.Client.Visitors
 
         private ExpressionNode expressionNode = new();
 
+
+
+
         public ExpressionNode Parse(Expression expression, List<ParameterExpression> parameterExpressions = null)
         {
             expressionNode.ParameterExpressions = parameterExpressions;
@@ -73,8 +76,8 @@ namespace Linq2GraphQL.Client.Visitors
                 Debug.WriteLine("----------------------------");
 
 
-             var expressionParser = new ExpressionParser();
-                expressionNode.ChildNodes.Add(expressionParser.Parse(lambdaExpression.Body, parameterExpressions));
+                var expressionParser = new ExpressionParser();
+                expressionNode.AddChild(expressionParser.Parse(lambdaExpression.Body, parameterExpressions));
             }
 
         }
@@ -91,7 +94,7 @@ namespace Linq2GraphQL.Client.Visitors
                 {
 
                     var expressionParser = new ExpressionParser();
-                    expressionNode.ChildNodes.Add(expressionParser.Parse(memberAssignment.Expression, expressionNode.ParameterExpressions));
+                    expressionNode.AddChild(expressionParser.Parse(memberAssignment.Expression, expressionNode.ParameterExpressions));
                 }
             }
         }
@@ -102,9 +105,9 @@ namespace Linq2GraphQL.Client.Visitors
 
             foreach (var argumentExpression in newExpression.Arguments)
             {
-                    var expressionParser = new ExpressionParser();
-                    expressionNode.ChildNodes.Add(expressionParser.Parse(argumentExpression, expressionNode.ParameterExpressions));
-               
+                var expressionParser = new ExpressionParser();
+                expressionNode.AddChild(expressionParser.Parse(argumentExpression, expressionNode.ParameterExpressions));
+
             }
         }
 
@@ -114,9 +117,13 @@ namespace Linq2GraphQL.Client.Visitors
 
             if (attr != null)
             {
+
                 Debug.WriteLine("Member: " + attr.GraphQLName);
                 Debug.WriteLine("ParameterExp: " + string.Join(",", expressionNode?.ParameterExpressions?.Select(e => e.Name) ?? []));
-                expressionNode.Members.Add(new ExpressionMember(attr.GraphQLName, memberExpression.Member));
+                Debug.WriteLine("MemeberExp: " + memberExpression.Expression);
+                // expressionNode.Members.Add(new ExpressionMember(attr.GraphQLName, memberExpression.Member, memberExpression.Expression as ParameterExpression));
+                expressionNode.AddMember(new ExpressionMember(attr.GraphQLName, memberExpression.Member, memberExpression.Expression as ParameterExpression));
+
             }
             ParseExpression(memberExpression.Expression);
         }
@@ -143,8 +150,8 @@ namespace Linq2GraphQL.Client.Visitors
                     i++;
                 }
 
-                expressionNode.Members.Add(new ExpressionMember(attr.GraphQLName, methodCallExpression.Method, argumentValues));
-
+               // expressionNode.Members.Add(new ExpressionMember(attr.GraphQLName, methodCallExpression.Method, null, argumentValues));
+                expressionNode.AddMember(new ExpressionMember(attr.GraphQLName, methodCallExpression.Method, null, argumentValues));
 
             }
             else
