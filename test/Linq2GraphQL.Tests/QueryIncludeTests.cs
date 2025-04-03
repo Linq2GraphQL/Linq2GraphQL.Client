@@ -44,6 +44,29 @@ public class QueryIncludeTests : IClassFixture<SampleClientFixture>
     }
 
 
+    [Fact]
+    public async Task IncludeBasic()
+    {
+        var query = sampleClient
+            .Query
+            .Orders()
+            .Include(e => e.Nodes.Select(e => e.Customer.Orders))
+            .Select(e => e.Nodes);
+
+        var req = await query.GetRequestAsJsonAsync();
+
+
+        var result = await query.ExecuteAsync();
+
+        var order = result.First();
+        Assert.NotEqual(Guid.Empty, order.OrderId);
+
+        Assert.NotNull(order.Customer);
+        Assert.Null(order.Customer.CustomerName);
+        Assert.NotNull(order.Customer.Orders);
+    }
+
+
 
     [Fact]
     public async Task IncludePrimitives_MultipleLevels()

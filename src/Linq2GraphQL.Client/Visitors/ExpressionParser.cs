@@ -9,17 +9,14 @@ using System.Threading.Tasks;
 
 namespace Linq2GraphQL.Client.Visitors
 {
-    internal class ExpressionParser
+    internal class ExpressionParser(ExpressionNode expressionNode)
     {
 
-        private ExpressionNode expressionNode = new();
 
 
-
-
-        public ExpressionNode Parse(Expression expression, List<ParameterExpression> parameterExpressions = null)
+        public ExpressionNode Parse(Expression expression)
         {
-            expressionNode.ParameterExpressions = parameterExpressions;
+            //expressionNode.ParameterExpressions = parameterExpressions;
             ParseExpression(expression);
             return expressionNode;
         }
@@ -51,17 +48,13 @@ namespace Linq2GraphQL.Client.Visitors
                     break;
 
             }
-
-
-
         }
+
 
         private void EvaluateLambda(LambdaExpression lambdaExpression)
         {
             Debug.WriteLine("Lambda: " + lambdaExpression.ToString());
-
             var parameterExpressions = lambdaExpression.Parameters.ToList();
-
             expressionNode.ParameterExpressions ??= parameterExpressions;
 
             Debug.WriteLine("ParameterExp: " + string.Join(",", expressionNode?.ParameterExpressions?.Select(e => e.Name) ?? []));
@@ -72,12 +65,8 @@ namespace Linq2GraphQL.Client.Visitors
             }
             else
             {
-
                 Debug.WriteLine("----------------------------");
-
-
-                var expressionParser = new ExpressionParser();
-                expressionNode.AddChild(expressionParser.Parse(lambdaExpression.Body, parameterExpressions));
+                expressionNode.AddChild(lambdaExpression.Body, parameterExpressions);
             }
 
         }
@@ -85,16 +74,13 @@ namespace Linq2GraphQL.Client.Visitors
 
         private void EvaluateInit(MemberInitExpression memberInitExpression)
         {
-
             Debug.WriteLine("Init: " + memberInitExpression);
 
             foreach (var binding in memberInitExpression.Bindings)
             {
                 if (binding is MemberAssignment memberAssignment)
                 {
-
-                    var expressionParser = new ExpressionParser();
-                    expressionNode.AddChild(expressionParser.Parse(memberAssignment.Expression, expressionNode.ParameterExpressions));
+                    expressionNode.AddChild(memberAssignment.Expression, expressionNode.ParameterExpressions);
                 }
             }
         }
@@ -103,30 +89,51 @@ namespace Linq2GraphQL.Client.Visitors
         {
             Debug.WriteLine("New: " + newExpression);
 
+            // expressionNode.ParameterExpressions ??= newExpression.Arguments;
+
             foreach (var argumentExpression in newExpression.Arguments)
             {
-                var expressionParser = new ExpressionParser();
-                expressionNode.AddChild(expressionParser.Parse(argumentExpression, expressionNode.ParameterExpressions));
-
+                expressionNode.AddChild(argumentExpression, expressionNode.ParameterExpressions);
             }
         }
 
         private void EvaluateMember(MemberExpression memberExpression)
         {
-            var attr = memberExpression.Member.GetCustomAttribute<GraphQLMemberAttribute>();
+            var member = GetExpressionMember(memberExpression)?.GetTopParent();
+            if (member != null)
+            {
+                expressionNode.AddMember(member);
+            }
+        }
 
+
+        private ExpressionMember GetExpressionMember(MemberExpression memberExpression)
+        {
+            var attr = memberExpression.Member.GetCustomAttribute<GraphQLMemberAttribute>();
             if (attr != null)
             {
+                var member = new ExpressionMember(attr.GraphQLName, memberExpression.Member, null);
 
-                Debug.WriteLine("Member: " + attr.GraphQLName);
-                Debug.WriteLine("ParameterExp: " + string.Join(",", expressionNode?.ParameterExpressions?.Select(e => e.Name) ?? []));
-                Debug.WriteLine("MemeberExp: " + memberExpression.Expression);
-                // expressionNode.Members.Add(new ExpressionMember(attr.GraphQLName, memberExpression.Member, memberExpression.Expression as ParameterExpression));
-                expressionNode.AddMember(new ExpressionMember(attr.GraphQLName, memberExpression.Member, memberExpression.Expression as ParameterExpression));
+                if (memberExpression.Expression is ParameterExpression parameterExpression)
+                {
+                    member.ParameterExpression = parameterExpression;
+                    return member;
+                }
 
+                if (memberExpression.Expression is not MemberExpression parentExpression) { return member; }
+                var parent = GetExpressionMember(parentExpression);
+                if (parent == null) { return member; }
+
+                member.AddParent(parent);
+
+
+                return member;
             }
-            ParseExpression(memberExpression.Expression);
+
+
+            return null;
         }
+
 
         private void EvaluateMethodCall(MethodCallExpression methodCallExpression)
         {
@@ -150,8 +157,11 @@ namespace Linq2GraphQL.Client.Visitors
                     i++;
                 }
 
-               // expressionNode.Members.Add(new ExpressionMember(attr.GraphQLName, methodCallExpression.Method, null, argumentValues));
-                expressionNode.AddMember(new ExpressionMember(attr.GraphQLName, methodCallExpression.Method, null, argumentValues));
+                var ll = methodCallExpression.Arguments.Where(e => e.NodeType == ExpressionType.Parameter).Cast<ParameterExpression>().FirstOrDefault();
+
+
+
+                expressionNode.AddMember(new ExpressionMember(attr.GraphQLName, methodCallExpression.Method, ll, argumentValues)); //TODO Get ParameterExpression
 
             }
             else

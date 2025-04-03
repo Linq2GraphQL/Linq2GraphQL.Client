@@ -25,9 +25,12 @@ public static class Utilities
     public static void ParseExpression(Expression body, QueryNode parent)
     {
 
-        var nn = new ExpressionParser();
-        var node = nn.Parse(body);
-        node.PopulateQueryNode(parent);
+        var topNode = new ExpressionNode(null, body);
+
+
+        //var nn = new ExpressionParser();
+        //var node = nn.Parse(body);
+        topNode.PopulateQueryNode(parent);
 
 
 
