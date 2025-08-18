@@ -100,6 +100,20 @@ Turning on *SafeMode* will make the client before the first request to do an int
 # Acknowledgments
 Linq2GraphQL is inspired by [GraphQLinq](https://github.com/Giorgi/GraphQLinq) , thank you [Giorgi](https://github.com/Giorgi)
 
+## Contributing
+
+Are you a developer looking to contribute to this project? Please see our [Developer Guide](DEVELOPER.md) for comprehensive information about:
+
+- T4 template development workflow
+- Code generation system architecture
+- Troubleshooting common issues
+- Best practices for template development
+- Manual template regeneration process
+
+## Development Workflow
+
+**⚠️ Important for Developers:** When modifying T4 templates (`.tt` files), you must manually regenerate the corresponding `.cs` files using Visual Studio's "Run Custom Tool" feature. See [DEVELOPER.md](DEVELOPER.md) for detailed instructions.
+
 [![Stargazers repo roster for @linq2graphql/linq2graphql.client](https://reporoster.com/stars/dark/linq2graphql/linq2graphql.client)](https://github.com/linq2graphql/linq2graphql.client/stargazers)
 
 

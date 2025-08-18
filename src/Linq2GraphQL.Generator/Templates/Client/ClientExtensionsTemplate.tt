@@ -1,5 +1,6 @@
 ﻿<#@ template language="C#" #>
 <#@ assembly name="System.Core" #>
+// Updated extensions template with dependency injection support
 using Linq2GraphQL.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
