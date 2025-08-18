@@ -38,6 +38,10 @@
             <Generator>TextTemplatingFilePreprocessor</Generator>
             <LastGenOutput>ClientTemplate.cs</LastGenOutput>
         </None>
+        <None Update="Templates\Client\IClientTemplate.tt">
+            <Generator>TextTemplatingFilePreprocessor</Generator>
+            <LastGenOutput>IClientTemplate.cs</LastGenOutput>
+        </None>
         <None Update="Templates\Enum\EnumTemplate.tt">
             <Generator>TextTemplatingFilePreprocessor</Generator>
             <LastGenOutput>EnumTemplate.cs</LastGenOutput>
@@ -49,6 +53,10 @@
         <None Update="Templates\Methods\MethodsTemplate.tt">
             <Generator>TextTemplatingFilePreprocessor</Generator>
             <LastGenOutput>MethodsTemplate.cs</LastGenOutput>
+        </None>
+        <None Update="Templates\Methods\IMethodsTemplate.tt">
+            <Generator>TextTemplatingFilePreprocessor</Generator>
+            <LastGenOutput>IMethodsTemplate.cs</LastGenOutput>
         </None>
         <None Update="Templates\Class\InputFactoryClassTemplate.tt">
             <LastGenOutput>InputFactoryClassTemplate.cs</LastGenOutput>
@@ -84,6 +92,11 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>ClientTemplate.tt</DependentUpon>
         </Compile>
+        <Compile Update="Templates\Client\IClientTemplate.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>IClientTemplate.tt</DependentUpon>
+        </Compile>
         <Compile Update="Templates\Enum\EnumTemplate.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
@@ -98,6 +111,11 @@
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
             <DependentUpon>MethodsTemplate.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Templates\Methods\IMethodsTemplate.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>IMethodsTemplate.tt</DependentUpon>
         </Compile>
         <Compile Update="Templates\Class\InputFactoryClassTemplate.cs">
             <AutoGen>True</AutoGen>

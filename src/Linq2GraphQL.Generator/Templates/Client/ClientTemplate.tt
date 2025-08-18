@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace <#= namespaceName #>;
 
-public class <#= name #>
+public class <#= name #> : I<#= name #>
 { 
     public <#= name #>(HttpClient httpClient, [FromKeyedServices("<#= name #>")]IOptions<GraphClientOptions> options, IServiceProvider provider)
     {
@@ -24,13 +24,13 @@ public class <#= name #>
     }
 
 <# if (includeQuery) { #>
-    public <#= GetMehodName(queryType) #> Query { get; private set; }
+    public I<#= GetMehodName(queryType) #> Query { get; private set; }
 <# } #>
 <# if (includeMutation) { #>
-    public <#= GetMehodName(mutationType) #> Mutation { get; private set; }
+    public I<#= GetMehodName(mutationType) #> Mutation { get; private set; }
 <# } #>
 <# if (includeSubscriptions) { #>
-    public <#= GetMehodName(subscriptionType) #> Subscription { get; private set; }
+    public I<#= GetMehodName(subscriptionType) #> Subscription { get; private set; }
 <# } #>
     
 }

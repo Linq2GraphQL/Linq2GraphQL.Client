@@ -14,7 +14,7 @@ using Linq2GraphQL.Client.Subscriptions;
 
 namespace <#= namespaceName #>;
 
-public class <#= ClassName #>
+public class <#= ClassName #> : I<#= ClassName #>
 {
     private readonly GraphClient client;
 

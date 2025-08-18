@@ -171,6 +171,12 @@ namespace Linq2GraphQL.Generator
             }
 
 
+            Console.WriteLine("Generate Client Interface...");
+            var clientInterfaceText = new IClientTemplate(namespaceName, clientName, queryType, mutationType, subscriptionType, includeDeprecated)
+                .TransformText();
+            var interfaceFileName = "I" + clientName + ".cs";
+            AddFile("Interfaces", interfaceFileName, clientInterfaceText);
+
             Console.WriteLine("Generate Client...");
             var templateText = new ClientTemplate(namespaceName, clientName, queryType, mutationType, subscriptionType, includeDeprecated)
                 .TransformText();
@@ -195,6 +201,12 @@ namespace Linq2GraphQL.Generator
                 return;
             }
 
+            // Generate interface first in Interfaces directory
+            var interfaceFileName = "I" + methodType.Name.ToPascalCase() + "Methods" + ".cs";
+            var interfaceTemplateText = new IMethodsTemplate(methodType, namespaceName, schemaType).TransformText();
+            AddFile("Interfaces", interfaceFileName, interfaceTemplateText);
+
+            // Generate concrete class that implements the interface in Client directory
             var fileName = methodType.Name.ToPascalCase() + "Methods" + ".cs";
             var templateText = new MethodsTemplate(methodType, namespaceName, schemaType).TransformText();
             AddFile(directory, fileName, templateText);

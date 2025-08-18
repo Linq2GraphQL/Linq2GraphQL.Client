@@ -1,0 +1,30 @@
+<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+using System.Collections.Generic;
+using Linq2GraphQL.Client;
+<#
+    if (isSubscription)
+    {
+#>
+using Linq2GraphQL.Client.Subscriptions;
+<#
+    }
+#>
+
+namespace <#= namespaceName #>;
+
+public interface I<#= ClassName #>
+{
+<#
+    foreach (var field in methodsType.AllFields)
+    {
+        var coreType = field.CoreType;
+#>
+<# if (field.IsDeprecated) { #>
+    [Obsolete("<#= field.DeprecationReason #>")]
+<# } #>
+    <#= GetReturnTypeString(field) #> <#= field.CSharpName #>(<#= field.GetArgString(false) #>);
+<#
+    }
+#>
+}

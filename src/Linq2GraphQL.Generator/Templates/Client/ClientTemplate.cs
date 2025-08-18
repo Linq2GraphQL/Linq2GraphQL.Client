@@ -15,7 +15,7 @@ namespace Linq2GraphQL.Generator.Templates.Client
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+    #line 1 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "17.0.0.0")]
     public partial class ClientTemplate : ClientTemplateBase
     {
@@ -29,28 +29,35 @@ namespace Linq2GraphQL.Generator.Templates.Client
                     "rosoft.Extensions.DependencyInjection;\r\nusing Microsoft.Extensions.Options;\r\n\r\nn" +
                     "amespace ");
             
-            #line 8 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 8 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(namespaceName));
             
             #line default
             #line hidden
             this.Write(";\r\n\r\npublic class ");
             
-            #line 10 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 10 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(name));
+            
+            #line default
+            #line hidden
+            this.Write(" : I");
+            
+            #line 10 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(name));
             
             #line default
             #line hidden
             this.Write("\r\n{ \r\n    public ");
             
-            #line 12 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 12 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(name));
             
             #line default
             #line hidden
             this.Write("(HttpClient httpClient, [FromKeyedServices(\"");
             
-            #line 12 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 12 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(name));
             
             #line default
@@ -58,129 +65,129 @@ namespace Linq2GraphQL.Generator.Templates.Client
             this.Write("\")]IOptions<GraphClientOptions> options, IServiceProvider provider)\r\n    {\r\n     " +
                     "   var client = new GraphClient(httpClient, options, provider, ");
             
-            #line 14 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 14 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(includeDeprecated.ToString().ToLower()));
             
             #line default
             #line hidden
             this.Write(");\r\n");
             
-            #line 15 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 15 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  if (includeQuery) { 
             
             #line default
             #line hidden
             this.Write("        Query = new ");
             
-            #line 16 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 16 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetMehodName(queryType)));
             
             #line default
             #line hidden
             this.Write("(client);\r\n");
             
-            #line 17 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 17 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  }
             
             #line default
             #line hidden
             
-            #line 18 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 18 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  if (includeMutation) { 
             
             #line default
             #line hidden
             this.Write("        Mutation = new ");
             
-            #line 19 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 19 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetMehodName(mutationType)));
             
             #line default
             #line hidden
             this.Write("(client);\r\n");
             
-            #line 20 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 20 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  }
             
             #line default
             #line hidden
             
-            #line 21 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 21 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  if (includeSubscriptions) { 
             
             #line default
             #line hidden
             this.Write("        Subscription = new ");
             
-            #line 22 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 22 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetMehodName(subscriptionType)));
             
             #line default
             #line hidden
             this.Write("(client); \r\n");
             
-            #line 23 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 23 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  }
             
             #line default
             #line hidden
             this.Write("    }\r\n\r\n");
             
-            #line 26 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 26 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  if (includeQuery) { 
             
             #line default
             #line hidden
-            this.Write("    public ");
+            this.Write("    public I");
             
-            #line 27 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 27 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetMehodName(queryType)));
             
             #line default
             #line hidden
             this.Write(" Query { get; private set; }\r\n");
             
-            #line 28 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 28 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  } 
             
             #line default
             #line hidden
             
-            #line 29 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 29 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  if (includeMutation) { 
             
             #line default
             #line hidden
-            this.Write("    public ");
+            this.Write("    public I");
             
-            #line 30 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 30 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetMehodName(mutationType)));
             
             #line default
             #line hidden
             this.Write(" Mutation { get; private set; }\r\n");
             
-            #line 31 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 31 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  } 
             
             #line default
             #line hidden
             
-            #line 32 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 32 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  if (includeSubscriptions) { 
             
             #line default
             #line hidden
-            this.Write("    public ");
+            this.Write("    public I");
             
-            #line 33 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 33 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetMehodName(subscriptionType)));
             
             #line default
             #line hidden
             this.Write(" Subscription { get; private set; }\r\n");
             
-            #line 34 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 34 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  } 
             
             #line default
