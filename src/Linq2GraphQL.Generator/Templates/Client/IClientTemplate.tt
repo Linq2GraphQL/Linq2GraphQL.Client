@@ -1,6 +1,5 @@
 <#@ template language="C#" #>
 <#@ assembly name="System.Core" #>
-// Updated interface template with dependency injection support
 using Linq2GraphQL.Client;
 
 namespace <#= namespaceName #>;

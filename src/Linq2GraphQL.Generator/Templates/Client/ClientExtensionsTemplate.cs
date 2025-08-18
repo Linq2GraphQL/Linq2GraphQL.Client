@@ -25,39 +25,38 @@ namespace Linq2GraphQL.Generator.Templates.Client
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("// Updated extensions template with dependency injection support\r\nusing Linq2Grap" +
-                    "hQL.Client;\r\nusing Microsoft.Extensions.DependencyInjection;\r\nusing Microsoft.Ex" +
-                    "tensions.Options;\r\n\r\nnamespace ");
+            this.Write("using Linq2GraphQL.Client;\r\nusing Microsoft.Extensions.DependencyInjection;\r\nusin" +
+                    "g Microsoft.Extensions.Options;\r\n\r\nnamespace ");
             
-            #line 8 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientExtensionsTemplate.tt"
+            #line 7 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientExtensionsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(namespaceName));
             
             #line default
             #line hidden
             this.Write(";\r\n\r\npublic static class ");
             
-            #line 10 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientExtensionsTemplate.tt"
+            #line 9 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientExtensionsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(clientName));
             
             #line default
             #line hidden
             this.Write("Extensions \r\n{\r\n    private const string ClientName = \"");
             
-            #line 12 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientExtensionsTemplate.tt"
+            #line 11 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientExtensionsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(clientName));
             
             #line default
             #line hidden
             this.Write("\";\r\n        \r\n    public static IGraphClientBuilder<");
             
-            #line 14 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientExtensionsTemplate.tt"
+            #line 13 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientExtensionsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(clientName));
             
             #line default
             #line hidden
             this.Write("> Add");
             
-            #line 14 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientExtensionsTemplate.tt"
+            #line 13 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientExtensionsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(clientName));
             
             #line default
@@ -66,14 +65,14 @@ namespace Linq2GraphQL.Generator.Templates.Client
                     "raphClientOptions();\r\n        return GraphClientBuilder(services, graphClientOpt" +
                     "ions);\r\n    }\r\n    \r\n    public static IGraphClientBuilder<");
             
-            #line 20 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientExtensionsTemplate.tt"
+            #line 19 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientExtensionsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(clientName));
             
             #line default
             #line hidden
             this.Write("> Add");
             
-            #line 20 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientExtensionsTemplate.tt"
+            #line 19 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientExtensionsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(clientName));
             
             #line default
@@ -88,7 +87,7 @@ namespace Linq2GraphQL.Generator.Templates.Client
 
     private static IGraphClientBuilder<");
             
-            #line 28 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientExtensionsTemplate.tt"
+            #line 27 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientExtensionsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(clientName));
             
             #line default
@@ -101,7 +100,7 @@ namespace Linq2GraphQL.Generator.Templates.Client
         services.AddMemoryCache();        
         return new ClientBuilder<");
             
-            #line 34 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientExtensionsTemplate.tt"
+            #line 33 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientExtensionsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(clientName));
             
             #line default

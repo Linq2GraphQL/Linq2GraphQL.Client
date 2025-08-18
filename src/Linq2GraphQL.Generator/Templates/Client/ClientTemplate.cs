@@ -25,18 +25,17 @@ namespace Linq2GraphQL.Generator.Templates.Client
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("// Updated template with dependency injection support - FORCE REGENERATION\r\nusing" +
-                    " Linq2GraphQL.Client;\r\nusing Microsoft.Extensions.DependencyInjection;\r\nusing Mi" +
-                    "crosoft.Extensions.Options;\r\n\r\nnamespace ");
+            this.Write("using Linq2GraphQL.Client;\r\nusing Microsoft.Extensions.DependencyInjection;\r\nusin" +
+                    "g Microsoft.Extensions.Options;\r\n\r\nnamespace ");
             
-            #line 8 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 7 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(namespaceName));
             
             #line default
             #line hidden
             this.Write(";\r\n\r\n/// <summary>\r\n/// GraphQL client for ");
             
-            #line 11 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 10 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(name));
             
             #line default
@@ -45,14 +44,14 @@ namespace Linq2GraphQL.Generator.Templates.Client
                     " GraphQL queries, mutations, and subscriptions.\r\n/// Supports dependency injecti" +
                     "on for better testability and flexibility.\r\n/// </remarks>\r\npublic class ");
             
-            #line 17 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 16 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(name));
             
             #line default
             #line hidden
             this.Write(" : I");
             
-            #line 17 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 16 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(name));
             
             #line default
@@ -67,7 +66,7 @@ namespace Linq2GraphQL.Generator.Templates.Client
     /// <param name=""provider"">Service provider for dependency resolution</param>
 ");
             
-            #line 25 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 24 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  if (includeQuery) { 
             
             #line default
@@ -75,13 +74,13 @@ namespace Linq2GraphQL.Generator.Templates.Client
             this.Write("    /// <param name=\"queryMethods\">Optional query methods implementation (uses de" +
                     "fault if null)</param>\r\n");
             
-            #line 27 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 26 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  } 
             
             #line default
             #line hidden
             
-            #line 28 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 27 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  if (includeMutation) { 
             
             #line default
@@ -89,13 +88,13 @@ namespace Linq2GraphQL.Generator.Templates.Client
             this.Write("    /// <param name=\"mutationMethods\">Optional mutation methods implementation (u" +
                     "ses default if null)</param>\r\n");
             
-            #line 30 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 29 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  } 
             
             #line default
             #line hidden
             
-            #line 31 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 30 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  if (includeSubscriptions) { 
             
             #line default
@@ -103,183 +102,157 @@ namespace Linq2GraphQL.Generator.Templates.Client
             this.Write("    /// <param name=\"subscriptionMethods\">Optional subscription methods implement" +
                     "ation (uses default if null)</param>\r\n");
             
-            #line 33 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 32 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  } 
             
             #line default
             #line hidden
             this.Write("    public ");
             
-            #line 34 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 33 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(name));
             
             #line default
             #line hidden
             this.Write("(\r\n        HttpClient httpClient, \r\n        [FromKeyedServices(\"");
             
-            #line 36 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 35 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(name));
             
             #line default
             #line hidden
-            this.Write("\")] IOptions<GraphClientOptions> options, \r\n        IServiceProvider provider,\r\n");
+            this.Write("\")] IOptions<GraphClientOptions> options, \r\n        IServiceProvider provider");
             
-            #line 38 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 36 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  if (includeQuery) { 
             
             #line default
             #line hidden
-            this.Write("        I");
+            this.Write(",\r\n        I");
             
-            #line 39 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 37 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetMehodName(queryType)));
             
             #line default
             #line hidden
             this.Write(" queryMethods = null");
             
-            #line 39 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
- if (includeMutation || includeSubscriptions) { 
-            
-            #line default
-            #line hidden
-            this.Write(",");
-            
-            #line 39 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 37 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  } 
             
             #line default
             #line hidden
             
-            #line 40 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
- } 
-            
-            #line default
-            #line hidden
-            
-            #line 41 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 37 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  if (includeMutation) { 
             
             #line default
             #line hidden
-            this.Write("        I");
+            this.Write(",\r\n        I");
             
-            #line 42 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 38 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetMehodName(mutationType)));
             
             #line default
             #line hidden
             this.Write(" mutationMethods = null");
             
-            #line 42 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
- if (includeSubscriptions) { 
-            
-            #line default
-            #line hidden
-            this.Write(",");
-            
-            #line 42 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 38 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  } 
             
             #line default
             #line hidden
             
-            #line 43 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
- } 
-            
-            #line default
-            #line hidden
-            
-            #line 44 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 38 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  if (includeSubscriptions) { 
             
             #line default
             #line hidden
-            this.Write("        I");
+            this.Write(",\r\n        I");
             
-            #line 45 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 39 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetMehodName(subscriptionType)));
             
             #line default
             #line hidden
-            this.Write(" subscriptionMethods = null\r\n");
+            this.Write(" subscriptionMethods = null");
             
-            #line 46 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 39 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  } 
             
             #line default
             #line hidden
             this.Write(")\r\n    {\r\n        var client = new GraphClient(httpClient, options, provider, ");
             
-            #line 48 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 41 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(includeDeprecated.ToString().ToLower()));
             
             #line default
             #line hidden
             this.Write(");\r\n");
             
-            #line 49 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 42 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  if (includeQuery) { 
             
             #line default
             #line hidden
             this.Write("        Query = queryMethods ?? new ");
             
-            #line 50 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 43 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetMehodName(queryType)));
             
             #line default
             #line hidden
             this.Write("(client);\r\n");
             
-            #line 51 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 44 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  } 
             
             #line default
             #line hidden
             
-            #line 52 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 45 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  if (includeMutation) { 
             
             #line default
             #line hidden
             this.Write("        Mutation = mutationMethods ?? new ");
             
-            #line 53 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 46 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetMehodName(mutationType)));
             
             #line default
             #line hidden
             this.Write("(client);\r\n");
             
-            #line 54 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 47 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  } 
             
             #line default
             #line hidden
             
-            #line 55 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 48 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  if (includeSubscriptions) { 
             
             #line default
             #line hidden
             this.Write("        Subscription = subscriptionMethods ?? new ");
             
-            #line 56 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 49 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetMehodName(subscriptionType)));
             
             #line default
             #line hidden
             this.Write("(client);\r\n");
             
-            #line 57 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 50 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  } 
             
             #line default
             #line hidden
             this.Write("    }\r\n\r\n");
             
-            #line 60 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 53 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  if (includeQuery) { 
             
             #line default
@@ -287,20 +260,20 @@ namespace Linq2GraphQL.Generator.Templates.Client
             this.Write("    /// <summary>\r\n    /// Gets the query methods for this GraphQL client\r\n    //" +
                     "/ </summary>\r\n    public I");
             
-            #line 64 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 57 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetMehodName(queryType)));
             
             #line default
             #line hidden
             this.Write(" Query { get; private set; }\r\n");
             
-            #line 65 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 58 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  } 
             
             #line default
             #line hidden
             
-            #line 66 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 59 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  if (includeMutation) { 
             
             #line default
@@ -308,20 +281,20 @@ namespace Linq2GraphQL.Generator.Templates.Client
             this.Write("    /// <summary>\r\n    /// Gets the mutation methods for this GraphQL client\r\n   " +
                     " /// </summary>\r\n    public I");
             
-            #line 70 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 63 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetMehodName(mutationType)));
             
             #line default
             #line hidden
             this.Write(" Mutation { get; private set; }\r\n");
             
-            #line 71 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 64 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  } 
             
             #line default
             #line hidden
             
-            #line 72 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 65 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  if (includeSubscriptions) { 
             
             #line default
@@ -329,14 +302,14 @@ namespace Linq2GraphQL.Generator.Templates.Client
             this.Write("    /// <summary>\r\n    /// Gets the subscription methods for this GraphQL client\r" +
                     "\n    /// </summary>\r\n    public I");
             
-            #line 76 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 69 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetMehodName(subscriptionType)));
             
             #line default
             #line hidden
             this.Write(" Subscription { get; private set; }\r\n");
             
-            #line 77 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
+            #line 70 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Client\ClientTemplate.tt"
  } 
             
             #line default

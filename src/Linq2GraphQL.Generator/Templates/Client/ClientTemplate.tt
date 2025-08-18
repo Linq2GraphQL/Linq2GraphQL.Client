@@ -1,6 +1,5 @@
 ﻿<#@ template language="C#" #>
 <#@ assembly name="System.Core" #>
-// Updated template with dependency injection support - FORCE REGENERATION
 using Linq2GraphQL.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -34,16 +33,10 @@ public class <#= name #> : I<#= name #>
     public <#= name #>(
         HttpClient httpClient, 
         [FromKeyedServices("<#= name #>")] IOptions<GraphClientOptions> options, 
-        IServiceProvider provider,
-<# if (includeQuery) { #>
-        I<#= GetMehodName(queryType) #> queryMethods = null<# if (includeMutation || includeSubscriptions) { #>,<# } #>
-<# } #>
-<# if (includeMutation) { #>
-        I<#= GetMehodName(mutationType) #> mutationMethods = null<# if (includeSubscriptions) { #>,<# } #>
-<# } #>
-<# if (includeSubscriptions) { #>
-        I<#= GetMehodName(subscriptionType) #> subscriptionMethods = null
-<# } #>)
+        IServiceProvider provider<# if (includeQuery) { #>,
+        I<#= GetMehodName(queryType) #> queryMethods = null<# } #><# if (includeMutation) { #>,
+        I<#= GetMehodName(mutationType) #> mutationMethods = null<# } #><# if (includeSubscriptions) { #>,
+        I<#= GetMehodName(subscriptionType) #> subscriptionMethods = null<# } #>)
     {
         var client = new GraphClient(httpClient, options, provider, <#= includeDeprecated.ToString().ToLower() #>);
 <# if (includeQuery) { #>
