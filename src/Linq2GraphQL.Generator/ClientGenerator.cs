@@ -104,16 +104,21 @@ namespace Linq2GraphQL.Generator
 
             Console.WriteLine("Generate Interfaces");
 
-            var classInterfacesList = schema.GetClassTypes().Where(e => e.HasInterfaces)
-                .SelectMany(i => i.Interfaces.ToDictionary(e => i.Name, e => e.Name)).ToList();
-            foreach (var interfaceType in schema.GetInterfaces())
+            var classInterfacesList = schema.GetClassTypes()?.Where(e => e.HasInterfaces)
+                ?.SelectMany(i => i.Interfaces?.ToDictionary(e => i.Name, e => e.Name))?.ToList() ?? new List<KeyValuePair<string, string>>();
+            
+            var interfaces = schema.GetInterfaces();
+            if (interfaces != null)
             {
-                var implementedBy = classInterfacesList.Where(e => e.Value == interfaceType.Name).Select(e => e.Key)
-                    .ToList();
+                foreach (var interfaceType in interfaces)
+                {
+                    var implementedBy = classInterfacesList.Where(e => e.Value == interfaceType.Name).Select(e => e.Key)
+                        .ToList();
 
-                var interfaceTemplte =
-                    new InterfaceTemplate(interfaceType, namespaceName, implementedBy).TransformText();
-                AddFile("Interfaces", interfaceType.FileName, interfaceTemplte);
+                    var interfaceTemplte =
+                        new InterfaceTemplate(interfaceType, namespaceName, implementedBy).TransformText();
+                    AddFile("Interfaces", interfaceType.FileName, interfaceTemplte);
+                }
             }
 
             Console.WriteLine("Generate Types...");

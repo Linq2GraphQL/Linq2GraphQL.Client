@@ -1,54 +1,54 @@
 ﻿<#@ template language="C#" #>
 <#@ assembly name="System.Core" #>
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using Linq2GraphQL.Client;
-<#
-    if (isSubscription)
-    {
-#>
+<# if (isSubscription) { #>
 using Linq2GraphQL.Client.Subscriptions;
-<#
-    }
-#>
+<# } #>
 
 namespace <#= namespaceName #>;
 
+/// <summary>
+/// Implementation of <#= ClassName #> GraphQL operations
+/// </summary>
 public class <#= ClassName #> : I<#= ClassName #>
 {
     private readonly GraphClient client;
 
+    /// <summary>
+    /// Initializes a new instance of the <#= ClassName #> class
+    /// </summary>
+    /// <param name="client">The GraphQL client instance</param>
     public <#= ClassName #>(GraphClient client)
     {
-        this.client = client;
+        this.client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-    <#
-    foreach (var field in methodsType.AllFields)
-    {
-        var coreType = field.CoreType;
-#>
+<# foreach (var field in methodsType.AllFields) { 
+    var coreType = field.CoreType; #>
+    /// <summary>
+    /// Executes <#= field.Name #> GraphQL operation
+    /// </summary>
 <# if (field.IsDeprecated) { #>
-[Obsolete("<#= field.DeprecationReason #>")]
-    <# } #>
-public <#= GetReturnTypeString(field) #> <#= field.CSharpName #>(<#= field.GetArgString(false) #>)
+    /// <remarks>
+    /// This operation is deprecated: <#= field.DeprecationReason #>
+    /// </remarks>
+    [Obsolete("<#= field.DeprecationReason #>")]
+<# } #>
+    /// <param name="<#= field.CSharpName.ToCamelCase() #>">The operation parameters</param>
+    /// <returns>GraphQL query result of type <#= GetReturnTypeString(field) #></returns>
+    public <#= GetReturnTypeString(field) #> <#= field.CSharpName #>(<#= field.GetArgString(false) #>)
     {
-	    var arguments = new List<ArgumentValue>
+        var arguments = new List<ArgumentValue>
         {
-    <#
-        foreach (var arg in field.Args)
-        {
-#>
-	    new("<#= arg.Name #>","<#= arg.CoreType.GraphQLTypeDefinition #>", <#= arg.Name.ToCamelCase() #>),
-    <#
-        }
-#>
-    };
+<# foreach (var arg in field.Args) { #>
+            new("<#= arg.Name #>", "<#= arg.CoreType.GraphQLTypeDefinition #>", <#= arg.Name.ToCamelCase() #>),
+<# } #>
+        };
 
-        return <#= GetReturnBuilderString(field) #>(client,  "<#= field.Name #>", <#= operationType #>, arguments); 
+        return <#= GetReturnBuilderString(field) #>(client, "<#= field.Name #>", <#= operationType #>, arguments);
     }
 
-    <#
-    }
-#>
+<# } #>
 }
