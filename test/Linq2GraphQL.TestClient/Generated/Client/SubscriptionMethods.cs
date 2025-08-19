@@ -12,7 +12,7 @@ using Linq2GraphQL.Client.Subscriptions;
 
 namespace Linq2GraphQL.TestClient;
 
-public class SubscriptionMethods
+public class SubscriptionMethods : ISubscriptionMethods
 {
     private readonly GraphClient client;
 

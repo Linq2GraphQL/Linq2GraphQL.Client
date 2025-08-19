@@ -8,6 +8,7 @@ namespace Linq2GraphQL.Tests;
 public class SampleNullableClientFixture : IDisposable
 {
     internal readonly SampleNullableClient sampleClient;
+    internal readonly ISampleNullableClient sampleClientInterface;
 
     public SampleNullableClientFixture()
     {
@@ -21,6 +22,10 @@ public class SampleNullableClientFixture : IDisposable
             {
                 SubscriptionProtocol = SubscriptionProtocol.ServerSentEvents, UseSafeMode = false
             }), application.Services);
+        
+        // Cast to interface for testing interface functionality
+        sampleClientInterface = sampleClient;
+        
         //Please note currently only ServerSentEvents work in test project
     }
 

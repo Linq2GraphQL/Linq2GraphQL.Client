@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 
 namespace Linq2GraphQL.TestClient;
 
-public class SampleClient
+public class SampleClient : ISampleClient
 { 
     public SampleClient(HttpClient httpClient, [FromKeyedServices("SampleClient")]IOptions<GraphClientOptions> options, IServiceProvider provider)
     {
@@ -22,8 +22,8 @@ public class SampleClient
         Subscription = new SubscriptionMethods(client); 
     }
 
-    public QueryMethods Query { get; private set; }
-    public MutationMethods Mutation { get; private set; }
-    public SubscriptionMethods Subscription { get; private set; }
+    public IQueryMethods Query { get; private set; }
+    public IMutationMethods Mutation { get; private set; }
+    public ISubscriptionMethods Subscription { get; private set; }
     
 }
