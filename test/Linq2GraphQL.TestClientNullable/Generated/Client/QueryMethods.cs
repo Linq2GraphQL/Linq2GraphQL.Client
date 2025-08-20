@@ -11,7 +11,7 @@ using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClientNullable;
 
-public class QueryMethods
+public class QueryMethods : IQueryMethods
 {
     private readonly GraphClient client;
 

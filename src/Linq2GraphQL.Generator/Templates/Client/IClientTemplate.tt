@@ -1,0 +1,18 @@
+<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+using Linq2GraphQL.Client;
+
+namespace <#= namespaceName #>;
+
+public interface I<#= name #>
+{
+<# if (includeQuery) { #>
+    I<#= GetMehodName(queryType) #> Query { get; }
+<# } #>
+<# if (includeMutation) { #>
+    I<#= GetMehodName(mutationType) #> Mutation { get; }
+<# } #>
+<# if (includeSubscriptions) { #>
+    I<#= GetMehodName(subscriptionType) #> Subscription { get; }
+<# } #>
+}

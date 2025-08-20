@@ -15,7 +15,7 @@ namespace Linq2GraphQL.Generator.Templates.Enum
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
+    #line 1 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "17.0.0.0")]
     public partial class EnumTemplate : EnumTemplateBase
     {
@@ -28,21 +28,21 @@ namespace Linq2GraphQL.Generator.Templates.Enum
             this.Write("using Linq2GraphQL.Client;\r\nusing System.Runtime.Serialization;\r\nusing System.Tex" +
                     "t.Json.Serialization;\r\n\r\nnamespace ");
             
-            #line 7 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
+            #line 7 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(namespaceName));
             
             #line default
             #line hidden
             this.Write(";\r\n\r\n[JsonConverter(typeof(JsonStringEnumMemberConverter))]\r\npublic enum ");
             
-            #line 10 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
+            #line 10 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(enumType.Name));
             
             #line default
             #line hidden
             this.Write("\r\n{\r\n");
             
-            #line 12 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
+            #line 12 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
 
     foreach (var enumValue in enumType.EnumValues)
     {
@@ -51,42 +51,42 @@ namespace Linq2GraphQL.Generator.Templates.Enum
             #line default
             #line hidden
             
-            #line 16 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
+            #line 16 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
  if (enumValue.IsDeprecated) { 
             
             #line default
             #line hidden
             this.Write("    [Obsolete(\"");
             
-            #line 17 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
+            #line 17 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(enumValue.SafeDeprecationReason));
             
             #line default
             #line hidden
             this.Write("\")]\r\n");
             
-            #line 18 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
+            #line 18 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
  } 
             
             #line default
             #line hidden
             this.Write("    [EnumMember(Value = \"");
             
-            #line 19 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
+            #line 19 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(enumValue.Name));
             
             #line default
             #line hidden
             this.Write("\")]\r\n    ");
             
-            #line 20 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
+            #line 20 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(enumValue.GetCSharpName()));
             
             #line default
             #line hidden
             this.Write(",\r\n");
             
-            #line 21 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
+            #line 21 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
 
     }
 
@@ -94,7 +94,7 @@ namespace Linq2GraphQL.Generator.Templates.Enum
             #line default
             #line hidden
             
-            #line 24 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
+            #line 24 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
 
     if (enumGeneratorStrategy == EnumGeneratorStrategy.AddUnknownOption)
     {
@@ -107,7 +107,7 @@ namespace Linq2GraphQL.Generator.Templates.Enum
                     "on\'t set explicitly. \r\n    /// </summary>\r\n    [EnumMember(Value = \"\")]\r\n    __U" +
                     "nknown\r\n");
             
-            #line 35 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
+            #line 35 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Enum\EnumTemplate.tt"
 
     }
 

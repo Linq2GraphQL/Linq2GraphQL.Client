@@ -18,7 +18,7 @@ namespace Linq2GraphQL.Generator.Templates.Scalars
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Scalars\ScalarTemplate.tt"
+    #line 1 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Scalars\ScalarTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "17.0.0.0")]
     public partial class ScalarTemplate : ScalarTemplateBase
     {
@@ -31,28 +31,28 @@ namespace Linq2GraphQL.Generator.Templates.Scalars
             this.Write("\r\nusing Linq2GraphQL.Client;\r\nusing System.Text.Json.Serialization;\r\n\r\nnamespace " +
                     "");
             
-            #line 10 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Scalars\ScalarTemplate.tt"
+            #line 10 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Scalars\ScalarTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(namespaceName));
             
             #line default
             #line hidden
             this.Write(";\r\n\r\n    /// <summary>\r\n    /// ");
             
-            #line 13 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Scalars\ScalarTemplate.tt"
+            #line 13 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Scalars\ScalarTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(scalarType.SummaryDescription));
             
             #line default
             #line hidden
             this.Write("\r\n    /// </summary>\r\n    [JsonConverter(typeof(CustomScalarConverter<");
             
-            #line 15 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Scalars\ScalarTemplate.tt"
+            #line 15 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Scalars\ScalarTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(className));
             
             #line default
             #line hidden
             this.Write(">))]\r\n    public partial class ");
             
-            #line 16 "C:\Code\Github\Linq2GraphQL.Client\src\Linq2GraphQL.Generator\Templates\Scalars\ScalarTemplate.tt"
+            #line 16 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Scalars\ScalarTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(className));
             
             #line default

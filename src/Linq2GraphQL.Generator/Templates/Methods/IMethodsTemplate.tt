@@ -1,0 +1,33 @@
+<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+using System;
+using System.Collections.Generic;
+using Linq2GraphQL.Client;
+<# if (isSubscription) { #>
+using Linq2GraphQL.Client.Subscriptions;
+<# } #>
+
+namespace <#= namespaceName #>;
+
+/// <summary>
+/// Interface for <#= ClassName #> GraphQL operations
+/// </summary>
+public interface I<#= ClassName #>
+{
+<# foreach (var field in methodsType.AllFields) { 
+    var coreType = field.CoreType; #>
+    /// <summary>
+    /// Executes <#= field.Name #> GraphQL operation
+    /// </summary>
+<# if (field.IsDeprecated) { #>
+    /// <remarks>
+    /// This operation is deprecated: <#= field.DeprecationReason #>
+    /// </remarks>
+    [Obsolete("<#= field.DeprecationReason #>")]
+<# } #>
+    /// <param name="<#= field.CSharpName.ToCamelCase() #>">The operation parameters</param>
+    /// <returns>GraphQL query result of type <#= GetReturnTypeString(field) #></returns>
+    <#= GetReturnTypeString(field) #> <#= field.CSharpName #>(<#= field.GetArgString(false) #>);
+
+<# } #>
+}

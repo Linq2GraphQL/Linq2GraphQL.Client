@@ -11,7 +11,7 @@ using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClient;
 
-public class MutationMethods
+public class MutationMethods : IMutationMethods
 {
     private readonly GraphClient client;
 

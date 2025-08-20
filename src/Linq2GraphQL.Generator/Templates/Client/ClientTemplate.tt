@@ -1,36 +1,71 @@
 ﻿<#@ template language="C#" #>
 <#@ assembly name="System.Core" #>
 using Linq2GraphQL.Client;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace <#= namespaceName #>;
 
-public class <#= name #>
+/// <summary>
+/// GraphQL client for <#= name #> operations
+/// </summary>
+/// <remarks>
+/// Provides strongly-typed access to GraphQL queries, mutations, and subscriptions.
+/// Supports dependency injection for better testability and flexibility.
+/// </remarks>
+public class <#= name #> : I<#= name #>
 { 
-    public <#= name #>(HttpClient httpClient, [FromKeyedServices("<#= name #>")]IOptions<GraphClientOptions> options, IServiceProvider provider)
+    /// <summary>
+    /// Constructor with dependency injection support
+    /// </summary>
+    /// <param name="httpClient">HTTP client for GraphQL requests</param>
+    /// <param name="options">GraphQL client configuration options</param>
+    /// <param name="provider">Service provider for dependency resolution</param>
+<# if (includeQuery) { #>
+    /// <param name="queryMethods">Optional query methods implementation (uses default if null)</param>
+<# } #>
+<# if (includeMutation) { #>
+    /// <param name="mutationMethods">Optional mutation methods implementation (uses default if null)</param>
+<# } #>
+<# if (includeSubscriptions) { #>
+    /// <param name="subscriptionMethods">Optional subscription methods implementation (uses default if null)</param>
+<# } #>
+    public <#= name #>(
+        HttpClient httpClient, 
+        [FromKeyedServices("<#= name #>")] IOptions<GraphClientOptions> options, 
+        IServiceProvider provider<# if (includeQuery) { #>,
+        I<#= GetMehodName(queryType) #> queryMethods = null<# } #><# if (includeMutation) { #>,
+        I<#= GetMehodName(mutationType) #> mutationMethods = null<# } #><# if (includeSubscriptions) { #>,
+        I<#= GetMehodName(subscriptionType) #> subscriptionMethods = null<# } #>)
     {
         var client = new GraphClient(httpClient, options, provider, <#= includeDeprecated.ToString().ToLower() #>);
 <# if (includeQuery) { #>
-        Query = new <#= GetMehodName(queryType) #>(client);
-<# }#>
+        Query = queryMethods ?? new <#= GetMehodName(queryType) #>(client);
+<# } #>
 <# if (includeMutation) { #>
-        Mutation = new <#= GetMehodName(mutationType) #>(client);
-<# }#>
+        Mutation = mutationMethods ?? new <#= GetMehodName(mutationType) #>(client);
+<# } #>
 <# if (includeSubscriptions) { #>
-        Subscription = new <#= GetMehodName(subscriptionType) #>(client); 
-<# }#>
+        Subscription = subscriptionMethods ?? new <#= GetMehodName(subscriptionType) #>(client);
+<# } #>
     }
 
 <# if (includeQuery) { #>
-    public <#= GetMehodName(queryType) #> Query { get; private set; }
+    /// <summary>
+    /// Gets the query methods for this GraphQL client
+    /// </summary>
+    public I<#= GetMehodName(queryType) #> Query { get; private set; }
 <# } #>
 <# if (includeMutation) { #>
-    public <#= GetMehodName(mutationType) #> Mutation { get; private set; }
+    /// <summary>
+    /// Gets the mutation methods for this GraphQL client
+    /// </summary>
+    public I<#= GetMehodName(mutationType) #> Mutation { get; private set; }
 <# } #>
 <# if (includeSubscriptions) { #>
-    public <#= GetMehodName(subscriptionType) #> Subscription { get; private set; }
+    /// <summary>
+    /// Gets the subscription methods for this GraphQL client
+    /// </summary>
+    public I<#= GetMehodName(subscriptionType) #> Subscription { get; private set; }
 <# } #>
-    
 }

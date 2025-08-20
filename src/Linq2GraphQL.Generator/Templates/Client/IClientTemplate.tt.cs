@@ -1,6 +1,6 @@
 namespace Linq2GraphQL.Generator.Templates.Client;
 
-public partial class ClientTemplate
+public partial class IClientTemplate
 {
     private readonly string namespaceName;
     private readonly string name;
@@ -9,7 +9,7 @@ public partial class ClientTemplate
     private readonly GraphqlType subscriptionType;
     private readonly bool includeDeprecated;
 
-    public ClientTemplate(string namespaceName, string name, GraphqlType queryType, GraphqlType mutationType, GraphqlType subscriptionType, bool includeDeprecated)
+    public IClientTemplate(string namespaceName, string name, GraphqlType queryType, GraphqlType mutationType, GraphqlType subscriptionType, bool includeDeprecated)
     {
         this.namespaceName = namespaceName;
         this.name = name;

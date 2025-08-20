@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 
 namespace Linq2GraphQL.TestClientNullable;
 
-public class SampleNullableClient
+public class SampleNullableClient : ISampleNullableClient
 {
     public SampleNullableClient(HttpClient httpClient, [FromKeyedServices("SampleNullableClient")]IOptions<GraphClientOptions> options, IServiceProvider provider)
     {
@@ -21,7 +21,7 @@ public class SampleNullableClient
         Mutation = new MutationMethods(client);
     }
 
-    public QueryMethods Query { get; private set; }
-    public MutationMethods Mutation { get; private set; }
+    public IQueryMethods Query { get; private set; }
+    public IMutationMethods Mutation { get; private set; }
     
 }

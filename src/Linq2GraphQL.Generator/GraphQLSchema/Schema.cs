@@ -21,15 +21,17 @@ public class Schema
 
     [JsonPropertyName("subscriptionType")] public GraphqlSchemaType SchemaSubscriptionType { get; set; }
 
-    [JsonIgnore] public GraphqlType QueryType => Types.FirstOrDefault(e => e.Name == SchemaQueryType?.Name);
+    [JsonIgnore] public GraphqlType QueryType => Types?.FirstOrDefault(e => e.Name == SchemaQueryType?.Name);
 
-    [JsonIgnore] public GraphqlType MutationType => Types.FirstOrDefault(e => e.Name == SchemaMutationType?.Name);
+    [JsonIgnore] public GraphqlType MutationType => Types?.FirstOrDefault(e => e.Name == SchemaMutationType?.Name);
 
     [JsonIgnore]
-    public GraphqlType SubscriptionType => Types.FirstOrDefault(e => e.Name == SchemaSubscriptionType?.Name);
+    public GraphqlType SubscriptionType => Types?.FirstOrDefault(e => e.Name == SchemaSubscriptionType?.Name);
 
     public List<GraphqlType> GetAllTypesExceptSystemTypes()
     {
+        if (Types == null) return new List<GraphqlType>();
+        
         return Types.Where(e => e.Name != SchemaQueryType?.Name &&
                                 !e.Name.StartsWith("__") &&
                                 !BuiltInTypes.Contains(e.Name) &&
@@ -40,6 +42,8 @@ public class Schema
 
     public void PopulateFieldTypes()
     {
+        if (Types == null) return;
+        
         foreach (var typeGroup in Types.Where(e => e.AllFields != null && e.AllFields.Any())
      .SelectMany(e => e.AllFields).GroupBy(e => e.Type.GetBaseBaseType().Name))
         {
@@ -76,6 +80,6 @@ public class Schema
         return GetAllTypesExceptSystemTypes().Where(e => e.Kind == TypeKind.Interface).ToList();
     }
 
-    public GraphqlType GetGraphqlType(string name) => Types.FirstOrDefault(e => e.Name == name);
+    public GraphqlType GetGraphqlType(string name) => Types?.FirstOrDefault(e => e.Name == name);
 
 }

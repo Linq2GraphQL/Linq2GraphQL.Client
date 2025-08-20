@@ -38,6 +38,10 @@
             <Generator>TextTemplatingFilePreprocessor</Generator>
             <LastGenOutput>ClientTemplate.cs</LastGenOutput>
         </None>
+        <None Update="Templates\Client\IClientTemplate.tt">
+            <Generator>TextTemplatingFilePreprocessor</Generator>
+            <LastGenOutput>IClientTemplate.cs</LastGenOutput>
+        </None>
         <None Update="Templates\Enum\EnumTemplate.tt">
             <Generator>TextTemplatingFilePreprocessor</Generator>
             <LastGenOutput>EnumTemplate.cs</LastGenOutput>
@@ -46,9 +50,9 @@
           <LastGenOutput>InterfaceTemplate.cs</LastGenOutput>
           <Generator>TextTemplatingFilePreprocessor</Generator>
         </None>
-        <None Update="Templates\Methods\MethodsTemplate.tt">
+        <None Update="Templates\Methods\IMethodsTemplate.tt">
             <Generator>TextTemplatingFilePreprocessor</Generator>
-            <LastGenOutput>MethodsTemplate.cs</LastGenOutput>
+            <LastGenOutput>IMethodsTemplate.cs</LastGenOutput>
         </None>
         <None Update="Templates\Class\InputFactoryClassTemplate.tt">
             <LastGenOutput>InputFactoryClassTemplate.cs</LastGenOutput>
@@ -79,10 +83,20 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>ClassTemplate.tt</DependentUpon>
         </Compile>
+        <Compile Update="Templates\Client\ClientExtensionsTemplate.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>ClientExtensionsTemplate.tt</DependentUpon>
+        </Compile>
         <Compile Update="Templates\Client\ClientTemplate.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>ClientTemplate.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Templates\Client\IClientTemplate.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
-            <DependentUpon>ClientTemplate.tt</DependentUpon>
+            <DependentUpon>IClientTemplate.tt</DependentUpon>
         </Compile>
         <Compile Update="Templates\Enum\EnumTemplate.cs">
             <DesignTime>True</DesignTime>
@@ -94,20 +108,15 @@
           <AutoGen>True</AutoGen>
           <DependentUpon>InterfaceTemplate.tt</DependentUpon>
         </Compile>
-        <Compile Update="Templates\Methods\MethodsTemplate.cs">
+        <Compile Update="Templates\Methods\IMethodsTemplate.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
-            <DependentUpon>MethodsTemplate.tt</DependentUpon>
+            <DependentUpon>IMethodsTemplate.tt</DependentUpon>
         </Compile>
         <Compile Update="Templates\Class\InputFactoryClassTemplate.cs">
             <AutoGen>True</AutoGen>
             <DesignTime>True</DesignTime>
             <DependentUpon>InputFactoryClassTemplate.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Templates\Client\ClientExtensionsTemplate.cs">
-            <AutoGen>True</AutoGen>
-            <DesignTime>True</DesignTime>
-            <DependentUpon>ClientExtensionsTemplate.tt</DependentUpon>
         </Compile>
         <Compile Update="Templates\Scalars\ScalarTemplate.cs">
           <DesignTime>True</DesignTime>
