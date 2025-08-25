@@ -86,12 +86,12 @@ internal class <#= GetInterfaceConcreteName() #> : <#= classType.Name #>
     /// <#= field.Name #> field from GraphQL schema
     /// </summary>
     [GraphQLMember("<#= field.Name #>")]
-    <#= coreType.CSharpTypeDefinition #> <#= field.CSharpName #> { get; set; }
+    public <#= coreType.CSharpTypeDefinition #> <#= field.CSharpName #> { get; set; }
 
 <# } #>
     /// <summary>
     /// GraphQL __typename field for runtime type resolution
     /// </summary>
     [GraphQLMember("__typename")]
-    string __TypeName { get; set; }
+    public string __TypeName { get; set; }
 }
