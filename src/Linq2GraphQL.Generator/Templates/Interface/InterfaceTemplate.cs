@@ -307,7 +307,7 @@ namespace Linq2GraphQL.Generator.Templates.Interface
             
             #line default
             #line hidden
-            this.Write("\")]\r\n    ");
+            this.Write("\")]\r\n    public ");
             
             #line 89 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Interface\InterfaceTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(coreType.CSharpTypeDefinition));
@@ -329,8 +329,8 @@ namespace Linq2GraphQL.Generator.Templates.Interface
             #line default
             #line hidden
             this.Write("    /// <summary>\r\n    /// GraphQL __typename field for runtime type resolution\r\n" +
-                    "    /// </summary>\r\n    [GraphQLMember(\"__typename\")]\r\n    string __TypeName { g" +
-                    "et; set; }\r\n}");
+                    "    /// </summary>\r\n    [GraphQLMember(\"__typename\")]\r\n    public string __TypeN" +
+                    "ame { get; set; }\r\n}");
             return this.GenerationEnvironment.ToString();
         }
     }
