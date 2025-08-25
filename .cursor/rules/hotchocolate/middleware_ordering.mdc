@@ -1,0 +1,27 @@
+---
+alwaysApply: false
+description: "HotChocolate GraphQL middleware ordering best practices"
+globs: ["**/*GraphQL*", "**/Resolvers/**/*", "**/*.cs"]
+---
+
+# HotChocolate Middleware Ordering
+
+- **Order middleware as: UsePaging → UseProjection → UseFiltering → UseSorting**
+  - Ensures correct data processing and optimal performance
+  - Example:
+    ```csharp
+    [UsePaging]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    public IQueryable<User> GetUsers([ScopedService] AppDbContext db) => db.Users;
+    ```
+  - Descriptor API:
+    ```csharp
+    descriptor.UsePaging().UseFiltering().UseSorting();
+    ```
+  - Source: Context7/Hot Chocolate docs
+description:
+globs:
+alwaysApply: false
+---

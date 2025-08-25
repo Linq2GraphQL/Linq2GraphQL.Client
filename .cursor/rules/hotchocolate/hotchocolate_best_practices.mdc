@@ -1,0 +1,150 @@
+---
+alwaysApply: false
+description: "GraphQL schema and resolver best practices for HotChocolate"
+globs: ["**/*GraphQL*", "**/Schema/**/*", "**/Resolvers/**/*", "**/*.cs"]
+---
+
+# HotChocolate GraphQL Best Practices
+
+## Schema Design
+
+### Schema Naming
+- **Store schema names as constants**
+  - Prevents typos and ensures consistency across the codebase
+  - Example:
+    ```csharp
+    public static class WellKnownSchemaNames
+    {
+        public const string Accounts = "accounts";
+        public const string Inventory = "inventory";
+        public const string UserManagement = "user-management";
+        public const string Analytics = "analytics";
+    }
+    ```
+
+### Naming Conventions
+- Use kebab-case for schema names (e.g., "user-management")
+- Keep names descriptive and domain-specific
+- Avoid abbreviations unless they are widely understood
+- Use consistent pluralization rules
+
+## Input/Output Types
+- **Use dedicated input/output types for mutations**
+  - Separate input validation from business logic
+  - Example:
+    ```csharp
+    public record CreateUserInput(string Email, string Name, string Role);
+    public record CreateUserPayload(User User, bool Success, string Message);
+    ```
+
+## Pagination, Filtering, and Sorting
+- **Implement consistent pagination patterns**
+  - Use cursor-based pagination for large datasets
+  - Example:
+    ```csharp
+    public record PaginationInput(int First, string? After);
+    public record PaginationPayload<T>(IEnumerable<T> Items, string? NextCursor, bool HasNextPage);
+    ```
+
+## Database Context Registration
+- **Register DbContext with proper lifetime**
+  - Use scoped lifetime for GraphQL operations
+  - Example:
+    ```csharp
+    services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseNpgsql(connectionString), 
+        ServiceLifetime.Scoped);
+    ```
+
+## Global State Attributes
+- **Use global state for shared context**
+  - Pass user context, tenant info, or request metadata
+  - Example:
+    ```csharp
+    [GlobalState("User")] User currentUser
+    [GlobalState("Tenant")] string tenantId
+    ```
+
+## Middleware Configuration
+- **Order middleware correctly**
+  - Authentication → Authorization → Business Logic
+  - Example:
+    ```csharp
+    services.AddGraphQLServer()
+        .AddAuthorization()
+        .AddFiltering()
+        .AddSorting()
+        .AddProjections();
+    ```
+
+## Data Loader Optimization
+- **Use DataLoaders for N+1 query prevention**
+  - Batch database queries efficiently
+  - Example:
+    ```csharp
+    public class UserDataLoader : BatchDataLoader<string, User>
+    {
+        protected override async Task<IReadOnlyDictionary<string, User>> LoadBatchAsync(
+            IReadOnlyList<string> keys, CancellationToken cancellationToken)
+        {
+            var users = await _context.Users
+                .Where(u => keys.Contains(u.Id))
+                .ToListAsync(cancellationToken);
+            return users.ToDictionary(u => u.Id);
+        }
+    }
+    ```
+
+## Cost Analysis
+- **Implement query cost analysis**
+  - Prevent expensive queries and abuse
+  - Example:
+    ```csharp
+    services.AddGraphQLServer()
+        .AddCostAnalysis(options =>
+        {
+            options.MaximumComplexity = 100;
+            options.ApplyCosts = true;
+        });
+    ```
+
+## Performance Optimization
+- **Use projections to limit data transfer**
+  - Only fetch required fields
+  - Example:
+    ```csharp
+    public class UserType : ObjectType<User>
+    {
+        protected override void Configure(IObjectTypeDescriptor<User> descriptor)
+        {
+            descriptor.Field(u => u.Id).Type<NonNullType<IdType>>();
+            descriptor.Field(u => u.Email).Type<NonNullType<StringType>>();
+            descriptor.Field(u => u.Name).Type<StringType>();
+        }
+    }
+    ```
+
+## Error Handling
+- **Implement consistent error handling**
+  - Use custom error types for domain-specific errors
+  - Example:
+    ```csharp
+    public class UserNotFoundError : GraphQLError
+    {
+        public UserNotFoundError(string userId) 
+            : base($"User with ID {userId} not found", "USER_NOT_FOUND")
+        {
+            Code = "USER_NOT_FOUND";
+            Extensions["userId"] = userId;
+        }
+    }
+    ```
+
+## References
+- Source: Context7/Hot Chocolate documentation
+- Follow [cursor_rules.mdc](mdc:.cursor/rules/cursor_rules.mdc) for rule structure
+- Follow [self_improve.mdc](mdc:.cursor/rules/self_improve.mdc) for continuous improvement
+description:
+globs:
+alwaysApply: false
+---

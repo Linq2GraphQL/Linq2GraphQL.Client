@@ -1,0 +1,11 @@
+---
+alwaysApply: false
+description: "DEPRECATED: Use consolidated_workflow.mdc instead"
+globs: ["**/*"]
+---
+
+# DEPRECATED: Development Workflow Guidelines
+
+**⚠️ This rule has been consolidated into [consolidated_workflow.mdc](mdc:.cursor/rules/consolidated_workflow.mdc)**
+
+This file is kept for reference but should not be used. All workflow guidelines have been moved to the consolidated workflow rule for better organization and reduced duplication.

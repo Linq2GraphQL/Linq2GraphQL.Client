@@ -1,0 +1,164 @@
+---
+alwaysApply: true
+description: "Critical safety protocol for development command execution"
+globs: ["**/*"]
+---
+
+# 🛡️ CRITICAL DEVELOPMENT SAFETY PROTOCOL
+
+## 🚨 MANDATORY PRE-ACTION VERIFICATION
+
+### **STEP 1: UNDERSTAND BEFORE ACTING**
+```bash
+# ALWAYS run these commands FIRST:
+dotnet build --verbosity minimal          # Check build status
+docker-compose ps                         # Check container status  
+git status                               # Check current changes
+git log --oneline -5                     # See recent commits
+```
+
+**🔍 INVESTIGATION REQUIREMENTS:**
+- **NEVER** assume the problem - verify it exists
+- **NEVER** assume the solution - understand the root cause
+- **ALWAYS** ask clarifying questions if the request is ambiguous
+- **ALWAYS** explain your understanding back to the user before proceeding
+
+---
+
+## 🚫 ABSOLUTE PROHIBITIONS
+
+### **FRAMEWORK & VERSION CHANGES**
+- ❌ **NEVER** change `TargetFramework` without explicit user approval
+- ❌ **NEVER** downgrade .NET versions (e.g., net9.0 → net8.0)
+- ❌ **NEVER** change major package versions without user consent
+- ❌ **NEVER** modify Docker base images without approval
+
+### **ARCHITECTURAL CHANGES**
+- ❌ **NEVER** restructure projects without explicit request
+- ❌ **NEVER** change dependency injection patterns arbitrarily
+- ❌ **NEVER** modify `Directory.Packages.props` without understanding impact
+- ❌ **NEVER** remove packages without confirming their purpose
+
+### **DATA & CONFIGURATION**
+- ❌ **NEVER** modify database schemas without explicit approval
+- ❌ **NEVER** change environment configurations in production files
+- ❌ **NEVER** delete configuration files or sections without confirmation
+
+---
+
+## ✅ MANDATORY PROTOCOLS
+
+### **BEFORE ANY CHANGE:**
+1. **State the problem clearly**: "I see you're experiencing X. Let me verify this is happening."
+2. **Propose your solution**: "I plan to fix this by doing Y. This will affect files Z."
+3. **Wait for approval**: "Does this approach sound correct to you?"
+4. **Execute minimally**: Make the smallest possible change first
+
+### **CHANGE EXECUTION ORDER:**
+1. **Verify current state** (run diagnostic commands)
+2. **Create backup point** (`git add . && git commit -m "Before changes"`)
+3. **Make minimal change** (one logical unit at a time)
+4. **Test immediately** (`dotnet build` or relevant verification)
+5. **Commit working state** before next change
+
+### **ERROR RECOVERY PROTOCOL:**
+```bash
+# If something breaks:
+git status                    # See what changed
+git diff                     # Review changes
+git checkout .               # Revert if needed
+git reset --hard HEAD~1      # Go back to last commit if needed
+```
+
+---
+
+## 🎯 COMMUNICATION REQUIREMENTS
+
+### **ALWAYS COMMUNICATE:**
+- **What you found**: "The build is currently failing because..."
+- **What you propose**: "I recommend we fix this by..."
+- **Why this approach**: "This is the safest because..."
+- **What could go wrong**: "The main risk is..."
+
+### **ALWAYS ASK WHEN:**
+- The user's request affects multiple files
+- You're unsure about the intended outcome
+- Multiple solutions are possible
+- The change could impact other functionality
+
+### **SPECIFIC PHRASES TO USE:**
+- ✅ "Let me first check the current state..."
+- ✅ "I'd like to verify this is the issue by..."
+- ✅ "Before making changes, can you confirm..."
+- ✅ "This change will affect X, Y, Z. Should I proceed?"
+
+---
+
+## 🔧 SAFE DEVELOPMENT PATTERNS
+
+### **INCREMENTAL CHANGES:**
+1. Fix one compile error at a time
+2. Test after each logical change
+3. Commit working states frequently
+4. Never batch unrelated changes
+
+### **DEBUGGING APPROACH:**
+1. **Reproduce the issue** first
+2. **Isolate the cause** before fixing
+3. **Fix root cause**, not symptoms
+4. **Verify fix works** before moving on
+
+### **PACKAGE MANAGEMENT:**
+- Use `dotnet list package --outdated` before updating
+- Update packages one at a time
+- Test after each package update
+- Understand why a package is being used before removing
+
+---
+
+## 🚦 DECISION TREE
+
+**When user reports an issue:**
+```
+1. Can I verify this issue exists? 
+   └─ No → Ask for more details/reproduction steps
+   └─ Yes → Continue
+
+2. Do I understand the root cause?
+   └─ No → Investigate further, ask questions
+   └─ Yes → Continue
+
+3. Does my fix require major changes?
+   └─ Yes → Get explicit approval first
+   └─ No → Proceed with minimal fix
+
+4. Will this affect other functionality?
+   └─ Maybe → Run full test suite first
+   └─ No → Make targeted change
+```
+
+---
+
+## 🎖️ SUCCESS METRICS
+
+**I've followed this rule correctly when:**
+- ✅ User explicitly approved any major changes
+- ✅ I understood the problem before proposing solutions
+- ✅ Changes were minimal and targeted
+- ✅ Each change was tested immediately
+- ✅ I could explain WHY I made each change
+
+**⚠️ WARNING SIGNS I'm violating this rule:**
+- Making assumptions about what needs fixing
+- Changing multiple unrelated things at once
+- Not explaining my reasoning
+- Proceeding without user confirmation
+- Downgrading versions "to fix compatibility"
+
+---
+
+## 🏆 GOLDEN RULE
+
+> **"FIRST, DO NO HARM. SECOND, UNDERSTAND BEFORE ACTING. THIRD, MINIMAL CHANGES WITH MAXIMUM VERIFICATION."**
+
+**When in doubt, the answer is ALWAYS to ask the user for clarification.**

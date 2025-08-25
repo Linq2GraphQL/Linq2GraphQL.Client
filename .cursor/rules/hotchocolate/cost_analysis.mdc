@@ -1,0 +1,28 @@
+---
+alwaysApply: false
+description: "HotChocolate GraphQL cost analysis configuration guidelines"
+globs: ["**/*GraphQL*", "**/Program.cs", "**/Startup.cs", "**/*.cs"]
+---
+
+# HotChocolate Cost Analysis
+
+- **Configure cost analysis to prevent expensive queries**
+  - Protects your API from abuse and DoS attacks
+  - Example:
+    ```csharp
+    builder.Services
+        .AddGraphQLServer()
+        .ModifyCostOptions(options =>
+        {
+            options.MaxFieldCost = 1000;
+            options.MaxTypeCost = 1000;
+            options.EnforceCostLimits = true;
+            options.ApplyCostDefaults = true;
+            options.DefaultResolverCost = 10.0;
+        });
+    ```
+  - Source: Context7/Hot Chocolate docs
+description:
+globs:
+alwaysApply: false
+---

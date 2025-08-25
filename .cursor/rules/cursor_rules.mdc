@@ -1,0 +1,69 @@
+---
+alwaysApply: false
+description: "Specification for creating and maintaining Cursor rules with proper frontmatter"
+globs: ["**/*.mdc"]
+---
+
+# Cursor Rules Specification
+
+## Required Rule Structure
+All Cursor rules must follow this standardized format:
+
+```markdown
+---
+alwaysApply: boolean
+description: "Clear, one-line description of what the rule enforces"
+globs: ["path/to/files/*.ext", "other/path/**/*"]
+---
+
+# Rule Title
+
+- **Main Points in Bold**
+  - Sub-points with details
+  - Examples and explanations
+```
+
+## Frontmatter Configuration
+
+### alwaysApply Values
+- `true`: Rule applies to all files matching globs (use sparingly)
+- `false`: Rule applies only when relevant context is present
+
+### description Guidelines
+- Keep under 100 characters
+- Use clear, actionable language
+- Describe what the rule enforces, not why
+
+### globs Patterns
+- Use specific patterns over broad ones
+- Avoid `**/*` unless absolutely necessary
+- Examples:
+  - `["**/*.cs", "**/*.ts"]` for code files
+  - `["**/*.mdc"]` for rule files
+  - `["**/test/**/*"]` for test files
+
+## File Organization
+- **Core Rules**: Fundamental patterns and structures
+- **Domain Rules**: Technology-specific rules (e.g., authentication/, hotchocolate/)
+- **Workflow Rules**: Development process and best practices
+
+## Quality Standards
+- Rules must be actionable and specific
+- Examples should come from actual code
+- Use ✅ DO and ❌ DON'T patterns
+- Reference existing code when possible
+- Avoid duplicate content across rules
+
+## Code Examples Format
+```typescript
+// ✅ DO: Show good examples
+const goodExample = true;
+
+// ❌ DON'T: Show anti-patterns
+const badExample = false;
+```
+
+## Cross-Referencing
+- Use `[filename](mdc:path/to/file)` for rule references
+- Link related rules together
+- Document migration paths for deprecated patterns 

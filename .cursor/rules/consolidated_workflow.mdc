@@ -1,0 +1,127 @@
+---
+alwaysApply: true
+description: "Comprehensive development workflow guidelines combining task management, code quality, and project organization"
+globs: ["**/*"]
+---
+
+# Development Workflow & Task Management Guidelines
+
+## Task Management Integration
+
+### Task Structure & Status Management
+- **Always include both title and description** for tasks and subtasks
+- Use consistent status values: `pending`, `in-progress`, `done`, `deferred`, `cancelled`
+- Mark subtasks as completed before marking parent tasks as done
+- Update task statuses regularly during development
+- Establish clear task dependencies using IDs and validate before starting work
+
+### Task Master Development Workflow
+- Begin coding sessions with `get_tasks` / `task-master list` to see current tasks and status
+- Determine next task using `next_task` / `task-master next`
+- Analyze complexity with `analyze_project_complexity` / `task-master analyze-complexity --research`
+- View specific task details using `get_task` / `task-master show <id>`
+- Break down complex tasks using `expand_task` / `task-master expand --id=<id> --force --research`
+- Mark completed tasks with `set_task_status` / `task-master set-status --id=<id> --status=done`
+- Update tasks when implementation differs from plan using `update_task` or `update`
+
+## Command Execution & Tool Usage
+
+### MCP Server Command Execution
+- **ALWAYS execute build/test/npm/etc via the MCP server mcp-server-commands tool**
+- Wrap commands with `tools/exec.ps1` for reliable execution
+- Pass each argument as its own `-Args` token
+- Avoid pipes; rely on RUN_COMPLETE markers and TRX/results files for completion detection
+- For test runs, prefer wrapping scripts with: `pwsh -NoProfile -File tools/exec.ps1 -Exe pwsh -Args -NoProfile,-File,artifacts/test/run-tests.ps1,-Configuration,Debug,-Verbosity,minimal,-ResultsDir,artifacts/test,-LogFileName,test-results.trx,-TimeoutSec,900`
+- The wrapper writes unique RUN_COMPLETE.marker and JSON summary files
+- Auto-detects TRX path from --logger/--results-directory parameters
+
+### Command Execution Safety
+- Use `run_terminal_cmd` for all shell/CLI actions (including curl commands)
+- Define serial vs parallel modes: Serial commands wait for output, parallel commands use background flags
+- Include safety & hygiene: idempotent starts, timeouts/retries, capture relevant output
+- Maintain name/PID registry for command tracking
+
+## Project Organization
+
+### File Structure & Naming
+- Organize code by domain/feature rather than technical layers
+- Use consistent naming conventions across the project
+- Maintain clear separation between API, Services, and Data layers
+- Follow existing patterns and conventions in the codebase
+
+### Configuration Management
+- Store sensitive data in environment variables
+- Use `appsettings.json` for non-sensitive configuration
+- Override configuration via Docker environment variables in production
+- Validate environment configuration on startup
+
+## Code Quality Standards
+
+### Core Principles
+- Follow SOLID principles and DRY (Don't Repeat Yourself)
+- Never expose or leak internal data models outside the service layer
+- Use structured logging with proper loggers throughout the codebase
+- Implement comprehensive error handling and validation
+- Follow security best practices and never commit secrets
+
+### Testing Strategy
+- Write tests for all business logic
+- Use integration tests to verify service interactions
+- Maintain test coverage above 80%
+- Run tests before committing code
+- Verify tasks according to test strategies before marking complete
+
+### Documentation
+- Keep README files up to date
+- Document API endpoints with Swagger/OpenAPI
+- Maintain inline code documentation for complex logic
+- Update documentation when APIs change
+
+## Service Architecture
+
+### Docker & Containerization
+- Use Docker Compose for local development
+- Ensure all services can start independently
+- Configure health checks for service monitoring
+- Use named volumes for persistent data
+- Set appropriate environment variables for each service
+
+### Service Communication
+- Use MassTransit with RabbitMQ for inter-service communication
+- Implement proper retry policies and circuit breakers
+- Monitor service health and performance
+- Use structured logging for debugging
+
+### Database Management
+- Use Entity Framework Core with PostgreSQL
+- Implement proper migrations for schema changes
+- Use connection pooling for performance
+- Monitor database performance and connections
+
+## Continuous Improvement Process
+
+### Code Review & Quality
+- Review all code changes before merging
+- Use automated tools for code quality checks
+- Address feedback promptly and thoroughly
+- Learn from code review comments to improve future code
+
+### Performance & Monitoring
+- Monitor application performance metrics
+- Use OpenTelemetry for distributed tracing
+- Implement proper health checks
+- Monitor resource usage and optimize accordingly
+
+### Pattern Recognition & Rule Updates
+- Compare new code with existing rules and patterns
+- Identify repeated implementations that should be standardized
+- Look for common error patterns that could be prevented
+- Monitor emerging best practices in the codebase
+- Create new rules when technology/pattern is used in 3+ files
+- Update existing rules when better examples exist or edge cases discovered
+
+## References
+- Follow [cursor_rules.mdc](mdc:.cursor/rules/cursor_rules.mdc) for rule structure
+- Follow [authentication_best_practices.mdc](mdc:.cursor/rules/authentication/authentication_best_practices.mdc) for security
+- Follow [hotchocolate_best_practices.mdc](mdc:.cursor/rules/hotchocolate/hotchocolate_best_practices.mdc) for GraphQL
+- Follow [taskmaster.mdc](mdc:.cursor/rules/taskmaster.mdc) for Task Master usage

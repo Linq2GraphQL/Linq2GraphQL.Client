@@ -1,0 +1,268 @@
+---
+alwaysApply: true
+description: "Continuously improve development patterns by detecting repetitive code and suggesting standardized approaches"
+globs: ["**/*.cs", "**/*.ts", "**/*.js", "**/*.tsx", "**/*.jsx"]
+---
+
+# 🔄 INTELLIGENT PATTERN DETECTION & RULE EVOLUTION
+
+## 🎯 CORE MISSION
+Automatically detect repetitive patterns in code and evolve development rules to maintain consistency, reduce technical debt, and improve code quality.
+
+---
+
+## 🔍 PATTERN DETECTION SYSTEM
+
+### **Immediate Detection Triggers**
+| Pattern Type | Threshold | Action Required |
+|-------------|-----------|-----------------|
+| **Identical Code Blocks** | 2+ occurrences | Suggest abstraction |
+| **Similar Error Handling** | 3+ variations | Propose standard pattern |
+| **Configuration Patterns** | 2+ services | Create shared configuration |
+| **API Response Patterns** | 3+ controllers | Standardize response format |
+| **Database Query Patterns** | 3+ repositories | Suggest base repository |
+
+### **Real-Time Detection Categories**
+
+#### **🏗️ Architectural Patterns**
+```csharp
+// DETECT: When this appears 2+ times across different files
+builder.Services.AddDbContext<MyContext>(options =>
+    options.UseSqlServer(connectionString));
+builder.Services.AddScoped<IMyService, MyService>();
+```
+**AUTO-SUGGEST**: Create `ServiceRegistrationExtensions.cs`
+
+#### **⚠️ Error Handling Patterns**
+```csharp
+// DETECT: When similar try-catch blocks appear 3+ times
+try
+{
+    var result = await _service.DoSomethingAsync();
+    return Ok(result);
+}
+catch (Exception ex)
+{
+    _logger.LogError(ex, "Error in {Method}", nameof(DoSomething));
+    return StatusCode(500, "Internal server error");
+}
+```
+**AUTO-SUGGEST**: Create standardized error handling middleware
+
+#### **🔧 Configuration Patterns**
+```csharp
+// DETECT: When similar configurations appear in 2+ services
+services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, cfg) => {
+        cfg.Host("localhost", "/", h => {
+            h.Username("guest");
+            h.Password("guest");
+        });
+    });
+});
+```
+**AUTO-SUGGEST**: Create shared configuration extension
+
+---
+
+## 🚀 AUTO-IMPROVEMENT WORKFLOW
+
+### **Step 1: Real-Time Pattern Analysis**
+```
+🔍 SCANNING...
+├── Analyzing current file changes
+├── Comparing with existing codebase patterns
+├── Identifying similarity thresholds
+└── Flagging improvement opportunities
+```
+
+### **Step 2: Intelligent Suggestion Generation**
+When patterns are detected, automatically generate:
+
+#### **📋 Immediate Actionable Suggestions**
+- **Extract Method**: "I notice this validation logic appears in 3 files. Should I extract it to a shared utility?"
+- **Create Extension**: "This service registration pattern repeats. Should I create a `ServiceCollectionExtensions`?"
+- **Standardize Pattern**: "Error handling varies across controllers. Should I create a standard approach?"
+
+#### **📝 Rule Updates**
+- **Add New Rule**: When new patterns emerge
+- **Update Existing Rule**: When patterns evolve
+- **Deprecate Rule**: When patterns become obsolete
+
+### **Step 3: Implementation Assistance**
+```csharp
+// BEFORE: Detected pattern in 3+ files
+public async Task<IActionResult> GetUsers()
+{
+    try { /* logic */ }
+    catch (Exception ex) { /* handling */ }
+}
+
+// AFTER: Suggested improvement
+[HttpGet]
+[StandardErrorHandling] // Custom attribute
+public async Task<IActionResult> GetUsers()
+{
+    var result = await _service.GetUsersAsync();
+    return Ok(result);
+}
+```
+
+---
+
+## 🎛️ PATTERN CLASSIFICATION SYSTEM
+
+### **🟢 TIER 1: CRITICAL PATTERNS (Immediate Action)**
+- **Security vulnerabilities** (SQL injection, XSS patterns)
+- **Performance anti-patterns** (N+1 queries, missing async)
+- **Memory leaks** (undisposed resources)
+
+### **🟡 TIER 2: CONSISTENCY PATTERNS (Suggest Standardization)**
+- **Naming conventions** variations
+- **Error handling** inconsistencies  
+- **Logging format** differences
+- **API response** structure variations
+
+### **🔵 TIER 3: OPTIMIZATION PATTERNS (Recommend Improvements)**
+- **Code duplication** opportunities
+- **Abstraction** possibilities
+- **Performance** enhancements
+
+---
+
+## 🧠 INTELLIGENT RULE EVOLUTION
+
+### **Dynamic Rule Generation**
+```markdown
+## AUTO-GENERATED: API Response Standardization
+**Detected**: 5 different response patterns across controllers
+**Suggested**: Standardized ApiResponse<T> wrapper
+
+### Implementation:
+```csharp
+public class ApiResponse<T>
+{
+    public bool Success { get; set; }
+    public T Data { get; set; }
+    public string Message { get; set; }
+    public List<string> Errors { get; set; }
+}
+```
+
+**Next Steps**: 
+1. Create `ApiResponse<T>` class
+2. Update controllers to use standard response
+3. Create extension methods for common responses
+```
+
+### **Rule Consolidation Intelligence**
+**BEFORE**: 5 separate rules for API patterns
+**AFTER**: 1 comprehensive "API Development Standards" rule
+
+### **Cross-Project Learning**
+- **Pattern Export**: Save successful patterns for reuse
+- **Best Practice Evolution**: Continuously refine based on outcomes
+- **Anti-Pattern Detection**: Learn from problematic patterns
+
+---
+
+## 🔧 PRACTICAL IMPLEMENTATION
+
+### **For Active Development**
+```csharp
+// 1. AS YOU TYPE: Real-time pattern detection
+// 2. ON SAVE: Pattern analysis and suggestions
+// 3. ON COMMIT: Comprehensive pattern review
+```
+
+### **Specific Triggers**
+- **File Save**: Analyze current file for patterns
+- **Multi-file Edit**: Cross-file pattern detection
+- **Code Review**: Suggest standardizations
+- **Refactoring**: Recommend pattern improvements
+
+### **User Interaction**
+```
+🤖 CURSOR: "I notice you're implementing user validation. 
+I see similar logic in UserController.cs and AdminController.cs. 
+
+Would you like me to:
+1. ✅ Extract to shared ValidationService
+2. ✅ Create UserValidationAttribute  
+3. ✅ Update existing files to use new pattern
+4. ❌ Skip this suggestion"
+```
+
+---
+
+## 📊 SUCCESS METRICS & FEEDBACK
+
+### **Automatic Quality Assessment**
+- **Code Duplication Reduction**: Track % decrease
+- **Consistency Score**: Measure pattern adherence  
+- **Bug Reduction**: Monitor issues related to inconsistency
+- **Development Velocity**: Measure time savings
+
+### **Pattern Effectiveness Tracking**
+```
+📈 PATTERN SUCCESS METRICS:
+├── Times Pattern Suggested: 15
+├── Times Pattern Adopted: 12 (80%)
+├── Bugs Prevented: 3
+├── Development Time Saved: 4.5 hours
+└── Developer Satisfaction: 4.2/5
+```
+
+### **Continuous Learning Loop**
+1. **Detect** patterns in code
+2. **Suggest** improvements 
+3. **Track** adoption rates
+4. **Measure** impact
+5. **Refine** detection algorithms
+
+---
+
+## 🎯 ACTIONABLE OUTCOMES
+
+### **Immediate Benefits**
+- ✅ **Reduce Copy-Paste**: Detect and prevent code duplication
+- ✅ **Enforce Standards**: Automatically suggest consistent patterns
+- ✅ **Prevent Technical Debt**: Catch anti-patterns early
+- ✅ **Accelerate Development**: Reuse proven patterns
+
+### **Long-term Evolution**
+- 🚀 **Self-Improving Codebase**: Patterns get better over time
+- 🚀 **Team Learning**: Share successful patterns across team
+- 🚀 **Quality Consistency**: Maintain standards automatically
+- 🚀 **Knowledge Preservation**: Capture and reuse best practices
+
+---
+
+## 🔄 INTEGRATION WITH EXISTING WORKFLOW
+
+### **Respects Current Rules**
+- ✅ Never conflicts with established patterns
+- ✅ Builds upon existing rule structure  
+- ✅ Maintains backward compatibility
+- ✅ Enhances rather than replaces
+
+### **Complements Development Flow**
+```
+💻 DEVELOPER WORKFLOW:
+1. Write code → 2. Pattern detected → 3. Suggestion offered → 4. Choose to apply → 5. Pattern improved
+                    ↓
+                    Codebase becomes more consistent and maintainable
+```
+
+---
+
+## 🎖️ GOLDEN PRINCIPLES
+
+> **"DETECT EARLY, SUGGEST GENTLY, IMPROVE CONTINUOUSLY"**
+
+1. **Never Force**: Always suggest, never automatically change
+2. **Learn Constantly**: Adapt patterns based on team preferences  
+3. **Stay Relevant**: Deprecate outdated patterns automatically
+4. **Measure Impact**: Track effectiveness of suggestions
+5. **Respect Context**: Understand when patterns don't apply

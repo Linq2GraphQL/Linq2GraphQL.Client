@@ -1,0 +1,63 @@
+---
+alwaysApply: false
+description: "Security guidelines for authentication and session management"
+globs: ["**/*.cs", "**/Controllers/**/*", "**/Services/**/*"]
+---
+
+# Authentication Best Practices
+
+## Session Security
+- **Always use HTTP-only cookies for session/auth tokens**
+  - Prevents XSS attacks by making tokens inaccessible to JavaScript
+  - Example (ASP.NET Core):
+    ```csharp
+    services.ConfigureApplicationCookie(options =>
+    {
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Strict;
+    });
+    ```
+
+## Token Management
+- **Use secure, short-lived tokens (JWT or MSAL best practices)**
+  - Set appropriate expiration and validate tokens on every request
+  - Example (JWT):
+    ```csharp
+    var token = new JwtSecurityToken(
+        expires: DateTime.UtcNow.AddMinutes(30),
+        ... // other claims
+    );
+    ```
+
+## OAuth Integration
+- **Integrate social logins via secure OAuth/OpenID Connect flows**
+  - Use official providers and never expose secrets in client-side code
+  - Example (ASP.NET Core):
+    ```csharp
+    services.AddAuthentication().AddGoogle(options =>
+    {
+        options.ClientId = Configuration["Authentication:Google:ClientId"];
+        options.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+    });
+    ```
+
+## Security Principles
+- **Never expose secrets or tokens in client-side code**
+  - All sensitive operations must be server-side only
+
+## MSAL Integration
+- **Use MSAL or equivalent for secure token acquisition and storage**
+  - Example (MSAL):
+    ```csharp
+    var app = PublicClientApplicationBuilder.Create(ClientId)
+        .WithAuthority(AzureCloudInstance.AzurePublic, TenantId)
+        .WithRedirectUri("http://localhost")
+        .Build();
+    var result = await app.AcquireTokenInteractive(scopes).ExecuteAsync();
+    ```
+
+## References
+- Context7/MSAL.NET documentation
+- Microsoft authentication documentation
+- Project AuthController/AuthMutations implementation
