@@ -52,7 +52,7 @@ namespace Linq2GraphQL.Generator
                 query = General.IntrospectionQuery;
             }
 
-                using var response = await httpClient.PostAsJsonAsync(uri, new { query = query });
+            using var response = await httpClient.PostAsJsonAsync(uri, new { query = query });
             if (!response.IsSuccessStatusCode)
             {
                 throw new Exception(
@@ -106,7 +106,7 @@ namespace Linq2GraphQL.Generator
 
             var classInterfacesList = schema.GetClassTypes()?.Where(e => e.HasInterfaces)
                 ?.SelectMany(i => i.Interfaces?.ToDictionary(e => i.Name, e => e.Name))?.ToList() ?? new List<KeyValuePair<string, string>>();
-            
+
             var interfaces = schema.GetInterfaces();
             if (interfaces != null)
             {

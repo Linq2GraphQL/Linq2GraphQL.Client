@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-using Linq2GraphQL.Client.Converters;
 using Linq2GraphQL.Client.Schema;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +12,11 @@ public class GraphClient
     private readonly IMemoryCache cache;
     private readonly IOptions<GraphClientOptions> options;
     private readonly bool includeDeprecated;
+
+    public GraphClient(HttpClient httpClient, IOptions<GraphClientOptions> options, IServiceProvider provider)
+        : this(httpClient, options, provider, false)
+    {
+    }
 
     public GraphClient(HttpClient httpClient, IOptions<GraphClientOptions> options, IServiceProvider provider, bool includeDeprecated = false)
     {
@@ -38,7 +42,7 @@ public class GraphClient
     public SubscriptionProtocol SubscriptionProtocol => options.Value.SubscriptionProtocol;
     public HttpClient HttpClient { get; }
     public JsonSerializerOptions SerializerOptions { get; }
- 
+
 
     public Func<GraphClient, Task<GraphQLRequest>> WSConnectionInitPayload => options.Value.WSConnectionInitPayload;
     private string GetSubscriptionUrl()
@@ -85,7 +89,7 @@ public class GraphClient
                 query = Helpers.SchemaQuery;
             }
 
-                var graphRequest = new GraphQLRequest { Query = query };
+            var graphRequest = new GraphQLRequest { Query = query };
             return await executor.ExecuteRequestAsync("__schema", graphRequest);
         });
     }

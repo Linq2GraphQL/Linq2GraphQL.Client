@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <PackAsTool>true</PackAsTool>
         <ToolCommandName>Linq2GraphQL</ToolCommandName>
+        <TransformOnBuild>true</TransformOnBuild>
 
 		<Authors>Joakim Dangården, Magnus Ahlberg</Authors>
 		<Company>Linq2GraphQL</Company>
