@@ -37,10 +37,10 @@ namespace Linq2GraphQL.Generator.Templates.Scalars
             #line default
             #line hidden
             this.Write(";\r\n\r\n    /// <summary>\r\n    /// ");
-            
+
             #line 13 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Scalars\ScalarTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(scalarType.SummaryDescription));
-            
+            this.Write(this.ToStringHelper.ToStringWithCulture(scalarType.SummaryDescription ?? $"Represents the {scalarType.Name} scalar type"));
+
             #line default
             #line hidden
             this.Write("\r\n    /// </summary>\r\n    [JsonConverter(typeof(CustomScalarConverter<");
