@@ -2,14 +2,16 @@ using Linq2GraphQL.TestServer;
 using Linq2GraphQL.TestServer.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddGraphQLServer()
-    .AddInMemorySubscriptions()
-    .AddQueryType<Query>()
-    .AddMutationType<Mutation>()
-    .AddSubscriptionType<Subscription>()
-    .AddTypeExtension<OrderGraphQLExtensions>()
+builder.Services
+    .AddGraphQLServer()
+    .ModifyCostOptions(options =>
+    {
+        options.EnforceCostLimits = false;
+    })
+    .AddTestServerTypes()
     .AddType<Pig>()
     .AddType<Spider>()
+    .AddInMemorySubscriptions()
     .AddFiltering()
     .AddSorting();
 

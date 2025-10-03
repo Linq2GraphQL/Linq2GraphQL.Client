@@ -5,19 +5,16 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 using Linq2GraphQL.Client.Common;
 
 namespace StartGG.Client;
 
-
 /// <summary>
-/// A set of actions available for a team to take
+///     A set of actions available for a team to take
 /// </summary>
-public partial class TeamActionSet : GraphQLTypeBase, ActionSet
+public class TeamActionSet : GraphQLTypeBase, ActionSet
 {
     [GraphQLMember("id")]
     [JsonPropertyName("id")]

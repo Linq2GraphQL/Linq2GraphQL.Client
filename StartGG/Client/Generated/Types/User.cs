@@ -5,59 +5,69 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 using Linq2GraphQL.Client.Common;
 
 namespace StartGG.Client;
 
-
 public static class UserExtensions
 {
     [GraphQLMember("authorizations")]
-    public static List<ProfileAuthorization> Authorizations(this User  user, [GraphQLArgument("types", "[SocialConnectionType]")] List<SocialConnectionType?> types = null)
+    public static List<ProfileAuthorization> Authorizations(this User user,
+        [GraphQLArgument("types", "[SocialConnectionType]")] List<SocialConnectionType?> types = null)
     {
         return user.GetMethodValue<List<ProfileAuthorization>>("authorizations", types);
     }
 
     [GraphQLMember("events")]
-    public static EventConnection Events(this User  user, [GraphQLArgument("query", "UserEventsPaginationQuery")] UserEventsPaginationQuery query = null)
+    public static EventConnection Events(this User user,
+        [GraphQLArgument("query", "UserEventsPaginationQuery")] UserEventsPaginationQuery query = null)
     {
         return user.GetMethodValue<EventConnection>("events", query);
     }
 
     [GraphQLMember("images")]
-    public static List<Image> Images(this User  user, [GraphQLArgument("type", "String")] string type = null)
+    public static List<Image> Images(this User user, [GraphQLArgument("type", "String")] string type = null)
     {
         return user.GetMethodValue<List<Image>>("images", type);
     }
 
     [GraphQLMember("leagues")]
-    public static LeagueConnection Leagues(this User  user, [GraphQLArgument("query", "UserLeaguesPaginationQuery")] UserLeaguesPaginationQuery query = null)
+    public static LeagueConnection Leagues(this User user,
+        [GraphQLArgument("query", "UserLeaguesPaginationQuery")] UserLeaguesPaginationQuery query = null)
     {
         return user.GetMethodValue<LeagueConnection>("leagues", query);
     }
 
     [GraphQLMember("tournaments")]
-    public static TournamentConnection Tournaments(this User  user, [GraphQLArgument("query", "UserTournamentsPaginationQuery")] UserTournamentsPaginationQuery query = null)
+    public static TournamentConnection Tournaments(this User user,
+        [GraphQLArgument("query", "UserTournamentsPaginationQuery")] UserTournamentsPaginationQuery query = null)
     {
         return user.GetMethodValue<TournamentConnection>("tournaments", query);
     }
-
 }
 
 /// <summary>
-/// A user
+///     A user
 /// </summary>
-public partial class User : GraphQLTypeBase
+public class User : GraphQLTypeBase
 {
-    private LazyProperty<List<ProfileAuthorization>> _authorizations = new();
+    private readonly LazyProperty<List<ProfileAuthorization>> _authorizations = new();
+
+    private readonly LazyProperty<EventConnection> _events = new();
+
+    private readonly LazyProperty<List<Image>> _images = new();
+
+    private readonly LazyProperty<LeagueConnection> _leagues = new();
+
+    private readonly LazyProperty<TournamentConnection> _tournaments = new();
+
     /// <summary>
-    /// Do not use in Query, only to retrive result
+    ///     Do not use in Query, only to retrive result
     /// </summary>
-    public List<ProfileAuthorization> Authorizations => _authorizations.Value(() => GetFirstMethodValue<List<ProfileAuthorization>>("authorizations"));
+    public List<ProfileAuthorization> Authorizations =>
+        _authorizations.Value(() => GetFirstMethodValue<List<ProfileAuthorization>>("authorizations"));
 
     [GraphQLMember("id")]
     [JsonPropertyName("id")]
@@ -68,14 +78,14 @@ public partial class User : GraphQLTypeBase
     public string Bio { get; set; }
 
     /// <summary>
-    /// Public facing user birthday that respects user publishing settings
+    ///     Public facing user birthday that respects user publishing settings
     /// </summary>
     [GraphQLMember("birthday")]
     [JsonPropertyName("birthday")]
     public string Birthday { get; set; }
 
     /// <summary>
-    /// Uniquely identifying token for user. Same as the hashed part of the slug
+    ///     Uniquely identifying token for user. Same as the hashed part of the slug
     /// </summary>
     [GraphQLMember("discriminator")]
     [JsonPropertyName("discriminator")]
@@ -85,9 +95,8 @@ public partial class User : GraphQLTypeBase
     [JsonPropertyName("email")]
     public string Email { get; set; }
 
-    private LazyProperty<EventConnection> _events = new();
     /// <summary>
-    /// Do not use in Query, only to retrive result
+    ///     Do not use in Query, only to retrive result
     /// </summary>
     public EventConnection Events => _events.Value(() => GetFirstMethodValue<EventConnection>("events"));
 
@@ -95,34 +104,32 @@ public partial class User : GraphQLTypeBase
     [JsonPropertyName("genderPronoun")]
     public string GenderPronoun { get; set; }
 
-    private LazyProperty<List<Image>> _images = new();
     /// <summary>
-    /// Do not use in Query, only to retrive result
+    ///     Do not use in Query, only to retrive result
     /// </summary>
     public List<Image> Images => _images.Value(() => GetFirstMethodValue<List<Image>>("images"));
 
-    private LazyProperty<LeagueConnection> _leagues = new();
     /// <summary>
-    /// Do not use in Query, only to retrive result
+    ///     Do not use in Query, only to retrive result
     /// </summary>
     public LeagueConnection Leagues => _leagues.Value(() => GetFirstMethodValue<LeagueConnection>("leagues"));
 
     /// <summary>
-    /// Public location info for this user
+    ///     Public location info for this user
     /// </summary>
     [GraphQLMember("location")]
     [JsonPropertyName("location")]
     public Address Location { get; set; }
 
     /// <summary>
-    /// Public facing user name that respects user publishing settings
+    ///     Public facing user name that respects user publishing settings
     /// </summary>
     [GraphQLMember("name")]
     [JsonPropertyName("name")]
     public string Name { get; set; }
 
     /// <summary>
-    /// player for user
+    ///     player for user
     /// </summary>
     [GraphQLMember("player")]
     [JsonPropertyName("player")]
@@ -132,10 +139,9 @@ public partial class User : GraphQLTypeBase
     [JsonPropertyName("slug")]
     public string Slug { get; set; }
 
-    private LazyProperty<TournamentConnection> _tournaments = new();
     /// <summary>
-    /// Do not use in Query, only to retrive result
+    ///     Do not use in Query, only to retrive result
     /// </summary>
-    public TournamentConnection Tournaments => _tournaments.Value(() => GetFirstMethodValue<TournamentConnection>("tournaments"));
-
+    public TournamentConnection Tournaments =>
+        _tournaments.Value(() => GetFirstMethodValue<TournamentConnection>("tournaments"));
 }

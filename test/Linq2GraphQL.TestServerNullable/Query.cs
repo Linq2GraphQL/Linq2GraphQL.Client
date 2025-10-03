@@ -4,6 +4,7 @@ using Linq2GraphQL.TestServer.Models;
 
 namespace Linq2GraphQL.TestServerNullable
 {
+    [QueryType]
     public class Query
     {
 

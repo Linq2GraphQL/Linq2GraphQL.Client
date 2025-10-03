@@ -5,134 +5,153 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-using Linq2GraphQL.Client;
-
 namespace Linq2GraphQL.TestClient;
 
-public static class IF 
-{ 
-	public static AddressFilterInput AddressFilter() 
-	{
-		return new AddressFilterInput();
-	}
-	public static AddressInput Address() 
-	{
-		return new AddressInput();
-	}
-	public static AddressSortInput AddressSort() 
-	{
-		return new AddressSortInput();
-	}
-	public static ByteOperationFilterInput ByteOperationFilter() 
-	{
-		return new ByteOperationFilterInput();
-	}
-	public static CustomerFilterInput CustomerFilter() 
-	{
-		return new CustomerFilterInput();
-	}
-	public static CustomerInput Customer() 
-	{
-		return new CustomerInput();
-	}
-	public static CustomerSortInput CustomerSort() 
-	{
-		return new CustomerSortInput();
-	}
-	public static CustomerStatusOperationFilterInput CustomerStatusOperationFilter() 
-	{
-		return new CustomerStatusOperationFilterInput();
-	}
-	public static DateTimeOperationFilterInput DateTimeOperationFilter() 
-	{
-		return new DateTimeOperationFilterInput();
-	}
-	public static DecimalOperationFilterInput DecimalOperationFilter() 
-	{
-		return new DecimalOperationFilterInput();
-	}
-	public static FloatOperationFilterInput FloatOperationFilter() 
-	{
-		return new FloatOperationFilterInput();
-	}
-	public static IAnimalFilterInput IAnimalFilter() 
-	{
-		return new IAnimalFilterInput();
-	}
-	public static IAnimalSortInput IAnimalSort() 
-	{
-		return new IAnimalSortInput();
-	}
-	public static IntOperationFilterInput IntOperationFilter() 
-	{
-		return new IntOperationFilterInput();
-	}
-	public static ItemFilterInput ItemFilter() 
-	{
-		return new ItemFilterInput();
-	}
-	public static ItemInput Item() 
-	{
-		return new ItemInput();
-	}
-	public static ListByteOperationFilterInput ListByteOperationFilter() 
-	{
-		return new ListByteOperationFilterInput();
-	}
-	public static ListFilterInputTypeOfOrderFilterInput ListFilterInputTypeOfOrderFilter() 
-	{
-		return new ListFilterInputTypeOfOrderFilterInput();
-	}
-	public static ListFilterInputTypeOfOrderLineFilterInput ListFilterInputTypeOfOrderLineFilter() 
-	{
-		return new ListFilterInputTypeOfOrderLineFilterInput();
-	}
-	public static OrderFilterInput OrderFilter() 
-	{
-		return new OrderFilterInput();
-	}
-	public static OrderInput Order() 
-	{
-		return new OrderInput();
-	}
-	public static OrderLineFilterInput OrderLineFilter() 
-	{
-		return new OrderLineFilterInput();
-	}
-	public static OrderLineInput OrderLine() 
-	{
-		return new OrderLineInput();
-	}
-	public static OrderSortInput OrderSort() 
-	{
-		return new OrderSortInput();
-	}
-	public static StringOperationFilterInput StringOperationFilter() 
-	{
-		return new StringOperationFilterInput();
-	}
-	public static TimeSpanOperationFilterInput TimeSpanOperationFilter() 
-	{
-		return new TimeSpanOperationFilterInput();
-	}
-	public static UuidOperationFilterInput UuidOperationFilter() 
-	{
-		return new UuidOperationFilterInput();
-	}
+public static class IF
+{
+    public static AddressFilterInput AddressFilter()
+    {
+        return new();
+    }
+
+    public static AddressInput Address()
+    {
+        return new();
+    }
+
+    public static AddressSortInput AddressSort()
+    {
+        return new();
+    }
+
+    public static ByteOperationFilterInput ByteOperationFilter()
+    {
+        return new();
+    }
+
+    public static CustomerFilterInput CustomerFilter()
+    {
+        return new();
+    }
+
+    public static CustomerInput Customer()
+    {
+        return new();
+    }
+
+    public static CustomerSortInput CustomerSort()
+    {
+        return new();
+    }
+
+    public static CustomerStatusOperationFilterInput CustomerStatusOperationFilter()
+    {
+        return new();
+    }
+
+    public static DateTimeOperationFilterInput DateTimeOperationFilter()
+    {
+        return new();
+    }
+
+    public static DecimalOperationFilterInput DecimalOperationFilter()
+    {
+        return new();
+    }
+
+    public static FloatOperationFilterInput FloatOperationFilter()
+    {
+        return new();
+    }
+
+    public static IAnimalFilterInput IAnimalFilter()
+    {
+        return new();
+    }
+
+    public static IAnimalSortInput IAnimalSort()
+    {
+        return new();
+    }
+
+    public static IntOperationFilterInput IntOperationFilter()
+    {
+        return new();
+    }
+
+    public static ItemFilterInput ItemFilter()
+    {
+        return new();
+    }
+
+    public static ItemInput Item()
+    {
+        return new();
+    }
+
+    public static ListByteOperationFilterInput ListByteOperationFilter()
+    {
+        return new();
+    }
+
+    public static ListFilterInputTypeOfOrderFilterInput ListFilterInputTypeOfOrderFilter()
+    {
+        return new();
+    }
+
+    public static ListFilterInputTypeOfOrderLineFilterInput ListFilterInputTypeOfOrderLineFilter()
+    {
+        return new();
+    }
+
+    public static OrderFilterInput OrderFilter()
+    {
+        return new();
+    }
+
+    public static OrderInput Order()
+    {
+        return new();
+    }
+
+    public static OrderLineFilterInput OrderLineFilter()
+    {
+        return new();
+    }
+
+    public static OrderLineInput OrderLine()
+    {
+        return new();
+    }
+
+    public static OrderSortInput OrderSort()
+    {
+        return new();
+    }
+
+    public static StringOperationFilterInput StringOperationFilter()
+    {
+        return new();
+    }
+
+    public static TimeSpanOperationFilterInput TimeSpanOperationFilter()
+    {
+        return new();
+    }
+
+    public static UuidOperationFilterInput UuidOperationFilter()
+    {
+        return new();
+    }
 }
 
-
-
 public static class AddressFilterInputExtensions
-{ 
-	    public static AddressFilterInput And(this AddressFilterInput input, Action<List<AddressFilterInput>> mod)
+{
+    public static AddressFilterInput And(this AddressFilterInput input, Action<List<AddressFilterInput>> mod)
     {
         var filter = new List<AddressFilterInput>();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.And = filter;
         return input;
     }
@@ -141,7 +160,7 @@ public static class AddressFilterInputExtensions
     {
         var filter = new List<AddressFilterInput>();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Or = filter;
         return input;
     }
@@ -150,7 +169,7 @@ public static class AddressFilterInputExtensions
     {
         var filter = new StringOperationFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Name = filter;
         return input;
     }
@@ -159,7 +178,7 @@ public static class AddressFilterInputExtensions
     {
         var filter = new StringOperationFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Street = filter;
         return input;
     }
@@ -168,158 +187,151 @@ public static class AddressFilterInputExtensions
     {
         var filter = new StringOperationFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.PostalCode = filter;
         return input;
     }
-
 }
 
 public static class AddressInputExtensions
-{ 
-	
+{
     public static AddressInput Name(this AddressInput input, string val)
     {
-         input.Name = val;
-         return input;
+        input.Name = val;
+        return input;
     }
 
 
     public static AddressInput Street(this AddressInput input, string val)
     {
-         input.Street = val;
-         return input;
+        input.Street = val;
+        return input;
     }
 
 
     public static AddressInput PostalCode(this AddressInput input, string val)
     {
-         input.PostalCode = val;
-         return input;
+        input.PostalCode = val;
+        return input;
     }
-
 }
 
 public static class AddressSortInputExtensions
-{ 
-	
+{
     public static AddressSortInput Name(this AddressSortInput input, SortEnumType? val)
     {
-         input.Name = val;
-         return input;
+        input.Name = val;
+        return input;
     }
 
 
     public static AddressSortInput Street(this AddressSortInput input, SortEnumType? val)
     {
-         input.Street = val;
-         return input;
+        input.Street = val;
+        return input;
     }
 
 
     public static AddressSortInput PostalCode(this AddressSortInput input, SortEnumType? val)
     {
-         input.PostalCode = val;
-         return input;
+        input.PostalCode = val;
+        return input;
     }
-
 }
 
 public static class ByteOperationFilterInputExtensions
-{ 
-	
+{
     public static ByteOperationFilterInput Eq(this ByteOperationFilterInput input, byte? val)
     {
-         input.Eq = val;
-         return input;
+        input.Eq = val;
+        return input;
     }
 
 
     public static ByteOperationFilterInput Neq(this ByteOperationFilterInput input, byte? val)
     {
-         input.Neq = val;
-         return input;
+        input.Neq = val;
+        return input;
     }
 
 
     public static ByteOperationFilterInput In(this ByteOperationFilterInput input, List<byte?> val)
     {
-         input.In = val;
-         return input;
+        input.In = val;
+        return input;
     }
 
 
     public static ByteOperationFilterInput Nin(this ByteOperationFilterInput input, List<byte?> val)
     {
-         input.Nin = val;
-         return input;
+        input.Nin = val;
+        return input;
     }
 
 
     public static ByteOperationFilterInput Gt(this ByteOperationFilterInput input, byte? val)
     {
-         input.Gt = val;
-         return input;
+        input.Gt = val;
+        return input;
     }
 
 
     public static ByteOperationFilterInput Ngt(this ByteOperationFilterInput input, byte? val)
     {
-         input.Ngt = val;
-         return input;
+        input.Ngt = val;
+        return input;
     }
 
 
     public static ByteOperationFilterInput Gte(this ByteOperationFilterInput input, byte? val)
     {
-         input.Gte = val;
-         return input;
+        input.Gte = val;
+        return input;
     }
 
 
     public static ByteOperationFilterInput Ngte(this ByteOperationFilterInput input, byte? val)
     {
-         input.Ngte = val;
-         return input;
+        input.Ngte = val;
+        return input;
     }
 
 
     public static ByteOperationFilterInput Lt(this ByteOperationFilterInput input, byte? val)
     {
-         input.Lt = val;
-         return input;
+        input.Lt = val;
+        return input;
     }
 
 
     public static ByteOperationFilterInput Nlt(this ByteOperationFilterInput input, byte? val)
     {
-         input.Nlt = val;
-         return input;
+        input.Nlt = val;
+        return input;
     }
 
 
     public static ByteOperationFilterInput Lte(this ByteOperationFilterInput input, byte? val)
     {
-         input.Lte = val;
-         return input;
+        input.Lte = val;
+        return input;
     }
 
 
     public static ByteOperationFilterInput Nlte(this ByteOperationFilterInput input, byte? val)
     {
-         input.Nlte = val;
-         return input;
+        input.Nlte = val;
+        return input;
     }
-
 }
 
 public static class CustomerFilterInputExtensions
-{ 
-	    public static CustomerFilterInput And(this CustomerFilterInput input, Action<List<CustomerFilterInput>> mod)
+{
+    public static CustomerFilterInput And(this CustomerFilterInput input, Action<List<CustomerFilterInput>> mod)
     {
         var filter = new List<CustomerFilterInput>();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.And = filter;
         return input;
     }
@@ -328,7 +340,7 @@ public static class CustomerFilterInputExtensions
     {
         var filter = new List<CustomerFilterInput>();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Or = filter;
         return input;
     }
@@ -337,34 +349,37 @@ public static class CustomerFilterInputExtensions
     {
         var filter = new UuidOperationFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.CustomerId = filter;
         return input;
     }
 
-    public static CustomerFilterInput CustomerName(this CustomerFilterInput input, Action<StringOperationFilterInput> mod)
+    public static CustomerFilterInput CustomerName(this CustomerFilterInput input,
+        Action<StringOperationFilterInput> mod)
     {
         var filter = new StringOperationFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.CustomerName = filter;
         return input;
     }
 
-    public static CustomerFilterInput Status(this CustomerFilterInput input, Action<CustomerStatusOperationFilterInput> mod)
+    public static CustomerFilterInput Status(this CustomerFilterInput input,
+        Action<CustomerStatusOperationFilterInput> mod)
     {
         var filter = new CustomerStatusOperationFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Status = filter;
         return input;
     }
 
-    public static CustomerFilterInput Orders(this CustomerFilterInput input, Action<ListFilterInputTypeOfOrderFilterInput> mod)
+    public static CustomerFilterInput Orders(this CustomerFilterInput input,
+        Action<ListFilterInputTypeOfOrderFilterInput> mod)
     {
         var filter = new ListFilterInputTypeOfOrderFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Orders = filter;
         return input;
     }
@@ -373,41 +388,39 @@ public static class CustomerFilterInputExtensions
     {
         var filter = new AddressFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Address = filter;
         return input;
     }
-
 }
 
 public static class CustomerInputExtensions
-{ 
-	
+{
     public static CustomerInput CustomerId(this CustomerInput input, Guid val)
     {
-         input.CustomerId = val;
-         return input;
+        input.CustomerId = val;
+        return input;
     }
 
 
     public static CustomerInput CustomerName(this CustomerInput input, string val)
     {
-         input.CustomerName = val;
-         return input;
+        input.CustomerName = val;
+        return input;
     }
 
 
     public static CustomerInput Status(this CustomerInput input, CustomerStatus val)
     {
-         input.Status = val;
-         return input;
+        input.Status = val;
+        return input;
     }
 
     public static CustomerInput Orders(this CustomerInput input, Action<List<OrderInput>> mod)
     {
         var filter = new List<OrderInput>();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Orders = filter;
         return input;
     }
@@ -416,350 +429,343 @@ public static class CustomerInputExtensions
     {
         var filter = new AddressInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Address = filter;
         return input;
     }
-
 }
 
 public static class CustomerSortInputExtensions
-{ 
-	
+{
     public static CustomerSortInput CustomerId(this CustomerSortInput input, SortEnumType? val)
     {
-         input.CustomerId = val;
-         return input;
+        input.CustomerId = val;
+        return input;
     }
 
 
     public static CustomerSortInput CustomerName(this CustomerSortInput input, SortEnumType? val)
     {
-         input.CustomerName = val;
-         return input;
+        input.CustomerName = val;
+        return input;
     }
 
 
     public static CustomerSortInput Status(this CustomerSortInput input, SortEnumType? val)
     {
-         input.Status = val;
-         return input;
+        input.Status = val;
+        return input;
     }
 
     public static CustomerSortInput Address(this CustomerSortInput input, Action<AddressSortInput> mod)
     {
         var filter = new AddressSortInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Address = filter;
         return input;
     }
-
 }
 
 public static class CustomerStatusOperationFilterInputExtensions
-{ 
-	
-    public static CustomerStatusOperationFilterInput Eq(this CustomerStatusOperationFilterInput input, CustomerStatus? val)
+{
+    public static CustomerStatusOperationFilterInput Eq(this CustomerStatusOperationFilterInput input,
+        CustomerStatus? val)
     {
-         input.Eq = val;
-         return input;
+        input.Eq = val;
+        return input;
     }
 
 
-    public static CustomerStatusOperationFilterInput Neq(this CustomerStatusOperationFilterInput input, CustomerStatus? val)
+    public static CustomerStatusOperationFilterInput Neq(this CustomerStatusOperationFilterInput input,
+        CustomerStatus? val)
     {
-         input.Neq = val;
-         return input;
+        input.Neq = val;
+        return input;
     }
 
 
-    public static CustomerStatusOperationFilterInput In(this CustomerStatusOperationFilterInput input, List<CustomerStatus> val)
+    public static CustomerStatusOperationFilterInput In(this CustomerStatusOperationFilterInput input,
+        List<CustomerStatus> val)
     {
-         input.In = val;
-         return input;
+        input.In = val;
+        return input;
     }
 
 
-    public static CustomerStatusOperationFilterInput Nin(this CustomerStatusOperationFilterInput input, List<CustomerStatus> val)
+    public static CustomerStatusOperationFilterInput Nin(this CustomerStatusOperationFilterInput input,
+        List<CustomerStatus> val)
     {
-         input.Nin = val;
-         return input;
+        input.Nin = val;
+        return input;
     }
-
 }
 
 public static class DateTimeOperationFilterInputExtensions
-{ 
-	
+{
     public static DateTimeOperationFilterInput Eq(this DateTimeOperationFilterInput input, DateTimeOffset? val)
     {
-         input.Eq = val;
-         return input;
+        input.Eq = val;
+        return input;
     }
 
 
     public static DateTimeOperationFilterInput Neq(this DateTimeOperationFilterInput input, DateTimeOffset? val)
     {
-         input.Neq = val;
-         return input;
+        input.Neq = val;
+        return input;
     }
 
 
     public static DateTimeOperationFilterInput In(this DateTimeOperationFilterInput input, List<DateTimeOffset?> val)
     {
-         input.In = val;
-         return input;
+        input.In = val;
+        return input;
     }
 
 
     public static DateTimeOperationFilterInput Nin(this DateTimeOperationFilterInput input, List<DateTimeOffset?> val)
     {
-         input.Nin = val;
-         return input;
+        input.Nin = val;
+        return input;
     }
 
 
     public static DateTimeOperationFilterInput Gt(this DateTimeOperationFilterInput input, DateTimeOffset? val)
     {
-         input.Gt = val;
-         return input;
+        input.Gt = val;
+        return input;
     }
 
 
     public static DateTimeOperationFilterInput Ngt(this DateTimeOperationFilterInput input, DateTimeOffset? val)
     {
-         input.Ngt = val;
-         return input;
+        input.Ngt = val;
+        return input;
     }
 
 
     public static DateTimeOperationFilterInput Gte(this DateTimeOperationFilterInput input, DateTimeOffset? val)
     {
-         input.Gte = val;
-         return input;
+        input.Gte = val;
+        return input;
     }
 
 
     public static DateTimeOperationFilterInput Ngte(this DateTimeOperationFilterInput input, DateTimeOffset? val)
     {
-         input.Ngte = val;
-         return input;
+        input.Ngte = val;
+        return input;
     }
 
 
     public static DateTimeOperationFilterInput Lt(this DateTimeOperationFilterInput input, DateTimeOffset? val)
     {
-         input.Lt = val;
-         return input;
+        input.Lt = val;
+        return input;
     }
 
 
     public static DateTimeOperationFilterInput Nlt(this DateTimeOperationFilterInput input, DateTimeOffset? val)
     {
-         input.Nlt = val;
-         return input;
+        input.Nlt = val;
+        return input;
     }
 
 
     public static DateTimeOperationFilterInput Lte(this DateTimeOperationFilterInput input, DateTimeOffset? val)
     {
-         input.Lte = val;
-         return input;
+        input.Lte = val;
+        return input;
     }
 
 
     public static DateTimeOperationFilterInput Nlte(this DateTimeOperationFilterInput input, DateTimeOffset? val)
     {
-         input.Nlte = val;
-         return input;
+        input.Nlte = val;
+        return input;
     }
-
 }
 
 public static class DecimalOperationFilterInputExtensions
-{ 
-	
+{
     public static DecimalOperationFilterInput Eq(this DecimalOperationFilterInput input, decimal? val)
     {
-         input.Eq = val;
-         return input;
+        input.Eq = val;
+        return input;
     }
 
 
     public static DecimalOperationFilterInput Neq(this DecimalOperationFilterInput input, decimal? val)
     {
-         input.Neq = val;
-         return input;
+        input.Neq = val;
+        return input;
     }
 
 
     public static DecimalOperationFilterInput In(this DecimalOperationFilterInput input, List<decimal?> val)
     {
-         input.In = val;
-         return input;
+        input.In = val;
+        return input;
     }
 
 
     public static DecimalOperationFilterInput Nin(this DecimalOperationFilterInput input, List<decimal?> val)
     {
-         input.Nin = val;
-         return input;
+        input.Nin = val;
+        return input;
     }
 
 
     public static DecimalOperationFilterInput Gt(this DecimalOperationFilterInput input, decimal? val)
     {
-         input.Gt = val;
-         return input;
+        input.Gt = val;
+        return input;
     }
 
 
     public static DecimalOperationFilterInput Ngt(this DecimalOperationFilterInput input, decimal? val)
     {
-         input.Ngt = val;
-         return input;
+        input.Ngt = val;
+        return input;
     }
 
 
     public static DecimalOperationFilterInput Gte(this DecimalOperationFilterInput input, decimal? val)
     {
-         input.Gte = val;
-         return input;
+        input.Gte = val;
+        return input;
     }
 
 
     public static DecimalOperationFilterInput Ngte(this DecimalOperationFilterInput input, decimal? val)
     {
-         input.Ngte = val;
-         return input;
+        input.Ngte = val;
+        return input;
     }
 
 
     public static DecimalOperationFilterInput Lt(this DecimalOperationFilterInput input, decimal? val)
     {
-         input.Lt = val;
-         return input;
+        input.Lt = val;
+        return input;
     }
 
 
     public static DecimalOperationFilterInput Nlt(this DecimalOperationFilterInput input, decimal? val)
     {
-         input.Nlt = val;
-         return input;
+        input.Nlt = val;
+        return input;
     }
 
 
     public static DecimalOperationFilterInput Lte(this DecimalOperationFilterInput input, decimal? val)
     {
-         input.Lte = val;
-         return input;
+        input.Lte = val;
+        return input;
     }
 
 
     public static DecimalOperationFilterInput Nlte(this DecimalOperationFilterInput input, decimal? val)
     {
-         input.Nlte = val;
-         return input;
+        input.Nlte = val;
+        return input;
     }
-
 }
 
 public static class FloatOperationFilterInputExtensions
-{ 
-	
+{
     public static FloatOperationFilterInput Eq(this FloatOperationFilterInput input, double? val)
     {
-         input.Eq = val;
-         return input;
+        input.Eq = val;
+        return input;
     }
 
 
     public static FloatOperationFilterInput Neq(this FloatOperationFilterInput input, double? val)
     {
-         input.Neq = val;
-         return input;
+        input.Neq = val;
+        return input;
     }
 
 
     public static FloatOperationFilterInput In(this FloatOperationFilterInput input, List<double?> val)
     {
-         input.In = val;
-         return input;
+        input.In = val;
+        return input;
     }
 
 
     public static FloatOperationFilterInput Nin(this FloatOperationFilterInput input, List<double?> val)
     {
-         input.Nin = val;
-         return input;
+        input.Nin = val;
+        return input;
     }
 
 
     public static FloatOperationFilterInput Gt(this FloatOperationFilterInput input, double? val)
     {
-         input.Gt = val;
-         return input;
+        input.Gt = val;
+        return input;
     }
 
 
     public static FloatOperationFilterInput Ngt(this FloatOperationFilterInput input, double? val)
     {
-         input.Ngt = val;
-         return input;
+        input.Ngt = val;
+        return input;
     }
 
 
     public static FloatOperationFilterInput Gte(this FloatOperationFilterInput input, double? val)
     {
-         input.Gte = val;
-         return input;
+        input.Gte = val;
+        return input;
     }
 
 
     public static FloatOperationFilterInput Ngte(this FloatOperationFilterInput input, double? val)
     {
-         input.Ngte = val;
-         return input;
+        input.Ngte = val;
+        return input;
     }
 
 
     public static FloatOperationFilterInput Lt(this FloatOperationFilterInput input, double? val)
     {
-         input.Lt = val;
-         return input;
+        input.Lt = val;
+        return input;
     }
 
 
     public static FloatOperationFilterInput Nlt(this FloatOperationFilterInput input, double? val)
     {
-         input.Nlt = val;
-         return input;
+        input.Nlt = val;
+        return input;
     }
 
 
     public static FloatOperationFilterInput Lte(this FloatOperationFilterInput input, double? val)
     {
-         input.Lte = val;
-         return input;
+        input.Lte = val;
+        return input;
     }
 
 
     public static FloatOperationFilterInput Nlte(this FloatOperationFilterInput input, double? val)
     {
-         input.Nlte = val;
-         return input;
+        input.Nlte = val;
+        return input;
     }
-
 }
 
 public static class IAnimalFilterInputExtensions
-{ 
-	    public static IAnimalFilterInput And(this IAnimalFilterInput input, Action<List<IAnimalFilterInput>> mod)
+{
+    public static IAnimalFilterInput And(this IAnimalFilterInput input, Action<List<IAnimalFilterInput>> mod)
     {
         var filter = new List<IAnimalFilterInput>();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.And = filter;
         return input;
     }
@@ -768,7 +774,7 @@ public static class IAnimalFilterInputExtensions
     {
         var filter = new List<IAnimalFilterInput>();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Or = filter;
         return input;
     }
@@ -777,7 +783,7 @@ public static class IAnimalFilterInputExtensions
     {
         var filter = new StringOperationFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Name = filter;
         return input;
     }
@@ -786,126 +792,121 @@ public static class IAnimalFilterInputExtensions
     {
         var filter = new IntOperationFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.NumberOfLegs = filter;
         return input;
     }
-
 }
 
 public static class IAnimalSortInputExtensions
-{ 
-	
+{
     public static IAnimalSortInput Name(this IAnimalSortInput input, SortEnumType? val)
     {
-         input.Name = val;
-         return input;
+        input.Name = val;
+        return input;
     }
 
 
     public static IAnimalSortInput NumberOfLegs(this IAnimalSortInput input, SortEnumType? val)
     {
-         input.NumberOfLegs = val;
-         return input;
+        input.NumberOfLegs = val;
+        return input;
     }
-
 }
 
 public static class IntOperationFilterInputExtensions
-{ 
-	
+{
     public static IntOperationFilterInput Eq(this IntOperationFilterInput input, int? val)
     {
-         input.Eq = val;
-         return input;
+        input.Eq = val;
+        return input;
     }
 
 
     public static IntOperationFilterInput Neq(this IntOperationFilterInput input, int? val)
     {
-         input.Neq = val;
-         return input;
+        input.Neq = val;
+        return input;
     }
 
 
     public static IntOperationFilterInput In(this IntOperationFilterInput input, List<int?> val)
     {
-         input.In = val;
-         return input;
+        input.In = val;
+        return input;
     }
 
 
     public static IntOperationFilterInput Nin(this IntOperationFilterInput input, List<int?> val)
     {
-         input.Nin = val;
-         return input;
+        input.Nin = val;
+        return input;
     }
 
 
     public static IntOperationFilterInput Gt(this IntOperationFilterInput input, int? val)
     {
-         input.Gt = val;
-         return input;
+        input.Gt = val;
+        return input;
     }
 
 
     public static IntOperationFilterInput Ngt(this IntOperationFilterInput input, int? val)
     {
-         input.Ngt = val;
-         return input;
+        input.Ngt = val;
+        return input;
     }
 
 
     public static IntOperationFilterInput Gte(this IntOperationFilterInput input, int? val)
     {
-         input.Gte = val;
-         return input;
+        input.Gte = val;
+        return input;
     }
 
 
     public static IntOperationFilterInput Ngte(this IntOperationFilterInput input, int? val)
     {
-         input.Ngte = val;
-         return input;
+        input.Ngte = val;
+        return input;
     }
 
 
     public static IntOperationFilterInput Lt(this IntOperationFilterInput input, int? val)
     {
-         input.Lt = val;
-         return input;
+        input.Lt = val;
+        return input;
     }
 
 
     public static IntOperationFilterInput Nlt(this IntOperationFilterInput input, int? val)
     {
-         input.Nlt = val;
-         return input;
+        input.Nlt = val;
+        return input;
     }
 
 
     public static IntOperationFilterInput Lte(this IntOperationFilterInput input, int? val)
     {
-         input.Lte = val;
-         return input;
+        input.Lte = val;
+        return input;
     }
 
 
     public static IntOperationFilterInput Nlte(this IntOperationFilterInput input, int? val)
     {
-         input.Nlte = val;
-         return input;
+        input.Nlte = val;
+        return input;
     }
-
 }
 
 public static class ItemFilterInputExtensions
-{ 
-	    public static ItemFilterInput And(this ItemFilterInput input, Action<List<ItemFilterInput>> mod)
+{
+    public static ItemFilterInput And(this ItemFilterInput input, Action<List<ItemFilterInput>> mod)
     {
         var filter = new List<ItemFilterInput>();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.And = filter;
         return input;
     }
@@ -914,7 +915,7 @@ public static class ItemFilterInputExtensions
     {
         var filter = new List<ItemFilterInput>();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Or = filter;
         return input;
     }
@@ -923,7 +924,7 @@ public static class ItemFilterInputExtensions
     {
         var filter = new StringOperationFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.ItemId = filter;
         return input;
     }
@@ -932,7 +933,7 @@ public static class ItemFilterInputExtensions
     {
         var filter = new StringOperationFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.ItemName = filter;
         return input;
     }
@@ -941,63 +942,63 @@ public static class ItemFilterInputExtensions
     {
         var filter = new ListByteOperationFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Data = filter;
         return input;
     }
-
 }
 
 public static class ItemInputExtensions
-{ 
-	
+{
     public static ItemInput ItemId(this ItemInput input, string val)
     {
-         input.ItemId = val;
-         return input;
+        input.ItemId = val;
+        return input;
     }
 
 
     public static ItemInput ItemName(this ItemInput input, string val)
     {
-         input.ItemName = val;
-         return input;
+        input.ItemName = val;
+        return input;
     }
 
 
     public static ItemInput Data(this ItemInput input, List<byte> val)
     {
-         input.Data = val;
-         return input;
+        input.Data = val;
+        return input;
     }
-
 }
 
 public static class ListByteOperationFilterInputExtensions
-{ 
-	    public static ListByteOperationFilterInput All(this ListByteOperationFilterInput input, Action<ByteOperationFilterInput> mod)
+{
+    public static ListByteOperationFilterInput All(this ListByteOperationFilterInput input,
+        Action<ByteOperationFilterInput> mod)
     {
         var filter = new ByteOperationFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.All = filter;
         return input;
     }
 
-    public static ListByteOperationFilterInput None(this ListByteOperationFilterInput input, Action<ByteOperationFilterInput> mod)
+    public static ListByteOperationFilterInput None(this ListByteOperationFilterInput input,
+        Action<ByteOperationFilterInput> mod)
     {
         var filter = new ByteOperationFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.None = filter;
         return input;
     }
 
-    public static ListByteOperationFilterInput Some(this ListByteOperationFilterInput input, Action<ByteOperationFilterInput> mod)
+    public static ListByteOperationFilterInput Some(this ListByteOperationFilterInput input,
+        Action<ByteOperationFilterInput> mod)
     {
         var filter = new ByteOperationFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Some = filter;
         return input;
     }
@@ -1005,37 +1006,39 @@ public static class ListByteOperationFilterInputExtensions
 
     public static ListByteOperationFilterInput Any(this ListByteOperationFilterInput input, bool? val)
     {
-         input.Any = val;
-         return input;
+        input.Any = val;
+        return input;
     }
-
 }
 
 public static class ListFilterInputTypeOfOrderFilterInputExtensions
-{ 
-	    public static ListFilterInputTypeOfOrderFilterInput All(this ListFilterInputTypeOfOrderFilterInput input, Action<OrderFilterInput> mod)
+{
+    public static ListFilterInputTypeOfOrderFilterInput All(this ListFilterInputTypeOfOrderFilterInput input,
+        Action<OrderFilterInput> mod)
     {
         var filter = new OrderFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.All = filter;
         return input;
     }
 
-    public static ListFilterInputTypeOfOrderFilterInput None(this ListFilterInputTypeOfOrderFilterInput input, Action<OrderFilterInput> mod)
+    public static ListFilterInputTypeOfOrderFilterInput None(this ListFilterInputTypeOfOrderFilterInput input,
+        Action<OrderFilterInput> mod)
     {
         var filter = new OrderFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.None = filter;
         return input;
     }
 
-    public static ListFilterInputTypeOfOrderFilterInput Some(this ListFilterInputTypeOfOrderFilterInput input, Action<OrderFilterInput> mod)
+    public static ListFilterInputTypeOfOrderFilterInput Some(this ListFilterInputTypeOfOrderFilterInput input,
+        Action<OrderFilterInput> mod)
     {
         var filter = new OrderFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Some = filter;
         return input;
     }
@@ -1043,57 +1046,59 @@ public static class ListFilterInputTypeOfOrderFilterInputExtensions
 
     public static ListFilterInputTypeOfOrderFilterInput Any(this ListFilterInputTypeOfOrderFilterInput input, bool? val)
     {
-         input.Any = val;
-         return input;
+        input.Any = val;
+        return input;
     }
-
 }
 
 public static class ListFilterInputTypeOfOrderLineFilterInputExtensions
-{ 
-	    public static ListFilterInputTypeOfOrderLineFilterInput All(this ListFilterInputTypeOfOrderLineFilterInput input, Action<OrderLineFilterInput> mod)
+{
+    public static ListFilterInputTypeOfOrderLineFilterInput All(this ListFilterInputTypeOfOrderLineFilterInput input,
+        Action<OrderLineFilterInput> mod)
     {
         var filter = new OrderLineFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.All = filter;
         return input;
     }
 
-    public static ListFilterInputTypeOfOrderLineFilterInput None(this ListFilterInputTypeOfOrderLineFilterInput input, Action<OrderLineFilterInput> mod)
+    public static ListFilterInputTypeOfOrderLineFilterInput None(this ListFilterInputTypeOfOrderLineFilterInput input,
+        Action<OrderLineFilterInput> mod)
     {
         var filter = new OrderLineFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.None = filter;
         return input;
     }
 
-    public static ListFilterInputTypeOfOrderLineFilterInput Some(this ListFilterInputTypeOfOrderLineFilterInput input, Action<OrderLineFilterInput> mod)
+    public static ListFilterInputTypeOfOrderLineFilterInput Some(this ListFilterInputTypeOfOrderLineFilterInput input,
+        Action<OrderLineFilterInput> mod)
     {
         var filter = new OrderLineFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Some = filter;
         return input;
     }
 
 
-    public static ListFilterInputTypeOfOrderLineFilterInput Any(this ListFilterInputTypeOfOrderLineFilterInput input, bool? val)
+    public static ListFilterInputTypeOfOrderLineFilterInput Any(this ListFilterInputTypeOfOrderLineFilterInput input,
+        bool? val)
     {
-         input.Any = val;
-         return input;
+        input.Any = val;
+        return input;
     }
-
 }
 
 public static class OrderFilterInputExtensions
-{ 
-	    public static OrderFilterInput And(this OrderFilterInput input, Action<List<OrderFilterInput>> mod)
+{
+    public static OrderFilterInput And(this OrderFilterInput input, Action<List<OrderFilterInput>> mod)
     {
         var filter = new List<OrderFilterInput>();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.And = filter;
         return input;
     }
@@ -1102,7 +1107,7 @@ public static class OrderFilterInputExtensions
     {
         var filter = new List<OrderFilterInput>();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Or = filter;
         return input;
     }
@@ -1111,7 +1116,7 @@ public static class OrderFilterInputExtensions
     {
         var filter = new UuidOperationFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.OrderId = filter;
         return input;
     }
@@ -1120,7 +1125,7 @@ public static class OrderFilterInputExtensions
     {
         var filter = new CustomerFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Customer = filter;
         return input;
     }
@@ -1129,7 +1134,7 @@ public static class OrderFilterInputExtensions
     {
         var filter = new AddressFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Address = filter;
         return input;
     }
@@ -1138,16 +1143,17 @@ public static class OrderFilterInputExtensions
     {
         var filter = new DateTimeOperationFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.OrderDate = filter;
         return input;
     }
 
-    public static OrderFilterInput Lines(this OrderFilterInput input, Action<ListFilterInputTypeOfOrderLineFilterInput> mod)
+    public static OrderFilterInput Lines(this OrderFilterInput input,
+        Action<ListFilterInputTypeOfOrderLineFilterInput> mod)
     {
         var filter = new ListFilterInputTypeOfOrderLineFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Lines = filter;
         return input;
     }
@@ -1156,7 +1162,7 @@ public static class OrderFilterInputExtensions
     {
         var filter = new TimeSpanOperationFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.EntryTime = filter;
         return input;
     }
@@ -1165,27 +1171,25 @@ public static class OrderFilterInputExtensions
     {
         var filter = new StringOperationFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Grade = filter;
         return input;
     }
-
 }
 
 public static class OrderInputExtensions
-{ 
-	
+{
     public static OrderInput OrderId(this OrderInput input, Guid val)
     {
-         input.OrderId = val;
-         return input;
+        input.OrderId = val;
+        return input;
     }
 
     public static OrderInput Customer(this OrderInput input, Action<CustomerInput> mod)
     {
         var filter = new CustomerInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Customer = filter;
         return input;
     }
@@ -1194,7 +1198,7 @@ public static class OrderInputExtensions
     {
         var filter = new AddressInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Address = filter;
         return input;
     }
@@ -1202,15 +1206,15 @@ public static class OrderInputExtensions
 
     public static OrderInput OrderDate(this OrderInput input, DateTimeOffset val)
     {
-         input.OrderDate = val;
-         return input;
+        input.OrderDate = val;
+        return input;
     }
 
     public static OrderInput Lines(this OrderInput input, Action<List<OrderLineInput>> mod)
     {
         var filter = new List<OrderLineInput>();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Lines = filter;
         return input;
     }
@@ -1218,26 +1222,25 @@ public static class OrderInputExtensions
 
     public static OrderInput EntryTime(this OrderInput input, TimeSpan? val)
     {
-         input.EntryTime = val;
-         return input;
+        input.EntryTime = val;
+        return input;
     }
 
 
     public static OrderInput Grade(this OrderInput input, string val)
     {
-         input.Grade = val;
-         return input;
+        input.Grade = val;
+        return input;
     }
-
 }
 
 public static class OrderLineFilterInputExtensions
-{ 
-	    public static OrderLineFilterInput And(this OrderLineFilterInput input, Action<List<OrderLineFilterInput>> mod)
+{
+    public static OrderLineFilterInput And(this OrderLineFilterInput input, Action<List<OrderLineFilterInput>> mod)
     {
         var filter = new List<OrderLineFilterInput>();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.And = filter;
         return input;
     }
@@ -1246,7 +1249,7 @@ public static class OrderLineFilterInputExtensions
     {
         var filter = new List<OrderLineFilterInput>();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Or = filter;
         return input;
     }
@@ -1255,7 +1258,7 @@ public static class OrderLineFilterInputExtensions
     {
         var filter = new IntOperationFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.LineNumber = filter;
         return input;
     }
@@ -1264,7 +1267,7 @@ public static class OrderLineFilterInputExtensions
     {
         var filter = new OrderFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Order = filter;
         return input;
     }
@@ -1273,7 +1276,7 @@ public static class OrderLineFilterInputExtensions
     {
         var filter = new ItemFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Item = filter;
         return input;
     }
@@ -1282,7 +1285,7 @@ public static class OrderLineFilterInputExtensions
     {
         var filter = new DecimalOperationFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Price = filter;
         return input;
     }
@@ -1291,27 +1294,25 @@ public static class OrderLineFilterInputExtensions
     {
         var filter = new FloatOperationFilterInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Quantity = filter;
         return input;
     }
-
 }
 
 public static class OrderLineInputExtensions
-{ 
-	
+{
     public static OrderLineInput LineNumber(this OrderLineInput input, int val)
     {
-         input.LineNumber = val;
-         return input;
+        input.LineNumber = val;
+        return input;
     }
 
     public static OrderLineInput Order(this OrderLineInput input, Action<OrderInput> mod)
     {
         var filter = new OrderInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Order = filter;
         return input;
     }
@@ -1320,7 +1321,7 @@ public static class OrderLineInputExtensions
     {
         var filter = new ItemInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Item = filter;
         return input;
     }
@@ -1328,33 +1329,31 @@ public static class OrderLineInputExtensions
 
     public static OrderLineInput Price(this OrderLineInput input, decimal val)
     {
-         input.Price = val;
-         return input;
+        input.Price = val;
+        return input;
     }
 
 
     public static OrderLineInput Quantity(this OrderLineInput input, double val)
     {
-         input.Quantity = val;
-         return input;
+        input.Quantity = val;
+        return input;
     }
-
 }
 
 public static class OrderSortInputExtensions
-{ 
-	
+{
     public static OrderSortInput OrderId(this OrderSortInput input, SortEnumType? val)
     {
-         input.OrderId = val;
-         return input;
+        input.OrderId = val;
+        return input;
     }
 
     public static OrderSortInput Customer(this OrderSortInput input, Action<CustomerSortInput> mod)
     {
         var filter = new CustomerSortInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Customer = filter;
         return input;
     }
@@ -1363,7 +1362,7 @@ public static class OrderSortInputExtensions
     {
         var filter = new AddressSortInput();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Address = filter;
         return input;
     }
@@ -1371,42 +1370,43 @@ public static class OrderSortInputExtensions
 
     public static OrderSortInput OrderDate(this OrderSortInput input, SortEnumType? val)
     {
-         input.OrderDate = val;
-         return input;
+        input.OrderDate = val;
+        return input;
     }
 
 
     public static OrderSortInput EntryTime(this OrderSortInput input, SortEnumType? val)
     {
-         input.EntryTime = val;
-         return input;
+        input.EntryTime = val;
+        return input;
     }
 
 
     public static OrderSortInput Grade(this OrderSortInput input, SortEnumType? val)
     {
-         input.Grade = val;
-         return input;
+        input.Grade = val;
+        return input;
     }
-
 }
 
 public static class StringOperationFilterInputExtensions
-{ 
-	    public static StringOperationFilterInput And(this StringOperationFilterInput input, Action<List<StringOperationFilterInput>> mod)
+{
+    public static StringOperationFilterInput And(this StringOperationFilterInput input,
+        Action<List<StringOperationFilterInput>> mod)
     {
         var filter = new List<StringOperationFilterInput>();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.And = filter;
         return input;
     }
 
-    public static StringOperationFilterInput Or(this StringOperationFilterInput input, Action<List<StringOperationFilterInput>> mod)
+    public static StringOperationFilterInput Or(this StringOperationFilterInput input,
+        Action<List<StringOperationFilterInput>> mod)
     {
         var filter = new List<StringOperationFilterInput>();
         mod ??= _ => { };
-        mod(filter); 
+        mod(filter);
         input.Or = filter;
         return input;
     }
@@ -1414,247 +1414,242 @@ public static class StringOperationFilterInputExtensions
 
     public static StringOperationFilterInput Eq(this StringOperationFilterInput input, string val)
     {
-         input.Eq = val;
-         return input;
+        input.Eq = val;
+        return input;
     }
 
 
     public static StringOperationFilterInput Neq(this StringOperationFilterInput input, string val)
     {
-         input.Neq = val;
-         return input;
+        input.Neq = val;
+        return input;
     }
 
 
     public static StringOperationFilterInput Contains(this StringOperationFilterInput input, string val)
     {
-         input.Contains = val;
-         return input;
+        input.Contains = val;
+        return input;
     }
 
 
     public static StringOperationFilterInput Ncontains(this StringOperationFilterInput input, string val)
     {
-         input.Ncontains = val;
-         return input;
+        input.Ncontains = val;
+        return input;
     }
 
 
     public static StringOperationFilterInput In(this StringOperationFilterInput input, List<string> val)
     {
-         input.In = val;
-         return input;
+        input.In = val;
+        return input;
     }
 
 
     public static StringOperationFilterInput Nin(this StringOperationFilterInput input, List<string> val)
     {
-         input.Nin = val;
-         return input;
+        input.Nin = val;
+        return input;
     }
 
 
     public static StringOperationFilterInput StartsWith(this StringOperationFilterInput input, string val)
     {
-         input.StartsWith = val;
-         return input;
+        input.StartsWith = val;
+        return input;
     }
 
 
     public static StringOperationFilterInput NstartsWith(this StringOperationFilterInput input, string val)
     {
-         input.NstartsWith = val;
-         return input;
+        input.NstartsWith = val;
+        return input;
     }
 
 
     public static StringOperationFilterInput EndsWith(this StringOperationFilterInput input, string val)
     {
-         input.EndsWith = val;
-         return input;
+        input.EndsWith = val;
+        return input;
     }
 
 
     public static StringOperationFilterInput NendsWith(this StringOperationFilterInput input, string val)
     {
-         input.NendsWith = val;
-         return input;
+        input.NendsWith = val;
+        return input;
     }
-
 }
 
 public static class TimeSpanOperationFilterInputExtensions
-{ 
-	
+{
     public static TimeSpanOperationFilterInput Eq(this TimeSpanOperationFilterInput input, TimeSpan? val)
     {
-         input.Eq = val;
-         return input;
+        input.Eq = val;
+        return input;
     }
 
 
     public static TimeSpanOperationFilterInput Neq(this TimeSpanOperationFilterInput input, TimeSpan? val)
     {
-         input.Neq = val;
-         return input;
+        input.Neq = val;
+        return input;
     }
 
 
     public static TimeSpanOperationFilterInput In(this TimeSpanOperationFilterInput input, List<TimeSpan?> val)
     {
-         input.In = val;
-         return input;
+        input.In = val;
+        return input;
     }
 
 
     public static TimeSpanOperationFilterInput Nin(this TimeSpanOperationFilterInput input, List<TimeSpan?> val)
     {
-         input.Nin = val;
-         return input;
+        input.Nin = val;
+        return input;
     }
 
 
     public static TimeSpanOperationFilterInput Gt(this TimeSpanOperationFilterInput input, TimeSpan? val)
     {
-         input.Gt = val;
-         return input;
+        input.Gt = val;
+        return input;
     }
 
 
     public static TimeSpanOperationFilterInput Ngt(this TimeSpanOperationFilterInput input, TimeSpan? val)
     {
-         input.Ngt = val;
-         return input;
+        input.Ngt = val;
+        return input;
     }
 
 
     public static TimeSpanOperationFilterInput Gte(this TimeSpanOperationFilterInput input, TimeSpan? val)
     {
-         input.Gte = val;
-         return input;
+        input.Gte = val;
+        return input;
     }
 
 
     public static TimeSpanOperationFilterInput Ngte(this TimeSpanOperationFilterInput input, TimeSpan? val)
     {
-         input.Ngte = val;
-         return input;
+        input.Ngte = val;
+        return input;
     }
 
 
     public static TimeSpanOperationFilterInput Lt(this TimeSpanOperationFilterInput input, TimeSpan? val)
     {
-         input.Lt = val;
-         return input;
+        input.Lt = val;
+        return input;
     }
 
 
     public static TimeSpanOperationFilterInput Nlt(this TimeSpanOperationFilterInput input, TimeSpan? val)
     {
-         input.Nlt = val;
-         return input;
+        input.Nlt = val;
+        return input;
     }
 
 
     public static TimeSpanOperationFilterInput Lte(this TimeSpanOperationFilterInput input, TimeSpan? val)
     {
-         input.Lte = val;
-         return input;
+        input.Lte = val;
+        return input;
     }
 
 
     public static TimeSpanOperationFilterInput Nlte(this TimeSpanOperationFilterInput input, TimeSpan? val)
     {
-         input.Nlte = val;
-         return input;
+        input.Nlte = val;
+        return input;
     }
-
 }
 
 public static class UuidOperationFilterInputExtensions
-{ 
-	
+{
     public static UuidOperationFilterInput Eq(this UuidOperationFilterInput input, Guid? val)
     {
-         input.Eq = val;
-         return input;
+        input.Eq = val;
+        return input;
     }
 
 
     public static UuidOperationFilterInput Neq(this UuidOperationFilterInput input, Guid? val)
     {
-         input.Neq = val;
-         return input;
+        input.Neq = val;
+        return input;
     }
 
 
     public static UuidOperationFilterInput In(this UuidOperationFilterInput input, List<Guid?> val)
     {
-         input.In = val;
-         return input;
+        input.In = val;
+        return input;
     }
 
 
     public static UuidOperationFilterInput Nin(this UuidOperationFilterInput input, List<Guid?> val)
     {
-         input.Nin = val;
-         return input;
+        input.Nin = val;
+        return input;
     }
 
 
     public static UuidOperationFilterInput Gt(this UuidOperationFilterInput input, Guid? val)
     {
-         input.Gt = val;
-         return input;
+        input.Gt = val;
+        return input;
     }
 
 
     public static UuidOperationFilterInput Ngt(this UuidOperationFilterInput input, Guid? val)
     {
-         input.Ngt = val;
-         return input;
+        input.Ngt = val;
+        return input;
     }
 
 
     public static UuidOperationFilterInput Gte(this UuidOperationFilterInput input, Guid? val)
     {
-         input.Gte = val;
-         return input;
+        input.Gte = val;
+        return input;
     }
 
 
     public static UuidOperationFilterInput Ngte(this UuidOperationFilterInput input, Guid? val)
     {
-         input.Ngte = val;
-         return input;
+        input.Ngte = val;
+        return input;
     }
 
 
     public static UuidOperationFilterInput Lt(this UuidOperationFilterInput input, Guid? val)
     {
-         input.Lt = val;
-         return input;
+        input.Lt = val;
+        return input;
     }
 
 
     public static UuidOperationFilterInput Nlt(this UuidOperationFilterInput input, Guid? val)
     {
-         input.Nlt = val;
-         return input;
+        input.Nlt = val;
+        return input;
     }
 
 
     public static UuidOperationFilterInput Lte(this UuidOperationFilterInput input, Guid? val)
     {
-         input.Lte = val;
-         return input;
+        input.Lte = val;
+        return input;
     }
 
 
     public static UuidOperationFilterInput Nlte(this UuidOperationFilterInput input, Guid? val)
     {
-         input.Nlte = val;
-         return input;
+        input.Nlte = val;
+        return input;
     }
-
 }

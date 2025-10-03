@@ -5,54 +5,51 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClient;
 
 [JsonConverter(typeof(GraphInputConverter<CustomerInput>))]
-public partial class CustomerInput : GraphInputBase
+public class CustomerInput : GraphInputBase
 {
-	[GraphQLMember("customerId")]
-	[JsonPropertyName("customerId")]
-	public Guid CustomerId 
-	{
-		get => GetValue<Guid>("customerId");
-    	set => SetValue("customerId", value);
-	}
+    [GraphQLMember("customerId")]
+    [JsonPropertyName("customerId")]
+    public Guid CustomerId
+    {
+        get => GetValue<Guid>("customerId");
+        set => SetValue("customerId", value);
+    }
 
-	[GraphQLMember("customerName")]
-	[JsonPropertyName("customerName")]
-	public string CustomerName 
-	{
-		get => GetValue<string>("customerName");
-    	set => SetValue("customerName", value);
-	}
+    [GraphQLMember("customerName")]
+    [JsonPropertyName("customerName")]
+    public string CustomerName
+    {
+        get => GetValue<string>("customerName");
+        set => SetValue("customerName", value);
+    }
 
-	[GraphQLMember("status")]
-	[JsonPropertyName("status")]
-	public CustomerStatus Status 
-	{
-		get => GetValue<CustomerStatus>("status");
-    	set => SetValue("status", value);
-	}
+    [GraphQLMember("status")]
+    [JsonPropertyName("status")]
+    public CustomerStatus Status
+    {
+        get => GetValue<CustomerStatus>("status");
+        set => SetValue("status", value);
+    }
 
-	[GraphQLMember("orders")]
-	[JsonPropertyName("orders")]
-	public List<OrderInput> Orders 
-	{
-		get => GetValue<List<OrderInput>>("orders");
-    	set => SetValue("orders", value);
-	}
+    [GraphQLMember("orders")]
+    [JsonPropertyName("orders")]
+    public List<OrderInput> Orders
+    {
+        get => GetValue<List<OrderInput>>("orders");
+        set => SetValue("orders", value);
+    }
 
-	[GraphQLMember("address")]
-	[JsonPropertyName("address")]
-	public AddressInput Address 
-	{
-		get => GetValue<AddressInput>("address");
-    	set => SetValue("address", value);
-	}
-
+    [GraphQLMember("address")]
+    [JsonPropertyName("address")]
+    public AddressInput Address
+    {
+        get => GetValue<AddressInput>("address");
+        set => SetValue("address", value);
+    }
 }

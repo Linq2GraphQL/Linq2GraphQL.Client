@@ -2,6 +2,7 @@
 
 namespace Linq2GraphQL.TestServer;
 
+[SubscriptionType]
 public class Subscription
 {
     [Subscribe]

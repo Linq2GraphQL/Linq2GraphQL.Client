@@ -1,7 +1,4 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text.Json.Serialization;
-using Linq2GraphQL.Client;
 using Linq2GraphQL.Client.Schema;
 
 namespace Linq2GraphQL.Client;
@@ -12,7 +9,8 @@ public class QueryNode
     private readonly Type underlyingMemberType;
     private string argumentHashCodeId;
 
-    public QueryNode(MemberInfo member, string name = null, List<ArgumentValue> arguments = null, bool interfaceProperty = false, bool topLevel = false)
+    public QueryNode(MemberInfo member, string name = null, List<ArgumentValue> arguments = null,
+        bool interfaceProperty = false, bool topLevel = false)
     {
         Name = name ?? member.GetCustomAttribute<GraphQLMemberAttribute>()?.GraphQLName ?? member.Name.ToCamelCase();
         Member = member;
@@ -21,7 +19,8 @@ public class QueryNode
         mustHaveChildren = MustHaveChildren(underlyingMemberType);
         InterfaceProperty = interfaceProperty;
 
-        if (!topLevel) {
+        if (!topLevel)
+        {
             SetArgumentHashCodeId();
         }
     }
@@ -29,13 +28,16 @@ public class QueryNode
     public bool InterfaceProperty { get; internal set; }
     public string Name { get; internal set; }
     public string Alias { get; internal set; }
-   
+
     public MemberInfo Member { get; internal set; }
     public List<QueryNode> ChildNodes { get; internal set; } = new();
     public List<ArgumentValue> Arguments { get; internal set; } = new();
     public bool IncludePrimitive { get; internal set; }
 
     public QueryNode Parent { get; private set; }
+
+    public int Level => Parent?.Level + 1 ?? 1;
+    public int Leaf { get; internal set; } = 1;
 
 
     internal void IncludePrimitiveIfNoChildPrimitive()
@@ -48,7 +50,7 @@ public class QueryNode
 
     private void SetArgumentHashCodeId()
     {
-       argumentHashCodeId = Utilities.GetArgumentsId(Arguments?.Select(e=> e.Value));
+        argumentHashCodeId = Utilities.GetArgumentsId(Arguments?.Select(e => e.Value));
         if (argumentHashCodeId != null)
         {
             Alias = Name + argumentHashCodeId;
@@ -65,15 +67,13 @@ public class QueryNode
 
     public void AddChildNode(MemberInfo member, string name = null)
     {
-        AddChildNode(new QueryNode(member, name));
+        AddChildNode(new(member, name));
     }
-
-    public int Level => Parent?.Level + 1 ?? 1;
-    public int Leaf { get; internal set; } = 1;
 
     public QueryNode AddChildNode(QueryNode childNode)
     {
-        var currentNode = ChildNodes.FirstOrDefault(e => e.Name == childNode.Name && e.argumentHashCodeId == childNode.argumentHashCodeId);
+        var currentNode = ChildNodes.FirstOrDefault(e =>
+            e.Name == childNode.Name && e.argumentHashCodeId == childNode.argumentHashCodeId);
         if (currentNode == null)
         {
             childNode.Parent = this;
@@ -81,7 +81,8 @@ public class QueryNode
             ChildNodes.Add(childNode);
             return childNode;
         }
-        else if (childNode.IncludePrimitive)
+
+        if (childNode.IncludePrimitive)
         {
             currentNode.IncludePrimitive = true;
         }
@@ -92,7 +93,6 @@ public class QueryNode
         }
 
         return currentNode;
-
     }
 
     public void SetArgumentValue(string graphName, object value)
@@ -119,7 +119,6 @@ public class QueryNode
             var typeOrListType = underlyingMemberType.GetTypeOrListType();
             foreach (var propertyInfo in typeOrListType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
-
                 if (!propertyInfo.PropertyType.IsValueTypeOrString())
                 {
                     continue;
@@ -164,7 +163,6 @@ public class QueryNode
         {
             child.SetAllUniqueVariableNames();
         }
-
     }
 
     public List<ArgumentValue> GetActiveArguments()
@@ -179,12 +177,14 @@ public class QueryNode
         {
             allArguments.AddRange(childNode.GetAllActiveArguments());
         }
+
         return allArguments;
     }
 
     private string GetArgumentString()
     {
-        var args = GetActiveArguments(); ;
+        var args = GetActiveArguments();
+        ;
         if (!args.Any())
         {
             return "";
@@ -195,13 +195,12 @@ public class QueryNode
         {
             argString += arg.GraphName + ":$" + arg.VariableName + " ";
         }
+
         argString.TrimEnd();
         argString += ")";
 
         return argString;
     }
-
-
 
 
     internal string GetQueryString(string indent = "")
@@ -212,7 +211,6 @@ public class QueryNode
         if (InterfaceProperty)
         {
             query = "... on " + Name + GetArgumentString() + Environment.NewLine;
-
         }
         else if (!string.IsNullOrWhiteSpace(Alias))
         {

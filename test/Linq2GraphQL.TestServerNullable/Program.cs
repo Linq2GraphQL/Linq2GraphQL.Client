@@ -6,13 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddGraphQLServer()
     .AddInMemorySubscriptions()
-    .AddQueryType<Query>()
-    .AddMutationType<Mutation>()
-    .AddType<MacAddressType>()
-    .AddType<LongitudeType>()
-    //.AddSubscriptionType<Subscription>()
-    //.AddType<Pig>()
-    //.AddType<Spider>()
+    .AddTestServerNullableTypes() 
     .AddFiltering()
     .AddSorting();
 

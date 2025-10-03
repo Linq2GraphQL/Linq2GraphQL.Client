@@ -5,38 +5,35 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 
 namespace StartGG.Client;
 
 [JsonConverter(typeof(GraphInputConverter<ShopOrderMessagesQuery>))]
-public partial class ShopOrderMessagesQuery : GraphInputBase
+public class ShopOrderMessagesQuery : GraphInputBase
 {
-	[GraphQLMember("page")]
-	[JsonPropertyName("page")]
-	public int? Page 
-	{
-		get => GetValue<int?>("page");
-    	set => SetValue("page", value);
-	}
+    [GraphQLMember("page")]
+    [JsonPropertyName("page")]
+    public int? Page
+    {
+        get => GetValue<int?>("page");
+        set => SetValue("page", value);
+    }
 
-	[GraphQLMember("perPage")]
-	[JsonPropertyName("perPage")]
-	public int? PerPage 
-	{
-		get => GetValue<int?>("perPage");
-    	set => SetValue("perPage", value);
-	}
+    [GraphQLMember("perPage")]
+    [JsonPropertyName("perPage")]
+    public int? PerPage
+    {
+        get => GetValue<int?>("perPage");
+        set => SetValue("perPage", value);
+    }
 
-	[GraphQLMember("sortBy")]
-	[JsonPropertyName("sortBy")]
-	public string SortBy 
-	{
-		get => GetValue<string>("sortBy");
-    	set => SetValue("sortBy", value);
-	}
-
+    [GraphQLMember("sortBy")]
+    [JsonPropertyName("sortBy")]
+    public string SortBy
+    {
+        get => GetValue<string>("sortBy");
+        set => SetValue("sortBy", value);
+    }
 }

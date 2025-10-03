@@ -5,46 +5,43 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClient;
 
 [JsonConverter(typeof(GraphInputConverter<ListFilterInputTypeOfOrderFilterInput>))]
-public partial class ListFilterInputTypeOfOrderFilterInput : GraphInputBase
+public class ListFilterInputTypeOfOrderFilterInput : GraphInputBase
 {
-	[GraphQLMember("all")]
-	[JsonPropertyName("all")]
-	public OrderFilterInput All 
-	{
-		get => GetValue<OrderFilterInput>("all");
-    	set => SetValue("all", value);
-	}
+    [GraphQLMember("all")]
+    [JsonPropertyName("all")]
+    public OrderFilterInput All
+    {
+        get => GetValue<OrderFilterInput>("all");
+        set => SetValue("all", value);
+    }
 
-	[GraphQLMember("none")]
-	[JsonPropertyName("none")]
-	public OrderFilterInput None 
-	{
-		get => GetValue<OrderFilterInput>("none");
-    	set => SetValue("none", value);
-	}
+    [GraphQLMember("none")]
+    [JsonPropertyName("none")]
+    public OrderFilterInput None
+    {
+        get => GetValue<OrderFilterInput>("none");
+        set => SetValue("none", value);
+    }
 
-	[GraphQLMember("some")]
-	[JsonPropertyName("some")]
-	public OrderFilterInput Some 
-	{
-		get => GetValue<OrderFilterInput>("some");
-    	set => SetValue("some", value);
-	}
+    [GraphQLMember("some")]
+    [JsonPropertyName("some")]
+    public OrderFilterInput Some
+    {
+        get => GetValue<OrderFilterInput>("some");
+        set => SetValue("some", value);
+    }
 
-	[GraphQLMember("any")]
-	[JsonPropertyName("any")]
-	public bool? Any 
-	{
-		get => GetValue<bool?>("any");
-    	set => SetValue("any", value);
-	}
-
+    [GraphQLMember("any")]
+    [JsonPropertyName("any")]
+    public bool? Any
+    {
+        get => GetValue<bool?>("any");
+        set => SetValue("any", value);
+    }
 }

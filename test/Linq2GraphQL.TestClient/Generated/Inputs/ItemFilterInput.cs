@@ -5,54 +5,51 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClient;
 
 [JsonConverter(typeof(GraphInputConverter<ItemFilterInput>))]
-public partial class ItemFilterInput : GraphInputBase
+public class ItemFilterInput : GraphInputBase
 {
-	[GraphQLMember("and")]
-	[JsonPropertyName("and")]
-	public List<ItemFilterInput> And 
-	{
-		get => GetValue<List<ItemFilterInput>>("and");
-    	set => SetValue("and", value);
-	}
+    [GraphQLMember("and")]
+    [JsonPropertyName("and")]
+    public List<ItemFilterInput> And
+    {
+        get => GetValue<List<ItemFilterInput>>("and");
+        set => SetValue("and", value);
+    }
 
-	[GraphQLMember("or")]
-	[JsonPropertyName("or")]
-	public List<ItemFilterInput> Or 
-	{
-		get => GetValue<List<ItemFilterInput>>("or");
-    	set => SetValue("or", value);
-	}
+    [GraphQLMember("or")]
+    [JsonPropertyName("or")]
+    public List<ItemFilterInput> Or
+    {
+        get => GetValue<List<ItemFilterInput>>("or");
+        set => SetValue("or", value);
+    }
 
-	[GraphQLMember("itemId")]
-	[JsonPropertyName("itemId")]
-	public StringOperationFilterInput ItemId 
-	{
-		get => GetValue<StringOperationFilterInput>("itemId");
-    	set => SetValue("itemId", value);
-	}
+    [GraphQLMember("itemId")]
+    [JsonPropertyName("itemId")]
+    public StringOperationFilterInput ItemId
+    {
+        get => GetValue<StringOperationFilterInput>("itemId");
+        set => SetValue("itemId", value);
+    }
 
-	[GraphQLMember("itemName")]
-	[JsonPropertyName("itemName")]
-	public StringOperationFilterInput ItemName 
-	{
-		get => GetValue<StringOperationFilterInput>("itemName");
-    	set => SetValue("itemName", value);
-	}
+    [GraphQLMember("itemName")]
+    [JsonPropertyName("itemName")]
+    public StringOperationFilterInput ItemName
+    {
+        get => GetValue<StringOperationFilterInput>("itemName");
+        set => SetValue("itemName", value);
+    }
 
-	[GraphQLMember("data")]
-	[JsonPropertyName("data")]
-	public ListByteOperationFilterInput Data 
-	{
-		get => GetValue<ListByteOperationFilterInput>("data");
-    	set => SetValue("data", value);
-	}
-
+    [GraphQLMember("data")]
+    [JsonPropertyName("data")]
+    public ListByteOperationFilterInput Data
+    {
+        get => GetValue<ListByteOperationFilterInput>("data");
+        set => SetValue("data", value);
+    }
 }

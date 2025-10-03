@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System;
 
 namespace Linq2GraphQL.Client;
 
@@ -12,7 +11,8 @@ internal static class Extensions
             return false;
         }
 
-        return type.IsValueType || type == typeof(string) || type.IsSubclassOf(typeof(CustomScalar)); ;
+        return type.IsValueType || type == typeof(string) || type.IsSubclassOf(typeof(CustomScalar));
+        ;
     }
 
     internal static bool IsListOfPrimitiveTypeOrString(this Type type)
@@ -57,9 +57,9 @@ internal static class Extensions
             MemberTypes.Method => ((MethodInfo)member).ReturnType,
             MemberTypes.Property => ((PropertyInfo)member).PropertyType,
             _ => throw new ArgumentException
-                            (
-                                "Input MemberInfo must be if type TypeInfo, EventInfo, FieldInfo, MethodInfo, or PropertyInfo"
-                            ),
+            (
+                "Input MemberInfo must be if type TypeInfo, EventInfo, FieldInfo, MethodInfo, or PropertyInfo"
+            )
         };
     }
 }

@@ -32,7 +32,6 @@ public class Order
 
     public Address GetOrderAddress(AddressType addressType)
     {
-        return new Address { Name = addressType.ToString(), PostalCode = "1234", Street = "Servcie Road 12345" };
+        return new() { Name = addressType.ToString(), PostalCode = "1234", Street = "Servcie Road 12345" };
     }
-
 }

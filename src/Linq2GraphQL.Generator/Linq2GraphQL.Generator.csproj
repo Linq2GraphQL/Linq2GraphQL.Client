@@ -2,27 +2,27 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <PackAsTool>true</PackAsTool>
         <ToolCommandName>Linq2GraphQL</ToolCommandName>
 
-		<Authors>Joakim Dangården, Magnus Ahlberg</Authors>
-		<Company>Linq2GraphQL</Company>
-		<RepositoryType>git</RepositoryType>
-		<RepositoryUrl>https://github.com/linq2graphql/linq2graphql.client</RepositoryUrl>
-		<PackageProjectUrl>https://linq2graphql.com/</PackageProjectUrl>
-		<Title>Linq2GraphQL.Generator</Title>
-		<Description>Generates Linq2GraphQL Client</Description>
-		<Copyright>Copyright 2023 (c) Joakim Dangården. All rights reserved.</Copyright>
-		<PackageTags>Linq GraphQL Client Generator</PackageTags>
+        <Authors>Joakim Dangården, Magnus Ahlberg</Authors>
+        <Company>Linq2GraphQL</Company>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/linq2graphql/linq2graphql.client</RepositoryUrl>
+        <PackageProjectUrl>https://linq2graphql.com/</PackageProjectUrl>
+        <Title>Linq2GraphQL.Generator</Title>
+        <Description>Generates Linq2GraphQL Client</Description>
+        <Copyright>Copyright 2023 (c) Joakim Dangården. All rights reserved.</Copyright>
+        <PackageTags>Linq GraphQL Client Generator</PackageTags>
 
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="System.CodeDom" />
-        <PackageReference Include="System.CommandLine" />
-        <PackageReference Include="Macross.Json.Extensions" />
+        <PackageReference Include="System.CodeDom"/>
+        <PackageReference Include="System.CommandLine"/>
+        <PackageReference Include="Macross.Json.Extensions"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -47,8 +47,8 @@
             <LastGenOutput>EnumTemplate.cs</LastGenOutput>
         </None>
         <None Update="Templates\Interface\InterfaceTemplate.tt">
-          <LastGenOutput>InterfaceTemplate.cs</LastGenOutput>
-          <Generator>TextTemplatingFilePreprocessor</Generator>
+            <LastGenOutput>InterfaceTemplate.cs</LastGenOutput>
+            <Generator>TextTemplatingFilePreprocessor</Generator>
         </None>
         <None Update="Templates\Methods\IMethodsTemplate.tt">
             <Generator>TextTemplatingFilePreprocessor</Generator>
@@ -63,13 +63,13 @@
             <LastGenOutput>ClientExtensionsTemplate.cs</LastGenOutput>
         </None>
         <None Update="Templates\Scalars\ScalarTemplate.tt">
-          <Generator>TextTemplatingFilePreprocessor</Generator>
-          <LastGenOutput>ScalarTemplate.cs</LastGenOutput>
+            <Generator>TextTemplatingFilePreprocessor</Generator>
+            <LastGenOutput>ScalarTemplate.cs</LastGenOutput>
         </None>
     </ItemGroup>
 
     <ItemGroup>
-        <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+        <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -84,14 +84,14 @@
             <DependentUpon>ClassTemplate.tt</DependentUpon>
         </Compile>
         <Compile Update="Templates\Client\ClientExtensionsTemplate.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>ClientExtensionsTemplate.tt</DependentUpon>
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>ClientExtensionsTemplate.tt</DependentUpon>
         </Compile>
         <Compile Update="Templates\Client\ClientTemplate.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>ClientTemplate.tt</DependentUpon>
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>ClientTemplate.tt</DependentUpon>
         </Compile>
         <Compile Update="Templates\Client\IClientTemplate.cs">
             <DesignTime>True</DesignTime>
@@ -104,9 +104,9 @@
             <DependentUpon>EnumTemplate.tt</DependentUpon>
         </Compile>
         <Compile Update="Templates\Interface\InterfaceTemplate.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>InterfaceTemplate.tt</DependentUpon>
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>InterfaceTemplate.tt</DependentUpon>
         </Compile>
         <Compile Update="Templates\Methods\IMethodsTemplate.cs">
             <DesignTime>True</DesignTime>
@@ -119,14 +119,14 @@
             <DependentUpon>InputFactoryClassTemplate.tt</DependentUpon>
         </Compile>
         <Compile Update="Templates\Scalars\ScalarTemplate.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>ScalarTemplate.tt</DependentUpon>
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>ScalarTemplate.tt</DependentUpon>
         </Compile>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Linq2GraphQL.Client\Linq2GraphQL.Client.csproj" />
+        <ProjectReference Include="..\Linq2GraphQL.Client\Linq2GraphQL.Client.csproj"/>
     </ItemGroup>
 
 </Project>

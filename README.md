@@ -1,4 +1,3 @@
-
 <div align='center'>
 
 <img src=https://raw.githubusercontent.com/Linq2GraphQL/Linq2GraphQL.Client/main/Logo.svg alt="logo" width=100 height=100 />
@@ -13,9 +12,12 @@
 </div>
 
 # Introduction
-Linq2GraphQL generates C# classes from the GraphQL schema and and togheter with the nuget package Linq2GraphQL.Client  it makes it possible to query the server using Linq expressions. 
+
+Linq2GraphQL generates C# classes from the GraphQL schema and and togheter with the nuget package Linq2GraphQL.Client it
+makes it possible to query the server using Linq expressions.
 
 A simple query that will get the first 10 orders with the primitive properties of orders and the connected customer.
+
 ```cs
 var orders = await sampleClient
     .Query
@@ -26,6 +28,7 @@ var orders = await sampleClient
 ```
 
 A example mutation where we add a new customer and return the Customer Id.
+
 ```cs
  var customerId = await sampleClient
      .Mutation
@@ -40,16 +43,19 @@ A example mutation where we add a new customer and return the Customer Id.
 ```     
 
 # Getting Started
-## Generate Client code
-There are two options to generate the client code from the GraphQL schema.
-Use the online tool to <a href="https://linq2graphql.com/generate-client"> generate</a> or install Linq2GraphQL.Generator as a tool.
 
-Install/Update Tool: 
+## Generate Client code
+
+There are two options to generate the client code from the GraphQL schema.
+Use the online tool to <a href="https://linq2graphql.com/generate-client"> generate</a> or install
+Linq2GraphQL.Generator as a tool.
+
+Install/Update Tool:
 
     dotnet tool update Linq2GraphQL.Generator -g --prerelease
-   
-   Usage:
-       
+
+Usage:
+
       Linq2GraphQL.Generator <endpoint> [options]
     
     Arguments:
@@ -64,24 +70,29 @@ Install/Update Tool:
       -es --enum-strategy          If AddUnknownOption all enums will have an additional Unknown option
       -nu --nullabel               Nullable client [default: false]
 	  -d  --deprecated			   Include Deprecated as Obsolete
-	
+
 As an example:
 
     Linq2GraphQL https://spacex-production.up.railway.app/ -c="SpaceXClient" -n="SpaceX" -o="Generated"
 
-Would generate a client from url *https://spacex-production.up.railway.app/* with the name *SpaceXClient* in the namespace *SpaceX* to folder *Generated*
+Would generate a client from url *https://spacex-production.up.railway.app/* with the name *SpaceXClient* in the
+namespace *SpaceX* to folder *Generated*
 
 ## Add Nuget
 
-Latest stable: [![Nuget](https://img.shields.io/nuget/v/Linq2GraphQL.Client.svg)](https://www.nuget.org/packages/Linq2GraphQL.Client)
+Latest
+stable: [![Nuget](https://img.shields.io/nuget/v/Linq2GraphQL.Client.svg)](https://www.nuget.org/packages/Linq2GraphQL.Client)
 <br/>
-Latest prerelease: [![Nuget](https://img.shields.io/nuget/vpre/Linq2GraphQL.Client.svg)](https://www.nuget.org/packages/Linq2GraphQL.Client)
+Latest
+prerelease: [![Nuget](https://img.shields.io/nuget/vpre/Linq2GraphQL.Client.svg)](https://www.nuget.org/packages/Linq2GraphQL.Client)
 
     dotnet add package Linq2GraphQL.Client --prerelease
 
 ## Dependency Injection
+
 The client adds a set of extensions to make it easier to add the client to dependency injection.
 As an example this would add SpaceXClient to the container:
+
 ```cs
 services
     .SpaceXClient(x =>
@@ -94,15 +105,22 @@ services
             httpClient.BaseAddress = new Uri("https://spacex-production.up.railway.app/"); 
         });
 ```
+
 ## Safe Mode
-Turning on *SafeMode* will make the client before the first request to do an introspection query to the endpoint. The schema will be used to make sure that any auto included properties are available. This is an advanced feature that require the endpoint to support introspection. By default safe mode is turned of.
+
+Turning on *SafeMode* will make the client before the first request to do an introspection query to the endpoint. The
+schema will be used to make sure that any auto included properties are available. This is an advanced feature that
+require the endpoint to support introspection. By default safe mode is turned of.
 
 # Acknowledgments
-Linq2GraphQL is inspired by [GraphQLinq](https://github.com/Giorgi/GraphQLinq) , thank you [Giorgi](https://github.com/Giorgi)
+
+Linq2GraphQL is inspired by [GraphQLinq](https://github.com/Giorgi/GraphQLinq) , thank
+you [Giorgi](https://github.com/Giorgi)
 
 ## Contributing
 
-Are you a developer looking to contribute to this project? Please see our [Developer Guide](DEVELOPER.md) for comprehensive information about:
+Are you a developer looking to contribute to this project? Please see our [Developer Guide](DEVELOPER.md) for
+comprehensive information about:
 
 - T4 template development workflow
 - Code generation system architecture
@@ -112,7 +130,9 @@ Are you a developer looking to contribute to this project? Please see our [Devel
 
 ## Development Workflow
 
-**⚠️ Important for Developers:** When modifying T4 templates (`.tt` files), you must manually regenerate the corresponding `.cs` files using Visual Studio's "Run Custom Tool" feature. See [DEVELOPER.md](DEVELOPER.md) for detailed instructions.
+**⚠️ Important for Developers:** When modifying T4 templates (`.tt` files), you must manually regenerate the
+corresponding `.cs` files using Visual Studio's "Run Custom Tool" feature. See [DEVELOPER.md](DEVELOPER.md) for detailed
+instructions.
 
 [![Stargazers repo roster for @linq2graphql/linq2graphql.client](https://reporoster.com/stars/dark/linq2graphql/linq2graphql.client)](https://github.com/linq2graphql/linq2graphql.client/stargazers)
 

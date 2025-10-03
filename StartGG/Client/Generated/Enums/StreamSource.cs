@@ -5,23 +5,18 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using Linq2GraphQL.Client;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
+using Linq2GraphQL.Client;
 
 namespace StartGG.Client;
 
 [JsonConverter(typeof(JsonStringEnumMemberConverter))]
 public enum StreamSource
 {
-    [EnumMember(Value = "TWITCH")]
-    Twitch,
-    [EnumMember(Value = "HITBOX")]
-    Hitbox,
-    [EnumMember(Value = "STREAMME")]
-    Streamme,
-    [EnumMember(Value = "MIXER")]
-    Mixer,
-    [EnumMember(Value = "YOUTUBE")]
-    Youtube,
+    [EnumMember(Value = "TWITCH")] Twitch,
+    [EnumMember(Value = "HITBOX")] Hitbox,
+    [EnumMember(Value = "STREAMME")] Streamme,
+    [EnumMember(Value = "MIXER")] Mixer,
+    [EnumMember(Value = "YOUTUBE")] Youtube
 }

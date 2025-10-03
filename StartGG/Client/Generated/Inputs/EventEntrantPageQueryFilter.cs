@@ -5,22 +5,19 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 
 namespace StartGG.Client;
 
 [JsonConverter(typeof(GraphInputConverter<EventEntrantPageQueryFilter>))]
-public partial class EventEntrantPageQueryFilter : GraphInputBase
+public class EventEntrantPageQueryFilter : GraphInputBase
 {
-	[GraphQLMember("name")]
-	[JsonPropertyName("name")]
-	public string Name 
-	{
-		get => GetValue<string>("name");
-    	set => SetValue("name", value);
-	}
-
+    [GraphQLMember("name")]
+    [JsonPropertyName("name")]
+    public string Name
+    {
+        get => GetValue<string>("name");
+        set => SetValue("name", value);
+    }
 }

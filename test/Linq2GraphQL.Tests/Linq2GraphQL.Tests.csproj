@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
 
@@ -10,11 +10,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" />
-        <PackageReference Include="Moq" />
-        <PackageReference Include="Shouldly" />
-        <PackageReference Include="xunit" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+        <PackageReference Include="Moq"/>
+        <PackageReference Include="Shouldly"/>
+        <PackageReference Include="xunit"/>
         <PackageReference Include="xunit.runner.visualstudio">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
@@ -26,10 +26,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Linq2GraphQL.TestClientNullable\Linq2GraphQL.TestClientNullable.csproj" />
-        <ProjectReference Include="..\Linq2GraphQL.TestClient\Linq2GraphQL.TestClient.csproj" />
-        <ProjectReference Include="..\Linq2GraphQL.TestServerNullable\Linq2GraphQL.TestServerNullable.csproj" />
-        <ProjectReference Include="..\Linq2GraphQL.TestServer\Linq2GraphQL.TestServer.csproj" />
+        <ProjectReference Include="..\Linq2GraphQL.TestClientNullable\Linq2GraphQL.TestClientNullable.csproj"/>
+        <ProjectReference Include="..\Linq2GraphQL.TestClient\Linq2GraphQL.TestClient.csproj"/>
+        <ProjectReference Include="..\Linq2GraphQL.TestServerNullable\Linq2GraphQL.TestServerNullable.csproj"/>
+        <ProjectReference Include="..\Linq2GraphQL.TestServer\Linq2GraphQL.TestServer.csproj"/>
     </ItemGroup>
 
 </Project>

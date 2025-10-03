@@ -5,17 +5,15 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using Linq2GraphQL.Client;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
+using Linq2GraphQL.Client;
 
 namespace StartGG.Client;
 
 [JsonConverter(typeof(JsonStringEnumMemberConverter))]
 public enum TeamMemberType
 {
-    [EnumMember(Value = "PLAYER")]
-    Player,
-    [EnumMember(Value = "STAFF")]
-    Staff,
+    [EnumMember(Value = "PLAYER")] Player,
+    [EnumMember(Value = "STAFF")] Staff
 }

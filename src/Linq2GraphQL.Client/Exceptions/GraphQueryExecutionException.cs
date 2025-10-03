@@ -4,13 +4,15 @@ namespace Linq2GraphQL.Client;
 
 public class GraphQueryExecutionException : Exception
 {
-    public GraphQueryExecutionException(string query, Dictionary<string, object> variables) : base("Unexpected error response received from server.")
+    public GraphQueryExecutionException(string query, Dictionary<string, object> variables) : base(
+        "Unexpected error response received from server.")
     {
         GraphQLQuery = query;
         GraphQLVariables = variables;
     }
 
-    public GraphQueryExecutionException(IEnumerable<GraphQueryError> errors, string query, Dictionary<string, object> variables)
+    public GraphQueryExecutionException(IEnumerable<GraphQueryError> errors, string query,
+        Dictionary<string, object> variables)
         : base($"{errors.FirstOrDefault()?.Message} - Check {nameof(Errors)} property for details")
     {
         Errors = errors;

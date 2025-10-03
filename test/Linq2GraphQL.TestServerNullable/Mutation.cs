@@ -2,6 +2,7 @@
 
 namespace Linq2GraphQL.TestServerNullable
 {
+    [MutationType]
     public class Mutation
     {
 

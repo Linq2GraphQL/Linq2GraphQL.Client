@@ -6,7 +6,6 @@
 //---------------------------------------------------------------------
 
 using Linq2GraphQL.Client;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -14,14 +13,14 @@ namespace Linq2GraphQL.TestClientNullable;
 
 public class SampleNullableClient : ISampleNullableClient
 {
-    public SampleNullableClient(HttpClient httpClient, [FromKeyedServices("SampleNullableClient")]IOptions<GraphClientOptions> options, IServiceProvider provider)
+    public SampleNullableClient(HttpClient httpClient,
+        [FromKeyedServices("SampleNullableClient")] IOptions<GraphClientOptions> options, IServiceProvider provider)
     {
         var client = new GraphClient(httpClient, options, provider);
         Query = new QueryMethods(client);
         Mutation = new MutationMethods(client);
     }
 
-    public IQueryMethods Query { get; private set; }
-    public IMutationMethods Mutation { get; private set; }
-    
+    public IQueryMethods Query { get; }
+    public IMutationMethods Mutation { get; }
 }

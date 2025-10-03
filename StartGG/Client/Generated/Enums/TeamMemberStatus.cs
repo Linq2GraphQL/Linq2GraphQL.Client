@@ -5,27 +5,20 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using Linq2GraphQL.Client;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
+using Linq2GraphQL.Client;
 
 namespace StartGG.Client;
 
 [JsonConverter(typeof(JsonStringEnumMemberConverter))]
 public enum TeamMemberStatus
 {
-    [EnumMember(Value = "UNKNOWN")]
-    Unknown,
-    [EnumMember(Value = "ACCEPTED")]
-    Accepted,
-    [EnumMember(Value = "INVITED")]
-    Invited,
-    [EnumMember(Value = "REQUEST")]
-    Request,
-    [EnumMember(Value = "ALUM")]
-    Alum,
-    [EnumMember(Value = "HIATUS")]
-    Hiatus,
-    [EnumMember(Value = "OPEN_SPOT")]
-    OpenSpot,
+    [EnumMember(Value = "UNKNOWN")] Unknown,
+    [EnumMember(Value = "ACCEPTED")] Accepted,
+    [EnumMember(Value = "INVITED")] Invited,
+    [EnumMember(Value = "REQUEST")] Request,
+    [EnumMember(Value = "ALUM")] Alum,
+    [EnumMember(Value = "HIATUS")] Hiatus,
+    [EnumMember(Value = "OPEN_SPOT")] OpenSpot
 }

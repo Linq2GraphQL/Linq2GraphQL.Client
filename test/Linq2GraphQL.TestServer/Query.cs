@@ -3,6 +3,7 @@ using Linq2GraphQL.TestServer.Models;
 
 namespace Linq2GraphQL.TestServer;
 
+[QueryType]
 public class Query
 {
     public string Hello(string name = "World")
@@ -52,10 +53,8 @@ public class Query
         return SampleData.GetAnimals().AsQueryable();
     }
 
-    
-
-
-    [UseOffsetPaging(DefaultPageSize = 200, IncludeTotalCount = true)]
+    //[UseOffsetPaging(DefaultPageSize = 200, IncludeTotalCount = true)]
+    [UsePaging()]
     [UseFiltering]
     [UseSorting]
     public IQueryable<Order> GetOrdersOffsetPaging()

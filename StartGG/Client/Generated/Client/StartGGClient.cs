@@ -6,22 +6,21 @@
 //---------------------------------------------------------------------
 
 using Linq2GraphQL.Client;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace StartGG.Client;
 
 public class StartGGClient
-{ 
-    public StartGGClient(HttpClient httpClient, [FromKeyedServices("StartGGClient")]IOptions<GraphClientOptions> options, IServiceProvider provider)
+{
+    public StartGGClient(HttpClient httpClient,
+        [FromKeyedServices("StartGGClient")] IOptions<GraphClientOptions> options, IServiceProvider provider)
     {
-        var client = new GraphClient(httpClient, options, provider, false);
-        Query = new QueryMethods(client);
-        Mutation = new MutationMethods(client);
+        var client = new GraphClient(httpClient, options, provider);
+        Query = new(client);
+        Mutation = new(client);
     }
 
     public QueryMethods Query { get; private set; }
     public MutationMethods Mutation { get; private set; }
-    
 }

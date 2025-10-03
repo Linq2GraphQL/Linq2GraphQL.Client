@@ -5,38 +5,35 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 
 namespace StartGG.Client;
 
 [JsonConverter(typeof(GraphInputConverter<WaveUpsertInput>))]
-public partial class WaveUpsertInput : GraphInputBase
+public class WaveUpsertInput : GraphInputBase
 {
-	[GraphQLMember("identifier")]
-	[JsonPropertyName("identifier")]
-	public string Identifier 
-	{
-		get => GetValue<string>("identifier");
-    	set => SetValue("identifier", value);
-	}
+    [GraphQLMember("identifier")]
+    [JsonPropertyName("identifier")]
+    public string Identifier
+    {
+        get => GetValue<string>("identifier");
+        set => SetValue("identifier", value);
+    }
 
-	[GraphQLMember("startAt")]
-	[JsonPropertyName("startAt")]
-	public Timestamp StartAt 
-	{
-		get => GetValue<Timestamp>("startAt");
-    	set => SetValue("startAt", value);
-	}
+    [GraphQLMember("startAt")]
+    [JsonPropertyName("startAt")]
+    public Timestamp StartAt
+    {
+        get => GetValue<Timestamp>("startAt");
+        set => SetValue("startAt", value);
+    }
 
-	[GraphQLMember("endAt")]
-	[JsonPropertyName("endAt")]
-	public Timestamp EndAt 
-	{
-		get => GetValue<Timestamp>("endAt");
-    	set => SetValue("endAt", value);
-	}
-
+    [GraphQLMember("endAt")]
+    [JsonPropertyName("endAt")]
+    public Timestamp EndAt
+    {
+        get => GetValue<Timestamp>("endAt");
+        set => SetValue("endAt", value);
+    }
 }

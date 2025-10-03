@@ -5,27 +5,20 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using Linq2GraphQL.Client;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
+using Linq2GraphQL.Client;
 
 namespace StartGG.Client;
 
 [JsonConverter(typeof(JsonStringEnumMemberConverter))]
 public enum ActivityState
 {
-    [EnumMember(Value = "CREATED")]
-    Created,
-    [EnumMember(Value = "ACTIVE")]
-    Active,
-    [EnumMember(Value = "COMPLETED")]
-    Completed,
-    [EnumMember(Value = "READY")]
-    Ready,
-    [EnumMember(Value = "INVALID")]
-    Invalid,
-    [EnumMember(Value = "CALLED")]
-    Called,
-    [EnumMember(Value = "QUEUED")]
-    Queued,
+    [EnumMember(Value = "CREATED")] Created,
+    [EnumMember(Value = "ACTIVE")] Active,
+    [EnumMember(Value = "COMPLETED")] Completed,
+    [EnumMember(Value = "READY")] Ready,
+    [EnumMember(Value = "INVALID")] Invalid,
+    [EnumMember(Value = "CALLED")] Called,
+    [EnumMember(Value = "QUEUED")] Queued
 }

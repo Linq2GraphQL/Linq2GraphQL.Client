@@ -44,7 +44,6 @@ public class QueryIncludeTests : IClassFixture<SampleClientFixture>
     //}
 
 
-
     [Fact]
     public async Task IncludePrimitives_MultipleLevels()
     {

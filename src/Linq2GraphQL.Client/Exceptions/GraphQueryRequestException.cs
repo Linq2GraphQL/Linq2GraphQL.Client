@@ -2,7 +2,8 @@
 
 public class GraphQueryRequestException : Exception
 {
-    public GraphQueryRequestException(string message, string query, Dictionary<string, object> variables) : base(message)
+    public GraphQueryRequestException(string message, string query, Dictionary<string, object> variables) :
+        base(message)
     {
         GraphQLQuery = query;
         GraphQLVariables = variables;

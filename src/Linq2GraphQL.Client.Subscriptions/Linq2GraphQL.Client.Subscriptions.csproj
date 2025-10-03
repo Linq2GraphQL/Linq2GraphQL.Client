@@ -1,26 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
-	
-		<Authors>Joakim Dangården,Magnus Ahlberg</Authors>
-		<Company>Linq2GraphQL</Company>
-		<RepositoryType>git</RepositoryType>
-		<RepositoryUrl>https://github.com/linq2graphql/linq2graphql.client</RepositoryUrl>
-		<PackageProjectUrl>https://linq2graphql.com/</PackageProjectUrl>
-		<Title>Linq2GraphQL.Client.Subscriptions</Title>
-		<Description>Linq2GraphQL Subscription support</Description>
-		<Copyright>Copyright 2023 (c) Joakim Dangården. All rights reserved.</Copyright>
-		<PackageTags>Linq GraphQL Client Subscriptions</PackageTags>
+
+        <Authors>Joakim Dangården,Magnus Ahlberg</Authors>
+        <Company>Linq2GraphQL</Company>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/linq2graphql/linq2graphql.client</RepositoryUrl>
+        <PackageProjectUrl>https://linq2graphql.com/</PackageProjectUrl>
+        <Title>Linq2GraphQL.Client.Subscriptions</Title>
+        <Description>Linq2GraphQL Subscription support</Description>
+        <Copyright>Copyright 2023 (c) Joakim Dangården. All rights reserved.</Copyright>
+        <PackageTags>Linq GraphQL Client Subscriptions</PackageTags>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Linq2GraphQL.Client\Linq2GraphQL.Client.csproj" />
+        <ProjectReference Include="..\Linq2GraphQL.Client\Linq2GraphQL.Client.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Websocket.Client" />
+        <PackageReference Include="Websocket.Client"/>
     </ItemGroup>
 
 </Project>

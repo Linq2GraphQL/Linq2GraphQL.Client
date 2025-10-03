@@ -6,14 +6,16 @@
 //---------------------------------------------------------------------
 
 
-using Linq2GraphQL.Client;
 using System.Text.Json.Serialization;
+using Linq2GraphQL.Client;
 
 namespace StartGG.Client;
 
-    /// <summary>
-    /// Represents a Unix Timestamp. Supports up to 53 bit int values,
-/// 		as that is JavaScript's internal memory allocation for integer values.
-    /// </summary>
-    [JsonConverter(typeof(CustomScalarConverter<Timestamp>))]
-    public partial class Timestamp : CustomScalar {}
+/// <summary>
+///     Represents a Unix Timestamp. Supports up to 53 bit int values,
+///     as that is JavaScript's internal memory allocation for integer values.
+/// </summary>
+[JsonConverter(typeof(CustomScalarConverter<Timestamp>))]
+public class Timestamp : CustomScalar
+{
+}

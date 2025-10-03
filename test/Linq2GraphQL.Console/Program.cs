@@ -21,19 +21,21 @@ serviceProvider
         x.SubscriptionProtocol = SubscriptionProtocol.ServerSentEvents;
     })
     .WithHttpClient(
-        httpClient => { httpClient.BaseAddress = new Uri("https://localhost:7184/graphql"); },
+        httpClient => { httpClient.BaseAddress = new("https://localhost:7184/graphql"); },
         builder =>
         {
             //Add stuff here
         });
 
 serviceProvider.AddStarWarsClient(x =>
-{
-    x.UseSafeMode = true;
-    x.SubscriptionProtocol = SubscriptionProtocol.ServerSentEvents;
-})
-   .WithHttpClient(
-       httpClient => { httpClient.BaseAddress = new Uri("https://swapi-graphql.netlify.app/.netlify/functions/index"); });
+    {
+        x.UseSafeMode = true;
+        x.SubscriptionProtocol = SubscriptionProtocol.ServerSentEvents;
+    })
+    .WithHttpClient(httpClient =>
+    {
+        httpClient.BaseAddress = new("https://swapi-graphql.netlify.app/.netlify/functions/index");
+    });
 
 
 var services = serviceProvider.BuildServiceProvider();

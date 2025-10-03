@@ -5,23 +5,22 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using Linq2GraphQL.Client;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
+using Linq2GraphQL.Client;
 
 namespace StartGG.Client;
 
 [JsonConverter(typeof(JsonStringEnumMemberConverter))]
 public enum Comparator
 {
-    [EnumMember(Value = "GREATER_THAN")]
-    GreaterThan,
+    [EnumMember(Value = "GREATER_THAN")] GreaterThan,
+
     [EnumMember(Value = "GREATER_THAN_OR_EQUAL")]
     GreaterThanOrEqual,
-    [EnumMember(Value = "EQUAL")]
-    Equal,
+    [EnumMember(Value = "EQUAL")] Equal,
+
     [EnumMember(Value = "LESS_THAN_OR_EQUAL")]
     LessThanOrEqual,
-    [EnumMember(Value = "LESS_THAN")]
-    LessThan,
+    [EnumMember(Value = "LESS_THAN")] LessThan
 }

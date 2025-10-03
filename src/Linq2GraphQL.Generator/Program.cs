@@ -54,19 +54,19 @@ internal class Program
             }
         );
 
-            await rootCommand.InvokeAsync(args);
-      
-
+        await rootCommand.InvokeAsync(args);
     }
 
     private static async Task GenerateClientAsync(Uri uri, string outputFolder, string namespaceName, string name,
         bool includeSubscriptions, string authToken, string enumStrategy, bool nullable, bool includeDeprecated)
     {
-        var enumStrat = enumStrategy != null && enumStrategy.Equals("AddUnknownOption", StringComparison.InvariantCultureIgnoreCase)
+        var enumStrat = enumStrategy != null &&
+                        enumStrategy.Equals("AddUnknownOption", StringComparison.InvariantCultureIgnoreCase)
             ? EnumGeneratorStrategy.AddUnknownOption
             : EnumGeneratorStrategy.FailIfMissing;
-        
-        var generator = new ClientGenerator(namespaceName, name, includeSubscriptions, enumStrat, nullable, includeDeprecated);
+
+        var generator = new ClientGenerator(namespaceName, name, includeSubscriptions, enumStrat, nullable,
+            includeDeprecated);
         var entries = await generator.GenerateAsync(uri, authToken);
 
         var outputPath = Path.GetFullPath(outputFolder, Environment.CurrentDirectory);
@@ -81,7 +81,6 @@ internal class Program
                 var filePath = Path.Combine(directory, entry.FileName);
                 await File.WriteAllTextAsync(filePath, entry.Content);
             }
-
         }
     }
 }

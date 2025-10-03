@@ -5,7 +5,6 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using System.Collections.Generic;
 using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClientNullable;
@@ -13,8 +12,10 @@ namespace Linq2GraphQL.TestClientNullable;
 public interface IQueryMethods
 {
     GraphQuery<Item> Item();
+
     [Obsolete("This is an really old method! please d not use it!!")]
     GraphQuery<Item> ItemDraft();
+
     GraphQuery<List<Customer>> CustomerList();
     GraphQuery<Customer?> CustomerNullable();
     GraphQuery<List<Customer?>?> CustomerListAllNullable();

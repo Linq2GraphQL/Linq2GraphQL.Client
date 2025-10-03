@@ -5,9 +5,9 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using Linq2GraphQL.Client;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
+using Linq2GraphQL.Client;
 
 namespace StartGG.Client;
 
@@ -16,22 +16,19 @@ public enum BracketType
 {
     [EnumMember(Value = "SINGLE_ELIMINATION")]
     SingleElimination,
+
     [EnumMember(Value = "DOUBLE_ELIMINATION")]
     DoubleElimination,
-    [EnumMember(Value = "ROUND_ROBIN")]
-    RoundRobin,
-    [EnumMember(Value = "SWISS")]
-    Swiss,
-    [EnumMember(Value = "EXHIBITION")]
-    Exhibition,
+    [EnumMember(Value = "ROUND_ROBIN")] RoundRobin,
+    [EnumMember(Value = "SWISS")] Swiss,
+    [EnumMember(Value = "EXHIBITION")] Exhibition,
+
     [EnumMember(Value = "CUSTOM_SCHEDULE")]
     CustomSchedule,
-    [EnumMember(Value = "MATCHMAKING")]
-    Matchmaking,
+    [EnumMember(Value = "MATCHMAKING")] Matchmaking,
+
     [EnumMember(Value = "ELIMINATION_ROUNDS")]
     EliminationRounds,
-    [EnumMember(Value = "RACE")]
-    Race,
-    [EnumMember(Value = "CIRCUIT")]
-    Circuit,
+    [EnumMember(Value = "RACE")] Race,
+    [EnumMember(Value = "CIRCUIT")] Circuit
 }

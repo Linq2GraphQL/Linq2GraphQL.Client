@@ -5,46 +5,43 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClient;
 
 [JsonConverter(typeof(GraphInputConverter<CustomerSortInput>))]
-public partial class CustomerSortInput : GraphInputBase
+public class CustomerSortInput : GraphInputBase
 {
-	[GraphQLMember("customerId")]
-	[JsonPropertyName("customerId")]
-	public SortEnumType? CustomerId 
-	{
-		get => GetValue<SortEnumType?>("customerId");
-    	set => SetValue("customerId", value);
-	}
+    [GraphQLMember("customerId")]
+    [JsonPropertyName("customerId")]
+    public SortEnumType? CustomerId
+    {
+        get => GetValue<SortEnumType?>("customerId");
+        set => SetValue("customerId", value);
+    }
 
-	[GraphQLMember("customerName")]
-	[JsonPropertyName("customerName")]
-	public SortEnumType? CustomerName 
-	{
-		get => GetValue<SortEnumType?>("customerName");
-    	set => SetValue("customerName", value);
-	}
+    [GraphQLMember("customerName")]
+    [JsonPropertyName("customerName")]
+    public SortEnumType? CustomerName
+    {
+        get => GetValue<SortEnumType?>("customerName");
+        set => SetValue("customerName", value);
+    }
 
-	[GraphQLMember("status")]
-	[JsonPropertyName("status")]
-	public SortEnumType? Status 
-	{
-		get => GetValue<SortEnumType?>("status");
-    	set => SetValue("status", value);
-	}
+    [GraphQLMember("status")]
+    [JsonPropertyName("status")]
+    public SortEnumType? Status
+    {
+        get => GetValue<SortEnumType?>("status");
+        set => SetValue("status", value);
+    }
 
-	[GraphQLMember("address")]
-	[JsonPropertyName("address")]
-	public AddressSortInput Address 
-	{
-		get => GetValue<AddressSortInput>("address");
-    	set => SetValue("address", value);
-	}
-
+    [GraphQLMember("address")]
+    [JsonPropertyName("address")]
+    public AddressSortInput Address
+    {
+        get => GetValue<AddressSortInput>("address");
+        set => SetValue("address", value);
+    }
 }

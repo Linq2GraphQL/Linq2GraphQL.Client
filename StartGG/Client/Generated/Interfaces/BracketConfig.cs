@@ -5,7 +5,6 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using System;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -16,8 +15,6 @@ namespace StartGG.Client;
 
 public static class BracketConfigExtentions
 {
-
-
     [GraphInterface]
     public static RaceBracketConfig RaceBracketConfig(this BracketConfig value)
     {
@@ -25,43 +22,38 @@ public static class BracketConfigExtentions
         {
             return (RaceBracketConfig)value;
         }
+
         return null;
     }
 }
 
-
 internal class BracketConfigConverter : InterfaceJsonConverter<BracketConfig>
 {
-    public override BracketConfig Deserialize(string typeName, JsonObject json) => typeName switch
+    public override BracketConfig Deserialize(string typeName, JsonObject json)
     {
-          "RaceBracketConfig" => json.Deserialize<RaceBracketConfig>(),
-        _ => json.Deserialize< BracketConfig__Concrete>()
-    };
+        return typeName switch
+        {
+            "RaceBracketConfig" => json.Deserialize<RaceBracketConfig>(),
+            _ => json.Deserialize<BracketConfig__Concrete>()
+        };
+    }
 }
 
-
-
-
 [JsonConverter(typeof(BracketConfigConverter))]
-public interface BracketConfig 
+public interface BracketConfig
 {
-	[GraphQLMember("id")]
-	public ID Id { get; set; }  
-	[GraphQLMember("bracketType")]
-	public BracketType? BracketType { get; set; }  
-    [GraphQLMember("__typename")]
-    public string __TypeName { get; set; }
+    [GraphQLMember("id")] public ID Id { get; set; }
 
+    [GraphQLMember("bracketType")] public BracketType? BracketType { get; set; }
+
+    [GraphQLMember("__typename")] public string __TypeName { get; set; }
 }
 
 internal class BracketConfig__Concrete : BracketConfig
 {
-	[GraphQLMember("id")]
-	public ID Id { get; set; }  
-	[GraphQLMember("bracketType")]
-	public BracketType? BracketType { get; set; }  
+    [GraphQLMember("id")] public ID Id { get; set; }
 
-    [GraphQLMember("__typename")]
-    public string __TypeName { get; set; }
+    [GraphQLMember("bracketType")] public BracketType? BracketType { get; set; }
 
+    [GraphQLMember("__typename")] public string __TypeName { get; set; }
 }

@@ -5,8 +5,6 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using Linq2GraphQL.Client;
-
 namespace Linq2GraphQL.TestClientNullable;
 
 public interface ISampleNullableClient

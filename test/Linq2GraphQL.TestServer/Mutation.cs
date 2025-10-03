@@ -3,6 +3,7 @@ using Linq2GraphQL.TestServer.Models;
 
 namespace Linq2GraphQL.TestServer;
 
+[MutationType]
 public class Mutation
 {
     public string SetName(string name)
