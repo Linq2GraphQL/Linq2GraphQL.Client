@@ -29,4 +29,8 @@ public partial class Address : GraphQLTypeBase
     [JsonPropertyName("postalCode")]
     public string PostalCode { get; set; }
 
+    [GraphQLMember("createdDate")]
+    [JsonPropertyName("createdDate")]
+    public DateTime CreatedDate { get; set; }
+
 }

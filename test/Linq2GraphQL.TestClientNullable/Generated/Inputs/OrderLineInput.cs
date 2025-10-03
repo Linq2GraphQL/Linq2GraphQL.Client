@@ -5,51 +5,54 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClientNullable;
 
 [JsonConverter(typeof(GraphInputConverter<OrderLineInput>))]
-public class OrderLineInput : GraphInputBase
+public partial class OrderLineInput : GraphInputBase
 {
-    [GraphQLMember("lineNumber")]
-    [JsonPropertyName("lineNumber")]
-    public required int LineNumber
-    {
-        get => GetValue<int>("lineNumber");
-        set => SetValue("lineNumber", value);
-    }
+	[GraphQLMember("lineNumber")]
+	[JsonPropertyName("lineNumber")]
+	public required int LineNumber 
+	{
+		get => GetValue<int>("lineNumber");
+    	set => SetValue("lineNumber", value);
+	}
 
-    [GraphQLMember("order")]
-    [JsonPropertyName("order")]
-    public required OrderInput Order
-    {
-        get => GetValue<OrderInput>("order");
-        set => SetValue("order", value);
-    }
+	[GraphQLMember("order")]
+	[JsonPropertyName("order")]
+	public required OrderInput Order 
+	{
+		get => GetValue<OrderInput>("order");
+    	set => SetValue("order", value);
+	}
 
-    [GraphQLMember("item")]
-    [JsonPropertyName("item")]
-    public ItemInput? Item
-    {
-        get => GetValue<ItemInput?>("item");
-        set => SetValue("item", value);
-    }
+	[GraphQLMember("item")]
+	[JsonPropertyName("item")]
+	public ItemInput? Item 
+	{
+		get => GetValue<ItemInput?>("item");
+    	set => SetValue("item", value);
+	}
 
-    [GraphQLMember("price")]
-    [JsonPropertyName("price")]
-    public required decimal Price
-    {
-        get => GetValue<decimal>("price");
-        set => SetValue("price", value);
-    }
+	[GraphQLMember("price")]
+	[JsonPropertyName("price")]
+	public required decimal Price 
+	{
+		get => GetValue<decimal>("price");
+    	set => SetValue("price", value);
+	}
 
-    [GraphQLMember("quantity")]
-    [JsonPropertyName("quantity")]
-    public required double Quantity
-    {
-        get => GetValue<double>("quantity");
-        set => SetValue("quantity", value);
-    }
+	[GraphQLMember("quantity")]
+	[JsonPropertyName("quantity")]
+	public required double Quantity 
+	{
+		get => GetValue<double>("quantity");
+    	set => SetValue("quantity", value);
+	}
+
 }

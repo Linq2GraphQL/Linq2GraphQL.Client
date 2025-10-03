@@ -14,22 +14,23 @@ using Linq2GraphQL.Client.Common;
 namespace Linq2GraphQL.TestClient;
 
 
-public partial class Address : GraphQLTypeBase
+/// <summary>
+/// An edge in a connection.
+/// </summary>
+public partial class OrdersOffsetPagingEdge : GraphQLTypeBase
 {
-    [GraphQLMember("name")]
-    [JsonPropertyName("name")]
-    public string Name { get; set; }
+    /// <summary>
+    /// A cursor for use in pagination.
+    /// </summary>
+    [GraphQLMember("cursor")]
+    [JsonPropertyName("cursor")]
+    public string Cursor { get; set; }
 
-    [GraphQLMember("street")]
-    [JsonPropertyName("street")]
-    public string Street { get; set; }
-
-    [GraphQLMember("postalCode")]
-    [JsonPropertyName("postalCode")]
-    public string PostalCode { get; set; }
-
-    [GraphQLMember("createdDate")]
-    [JsonPropertyName("createdDate")]
-    public DateTime CreatedDate { get; set; }
+    /// <summary>
+    /// The item at the end of the edge.
+    /// </summary>
+    [GraphQLMember("node")]
+    [JsonPropertyName("node")]
+    public Order Node { get; set; }
 
 }

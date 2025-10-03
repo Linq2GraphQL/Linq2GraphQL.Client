@@ -39,4 +39,12 @@ public partial class AddressInput : GraphInputBase
     	set => SetValue("postalCode", value);
 	}
 
+	[GraphQLMember("createdDate")]
+	[JsonPropertyName("createdDate")]
+	public DateTime CreatedDate 
+	{
+		get => GetValue<DateTime>("createdDate");
+    	set => SetValue("createdDate", value);
+	}
+
 }

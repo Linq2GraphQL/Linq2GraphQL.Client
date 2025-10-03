@@ -5,83 +5,86 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClient;
 
 [JsonConverter(typeof(GraphInputConverter<OrderFilterInput>))]
-public class OrderFilterInput : GraphInputBase
+public partial class OrderFilterInput : GraphInputBase
 {
-    [GraphQLMember("and")]
-    [JsonPropertyName("and")]
-    public List<OrderFilterInput> And
-    {
-        get => GetValue<List<OrderFilterInput>>("and");
-        set => SetValue("and", value);
-    }
+	[GraphQLMember("and")]
+	[JsonPropertyName("and")]
+	public List<OrderFilterInput> And 
+	{
+		get => GetValue<List<OrderFilterInput>>("and");
+    	set => SetValue("and", value);
+	}
 
-    [GraphQLMember("or")]
-    [JsonPropertyName("or")]
-    public List<OrderFilterInput> Or
-    {
-        get => GetValue<List<OrderFilterInput>>("or");
-        set => SetValue("or", value);
-    }
+	[GraphQLMember("or")]
+	[JsonPropertyName("or")]
+	public List<OrderFilterInput> Or 
+	{
+		get => GetValue<List<OrderFilterInput>>("or");
+    	set => SetValue("or", value);
+	}
 
-    [GraphQLMember("orderId")]
-    [JsonPropertyName("orderId")]
-    public UuidOperationFilterInput OrderId
-    {
-        get => GetValue<UuidOperationFilterInput>("orderId");
-        set => SetValue("orderId", value);
-    }
+	[GraphQLMember("orderId")]
+	[JsonPropertyName("orderId")]
+	public UuidOperationFilterInput OrderId 
+	{
+		get => GetValue<UuidOperationFilterInput>("orderId");
+    	set => SetValue("orderId", value);
+	}
 
-    [GraphQLMember("customer")]
-    [JsonPropertyName("customer")]
-    public CustomerFilterInput Customer
-    {
-        get => GetValue<CustomerFilterInput>("customer");
-        set => SetValue("customer", value);
-    }
+	[GraphQLMember("customer")]
+	[JsonPropertyName("customer")]
+	public CustomerFilterInput Customer 
+	{
+		get => GetValue<CustomerFilterInput>("customer");
+    	set => SetValue("customer", value);
+	}
 
-    [GraphQLMember("address")]
-    [JsonPropertyName("address")]
-    public AddressFilterInput Address
-    {
-        get => GetValue<AddressFilterInput>("address");
-        set => SetValue("address", value);
-    }
+	[GraphQLMember("address")]
+	[JsonPropertyName("address")]
+	public AddressFilterInput Address 
+	{
+		get => GetValue<AddressFilterInput>("address");
+    	set => SetValue("address", value);
+	}
 
-    [GraphQLMember("orderDate")]
-    [JsonPropertyName("orderDate")]
-    public DateTimeOperationFilterInput OrderDate
-    {
-        get => GetValue<DateTimeOperationFilterInput>("orderDate");
-        set => SetValue("orderDate", value);
-    }
+	[GraphQLMember("orderDate")]
+	[JsonPropertyName("orderDate")]
+	public DateTimeOperationFilterInput OrderDate 
+	{
+		get => GetValue<DateTimeOperationFilterInput>("orderDate");
+    	set => SetValue("orderDate", value);
+	}
 
-    [GraphQLMember("lines")]
-    [JsonPropertyName("lines")]
-    public ListFilterInputTypeOfOrderLineFilterInput Lines
-    {
-        get => GetValue<ListFilterInputTypeOfOrderLineFilterInput>("lines");
-        set => SetValue("lines", value);
-    }
+	[GraphQLMember("lines")]
+	[JsonPropertyName("lines")]
+	public ListFilterInputTypeOfOrderLineFilterInput Lines 
+	{
+		get => GetValue<ListFilterInputTypeOfOrderLineFilterInput>("lines");
+    	set => SetValue("lines", value);
+	}
 
-    [GraphQLMember("entryTime")]
-    [JsonPropertyName("entryTime")]
-    public TimeSpanOperationFilterInput EntryTime
-    {
-        get => GetValue<TimeSpanOperationFilterInput>("entryTime");
-        set => SetValue("entryTime", value);
-    }
+	[GraphQLMember("entryTime")]
+	[JsonPropertyName("entryTime")]
+	public LocalTimeOperationFilterInput EntryTime 
+	{
+		get => GetValue<LocalTimeOperationFilterInput>("entryTime");
+    	set => SetValue("entryTime", value);
+	}
 
-    [GraphQLMember("grade")]
-    [JsonPropertyName("grade")]
-    public StringOperationFilterInput Grade
-    {
-        get => GetValue<StringOperationFilterInput>("grade");
-        set => SetValue("grade", value);
-    }
+	[GraphQLMember("grade")]
+	[JsonPropertyName("grade")]
+	public StringOperationFilterInput Grade 
+	{
+		get => GetValue<StringOperationFilterInput>("grade");
+    	set => SetValue("grade", value);
+	}
+
 }

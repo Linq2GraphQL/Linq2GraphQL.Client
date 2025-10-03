@@ -7,6 +7,7 @@ public class Customer
     public CustomerStatus Status { get; set; }
     public List<Order> Orders { get; set; } = new();
     public Address? Address { get; set; }
+    public DateTimeOffset? Created { get; set; }
 }
 
 public enum AddressType

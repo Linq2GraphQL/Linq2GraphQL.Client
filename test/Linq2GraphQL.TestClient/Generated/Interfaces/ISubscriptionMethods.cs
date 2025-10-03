@@ -5,12 +5,30 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
+using Linq2GraphQL.Client;
 using Linq2GraphQL.Client.Subscriptions;
 
 namespace Linq2GraphQL.TestClient;
 
+/// <summary>
+/// Interface for SubscriptionMethods GraphQL operations
+/// </summary>
 public interface ISubscriptionMethods
 {
+    /// <summary>
+    /// Executes customerAdded GraphQL operation
+    /// </summary>
+    /// <param name="customerAdded">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphSubscription<Customer></returns>
     GraphSubscription<Customer> CustomerAdded();
+
+    /// <summary>
+    /// Executes customerNameAdded GraphQL operation
+    /// </summary>
+    /// <param name="customerNameAdded">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphSubscription<Customer></returns>
     GraphSubscription<Customer> CustomerNameAdded(string name = null);
+
 }

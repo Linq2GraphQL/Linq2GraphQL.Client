@@ -5,35 +5,38 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClientNullable;
 
 [JsonConverter(typeof(GraphInputConverter<PersonInput>))]
-public class PersonInput : GraphInputBase
+public partial class PersonInput : GraphInputBase
 {
-    [GraphQLMember("name")]
-    [JsonPropertyName("name")]
-    public required string Name
-    {
-        get => GetValue<string>("name");
-        set => SetValue("name", value);
-    }
+	[GraphQLMember("name")]
+	[JsonPropertyName("name")]
+	public required string Name 
+	{
+		get => GetValue<string>("name");
+    	set => SetValue("name", value);
+	}
 
-    [GraphQLMember("macAddress")]
-    [JsonPropertyName("macAddress")]
-    public MacAddress? MacAddress
-    {
-        get => GetValue<MacAddress?>("macAddress");
-        set => SetValue("macAddress", value);
-    }
+	[GraphQLMember("macAddress")]
+	[JsonPropertyName("macAddress")]
+	public MacAddress? MacAddress 
+	{
+		get => GetValue<MacAddress?>("macAddress");
+    	set => SetValue("macAddress", value);
+	}
 
-    [GraphQLMember("longitude")]
-    [JsonPropertyName("longitude")]
-    public Longitude? Longitude
-    {
-        get => GetValue<Longitude?>("longitude");
-        set => SetValue("longitude", value);
-    }
+	[GraphQLMember("longitude")]
+	[JsonPropertyName("longitude")]
+	public Longitude? Longitude 
+	{
+		get => GetValue<Longitude?>("longitude");
+    	set => SetValue("longitude", value);
+	}
+
 }

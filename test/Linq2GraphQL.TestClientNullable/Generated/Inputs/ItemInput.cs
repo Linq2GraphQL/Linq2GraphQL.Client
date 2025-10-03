@@ -5,35 +5,38 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClientNullable;
 
 [JsonConverter(typeof(GraphInputConverter<ItemInput>))]
-public class ItemInput : GraphInputBase
+public partial class ItemInput : GraphInputBase
 {
-    [GraphQLMember("itemId")]
-    [JsonPropertyName("itemId")]
-    public required string ItemId
-    {
-        get => GetValue<string>("itemId");
-        set => SetValue("itemId", value);
-    }
+	[GraphQLMember("itemId")]
+	[JsonPropertyName("itemId")]
+	public required string ItemId 
+	{
+		get => GetValue<string>("itemId");
+    	set => SetValue("itemId", value);
+	}
 
-    [GraphQLMember("itemName")]
-    [JsonPropertyName("itemName")]
-    public required string ItemName
-    {
-        get => GetValue<string>("itemName");
-        set => SetValue("itemName", value);
-    }
+	[GraphQLMember("itemName")]
+	[JsonPropertyName("itemName")]
+	public required string ItemName 
+	{
+		get => GetValue<string>("itemName");
+    	set => SetValue("itemName", value);
+	}
 
-    [GraphQLMember("data")]
-    [JsonPropertyName("data")]
-    public List<byte>? Data
-    {
-        get => GetValue<List<byte>?>("data");
-        set => SetValue("data", value);
-    }
+	[GraphQLMember("data")]
+	[JsonPropertyName("data")]
+	public List<byte>? Data 
+	{
+		get => GetValue<List<byte>?>("data");
+    	set => SetValue("data", value);
+	}
+
 }

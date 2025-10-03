@@ -5,6 +5,8 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 using Linq2GraphQL.Client.Common;
@@ -13,7 +15,7 @@ namespace Linq2GraphQL.TestClientNullable;
 
 #pragma warning disable CS8618
 
-public class OrderLine : GraphQLTypeBase
+public partial class OrderLine : GraphQLTypeBase
 {
     [GraphQLMember("lineNumber")]
     [JsonPropertyName("lineNumber")]
@@ -34,4 +36,5 @@ public class OrderLine : GraphQLTypeBase
     [GraphQLMember("quantity")]
     [JsonPropertyName("quantity")]
     public double Quantity { get; set; }
+
 }

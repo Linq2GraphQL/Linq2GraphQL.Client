@@ -106,17 +106,19 @@ public class QueryMethods : IQueryMethods
         return new GraphCursorQuery<AnimalsConnection>(client,  "animals", OperationType.Query, arguments); 
     }
 
-    public GraphQuery<OrdersOffsetPagingCollectionSegment> OrdersOffsetPaging(int? skip = null, int? take = null, OrderFilterInput where = null, List<OrderSortInput> order = null)
+    public GraphCursorQuery<OrdersOffsetPagingConnection> OrdersOffsetPaging(int? first = null, string after = null, int? last = null, string before = null, OrderFilterInput where = null, List<OrderSortInput> order = null)
     {
 	    var arguments = new List<ArgumentValue>
         {
-    	    new("skip","Int", skip),
-    	    new("take","Int", take),
+    	    new("first","Int", first),
+    	    new("after","String", after),
+    	    new("last","Int", last),
+    	    new("before","String", before),
     	    new("where","OrderFilterInput", where),
     	    new("order","[OrderSortInput!]", order),
         };
 
-        return new GraphQuery<OrdersOffsetPagingCollectionSegment>(client,  "ordersOffsetPaging", OperationType.Query, arguments); 
+        return new GraphCursorQuery<OrdersOffsetPagingConnection>(client,  "ordersOffsetPaging", OperationType.Query, arguments); 
     }
 
     }

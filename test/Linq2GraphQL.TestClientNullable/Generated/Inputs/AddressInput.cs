@@ -5,35 +5,46 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClientNullable;
 
 [JsonConverter(typeof(GraphInputConverter<AddressInput>))]
-public class AddressInput : GraphInputBase
+public partial class AddressInput : GraphInputBase
 {
-    [GraphQLMember("name")]
-    [JsonPropertyName("name")]
-    public required string Name
-    {
-        get => GetValue<string>("name");
-        set => SetValue("name", value);
-    }
+	[GraphQLMember("name")]
+	[JsonPropertyName("name")]
+	public required string Name 
+	{
+		get => GetValue<string>("name");
+    	set => SetValue("name", value);
+	}
 
-    [GraphQLMember("street")]
-    [JsonPropertyName("street")]
-    public required string Street
-    {
-        get => GetValue<string>("street");
-        set => SetValue("street", value);
-    }
+	[GraphQLMember("street")]
+	[JsonPropertyName("street")]
+	public required string Street 
+	{
+		get => GetValue<string>("street");
+    	set => SetValue("street", value);
+	}
 
-    [GraphQLMember("postalCode")]
-    [JsonPropertyName("postalCode")]
-    public required string PostalCode
-    {
-        get => GetValue<string>("postalCode");
-        set => SetValue("postalCode", value);
-    }
+	[GraphQLMember("postalCode")]
+	[JsonPropertyName("postalCode")]
+	public required string PostalCode 
+	{
+		get => GetValue<string>("postalCode");
+    	set => SetValue("postalCode", value);
+	}
+
+	[GraphQLMember("createdDate")]
+	[JsonPropertyName("createdDate")]
+	public required DateTime CreatedDate 
+	{
+		get => GetValue<DateTime>("createdDate");
+    	set => SetValue("createdDate", value);
+	}
+
 }

@@ -12,102 +12,102 @@ using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClient;
 
-[JsonConverter(typeof(GraphInputConverter<DecimalOperationFilterInput>))]
-public partial class DecimalOperationFilterInput : GraphInputBase
+[JsonConverter(typeof(GraphInputConverter<LocalTimeOperationFilterInput>))]
+public partial class LocalTimeOperationFilterInput : GraphInputBase
 {
 	[GraphQLMember("eq")]
 	[JsonPropertyName("eq")]
-	public decimal? Eq 
+	public TimeSpan? Eq 
 	{
-		get => GetValue<decimal?>("eq");
+		get => GetValue<TimeSpan?>("eq");
     	set => SetValue("eq", value);
 	}
 
 	[GraphQLMember("neq")]
 	[JsonPropertyName("neq")]
-	public decimal? Neq 
+	public TimeSpan? Neq 
 	{
-		get => GetValue<decimal?>("neq");
+		get => GetValue<TimeSpan?>("neq");
     	set => SetValue("neq", value);
 	}
 
 	[GraphQLMember("in")]
 	[JsonPropertyName("in")]
-	public List<decimal?> In 
+	public List<TimeSpan?> In 
 	{
-		get => GetValue<List<decimal?>>("in");
+		get => GetValue<List<TimeSpan?>>("in");
     	set => SetValue("in", value);
 	}
 
 	[GraphQLMember("nin")]
 	[JsonPropertyName("nin")]
-	public List<decimal?> Nin 
+	public List<TimeSpan?> Nin 
 	{
-		get => GetValue<List<decimal?>>("nin");
+		get => GetValue<List<TimeSpan?>>("nin");
     	set => SetValue("nin", value);
 	}
 
 	[GraphQLMember("gt")]
 	[JsonPropertyName("gt")]
-	public decimal? Gt 
+	public TimeSpan? Gt 
 	{
-		get => GetValue<decimal?>("gt");
+		get => GetValue<TimeSpan?>("gt");
     	set => SetValue("gt", value);
 	}
 
 	[GraphQLMember("ngt")]
 	[JsonPropertyName("ngt")]
-	public decimal? Ngt 
+	public TimeSpan? Ngt 
 	{
-		get => GetValue<decimal?>("ngt");
+		get => GetValue<TimeSpan?>("ngt");
     	set => SetValue("ngt", value);
 	}
 
 	[GraphQLMember("gte")]
 	[JsonPropertyName("gte")]
-	public decimal? Gte 
+	public TimeSpan? Gte 
 	{
-		get => GetValue<decimal?>("gte");
+		get => GetValue<TimeSpan?>("gte");
     	set => SetValue("gte", value);
 	}
 
 	[GraphQLMember("ngte")]
 	[JsonPropertyName("ngte")]
-	public decimal? Ngte 
+	public TimeSpan? Ngte 
 	{
-		get => GetValue<decimal?>("ngte");
+		get => GetValue<TimeSpan?>("ngte");
     	set => SetValue("ngte", value);
 	}
 
 	[GraphQLMember("lt")]
 	[JsonPropertyName("lt")]
-	public decimal? Lt 
+	public TimeSpan? Lt 
 	{
-		get => GetValue<decimal?>("lt");
+		get => GetValue<TimeSpan?>("lt");
     	set => SetValue("lt", value);
 	}
 
 	[GraphQLMember("nlt")]
 	[JsonPropertyName("nlt")]
-	public decimal? Nlt 
+	public TimeSpan? Nlt 
 	{
-		get => GetValue<decimal?>("nlt");
+		get => GetValue<TimeSpan?>("nlt");
     	set => SetValue("nlt", value);
 	}
 
 	[GraphQLMember("lte")]
 	[JsonPropertyName("lte")]
-	public decimal? Lte 
+	public TimeSpan? Lte 
 	{
-		get => GetValue<decimal?>("lte");
+		get => GetValue<TimeSpan?>("lte");
     	set => SetValue("lte", value);
 	}
 
 	[GraphQLMember("nlte")]
 	[JsonPropertyName("nlte")]
-	public decimal? Nlte 
+	public TimeSpan? Nlte 
 	{
-		get => GetValue<decimal?>("nlte");
+		get => GetValue<TimeSpan?>("nlte");
     	set => SetValue("nlte", value);
 	}
 

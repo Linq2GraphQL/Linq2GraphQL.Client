@@ -39,4 +39,12 @@ public partial class AddressSortInput : GraphInputBase
     	set => SetValue("postalCode", value);
 	}
 
+	[GraphQLMember("createdDate")]
+	[JsonPropertyName("createdDate")]
+	public SortEnumType? CreatedDate 
+	{
+		get => GetValue<SortEnumType?>("createdDate");
+    	set => SetValue("createdDate", value);
+	}
+
 }

@@ -12,102 +12,102 @@ using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClient;
 
-[JsonConverter(typeof(GraphInputConverter<DecimalOperationFilterInput>))]
-public partial class DecimalOperationFilterInput : GraphInputBase
+[JsonConverter(typeof(GraphInputConverter<LocalDateOperationFilterInput>))]
+public partial class LocalDateOperationFilterInput : GraphInputBase
 {
 	[GraphQLMember("eq")]
 	[JsonPropertyName("eq")]
-	public decimal? Eq 
+	public DateTime? Eq 
 	{
-		get => GetValue<decimal?>("eq");
+		get => GetValue<DateTime?>("eq");
     	set => SetValue("eq", value);
 	}
 
 	[GraphQLMember("neq")]
 	[JsonPropertyName("neq")]
-	public decimal? Neq 
+	public DateTime? Neq 
 	{
-		get => GetValue<decimal?>("neq");
+		get => GetValue<DateTime?>("neq");
     	set => SetValue("neq", value);
 	}
 
 	[GraphQLMember("in")]
 	[JsonPropertyName("in")]
-	public List<decimal?> In 
+	public List<DateTime?> In 
 	{
-		get => GetValue<List<decimal?>>("in");
+		get => GetValue<List<DateTime?>>("in");
     	set => SetValue("in", value);
 	}
 
 	[GraphQLMember("nin")]
 	[JsonPropertyName("nin")]
-	public List<decimal?> Nin 
+	public List<DateTime?> Nin 
 	{
-		get => GetValue<List<decimal?>>("nin");
+		get => GetValue<List<DateTime?>>("nin");
     	set => SetValue("nin", value);
 	}
 
 	[GraphQLMember("gt")]
 	[JsonPropertyName("gt")]
-	public decimal? Gt 
+	public DateTime? Gt 
 	{
-		get => GetValue<decimal?>("gt");
+		get => GetValue<DateTime?>("gt");
     	set => SetValue("gt", value);
 	}
 
 	[GraphQLMember("ngt")]
 	[JsonPropertyName("ngt")]
-	public decimal? Ngt 
+	public DateTime? Ngt 
 	{
-		get => GetValue<decimal?>("ngt");
+		get => GetValue<DateTime?>("ngt");
     	set => SetValue("ngt", value);
 	}
 
 	[GraphQLMember("gte")]
 	[JsonPropertyName("gte")]
-	public decimal? Gte 
+	public DateTime? Gte 
 	{
-		get => GetValue<decimal?>("gte");
+		get => GetValue<DateTime?>("gte");
     	set => SetValue("gte", value);
 	}
 
 	[GraphQLMember("ngte")]
 	[JsonPropertyName("ngte")]
-	public decimal? Ngte 
+	public DateTime? Ngte 
 	{
-		get => GetValue<decimal?>("ngte");
+		get => GetValue<DateTime?>("ngte");
     	set => SetValue("ngte", value);
 	}
 
 	[GraphQLMember("lt")]
 	[JsonPropertyName("lt")]
-	public decimal? Lt 
+	public DateTime? Lt 
 	{
-		get => GetValue<decimal?>("lt");
+		get => GetValue<DateTime?>("lt");
     	set => SetValue("lt", value);
 	}
 
 	[GraphQLMember("nlt")]
 	[JsonPropertyName("nlt")]
-	public decimal? Nlt 
+	public DateTime? Nlt 
 	{
-		get => GetValue<decimal?>("nlt");
+		get => GetValue<DateTime?>("nlt");
     	set => SetValue("nlt", value);
 	}
 
 	[GraphQLMember("lte")]
 	[JsonPropertyName("lte")]
-	public decimal? Lte 
+	public DateTime? Lte 
 	{
-		get => GetValue<decimal?>("lte");
+		get => GetValue<DateTime?>("lte");
     	set => SetValue("lte", value);
 	}
 
 	[GraphQLMember("nlte")]
 	[JsonPropertyName("nlte")]
-	public decimal? Nlte 
+	public DateTime? Nlte 
 	{
-		get => GetValue<decimal?>("nlte");
+		get => GetValue<DateTime?>("nlte");
     	set => SetValue("nlte", value);
 	}
 

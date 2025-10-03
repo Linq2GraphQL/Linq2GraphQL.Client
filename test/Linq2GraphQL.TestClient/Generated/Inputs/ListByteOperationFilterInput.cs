@@ -5,43 +5,46 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClient;
 
 [JsonConverter(typeof(GraphInputConverter<ListByteOperationFilterInput>))]
-public class ListByteOperationFilterInput : GraphInputBase
+public partial class ListByteOperationFilterInput : GraphInputBase
 {
-    [GraphQLMember("all")]
-    [JsonPropertyName("all")]
-    public ByteOperationFilterInput All
-    {
-        get => GetValue<ByteOperationFilterInput>("all");
-        set => SetValue("all", value);
-    }
+	[GraphQLMember("all")]
+	[JsonPropertyName("all")]
+	public ByteOperationFilterInput All 
+	{
+		get => GetValue<ByteOperationFilterInput>("all");
+    	set => SetValue("all", value);
+	}
 
-    [GraphQLMember("none")]
-    [JsonPropertyName("none")]
-    public ByteOperationFilterInput None
-    {
-        get => GetValue<ByteOperationFilterInput>("none");
-        set => SetValue("none", value);
-    }
+	[GraphQLMember("none")]
+	[JsonPropertyName("none")]
+	public ByteOperationFilterInput None 
+	{
+		get => GetValue<ByteOperationFilterInput>("none");
+    	set => SetValue("none", value);
+	}
 
-    [GraphQLMember("some")]
-    [JsonPropertyName("some")]
-    public ByteOperationFilterInput Some
-    {
-        get => GetValue<ByteOperationFilterInput>("some");
-        set => SetValue("some", value);
-    }
+	[GraphQLMember("some")]
+	[JsonPropertyName("some")]
+	public ByteOperationFilterInput Some 
+	{
+		get => GetValue<ByteOperationFilterInput>("some");
+    	set => SetValue("some", value);
+	}
 
-    [GraphQLMember("any")]
-    [JsonPropertyName("any")]
-    public bool? Any
-    {
-        get => GetValue<bool?>("any");
-        set => SetValue("any", value);
-    }
+	[GraphQLMember("any")]
+	[JsonPropertyName("any")]
+	public bool? Any 
+	{
+		get => GetValue<bool?>("any");
+    	set => SetValue("any", value);
+	}
+
 }

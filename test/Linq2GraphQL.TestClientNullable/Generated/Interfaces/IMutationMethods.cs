@@ -5,11 +5,29 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClientNullable;
 
+/// <summary>
+/// Interface for MutationMethods GraphQL operations
+/// </summary>
 public interface IMutationMethods
 {
+    /// <summary>
+    /// Executes updateCustomer GraphQL operation
+    /// </summary>
+    /// <param name="updateCustomer">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<Customer></returns>
+    GraphQuery<Customer> UpdateCustomer(CustomerInput customer);
+
+    /// <summary>
+    /// Executes updatePerson GraphQL operation
+    /// </summary>
+    /// <param name="updatePerson">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<Person></returns>
     GraphQuery<Person> UpdatePerson(PersonInput person);
+
 }

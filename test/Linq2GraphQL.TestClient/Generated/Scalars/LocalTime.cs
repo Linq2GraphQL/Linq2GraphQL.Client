@@ -5,12 +5,14 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+
 using Linq2GraphQL.Client;
+using System.Text.Json.Serialization;
 
-namespace Linq2GraphQL.TestClientNullable;
+namespace Linq2GraphQL.TestClient;
 
-public interface ISampleNullableClient
-{
-    IQueryMethods Query { get; }
-    IMutationMethods Mutation { get; }
-}
+    /// <summary>
+    /// The LocalTime scalar type is a local time string (i.e., with no associated timezone) in 24-hr HH:mm:ss.
+    /// </summary>
+    [JsonConverter(typeof(CustomScalarConverter<LocalTime>))]
+    public partial class LocalTime : CustomScalar {}

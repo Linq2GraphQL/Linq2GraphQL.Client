@@ -5,51 +5,62 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClient;
 
 [JsonConverter(typeof(GraphInputConverter<AddressFilterInput>))]
-public class AddressFilterInput : GraphInputBase
+public partial class AddressFilterInput : GraphInputBase
 {
-    [GraphQLMember("and")]
-    [JsonPropertyName("and")]
-    public List<AddressFilterInput> And
-    {
-        get => GetValue<List<AddressFilterInput>>("and");
-        set => SetValue("and", value);
-    }
+	[GraphQLMember("and")]
+	[JsonPropertyName("and")]
+	public List<AddressFilterInput> And 
+	{
+		get => GetValue<List<AddressFilterInput>>("and");
+    	set => SetValue("and", value);
+	}
 
-    [GraphQLMember("or")]
-    [JsonPropertyName("or")]
-    public List<AddressFilterInput> Or
-    {
-        get => GetValue<List<AddressFilterInput>>("or");
-        set => SetValue("or", value);
-    }
+	[GraphQLMember("or")]
+	[JsonPropertyName("or")]
+	public List<AddressFilterInput> Or 
+	{
+		get => GetValue<List<AddressFilterInput>>("or");
+    	set => SetValue("or", value);
+	}
 
-    [GraphQLMember("name")]
-    [JsonPropertyName("name")]
-    public StringOperationFilterInput Name
-    {
-        get => GetValue<StringOperationFilterInput>("name");
-        set => SetValue("name", value);
-    }
+	[GraphQLMember("name")]
+	[JsonPropertyName("name")]
+	public StringOperationFilterInput Name 
+	{
+		get => GetValue<StringOperationFilterInput>("name");
+    	set => SetValue("name", value);
+	}
 
-    [GraphQLMember("street")]
-    [JsonPropertyName("street")]
-    public StringOperationFilterInput Street
-    {
-        get => GetValue<StringOperationFilterInput>("street");
-        set => SetValue("street", value);
-    }
+	[GraphQLMember("street")]
+	[JsonPropertyName("street")]
+	public StringOperationFilterInput Street 
+	{
+		get => GetValue<StringOperationFilterInput>("street");
+    	set => SetValue("street", value);
+	}
 
-    [GraphQLMember("postalCode")]
-    [JsonPropertyName("postalCode")]
-    public StringOperationFilterInput PostalCode
-    {
-        get => GetValue<StringOperationFilterInput>("postalCode");
-        set => SetValue("postalCode", value);
-    }
+	[GraphQLMember("postalCode")]
+	[JsonPropertyName("postalCode")]
+	public StringOperationFilterInput PostalCode 
+	{
+		get => GetValue<StringOperationFilterInput>("postalCode");
+    	set => SetValue("postalCode", value);
+	}
+
+	[GraphQLMember("createdDate")]
+	[JsonPropertyName("createdDate")]
+	public LocalDateOperationFilterInput CreatedDate 
+	{
+		get => GetValue<LocalDateOperationFilterInput>("createdDate");
+    	set => SetValue("createdDate", value);
+	}
+
 }

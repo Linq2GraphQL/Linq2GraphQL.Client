@@ -9,10 +9,10 @@
 using Linq2GraphQL.Client;
 using System.Text.Json.Serialization;
 
-namespace Linq2GraphQL.TestClientNullable;
+namespace Linq2GraphQL.TestClient;
 
     /// <summary>
-    /// The Longitude scalar type is a valid decimal degrees longitude number.
+    /// The `LocalDate` scalar type represents a ISO date string, represented as UTF-8 character sequences YYYY-MM-DD. The scalar follows the specification defined in RFC3339
     /// </summary>
-    [JsonConverter(typeof(CustomScalarConverter<Longitude>))]
-    public partial class Longitude : CustomScalar {}
+    [JsonConverter(typeof(CustomScalarConverter<LocalDate>))]
+    public partial class LocalDate : CustomScalar {}

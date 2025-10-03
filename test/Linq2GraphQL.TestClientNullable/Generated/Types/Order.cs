@@ -5,6 +5,8 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 using Linq2GraphQL.Client.Common;
@@ -17,47 +19,43 @@ public static class OrderExtensions
 {
     [GraphQLMember("myGradeMethod")]
     [Obsolete("This method should not be used anymore")]
-    public static string? MyGradeMethod(this Order order, [GraphQLArgument("name", "String!")] string name)
+    public static string? MyGradeMethod(this Order  order, [GraphQLArgument("name", "String!")] string name)
     {
         return order.GetMethodValue<string?>("myGradeMethod", name);
     }
 
     [GraphQLMember("orderHello")]
-    public static string OrderHello(this Order order, [GraphQLArgument("name", "String!")] string name,
-        [GraphQLArgument("first", "Int!")] int first)
+    public static string OrderHello(this Order  order, [GraphQLArgument("name", "String!")] string name, [GraphQLArgument("first", "Int!")] int first)
     {
         return order.GetMethodValue<string>("orderHello", name, first);
     }
 
     [GraphQLMember("orderAddress")]
-    public static Address OrderAddress(this Order order,
-        [GraphQLArgument("addressType", "AddressType!")] AddressType addressType)
+    public static Address OrderAddress(this Order  order, [GraphQLArgument("addressType", "AddressType!")] AddressType addressType)
     {
         return order.GetMethodValue<Address>("orderAddress", addressType);
     }
+
 }
 
-public class Order : GraphQLTypeBase
+public partial class Order : GraphQLTypeBase
 {
-    private readonly LazyProperty<string?> _myGradeMethod = new();
-
-    private readonly LazyProperty<Address> _orderAddress = new();
-
-    private readonly LazyProperty<string> _orderHello = new();
-
+    private LazyProperty<string?> _myGradeMethod = new();
     /// <summary>
-    ///     Do not use in Query, only to retrive result
+    /// Do not use in Query, only to retrive result
     /// </summary>
     [Obsolete("This method should not be used anymore")]
     public string? MyGradeMethod => _myGradeMethod.Value(() => GetFirstMethodValue<string?>("myGradeMethod"));
 
+    private LazyProperty<string> _orderHello = new();
     /// <summary>
-    ///     Do not use in Query, only to retrive result
+    /// Do not use in Query, only to retrive result
     /// </summary>
     public string OrderHello => _orderHello.Value(() => GetFirstMethodValue<string>("orderHello"));
 
+    private LazyProperty<Address> _orderAddress = new();
     /// <summary>
-    ///     Do not use in Query, only to retrive result
+    /// Do not use in Query, only to retrive result
     /// </summary>
     public Address OrderAddress => _orderAddress.Value(() => GetFirstMethodValue<Address>("orderAddress"));
 
@@ -89,4 +87,5 @@ public class Order : GraphQLTypeBase
     [GraphQLMember("grade")]
     [JsonPropertyName("grade")]
     public string? Grade { get; set; }
+
 }

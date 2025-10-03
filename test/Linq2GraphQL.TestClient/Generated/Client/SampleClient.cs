@@ -6,24 +6,53 @@
 //---------------------------------------------------------------------
 
 using Linq2GraphQL.Client;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace Linq2GraphQL.TestClient;
 
+/// <summary>
+/// GraphQL client for SampleClient operations
+/// </summary>
+/// <remarks>
+/// Provides strongly-typed access to GraphQL queries, mutations, and subscriptions.
+/// Supports dependency injection for better testability and flexibility.
+/// </remarks>
 public class SampleClient : ISampleClient
 { 
-    public SampleClient(HttpClient httpClient, [FromKeyedServices("SampleClient")]IOptions<GraphClientOptions> options, IServiceProvider provider)
+    /// <summary>
+    /// Constructor with dependency injection support
+    /// </summary>
+    /// <param name="httpClient">HTTP client for GraphQL requests</param>
+    /// <param name="options">GraphQL client configuration options</param>
+    /// <param name="provider">Service provider for dependency resolution</param>
+    /// <param name="queryMethods">Optional query methods implementation (uses default if null)</param>
+    /// <param name="mutationMethods">Optional mutation methods implementation (uses default if null)</param>
+    /// <param name="subscriptionMethods">Optional subscription methods implementation (uses default if null)</param>
+    public SampleClient(
+        HttpClient httpClient, 
+        [FromKeyedServices("SampleClient")] IOptions<GraphClientOptions> options, 
+        IServiceProvider provider,
+        IQueryMethods queryMethods = null,
+        IMutationMethods mutationMethods = null,
+        ISubscriptionMethods subscriptionMethods = null)
     {
         var client = new GraphClient(httpClient, options, provider, true);
-        Query = new QueryMethods(client);
-        Mutation = new MutationMethods(client);
-        Subscription = new SubscriptionMethods(client); 
+        Query = queryMethods ?? new QueryMethods(client);
+        Mutation = mutationMethods ?? new MutationMethods(client);
+        Subscription = subscriptionMethods ?? new SubscriptionMethods(client);
     }
 
+    /// <summary>
+    /// Gets the query methods for this GraphQL client
+    /// </summary>
     public IQueryMethods Query { get; private set; }
+    /// <summary>
+    /// Gets the mutation methods for this GraphQL client
+    /// </summary>
     public IMutationMethods Mutation { get; private set; }
+    /// <summary>
+    /// Gets the subscription methods for this GraphQL client
+    /// </summary>
     public ISubscriptionMethods Subscription { get; private set; }
-    
 }

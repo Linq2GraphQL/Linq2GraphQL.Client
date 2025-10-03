@@ -5,27 +5,30 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClient;
 
 [JsonConverter(typeof(GraphInputConverter<IAnimalSortInput>))]
-public class IAnimalSortInput : GraphInputBase
+public partial class IAnimalSortInput : GraphInputBase
 {
-    [GraphQLMember("name")]
-    [JsonPropertyName("name")]
-    public SortEnumType? Name
-    {
-        get => GetValue<SortEnumType?>("name");
-        set => SetValue("name", value);
-    }
+	[GraphQLMember("name")]
+	[JsonPropertyName("name")]
+	public SortEnumType? Name 
+	{
+		get => GetValue<SortEnumType?>("name");
+    	set => SetValue("name", value);
+	}
 
-    [GraphQLMember("numberOfLegs")]
-    [JsonPropertyName("numberOfLegs")]
-    public SortEnumType? NumberOfLegs
-    {
-        get => GetValue<SortEnumType?>("numberOfLegs");
-        set => SetValue("numberOfLegs", value);
-    }
+	[GraphQLMember("numberOfLegs")]
+	[JsonPropertyName("numberOfLegs")]
+	public SortEnumType? NumberOfLegs 
+	{
+		get => GetValue<SortEnumType?>("numberOfLegs");
+    	set => SetValue("numberOfLegs", value);
+	}
+
 }
