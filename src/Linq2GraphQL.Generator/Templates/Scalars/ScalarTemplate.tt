@@ -10,7 +10,7 @@ using System.Text.Json.Serialization;
 namespace <#= namespaceName #>;
 
     /// <summary>
-    /// <#= scalarType.SummaryDescription #>
+    /// <#= scalarType.SummaryDescription ?? $"Represents the {scalarType.ScalarTypeName} scalar type" #>
     /// </summary>
     [JsonConverter(typeof(CustomScalarConverter<<#= className #>>))]
     public partial class <#= className #> : CustomScalar {}
