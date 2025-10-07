@@ -12,9 +12,10 @@ public class Subscription
     }
 
     [Subscribe]
-    [Topic("{name}")]
+    [Topic($"{{{nameof(name)}}}")]
     public Customer CustomerNameAdded(string name, [EventMessage] Customer customer)
     {
+        Console.WriteLine($"Customer {customer.CustomerName} added from topic {name}");
         return customer;
     }
 }

@@ -68,7 +68,7 @@ public class QueryIncludeTests : IClassFixture<SampleClientFixture>
     }
 
     [Fact]
-    public async Task IncludePrimitives_AnomousResult()
+    public async Task IncludePrimitives_AnonymousResult()
     {
         var query = sampleClient
             .Query
