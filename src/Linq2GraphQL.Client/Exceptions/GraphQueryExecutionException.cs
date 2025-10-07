@@ -32,7 +32,7 @@ public class GraphQueryError
 
     [JsonPropertyName("locations")] public ErrorLocation[] Locations { get; set; }
 
-    [JsonPropertyName("path")] public List<string> Path { get; set; }
+    [JsonPropertyName("path")] public List<object> Path { get; set; }
 }
 
 public class ErrorLocation

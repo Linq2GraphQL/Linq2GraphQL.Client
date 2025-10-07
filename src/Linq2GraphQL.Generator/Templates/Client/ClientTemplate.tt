@@ -34,19 +34,19 @@ public class <#= name #> : I<#= name #>
         HttpClient httpClient, 
         [FromKeyedServices("<#= name #>")] IOptions<GraphClientOptions> options, 
         IServiceProvider provider<# if (includeQuery) { #>,
-        I<#= GetMehodName(queryType) #> queryMethods = null<# } #><# if (includeMutation) { #>,
-        I<#= GetMehodName(mutationType) #> mutationMethods = null<# } #><# if (includeSubscriptions) { #>,
-        I<#= GetMehodName(subscriptionType) #> subscriptionMethods = null<# } #>)
+        I<#= GetParameterName(queryType) #> queryMethods = null<# } #><# if (includeMutation) { #>,
+        I<#= GetParameterName(mutationType) #> mutationMethods = null<# } #><# if (includeSubscriptions) { #>,
+        I<#= GetParameterName(subscriptionType) #> subscriptionMethods = null<# } #>)
     {
         var client = new GraphClient(httpClient, options, provider, <#= includeDeprecated.ToString().ToLower() #>);
 <# if (includeQuery) { #>
-        Query = queryMethods ?? new <#= GetMehodName(queryType) #>(client);
+        Query = queryMethods ?? new <#= GetTypeName(queryType) #>(client);
 <# } #>
 <# if (includeMutation) { #>
-        Mutation = mutationMethods ?? new <#= GetMehodName(mutationType) #>(client);
+        Mutation = mutationMethods ?? new <#= GetTypeName(mutationType) #>(client);
 <# } #>
 <# if (includeSubscriptions) { #>
-        Subscription = subscriptionMethods ?? new <#= GetMehodName(subscriptionType) #>(client);
+        Subscription = subscriptionMethods ?? new <#= GetTypeName(subscriptionType) #>(client);
 <# } #>
     }
 
@@ -54,18 +54,18 @@ public class <#= name #> : I<#= name #>
     /// <summary>
     /// Gets the query methods for this GraphQL client
     /// </summary>
-    public I<#= GetMehodName(queryType) #> Query { get; private set; }
+    public I<#= GetTypeName(queryType) #> Query { get; private set; }
 <# } #>
 <# if (includeMutation) { #>
     /// <summary>
     /// Gets the mutation methods for this GraphQL client
     /// </summary>
-    public I<#= GetMehodName(mutationType) #> Mutation { get; private set; }
+    public I<#= GetTypeName(mutationType) #> Mutation { get; private set; }
 <# } #>
 <# if (includeSubscriptions) { #>
     /// <summary>
     /// Gets the subscription methods for this GraphQL client
     /// </summary>
-    public I<#= GetMehodName(subscriptionType) #> Subscription { get; private set; }
+    public I<#= GetTypeName(subscriptionType) #> Subscription { get; private set; }
 <# } #>
 }

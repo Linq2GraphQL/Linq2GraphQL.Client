@@ -32,8 +32,8 @@ public class SampleNullableClient : ISampleNullableClient
         HttpClient httpClient, 
         [FromKeyedServices("SampleNullableClient")] IOptions<GraphClientOptions> options, 
         IServiceProvider provider,
-        IQueryMethods queryMethods = null,
-        IMutationMethods mutationMethods = null)
+        IQueryMethods? queryMethods = null,
+        IMutationMethods? mutationMethods = null)
     {
         var client = new GraphClient(httpClient, options, provider, true);
         Query = queryMethods ?? new QueryMethods(client);

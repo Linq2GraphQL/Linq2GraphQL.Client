@@ -10,8 +10,13 @@ using System.Text.Json;
 
 namespace Linq2GraphQL.Generator
 {
-    public class ClientGenerator(string namespaceName, string clientName, bool includeSubscriptions,
-        EnumGeneratorStrategy enumGeneratorStrategy, bool nullable, bool includeDeprecated)
+    public class ClientGenerator(
+        string namespaceName,
+        string clientName,
+        bool includeSubscriptions,
+        EnumGeneratorStrategy enumGeneratorStrategy,
+        bool nullable,
+        bool includeDeprecated)
     {
         private readonly List<FileEntry> entries = new();
 
@@ -52,7 +57,7 @@ namespace Linq2GraphQL.Generator
                 query = General.IntrospectionQuery;
             }
 
-                using var response = await httpClient.PostAsJsonAsync(uri, new { query = query });
+            using var response = await httpClient.PostAsJsonAsync(uri, new { query = query });
             if (!response.IsSuccessStatusCode)
             {
                 throw new Exception(
@@ -105,8 +110,10 @@ namespace Linq2GraphQL.Generator
             Console.WriteLine("Generate Interfaces");
 
             var classInterfacesList = schema.GetClassTypes()?.Where(e => e.HasInterfaces)
-                ?.SelectMany(i => i.Interfaces?.ToDictionary(e => i.Name, e => e.Name))?.ToList() ?? new List<KeyValuePair<string, string>>();
-            
+                                          ?.SelectMany(i => i.Interfaces?.ToDictionary(e => i.Name, e => e.Name))
+                                          ?.ToList() ??
+                                      new List<KeyValuePair<string, string>>();
+
             var interfaces = schema.GetInterfaces();
             if (interfaces != null)
             {
@@ -149,7 +156,6 @@ namespace Linq2GraphQL.Generator
             }
 
 
-
             Console.WriteLine("Generate Enums...");
             foreach (var enumType in schema.GetEnums())
             {
@@ -172,18 +178,19 @@ namespace Linq2GraphQL.Generator
             {
                 var scalarText = new ScalarTemplate(scalar, namespaceName).TransformText();
                 AddFile("Scalars", scalar.FileName, scalarText);
-
             }
 
 
             Console.WriteLine("Generate Client Interface...");
-            var clientInterfaceText = new IClientTemplate(namespaceName, clientName, queryType, mutationType, subscriptionType, includeDeprecated)
+            var clientInterfaceText = new IClientTemplate(namespaceName, clientName, queryType, mutationType,
+                    subscriptionType, includeDeprecated)
                 .TransformText();
             var interfaceFileName = "I" + clientName + ".cs";
             AddFile("Interfaces", interfaceFileName, clientInterfaceText);
 
             Console.WriteLine("Generate Client...");
-            var templateText = new ClientTemplate(namespaceName, clientName, queryType, mutationType, subscriptionType, includeDeprecated)
+            var templateText = new ClientTemplate(namespaceName, clientName, queryType, mutationType, subscriptionType,
+                    includeDeprecated, nullable: nullable)
                 .TransformText();
             var fileName = clientName + ".cs";
             AddFile(clientDirName, fileName, templateText);

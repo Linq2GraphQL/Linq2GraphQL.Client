@@ -5,10 +5,10 @@ namespace Linq2GraphQL.Client;
 
 public class QueryExecutor<T>
 {
-    private const string errorPropertyName = "errors";
-    private const string dataPropertyName = "data";
-    private const string extensionsPropertyName = "extensions";
-    
+    private const string ErrorPropertyName = "errors";
+    private const string DataPropertyName = "data";
+    private const string ExtensionsPropertyName = "extensions";
+
     private readonly GraphClient client;
 
     internal QueryExecutor(GraphClient client)
@@ -16,9 +16,11 @@ public class QueryExecutor<T>
         this.client = client;
     }
 
-    internal async Task<T> ExecuteRequestAsync(string name, GraphQLRequest graphRequest, CancellationToken cancellationToken = default)
+    internal async Task<T> ExecuteRequestAsync(string name, GraphQLRequest graphRequest,
+        CancellationToken cancellationToken = default)
     {
-        using var response = await client.HttpClient.PostAsJsonAsync("", graphRequest, client.SerializerOptions, cancellationToken: cancellationToken);
+        using var response = await client.HttpClient.PostAsJsonAsync("", graphRequest, client.SerializerOptions,
+            cancellationToken: cancellationToken);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -34,8 +36,7 @@ public class QueryExecutor<T>
     public T ProcessResponse(string con, string name, GraphQLRequest request)
     {
         var document = JsonDocument.Parse(con);
-        var hasError = document.RootElement.TryGetProperty(errorPropertyName, out var errorElement);
-        var hasExtensions = document.RootElement.TryGetProperty(extensionsPropertyName, out var extensionsElement);
+        var hasError = document.RootElement.TryGetProperty(ErrorPropertyName, out var errorElement);
 
         if (hasError)
         {
@@ -43,7 +44,7 @@ public class QueryExecutor<T>
             throw new GraphQueryExecutionException(errors, request.Query, request.Variables);
         }
 
-        document.RootElement.TryGetProperty(dataPropertyName, out var dataElement);
+        document.RootElement.TryGetProperty(DataPropertyName, out var dataElement);
         dataElement.TryGetProperty(name, out var resultElement);
 
         if (resultElement.ValueKind == JsonValueKind.Null)
@@ -52,6 +53,5 @@ public class QueryExecutor<T>
         }
 
         return resultElement.Deserialize<T>(client.SerializerOptions);
-
     }
 }
