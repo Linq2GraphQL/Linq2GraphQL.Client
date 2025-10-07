@@ -5,30 +5,27 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 
 namespace StartGG.Client;
 
 [JsonConverter(typeof(GraphInputConverter<PhaseGroupPageQueryFilter>))]
-public partial class PhaseGroupPageQueryFilter : GraphInputBase
+public class PhaseGroupPageQueryFilter : GraphInputBase
 {
-	[GraphQLMember("id")]
-	[JsonPropertyName("id")]
-	public List<ID> Id 
-	{
-		get => GetValue<List<ID>>("id");
-    	set => SetValue("id", value);
-	}
+    [GraphQLMember("id")]
+    [JsonPropertyName("id")]
+    public List<ID> Id
+    {
+        get => GetValue<List<ID>>("id");
+        set => SetValue("id", value);
+    }
 
-	[GraphQLMember("waveId")]
-	[JsonPropertyName("waveId")]
-	public ID WaveId 
-	{
-		get => GetValue<ID>("waveId");
-    	set => SetValue("waveId", value);
-	}
-
+    [GraphQLMember("waveId")]
+    [JsonPropertyName("waveId")]
+    public ID WaveId
+    {
+        get => GetValue<ID>("waveId");
+        set => SetValue("waveId", value);
+    }
 }

@@ -6,7 +6,10 @@
     <CardBody>
 
 
-        <h3>@Title  <Icon class="icon" IconType="@(isExpanded ? Icons.Layout_navbar_collapse: Icons.Layout_navbar_expand)" OnClick="ShowDetailsAsync" /></h3>
+        <h3>@Title <Icon class="icon"
+                         IconType="@(isExpanded ? Icons.Layout_navbar_collapse : Icons.Layout_navbar_expand)"
+                         OnClick="ShowDetailsAsync"/>
+        </h3>
 
         <div class="mb-2">
             @Description
@@ -21,13 +24,14 @@
 
                 <Tab Title="Query">
                     <div style="height:300px">
-                        <StandaloneCodeEditor Id="@(id + "_query")" ConstructionOptions="QueryConstructionOptions" />
+                        <StandaloneCodeEditor Id="@(id + "_query")" ConstructionOptions="QueryConstructionOptions"/>
                     </div>
                 </Tab>
 
                 <Tab Title="Variables">
                     <div style="height:300px">
-                        <StandaloneCodeEditor Id="@(id + "_variables")" ConstructionOptions="VariableConstructionOptions" />
+                        <StandaloneCodeEditor Id="@(id + "_variables")"
+                                              ConstructionOptions="VariableConstructionOptions"/>
                     </div>
                 </Tab>
 
@@ -35,7 +39,9 @@
                     <Header>
                         @if (QueryExecute.BaseResult == null)
                         {
-                            <Button Disabled=isExecuting Size=ButtonSize.Small BackgroundColor=TablerColor.Primary OnClick="ExecuteAsync">Execute</Button>
+                            <Button Disabled=isExecuting Size=ButtonSize.Small BackgroundColor=TablerColor.Primary
+                                    OnClick="ExecuteAsync">Execute
+                            </Button>
                         }
                         else
                         {
@@ -47,8 +53,8 @@
                         <div style="height:300px">
                             @if (QueryExecute.BaseResult != null)
                             {
-                                <StandaloneCodeEditor Id="@(id + "_result")" ConstructionOptions="ResultConstructionOptions" />
-
+                                <StandaloneCodeEditor Id="@(id + "_result")"
+                                                      ConstructionOptions="ResultConstructionOptions"/>
                             }
                         </div>
                     </ChildContent>
@@ -59,13 +65,12 @@
                 {
                     <Tab Title="Base Result">
                         <div style="height:300px">
-                            <StandaloneCodeEditor Id="@(id + "_baseResult")" ConstructionOptions="ResponseConstructionOptions" />
+                            <StandaloneCodeEditor Id="@(id + "_baseResult")"
+                                                  ConstructionOptions="ResponseConstructionOptions"/>
 
                         </div>
                     </Tab>
                 }
-
-
 
 
             </Tabs>

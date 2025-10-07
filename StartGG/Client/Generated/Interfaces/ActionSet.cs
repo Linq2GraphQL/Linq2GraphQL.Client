@@ -5,7 +5,6 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using System;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -16,8 +15,6 @@ namespace StartGG.Client;
 
 public static class ActionSetExtentions
 {
-
-
     [GraphInterface]
     public static TeamActionSet TeamActionSet(this ActionSet value)
     {
@@ -25,39 +22,34 @@ public static class ActionSetExtentions
         {
             return (TeamActionSet)value;
         }
+
         return null;
     }
 }
 
-
 internal class ActionSetConverter : InterfaceJsonConverter<ActionSet>
 {
-    public override ActionSet Deserialize(string typeName, JsonObject json) => typeName switch
+    public override ActionSet Deserialize(string typeName, JsonObject json)
     {
-          "TeamActionSet" => json.Deserialize<TeamActionSet>(),
-        _ => json.Deserialize< ActionSet__Concrete>()
-    };
+        return typeName switch
+        {
+            "TeamActionSet" => json.Deserialize<TeamActionSet>(),
+            _ => json.Deserialize<ActionSet__Concrete>()
+        };
+    }
 }
 
-
-
-
 [JsonConverter(typeof(ActionSetConverter))]
-public interface ActionSet 
+public interface ActionSet
 {
-	[GraphQLMember("id")]
-	public ID Id { get; set; }  
-    [GraphQLMember("__typename")]
-    public string __TypeName { get; set; }
+    [GraphQLMember("id")] public ID Id { get; set; }
 
+    [GraphQLMember("__typename")] public string __TypeName { get; set; }
 }
 
 internal class ActionSet__Concrete : ActionSet
 {
-	[GraphQLMember("id")]
-	public ID Id { get; set; }  
+    [GraphQLMember("id")] public ID Id { get; set; }
 
-    [GraphQLMember("__typename")]
-    public string __TypeName { get; set; }
-
+    [GraphQLMember("__typename")] public string __TypeName { get; set; }
 }

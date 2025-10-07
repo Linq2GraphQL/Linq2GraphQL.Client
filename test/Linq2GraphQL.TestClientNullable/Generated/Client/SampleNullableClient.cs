@@ -6,22 +6,46 @@
 //---------------------------------------------------------------------
 
 using Linq2GraphQL.Client;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace Linq2GraphQL.TestClientNullable;
 
+/// <summary>
+/// GraphQL client for SampleNullableClient operations
+/// </summary>
+/// <remarks>
+/// Provides strongly-typed access to GraphQL queries, mutations, and subscriptions.
+/// Supports dependency injection for better testability and flexibility.
+/// </remarks>
 public class SampleNullableClient : ISampleNullableClient
-{
-    public SampleNullableClient(HttpClient httpClient, [FromKeyedServices("SampleNullableClient")]IOptions<GraphClientOptions> options, IServiceProvider provider)
+{ 
+    /// <summary>
+    /// Constructor with dependency injection support
+    /// </summary>
+    /// <param name="httpClient">HTTP client for GraphQL requests</param>
+    /// <param name="options">GraphQL client configuration options</param>
+    /// <param name="provider">Service provider for dependency resolution</param>
+    /// <param name="queryMethods">Optional query methods implementation (uses default if null)</param>
+    /// <param name="mutationMethods">Optional mutation methods implementation (uses default if null)</param>
+    public SampleNullableClient(
+        HttpClient httpClient, 
+        [FromKeyedServices("SampleNullableClient")] IOptions<GraphClientOptions> options, 
+        IServiceProvider provider,
+        IQueryMethods? queryMethods = null,
+        IMutationMethods? mutationMethods = null)
     {
-        var client = new GraphClient(httpClient, options, provider);
-        Query = new QueryMethods(client);
-        Mutation = new MutationMethods(client);
+        var client = new GraphClient(httpClient, options, provider, true);
+        Query = queryMethods ?? new QueryMethods(client);
+        Mutation = mutationMethods ?? new MutationMethods(client);
     }
 
+    /// <summary>
+    /// Gets the query methods for this GraphQL client
+    /// </summary>
     public IQueryMethods Query { get; private set; }
+    /// <summary>
+    /// Gets the mutation methods for this GraphQL client
+    /// </summary>
     public IMutationMethods Mutation { get; private set; }
-    
 }

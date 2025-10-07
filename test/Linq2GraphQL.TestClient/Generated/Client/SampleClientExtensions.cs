@@ -33,7 +33,7 @@ public static class SampleClientExtensions
         GraphClientOptions graphClientOptions)
     {
         var opts = Options.Create(graphClientOptions);
-        services.AddKeyedSingleton(ClientName, opts); 
+        services.AddKeyedSingleton(ClientName, opts);
         services.AddMemoryCache();        
         return new ClientBuilder<SampleClient>(ClientName, services);
     }

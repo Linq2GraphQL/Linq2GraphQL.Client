@@ -14,10 +14,16 @@ using Linq2GraphQL.Client.Converters;
 
 namespace Linq2GraphQL.TestClient;
 
-public static class IAnimalExtentions
+/// <summary>
+/// Extension methods for IAnimal interface type casting
+/// </summary>
+public static class IAnimalExtensions
 {
-
-
+    /// <summary>
+    /// Casts IAnimal to Pig if the runtime type matches
+    /// </summary>
+    /// <param name="value">The interface value to cast</param>
+    /// <returns>Pig instance or null if type doesn't match</returns>
     [GraphInterface]
     public static Pig Pig(this IAnimal value)
     {
@@ -28,6 +34,11 @@ public static class IAnimalExtentions
         return null;
     }
 
+    /// <summary>
+    /// Casts IAnimal to Spider if the runtime type matches
+    /// </summary>
+    /// <param name="value">The interface value to cast</param>
+    /// <returns>Spider instance or null if type doesn't match</returns>
     [GraphInterface]
     public static Spider Spider(this IAnimal value)
     {
@@ -37,42 +48,73 @@ public static class IAnimalExtentions
         }
         return null;
     }
+
 }
 
-
+/// <summary>
+/// JSON converter for IAnimal interface deserialization
+/// </summary>
 internal class IAnimalConverter : InterfaceJsonConverter<IAnimal>
 {
+    /// <summary>
+    /// Deserializes JSON to the appropriate concrete type based on __typename
+    /// </summary>
+    /// <param name="typeName">The GraphQL type name from __typename field</param>
+    /// <param name="json">The JSON object to deserialize</param>
+    /// <returns>Deserialized instance of the appropriate concrete type</returns>
     public override IAnimal Deserialize(string typeName, JsonObject json) => typeName switch
     {
-          "Pig" => json.Deserialize<Pig>(),
-      "Spider" => json.Deserialize<Spider>(),
-        _ => json.Deserialize< IAnimal__Concrete>()
+        "Pig" => json.Deserialize<Pig>(),
+        "Spider" => json.Deserialize<Spider>(),
+        _ => json.Deserialize<IAnimal__Concrete>()
     };
 }
 
-
-
-
+/// <summary>
+/// GraphQL interface IAnimal with all common fields
+/// </summary>
 [JsonConverter(typeof(IAnimalConverter))]
 public interface IAnimal 
 {
-	[GraphQLMember("name")]
-	public string Name { get; set; }  
-	[GraphQLMember("numberOfLegs")]
-	public int NumberOfLegs { get; set; }  
-    [GraphQLMember("__typename")]
-    public string __TypeName { get; set; }
+    /// <summary>
+    /// name field from GraphQL schema
+    /// </summary>
+    [GraphQLMember("name")]
+    string Name { get; set; }
 
+    /// <summary>
+    /// numberOfLegs field from GraphQL schema
+    /// </summary>
+    [GraphQLMember("numberOfLegs")]
+    int NumberOfLegs { get; set; }
+
+    /// <summary>
+    /// GraphQL __typename field for runtime type resolution
+    /// </summary>
+    [GraphQLMember("__typename")]
+    string __TypeName { get; set; }
 }
 
+/// <summary>
+/// Concrete implementation of IAnimal interface for fallback deserialization
+/// </summary>
 internal class IAnimal__Concrete : IAnimal
 {
-	[GraphQLMember("name")]
-	public string Name { get; set; }  
-	[GraphQLMember("numberOfLegs")]
-	public int NumberOfLegs { get; set; }  
+    /// <summary>
+    /// name field from GraphQL schema
+    /// </summary>
+    [GraphQLMember("name")]
+    public string Name { get; set; }
 
+    /// <summary>
+    /// numberOfLegs field from GraphQL schema
+    /// </summary>
+    [GraphQLMember("numberOfLegs")]
+    public int NumberOfLegs { get; set; }
+
+    /// <summary>
+    /// GraphQL __typename field for runtime type resolution
+    /// </summary>
     [GraphQLMember("__typename")]
     public string __TypeName { get; set; }
-
 }

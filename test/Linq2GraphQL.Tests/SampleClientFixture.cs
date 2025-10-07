@@ -22,10 +22,10 @@ public class SampleClientFixture : IDisposable
             {
                 SubscriptionProtocol = SubscriptionProtocol.ServerSentEvents, UseSafeMode = true
             }), application.Services);
-        
+
         // Cast to interface for testing interface functionality
         sampleClientInterface = sampleClient;
-        
+
         //Please note currently only ServerSentEvents work in test project
     }
 

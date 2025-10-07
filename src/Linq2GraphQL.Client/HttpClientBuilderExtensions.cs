@@ -30,4 +30,28 @@ public static class HttpClientBuilderExtensions
 
         return builder;
     }
+    
+    public static IHttpClientBuilder WithHttpClient<T>(
+        this IGraphClientBuilder<T> clientBuilder,
+        string httpClientName,
+        Action<HttpClient> configureClient,
+        Action<IHttpClientBuilder> configureClientBuilder = null) where T : class
+    {
+        var builder = clientBuilder.Services
+            .AddHttpClient<T>(
+                httpClientName,
+                client =>
+                {
+                    client.DefaultRequestHeaders.UserAgent.Add(
+                        new ProductInfoHeaderValue(
+                            new ProductHeaderValue(
+                                userAgentName,
+                                userAgentVersion)));
+                    configureClient(client);
+                });
+
+        configureClientBuilder?.Invoke(builder);
+
+        return builder;
+    }
 }

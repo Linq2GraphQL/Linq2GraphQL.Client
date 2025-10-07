@@ -1,20 +1,18 @@
-﻿namespace Linq2GraphQL.Client
+﻿namespace Linq2GraphQL.Client;
+
+public class CustomScalar
 {
-    public class CustomScalar
+    internal object InternalValue { get; set; }
+
+    public virtual object Value
     {
-        internal object InternalValue { get; set; }
+        get => InternalValue;
 
-        public override string ToString()
-        {
-            return InternalValue?.ToString();
-        }
+        set => InternalValue = value;
+    }
 
-        public virtual object Value
-        {
-            get { return InternalValue; }
-
-            set { InternalValue = value; }
-
-        }
+    public override string ToString()
+    {
+        return InternalValue?.ToString();
     }
 }

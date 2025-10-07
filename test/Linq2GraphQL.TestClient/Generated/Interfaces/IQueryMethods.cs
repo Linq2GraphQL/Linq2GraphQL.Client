@@ -5,19 +5,71 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClient;
 
+/// <summary>
+/// Interface for QueryMethods GraphQL operations
+/// </summary>
 public interface IQueryMethods
 {
+    /// <summary>
+    /// Executes hello GraphQL operation
+    /// </summary>
+    /// <param name="hello">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<string></returns>
     GraphQuery<string> Hello(string name = null);
+
+    /// <summary>
+    /// Executes customerReturnNull GraphQL operation
+    /// </summary>
+    /// <param name="customerReturnNull">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<Customer></returns>
     GraphQuery<Customer> CustomerReturnNull();
+
+    /// <summary>
+    /// Executes customers GraphQL operation
+    /// </summary>
+    /// <param name="customers">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<List<Customer>></returns>
     GraphQuery<List<Customer>> Customers();
+
+    /// <summary>
+    /// Executes ordersNoBackwardPagination GraphQL operation
+    /// </summary>
+    /// <param name="ordersNoBackwardPagination">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<OrdersNoBackwardPaginationConnection></returns>
     GraphQuery<OrdersNoBackwardPaginationConnection> OrdersNoBackwardPagination(int? first = null, string after = null, OrderFilterInput where = null, List<OrderSortInput> order = null);
+
+    /// <summary>
+    /// Executes ordersNoTotalCount GraphQL operation
+    /// </summary>
+    /// <param name="ordersNoTotalCount">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphCursorQuery<OrdersNoTotalCountConnection></returns>
     GraphCursorQuery<OrdersNoTotalCountConnection> OrdersNoTotalCount(int? first = null, string after = null, int? last = null, string before = null, OrderFilterInput where = null, List<OrderSortInput> order = null);
+
+    /// <summary>
+    /// Executes orders GraphQL operation
+    /// </summary>
+    /// <param name="orders">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphCursorQuery<OrdersConnection></returns>
     GraphCursorQuery<OrdersConnection> Orders(int? first = null, string after = null, int? last = null, string before = null, OrderFilterInput where = null, List<OrderSortInput> order = null);
+
+    /// <summary>
+    /// Executes animals GraphQL operation
+    /// </summary>
+    /// <param name="animals">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphCursorQuery<AnimalsConnection></returns>
     GraphCursorQuery<AnimalsConnection> Animals(int? first = null, string after = null, int? last = null, string before = null, IAnimalFilterInput where = null, List<IAnimalSortInput> order = null);
-    GraphQuery<OrdersOffsetPagingCollectionSegment> OrdersOffsetPaging(int? skip = null, int? take = null, OrderFilterInput where = null, List<OrderSortInput> order = null);
+
+    /// <summary>
+    /// Executes ordersOffsetPaging GraphQL operation
+    /// </summary>
+    /// <param name="ordersOffsetPaging">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphCursorQuery<OrdersOffsetPagingConnection></returns>
+    GraphCursorQuery<OrdersOffsetPagingConnection> OrdersOffsetPaging(int? first = null, string after = null, int? last = null, string before = null, OrderFilterInput where = null, List<OrderSortInput> order = null);
+
 }

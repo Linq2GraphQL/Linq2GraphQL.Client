@@ -6,11 +6,8 @@ public class Schema
 {
     private static readonly List<string> BuiltInTypes = new()
     {
-     //   "ID",
-        "Int",
-        "Float",
-        "String",
-        "Boolean"
+        //   "ID",
+        "Int", "Float", "String", "Boolean"
     };
 
     public List<GraphqlType> Types { get; set; }
@@ -30,8 +27,8 @@ public class Schema
 
     public List<GraphqlType> GetAllTypesExceptSystemTypes()
     {
-        if (Types == null) return new List<GraphqlType>();
-        
+        if (Types == null) return new();
+
         return Types.Where(e => e.Name != SchemaQueryType?.Name &&
                                 !e.Name.StartsWith("__") &&
                                 !BuiltInTypes.Contains(e.Name) &&
@@ -43,9 +40,9 @@ public class Schema
     public void PopulateFieldTypes()
     {
         if (Types == null) return;
-        
+
         foreach (var typeGroup in Types.Where(e => e.AllFields != null && e.AllFields.Any())
-     .SelectMany(e => e.AllFields).GroupBy(e => e.Type.GetBaseBaseType().Name))
+                     .SelectMany(e => e.AllFields).GroupBy(e => e.Type.GetBaseBaseType().Name))
         {
             var graphQlType = GetGraphqlType(typeGroup.Key);
 
@@ -72,7 +69,8 @@ public class Schema
     public List<GraphqlType> GetCustomScalars()
     {
         var mappers = Helpers.TypeMapping;
-        return GetAllTypesExceptSystemTypes().Where(e => e.Kind == TypeKind.Scalar && !mappers.ContainsKey(e.Name)).ToList();
+        return GetAllTypesExceptSystemTypes().Where(e => e.Kind == TypeKind.Scalar && !mappers.ContainsKey(e.Name))
+            .ToList();
     }
 
     public List<GraphqlType> GetInterfaces()
@@ -80,6 +78,8 @@ public class Schema
         return GetAllTypesExceptSystemTypes().Where(e => e.Kind == TypeKind.Interface).ToList();
     }
 
-    public GraphqlType GetGraphqlType(string name) => Types?.FirstOrDefault(e => e.Name == name);
-
+    public GraphqlType GetGraphqlType(string name)
+    {
+        return Types?.FirstOrDefault(e => e.Name == name);
+    }
 }

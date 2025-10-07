@@ -11,8 +11,23 @@ using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClient;
 
+/// <summary>
+/// Interface for MutationMethods GraphQL operations
+/// </summary>
 public interface IMutationMethods
 {
-    GraphQuery<string> SetName(string name);
-    GraphQuery<Customer> AddCustomer(CustomerInput customer);
+    /// <summary>
+    /// Executes setName GraphQL operation
+    /// </summary>
+    /// <param name="setName">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<string></returns>
+    GraphQuery<string> SetName(string name = null);
+
+    /// <summary>
+    /// Executes addCustomer GraphQL operation
+    /// </summary>
+    /// <param name="addCustomer">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<Customer></returns>
+    GraphQuery<Customer> AddCustomer(CustomerInput customer = null);
+
 }

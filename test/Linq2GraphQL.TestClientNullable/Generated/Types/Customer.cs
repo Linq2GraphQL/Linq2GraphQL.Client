@@ -37,4 +37,8 @@ public partial class Customer : GraphQLTypeBase
     [JsonPropertyName("address")]
     public Address? Address { get; set; }
 
+    [GraphQLMember("created")]
+    [JsonPropertyName("created")]
+    public DateTimeOffset? Created { get; set; }
+
 }

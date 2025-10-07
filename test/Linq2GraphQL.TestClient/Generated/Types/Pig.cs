@@ -16,6 +16,10 @@ namespace Linq2GraphQL.TestClient;
 
 public partial class Pig : GraphQLTypeBase, IAnimal
 {
+    [GraphQLMember("spices")]
+    [JsonPropertyName("spices")]
+    public string Spices { get; set; }
+
     [GraphQLMember("name")]
     [JsonPropertyName("name")]
     public string Name { get; set; }
@@ -27,10 +31,6 @@ public partial class Pig : GraphQLTypeBase, IAnimal
     [GraphQLMember("speed")]
     [JsonPropertyName("speed")]
     public int Speed { get; set; }
-
-    [GraphQLMember("spices")]
-    [JsonPropertyName("spices")]
-    public string Spices { get; set; }
 
     [GraphQLMember("__typename")]
     [JsonPropertyName("__typename")]

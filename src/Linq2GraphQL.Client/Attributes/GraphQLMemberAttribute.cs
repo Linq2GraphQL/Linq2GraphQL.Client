@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Linq2GraphQL.Client;
+﻿namespace Linq2GraphQL.Client;
 
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method)]
 public class GraphQLMemberAttribute : Attribute

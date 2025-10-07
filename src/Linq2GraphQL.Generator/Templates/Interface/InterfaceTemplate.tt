@@ -14,7 +14,10 @@ namespace <#= namespaceName #>;
 /// </summary>
 public static class <#= classType.Name #>Extensions
 {
-<# foreach (var field in implementedBy) { #>
+<#
+    foreach (var field in implementedBy)
+    {
+#>
     /// <summary>
     /// Casts <#= classType.Name #> to <#= field #> if the runtime type matches
     /// </summary>
@@ -30,7 +33,9 @@ public static class <#= classType.Name #>Extensions
         return null;
     }
 
-<# } #>
+<#
+    }
+#>
 }
 
 /// <summary>
@@ -46,9 +51,14 @@ internal class <#= GetInterfaceConverterName() #> : InterfaceJsonConverter<<#= c
     /// <returns>Deserialized instance of the appropriate concrete type</returns>
     public override <#= classType.Name #> Deserialize(string typeName, JsonObject json) => typeName switch
     {
-<# foreach (var field in implementedBy) { #>
+<#
+    foreach (var field in implementedBy)
+    {
+#>
         "<#= field #>" => json.Deserialize<<#= field #>>(),
-<# } #>
+<#
+    }
+#>
         _ => json.Deserialize<<#= GetInterfaceConcreteName() #>>()
     };
 }
@@ -59,15 +69,20 @@ internal class <#= GetInterfaceConverterName() #> : InterfaceJsonConverter<<#= c
 [JsonConverter(typeof(<#= GetInterfaceConverterName() #>))]
 public interface <#= classType.Name #> <#= classType.GetInterfacesString() #>
 {
-<# foreach (var field in classType.AllFields) { 
-    var coreType = field.CoreType; #>
+<#
+    foreach (var field in classType.AllFields)
+    {
+        var coreType = field.CoreType;
+#>
     /// <summary>
     /// <#= field.Name #> field from GraphQL schema
     /// </summary>
     [GraphQLMember("<#= field.Name #>")]
     <#= coreType.CSharpTypeDefinition #> <#= field.CSharpName #> { get; set; }
 
-<# } #>
+<#
+    }
+#>
     /// <summary>
     /// GraphQL __typename field for runtime type resolution
     /// </summary>
@@ -80,15 +95,20 @@ public interface <#= classType.Name #> <#= classType.GetInterfacesString() #>
 /// </summary>
 internal class <#= GetInterfaceConcreteName() #> : <#= classType.Name #>
 {
-<# foreach (var field in classType.AllFields) { 
-    var coreType = field.CoreType; #>
+<#
+    foreach (var field in classType.AllFields)
+    {
+        var coreType = field.CoreType;
+#>
     /// <summary>
     /// <#= field.Name #> field from GraphQL schema
     /// </summary>
     [GraphQLMember("<#= field.Name #>")]
     public <#= coreType.CSharpTypeDefinition #> <#= field.CSharpName #> { get; set; }
 
-<# } #>
+<#
+    }
+#>
     /// <summary>
     /// GraphQL __typename field for runtime type resolution
     /// </summary>

@@ -5,20 +5,75 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClientNullable;
 
+/// <summary>
+/// Interface for QueryMethods GraphQL operations
+/// </summary>
 public interface IQueryMethods
 {
+    /// <summary>
+    /// Executes item GraphQL operation
+    /// </summary>
+    /// <param name="item">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<Item></returns>
     GraphQuery<Item> Item();
+
+    /// <summary>
+    /// Executes itemDraft GraphQL operation
+    /// </summary>
+    /// <remarks>
+    /// This operation is deprecated: This is an really old method! please d not use it!!
+    /// </remarks>
     [Obsolete("This is an really old method! please d not use it!!")]
+    /// <param name="itemDraft">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<Item></returns>
     GraphQuery<Item> ItemDraft();
+
+    /// <summary>
+    /// Executes customerList GraphQL operation
+    /// </summary>
+    /// <param name="customerList">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<List<Customer>></returns>
     GraphQuery<List<Customer>> CustomerList();
+
+    /// <summary>
+    /// Executes customerNullable GraphQL operation
+    /// </summary>
+    /// <param name="customerNullable">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<Customer?></returns>
     GraphQuery<Customer?> CustomerNullable();
+
+    /// <summary>
+    /// Executes customerListAllNullable GraphQL operation
+    /// </summary>
+    /// <param name="customerListAllNullable">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<List<Customer?>?></returns>
     GraphQuery<List<Customer?>?> CustomerListAllNullable();
+
+    /// <summary>
+    /// Executes customerListNullable GraphQL operation
+    /// </summary>
+    /// <param name="customerListNullable">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<List<Customer>?></returns>
     GraphQuery<List<Customer>?> CustomerListNullable();
+
+    /// <summary>
+    /// Executes customerListInList GraphQL operation
+    /// </summary>
+    /// <param name="customerListInList">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<List<List<Customer>>></returns>
     GraphQuery<List<List<Customer>>> CustomerListInList();
+
+    /// <summary>
+    /// Executes person GraphQL operation
+    /// </summary>
+    /// <param name="person">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<Person></returns>
     GraphQuery<Person> Person();
+
 }

@@ -6,15 +6,17 @@
 //---------------------------------------------------------------------
 
 
-using Linq2GraphQL.Client;
 using System.Text.Json.Serialization;
+using Linq2GraphQL.Client;
 
 namespace StartGG.Client;
 
-    /// <summary>
-    /// The `ID` scalar type represents a unique identifier, often used to
-/// refetch an object or as key for a cache. When expected as an input type, any string (such as `"4"`) or integer
-/// (such as `4`) input value will be accepted as an ID.
-    /// </summary>
-    [JsonConverter(typeof(CustomScalarConverter<ID>))]
-    public partial class ID : CustomScalar {}
+/// <summary>
+///     The `ID` scalar type represents a unique identifier, often used to
+///     refetch an object or as key for a cache. When expected as an input type, any string (such as `"4"`) or integer
+///     (such as `4`) input value will be accepted as an ID.
+/// </summary>
+[JsonConverter(typeof(CustomScalarConverter<ID>))]
+public class ID : CustomScalar
+{
+}

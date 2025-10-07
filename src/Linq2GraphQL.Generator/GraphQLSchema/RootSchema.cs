@@ -20,7 +20,6 @@ public class GraphqlSchemaType
 
 public class GraphqlType : BaseType
 {
-
     public List<EnumValue> EnumValues { get; set; }
     public List<Field> Fields { get; set; }
     public List<Field> InputFields { get; set; }
@@ -46,6 +45,7 @@ public class GraphqlType : BaseType
             {
                 interfaces += ", ";
             }
+
             interfaces += string.Join(", ", Interfaces.Select(e => e.Name));
         }
 
@@ -60,7 +60,6 @@ public class GraphqlType : BaseType
         }
 
 
-
         if (!string.IsNullOrWhiteSpace(interfaces))
         {
             interfaces = ": " + interfaces;
@@ -71,13 +70,21 @@ public class GraphqlType : BaseType
 
     public bool IsPageInfo()
     {
-        if (CSharpName != "PageInfo") { return false; }
-        if (InputFields != null && InputFields.Any()) { return false; }
+        if (CSharpName != "PageInfo")
+        {
+            return false;
+        }
+
+        if (InputFields != null && InputFields.Any())
+        {
+            return false;
+        }
+
         //TODO Fix this
         foreach (var field in Fields)
         {
-
         }
+
         return true;
     }
 
@@ -85,8 +92,6 @@ public class GraphqlType : BaseType
     {
         return Fields?.Any(e => e.GraphqlType.IsPageInfo()) == true;
     }
-
-
 }
 
 [JsonConverter(typeof(JsonStringEnumMemberConverter))]
@@ -123,16 +128,12 @@ public class EnumValue
     }
 }
 
-
-
-
 public class BaseField
 {
-
     public string Name { get; set; }
 
     public string SafeName => Helpers.SafeVariableName(Name);
-   
+
 
     public string Description { get; set; }
 
@@ -153,6 +154,7 @@ public class BaseField
     public BaseType Type { get; set; }
 
     private CoreType coreType;
+
     public CoreType CoreType
     {
         get
@@ -161,12 +163,7 @@ public class BaseField
             return coreType;
         }
     }
-
-
-
 }
-
-
 
 public class Field : BaseField
 {
@@ -175,9 +172,21 @@ public class Field : BaseField
 
     public bool SupportCursorPaging()
     {
-        if (!GraphqlType.ContainPageInfo()) { return false; }
-        if (Args?.FirstOrDefault(e => e.Name == "after" && e.CoreType.CSharpTypeName == "string") == null) { return false; }
-        if (Args?.FirstOrDefault(e => e.Name == "before" && e.CoreType.CSharpTypeName == "string") == null) { return false; }
+        if (!GraphqlType.ContainPageInfo())
+        {
+            return false;
+        }
+
+        if (Args?.FirstOrDefault(e => e.Name == "after" && e.CoreType.CSharpTypeName == "string") == null)
+        {
+            return false;
+        }
+
+        if (Args?.FirstOrDefault(e => e.Name == "before" && e.CoreType.CSharpTypeName == "string") == null)
+        {
+            return false;
+        }
+
         return true;
     }
 
@@ -224,13 +233,10 @@ public class Field : BaseField
     }
 }
 
-
 public class Arg : BaseField
 {
     public string DefaultValue { get; set; }
 }
-
-
 
 public class BaseType
 {
@@ -247,7 +253,6 @@ public class BaseType
     public string FileName => CSharpName + ".cs";
 
     public BaseType OfType { get; set; }
-
 
 
     public List<BaseType> GetAllTypes()
@@ -292,7 +297,6 @@ public class BaseType
                     result.BaseType = type;
                     currentNoneNull = false;
                     break;
-
             }
         }
 
@@ -314,12 +318,8 @@ public class BaseType
         result.SetGraphQLTypeDefinition();
 
         return result;
-
     }
-
-
 }
-
 
 public class CoreTypeList
 {
@@ -339,6 +339,7 @@ public class CoreType
     public bool IsEnum => BaseType.Kind == TypeKind.Enum;
 
     public string CSharpTypeDefinition { get; set; }
+
     public string CSharpTypeDefinitionNeverNull
     {
         get
@@ -347,30 +348,36 @@ public class CoreType
             {
                 return CSharpTypeDefinition.RemoveFromEnd("?");
             }
+
             return CSharpTypeDefinition;
         }
     }
+
     public string GraphQLTypeDefinition { get; set; }
 
     public void SetGraphQLTypeDefinition()
     {
         var result = BaseType.Name;
 
-        if (NoneNull) { result += "!"; }
+        if (NoneNull)
+        {
+            result += "!";
+        }
 
         foreach (var list in Lists)
         {
             result = $"[{result}]";
-            if (list.NoneNull) { result += "!"; }
+            if (list.NoneNull)
+            {
+                result += "!";
+            }
         }
 
         GraphQLTypeDefinition = result;
-
     }
 
     private bool UseSharpNoneNull()
     {
-
         if (GeneratorSettings.Current.Nullable || NoneNull)
         {
             return NoneNull;
@@ -392,16 +399,20 @@ public class CoreType
     {
         var result = CSharpTypeName;
 
-        if (!UseSharpNoneNull()) { result += "?"; }
+        if (!UseSharpNoneNull())
+        {
+            result += "?";
+        }
 
         foreach (var list in Lists)
         {
             result = $"List<{result}>";
-            if (!list.NoneNull && GeneratorSettings.Current.Nullable) { result += "?"; }
+            if (!list.NoneNull && GeneratorSettings.Current.Nullable)
+            {
+                result += "?";
+            }
         }
 
         CSharpTypeDefinition = result;
-
     }
-
 }

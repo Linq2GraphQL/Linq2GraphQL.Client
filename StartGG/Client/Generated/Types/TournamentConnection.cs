@@ -5,23 +5,19 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 using Linq2GraphQL.Client.Common;
 
 namespace StartGG.Client;
 
-
-public partial class TournamentConnection : GraphQLTypeBase, Linq2GraphQL.Client.Common.ICursorPaging
+public class TournamentConnection : GraphQLTypeBase, ICursorPaging
 {
-    [GraphQLMember("pageInfo")]
-    [JsonPropertyName("pageInfo")]
-    public Linq2GraphQL.Client.Common.PageInfo PageInfo { get; set; }
-
     [GraphQLMember("nodes")]
     [JsonPropertyName("nodes")]
     public List<Tournament> Nodes { get; set; }
 
+    [GraphQLMember("pageInfo")]
+    [JsonPropertyName("pageInfo")]
+    public PageInfo PageInfo { get; set; }
 }

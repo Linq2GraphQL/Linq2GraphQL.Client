@@ -5,7 +5,6 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using System;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -16,8 +15,6 @@ namespace StartGG.Client;
 
 public static class MatchConfigExtentions
 {
-
-
     [GraphInterface]
     public static RaceMatchConfig RaceMatchConfig(this MatchConfig value)
     {
@@ -25,43 +22,38 @@ public static class MatchConfigExtentions
         {
             return (RaceMatchConfig)value;
         }
+
         return null;
     }
 }
 
-
 internal class MatchConfigConverter : InterfaceJsonConverter<MatchConfig>
 {
-    public override MatchConfig Deserialize(string typeName, JsonObject json) => typeName switch
+    public override MatchConfig Deserialize(string typeName, JsonObject json)
     {
-          "RaceMatchConfig" => json.Deserialize<RaceMatchConfig>(),
-        _ => json.Deserialize< MatchConfig__Concrete>()
-    };
+        return typeName switch
+        {
+            "RaceMatchConfig" => json.Deserialize<RaceMatchConfig>(),
+            _ => json.Deserialize<MatchConfig__Concrete>()
+        };
+    }
 }
 
-
-
-
 [JsonConverter(typeof(MatchConfigConverter))]
-public interface MatchConfig 
+public interface MatchConfig
 {
-	[GraphQLMember("id")]
-	public ID Id { get; set; }  
-	[GraphQLMember("bracketType")]
-	public BracketType? BracketType { get; set; }  
-    [GraphQLMember("__typename")]
-    public string __TypeName { get; set; }
+    [GraphQLMember("id")] public ID Id { get; set; }
 
+    [GraphQLMember("bracketType")] public BracketType? BracketType { get; set; }
+
+    [GraphQLMember("__typename")] public string __TypeName { get; set; }
 }
 
 internal class MatchConfig__Concrete : MatchConfig
 {
-	[GraphQLMember("id")]
-	public ID Id { get; set; }  
-	[GraphQLMember("bracketType")]
-	public BracketType? BracketType { get; set; }  
+    [GraphQLMember("id")] public ID Id { get; set; }
 
-    [GraphQLMember("__typename")]
-    public string __TypeName { get; set; }
+    [GraphQLMember("bracketType")] public BracketType? BracketType { get; set; }
 
+    [GraphQLMember("__typename")] public string __TypeName { get; set; }
 }

@@ -14,7 +14,8 @@ public class GraphClient
     private readonly IOptions<GraphClientOptions> options;
     private readonly bool includeDeprecated;
 
-    public GraphClient(HttpClient httpClient, IOptions<GraphClientOptions> options, IServiceProvider provider, bool includeDeprecated = false)
+    public GraphClient(HttpClient httpClient, IOptions<GraphClientOptions> options, IServiceProvider provider,
+        bool includeDeprecated = false)
     {
         this.options = options;
         this.includeDeprecated = includeDeprecated;
@@ -25,11 +26,7 @@ public class GraphClient
 
         HttpClient = httpClient;
 
-        SerializerOptions = new()
-        {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            Converters = { },
-        };
+        SerializerOptions = new() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, Converters = { }, };
 
         SubscriptionUrl = GetSubscriptionUrl();
     }
@@ -38,9 +35,10 @@ public class GraphClient
     public SubscriptionProtocol SubscriptionProtocol => options.Value.SubscriptionProtocol;
     public HttpClient HttpClient { get; }
     public JsonSerializerOptions SerializerOptions { get; }
- 
+
 
     public Func<GraphClient, Task<GraphQLRequest>> WSConnectionInitPayload => options.Value.WSConnectionInitPayload;
+
     private string GetSubscriptionUrl()
     {
         var baseUrl = HttpClient?.BaseAddress.ToString();
@@ -85,7 +83,7 @@ public class GraphClient
                 query = Helpers.SchemaQuery;
             }
 
-                var graphRequest = new GraphQLRequest { Query = query };
+            var graphRequest = new GraphQLRequest { Query = query };
             return await executor.ExecuteRequestAsync("__schema", graphRequest);
         });
     }

@@ -55,4 +55,12 @@ public partial class AddressFilterInput : GraphInputBase
     	set => SetValue("postalCode", value);
 	}
 
+	[GraphQLMember("createdDate")]
+	[JsonPropertyName("createdDate")]
+	public LocalDateOperationFilterInput CreatedDate 
+	{
+		get => GetValue<LocalDateOperationFilterInput>("createdDate");
+    	set => SetValue("createdDate", value);
+	}
+
 }

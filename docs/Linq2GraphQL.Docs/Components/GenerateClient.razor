@@ -14,54 +14,60 @@
         <CardBody>
             <DataGrid>
                 <DataGridItem Title="Name">
-                    <InputText class="form-control" @bind-Value="options.ClientName" />
+                    <InputText class="form-control" @bind-Value="options.ClientName"/>
                 </DataGridItem>
                 <DataGridItem Title="Namespace">
-                    <InputText class="form-control" @bind-Value="options.Namespace" />
+                    <InputText class="form-control" @bind-Value="options.Namespace"/>
                 </DataGridItem>
 
                 <DataGridItem Title="Enum Strategy">
-                    <ItemSelect Items="EnumHelper.GetList<EnumGeneratorStrategy>()" @bind-SelectedValue="options.EnumGeneratorStrategy" />
+                    <ItemSelect Items="EnumHelper.GetList<EnumGeneratorStrategy>()"
+                                @bind-SelectedValue="options.EnumGeneratorStrategy"/>
                 </DataGridItem>
 
                 <DataGridItem Title="Include subscriptions">
-                    <Checkbox Switch @bind-Value="options.IncludeSubscriptions" />
+                    <Checkbox Switch @bind-Value="options.IncludeSubscriptions"/>
                 </DataGridItem>
-            
+
                 <DataGridItem Title="Nullable client">
-                    <Checkbox Switch @bind-Value="options.Nullable" />
+                    <Checkbox Switch @bind-Value="options.Nullable"/>
                 </DataGridItem>
 
                 <DataGridItem Title="Include Deprecated">
-                    <Checkbox Switch @bind-Value="options.IncludeDeprecated" />
+                    <Checkbox Switch @bind-Value="options.IncludeDeprecated"/>
                 </DataGridItem>
-            
+
             </DataGrid>
 
-            <div class="mt-3" />
+            <div class="mt-3"/>
             <Tabs>
                 <Tab Title="Url">
                     <DataGrid>
                         <DataGridItem Title="Url">
-                            <InputText class="form-control" @bind-Value="options.Url" />
+                            <InputText class="form-control" @bind-Value="options.Url"/>
                         </DataGridItem>
                         <DataGridItem Title="Token">
-                            <InputText class="form-control" @bind-Value="options.Token" />
+                            <InputText class="form-control" @bind-Value="options.Token"/>
                         </DataGridItem>
                     </DataGrid>
 
 
-                    <Button class="mt-3" BackgroundColor="TablerColor.Primary" OnClick="GenerateClientAsync">Generate</Button>
+                    <Button class="mt-3" BackgroundColor="TablerColor.Primary" OnClick="GenerateClientAsync">Generate
+                    </Button>
 
                 </Tab>
 
                 <Tab Title="Schema">
 
-                    <div class="mb-2">Run this <Icon class="icon" IconType="Icons.Copy" OnClick="CopyIntrospection" /> query and paste the result below.</div>
+                    <div class="mb-2">Run this
+                        <Icon class="icon" IconType="Icons.Copy" OnClick="CopyIntrospection"/>
+                        query and paste the result below.
+                    </div>
 
-                    <InputTextArea class="form-control" @bind-Value="options.Schema" rows="20" />
+                    <InputTextArea class="form-control" @bind-Value="options.Schema" rows="20"/>
 
-                    <Button class="mt-3" BackgroundColor="TablerColor.Primary" OnClick="GenerateClientJson">Generate</Button>
+                    <Button class="mt-3" BackgroundColor="TablerColor.Primary" OnClick="GenerateClientJson">Generate
+                    </Button>
                 </Tab>
 
             </Tabs>

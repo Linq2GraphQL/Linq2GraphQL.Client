@@ -1,23 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-	<PropertyGroup>
-		<OutputType>Exe</OutputType>
-		<TargetFramework>net8.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-	</PropertyGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="System.Text.Json" />
-		<PackageReference Include="HotChocolate.AspNetCore" />
-		<PackageReference Include="HotChocolate.Data" />
-		<PackageReference Include="HotChocolate.Types.Scalars" />
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="System.Text.Json"/>
+        <PackageReference Include="HotChocolate.AspNetCore"/>
+        <PackageReference Include="HotChocolate.Data"/>
+        <PackageReference Include="HotChocolate.Types.Scalars"/>
+        <PackageReference Include="HotChocolate.Types.Analyzers"/>
+    </ItemGroup>
 
-	<ItemGroup>
-	  <ProjectReference Include="..\Linq2GraphQL.TestServer.Shared\Linq2GraphQL.TestServer.Shared.csproj" />
-	</ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Linq2GraphQL.TestServer.Shared\Linq2GraphQL.TestServer.Shared.csproj"/>
+    </ItemGroup>
 
-	
 
 </Project>

@@ -6,5 +6,4 @@ public class Item
     public string ItemName { get; set; } = "";
 
     public byte[]? Data { get; set; }
-
 }

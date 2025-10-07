@@ -73,9 +73,9 @@ public partial class OrderFilterInput : GraphInputBase
 
 	[GraphQLMember("entryTime")]
 	[JsonPropertyName("entryTime")]
-	public TimeSpanOperationFilterInput EntryTime 
+	public LocalTimeOperationFilterInput EntryTime 
 	{
-		get => GetValue<TimeSpanOperationFilterInput>("entryTime");
+		get => GetValue<LocalTimeOperationFilterInput>("entryTime");
     	set => SetValue("entryTime", value);
 	}
 
