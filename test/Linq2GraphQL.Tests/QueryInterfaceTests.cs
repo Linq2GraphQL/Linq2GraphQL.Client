@@ -25,6 +25,7 @@ public class QueryInterfaceTests : IClassFixture<SampleClientFixture>
 
         Assert.IsType<Spider>(spider);
         Assert.IsType<Pig>(pig);
+
     }
 
     [Fact]
@@ -46,5 +47,9 @@ public class QueryInterfaceTests : IClassFixture<SampleClientFixture>
 
         Assert.IsType<Spider>(spider);
         Assert.IsType<Pig>(pig);
+
+        var spiderA = spider as Spider;
+
+        Assert.Equal(11, spiderA!.Speed);
     }
 }
