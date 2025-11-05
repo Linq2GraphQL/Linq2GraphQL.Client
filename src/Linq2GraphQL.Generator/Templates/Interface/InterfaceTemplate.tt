@@ -23,7 +23,7 @@ public static class <#= classType.Name #>Extensions
     /// </summary>
     /// <param name="value">The interface value to cast</param>
     /// <returns><#= field #> instance or null if type doesn't match</returns>
-    [GraphInterface]
+    [GraphQLMember("<#= field #>", true)]
     public static <#= field #> <#= field #>(this <#= classType.Name #> value)
     {
         if (value.__TypeName == "<#= field #>")

@@ -52,6 +52,10 @@ public partial class Customer : GraphQLTypeBase
     [JsonPropertyName("address")]
     public Address Address { get; set; }
 
+    [GraphQLMember("created")]
+    [JsonPropertyName("created")]
+    public DateTimeOffset? Created { get; set; }
+
     private LazyProperty<List<Customer>> _relatedCustomers = new();
     /// <summary>
     /// Do not use in Query, only to retrive result

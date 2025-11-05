@@ -71,4 +71,12 @@ public partial class CustomerFilterInput : GraphInputBase
     	set => SetValue("address", value);
 	}
 
+	[GraphQLMember("created")]
+	[JsonPropertyName("created")]
+	public DateTimeOperationFilterInput Created 
+	{
+		get => GetValue<DateTimeOperationFilterInput>("created");
+    	set => SetValue("created", value);
+	}
+
 }

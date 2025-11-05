@@ -24,7 +24,7 @@ public static class IAnimalExtensions
     /// </summary>
     /// <param name="value">The interface value to cast</param>
     /// <returns>Pig instance or null if type doesn't match</returns>
-    [GraphInterface]
+    [GraphQLMember("Pig", true)]
     public static Pig Pig(this IAnimal value)
     {
         if (value.__TypeName == "Pig")
@@ -39,7 +39,7 @@ public static class IAnimalExtensions
     /// </summary>
     /// <param name="value">The interface value to cast</param>
     /// <returns>Spider instance or null if type doesn't match</returns>
-    [GraphInterface]
+    [GraphQLMember("Spider", true)]
     public static Spider Spider(this IAnimal value)
     {
         if (value.__TypeName == "Spider")

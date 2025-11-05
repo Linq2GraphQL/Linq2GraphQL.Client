@@ -405,6 +405,15 @@ public static class CustomerFilterInputExtensions
         return input;
     }
 
+    public static CustomerFilterInput Created(this CustomerFilterInput input, Action<DateTimeOperationFilterInput> mod)
+    {
+        var filter = new DateTimeOperationFilterInput();
+        mod ??= _ => { };
+        mod(filter); 
+        input.Created = filter;
+        return input;
+    }
+
 }
 
 public static class CustomerInputExtensions
@@ -448,6 +457,13 @@ public static class CustomerInputExtensions
         return input;
     }
 
+
+    public static CustomerInput Created(this CustomerInput input, DateTimeOffset? val)
+    {
+         input.Created = val;
+         return input;
+    }
+
 }
 
 public static class CustomerSortInputExtensions
@@ -480,6 +496,13 @@ public static class CustomerSortInputExtensions
         mod(filter); 
         input.Address = filter;
         return input;
+    }
+
+
+    public static CustomerSortInput Created(this CustomerSortInput input, SortEnumType? val)
+    {
+         input.Created = val;
+         return input;
     }
 
 }

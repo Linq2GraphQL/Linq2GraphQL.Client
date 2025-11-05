@@ -47,4 +47,12 @@ public partial class CustomerSortInput : GraphInputBase
     	set => SetValue("address", value);
 	}
 
+	[GraphQLMember("created")]
+	[JsonPropertyName("created")]
+	public SortEnumType? Created 
+	{
+		get => GetValue<SortEnumType?>("created");
+    	set => SetValue("created", value);
+	}
+
 }
