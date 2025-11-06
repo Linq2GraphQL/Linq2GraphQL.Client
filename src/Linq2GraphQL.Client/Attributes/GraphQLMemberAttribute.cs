@@ -3,7 +3,12 @@
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method)]
 public class GraphQLMemberAttribute : Attribute
 {
-    public GraphQLMemberAttribute(string graphQLName, bool interfaceProperty = false)
+    public GraphQLMemberAttribute(string graphQLName)
+    {
+        GraphQLName = graphQLName;
+    }
+
+    public GraphQLMemberAttribute(string graphQLName, bool interfaceProperty)
     {
         GraphQLName = graphQLName;
         InterfaceProperty = interfaceProperty;
