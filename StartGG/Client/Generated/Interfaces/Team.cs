@@ -14,11 +14,17 @@ using Linq2GraphQL.Client.Converters;
 
 namespace StartGG.Client;
 
-public static class TeamExtentions
+/// <summary>
+/// Extension methods for Team interface type casting
+/// </summary>
+public static class TeamExtensions
 {
-
-
-    [GraphInterface]
+    /// <summary>
+    /// Casts Team to EventTeam if the runtime type matches
+    /// </summary>
+    /// <param name="value">The interface value to cast</param>
+    /// <returns>EventTeam instance or null if type doesn't match</returns>
+    [GraphQLMember("EventTeam", true)]
     public static EventTeam EventTeam(this Team value)
     {
         if (value.__TypeName == "EventTeam")
@@ -28,7 +34,12 @@ public static class TeamExtentions
         return null;
     }
 
-    [GraphInterface]
+    /// <summary>
+    /// Casts Team to GlobalTeam if the runtime type matches
+    /// </summary>
+    /// <param name="value">The interface value to cast</param>
+    /// <returns>GlobalTeam instance or null if type doesn't match</returns>
+    [GraphQLMember("GlobalTeam", true)]
     public static GlobalTeam GlobalTeam(this Team value)
     {
         if (value.__TypeName == "GlobalTeam")
@@ -37,54 +48,109 @@ public static class TeamExtentions
         }
         return null;
     }
+
 }
 
-
+/// <summary>
+/// JSON converter for Team interface deserialization
+/// </summary>
 internal class TeamConverter : InterfaceJsonConverter<Team>
 {
+    /// <summary>
+    /// Deserializes JSON to the appropriate concrete type based on __typename
+    /// </summary>
+    /// <param name="typeName">The GraphQL type name from __typename field</param>
+    /// <param name="json">The JSON object to deserialize</param>
+    /// <returns>Deserialized instance of the appropriate concrete type</returns>
     public override Team Deserialize(string typeName, JsonObject json) => typeName switch
     {
-          "EventTeam" => json.Deserialize<EventTeam>(),
-      "GlobalTeam" => json.Deserialize<GlobalTeam>(),
-        _ => json.Deserialize< Team__Concrete>()
+        "EventTeam" => json.Deserialize<EventTeam>(),
+        "GlobalTeam" => json.Deserialize<GlobalTeam>(),
+        _ => json.Deserialize<Team__Concrete>()
     };
 }
 
-
-
-
+/// <summary>
+/// GraphQL interface Team with all common fields
+/// </summary>
 [JsonConverter(typeof(TeamConverter))]
 public interface Team 
 {
-	[GraphQLMember("id")]
-	public ID Id { get; set; }  
-	[GraphQLMember("discriminator")]
-	public string Discriminator { get; set; }  
-	[GraphQLMember("images")]
-	public List<Image> Images { get;  }  
-	[GraphQLMember("members")]
-	public List<TeamMember> Members { get;  }  
-	[GraphQLMember("name")]
-	public string Name { get; set; }  
-    [GraphQLMember("__typename")]
-    public string __TypeName { get; set; }
+    /// <summary>
+    /// id field from GraphQL schema
+    /// </summary>
+    [GraphQLMember("id")]
+    ID Id { get; set; }
 
+    /// <summary>
+    /// discriminator field from GraphQL schema
+    /// </summary>
+    [GraphQLMember("discriminator")]
+    string Discriminator { get; set; }
+
+    /// <summary>
+    /// images field from GraphQL schema
+    /// </summary>
+    [GraphQLMember("images")]
+    List<Image> Images { get; set; }
+
+    /// <summary>
+    /// members field from GraphQL schema
+    /// </summary>
+    [GraphQLMember("members")]
+    List<TeamMember> Members { get; set; }
+
+    /// <summary>
+    /// name field from GraphQL schema
+    /// </summary>
+    [GraphQLMember("name")]
+    string Name { get; set; }
+
+    /// <summary>
+    /// GraphQL __typename field for runtime type resolution
+    /// </summary>
+    [GraphQLMember("__typename")]
+    string __TypeName { get; set; }
 }
 
+/// <summary>
+/// Concrete implementation of Team interface for fallback deserialization
+/// </summary>
 internal class Team__Concrete : Team
 {
-	[GraphQLMember("id")]
-	public ID Id { get; set; }  
-	[GraphQLMember("discriminator")]
-	public string Discriminator { get; set; }  
-	[GraphQLMember("images")]
-	public List<Image> Images { get; set; }  
-	[GraphQLMember("members")]
-	public List<TeamMember> Members { get; set; }  
-	[GraphQLMember("name")]
-	public string Name { get; set; }  
+    /// <summary>
+    /// id field from GraphQL schema
+    /// </summary>
+    [GraphQLMember("id")]
+    public ID Id { get; set; }
 
+    /// <summary>
+    /// discriminator field from GraphQL schema
+    /// </summary>
+    [GraphQLMember("discriminator")]
+    public string Discriminator { get; set; }
+
+    /// <summary>
+    /// images field from GraphQL schema
+    /// </summary>
+    [GraphQLMember("images")]
+    public List<Image> Images { get; set; }
+
+    /// <summary>
+    /// members field from GraphQL schema
+    /// </summary>
+    [GraphQLMember("members")]
+    public List<TeamMember> Members { get; set; }
+
+    /// <summary>
+    /// name field from GraphQL schema
+    /// </summary>
+    [GraphQLMember("name")]
+    public string Name { get; set; }
+
+    /// <summary>
+    /// GraphQL __typename field for runtime type resolution
+    /// </summary>
     [GraphQLMember("__typename")]
     public string __TypeName { get; set; }
-
 }

@@ -11,22 +11,21 @@ using Microsoft.Extensions.Options;
 
 namespace StartGG.Client;
 
-public static class StartGGClientExtensions
+public static class StartGGClientExtensions 
 {
     private const string ClientName = "StartGGClient";
-
+        
     public static IGraphClientBuilder<StartGGClient> AddStartGGClient(this IServiceCollection services)
     {
         var graphClientOptions = new GraphClientOptions();
         return GraphClientBuilder(services, graphClientOptions);
     }
-
-    public static IGraphClientBuilder<StartGGClient> AddStartGGClient(this IServiceCollection services,
-        Action<GraphClientOptions> opts)
+    
+    public static IGraphClientBuilder<StartGGClient> AddStartGGClient(this IServiceCollection services, Action<GraphClientOptions> opts)
     {
         var graphClientOptions = new GraphClientOptions();
         opts(graphClientOptions);
-
+        
         return GraphClientBuilder(services, graphClientOptions);
     }
 
@@ -35,7 +34,7 @@ public static class StartGGClientExtensions
     {
         var opts = Options.Create(graphClientOptions);
         services.AddKeyedSingleton(ClientName, opts);
-        services.AddMemoryCache();
+        services.AddMemoryCache();        
         return new ClientBuilder<StartGGClient>(ClientName, services);
     }
 }

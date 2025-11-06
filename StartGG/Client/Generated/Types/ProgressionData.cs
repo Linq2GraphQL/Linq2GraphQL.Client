@@ -11,26 +11,26 @@ using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 using Linq2GraphQL.Client.Common;
 
-namespace Linq2GraphQL.TestClient;
+namespace StartGG.Client;
 
 
 /// <summary>
-/// Information about the offset pagination.
+/// Data on phase progression, keyed on destination PhaseId
 /// </summary>
-public partial class CollectionSegmentInfo : GraphQLTypeBase
+public partial class ProgressionData : GraphQLTypeBase
 {
     /// <summary>
-    /// Indicates whether more items exist following the set defined by the clients arguments.
+    /// Origin phase ID that is the source of this progression.
     /// </summary>
-    [GraphQLMember("hasNextPage")]
-    [JsonPropertyName("hasNextPage")]
-    public bool HasNextPage { get; set; }
+    [GraphQLMember("origin")]
+    [JsonPropertyName("origin")]
+    public int? Origin { get; set; }
 
     /// <summary>
-    /// Indicates whether more items exist prior the set defined by the clients arguments.
+    /// Amount of seeds per phase group that are progressing.
     /// </summary>
-    [GraphQLMember("hasPreviousPage")]
-    [JsonPropertyName("hasPreviousPage")]
-    public bool HasPreviousPage { get; set; }
+    [GraphQLMember("numProgressing")]
+    [JsonPropertyName("numProgressing")]
+    public int? NumProgressing { get; set; }
 
 }

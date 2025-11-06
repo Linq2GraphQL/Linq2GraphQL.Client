@@ -5,171 +5,167 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 using Linq2GraphQL.Client.Common;
 
 namespace StarWars.Client;
 
+
 public static class StarshipExtensions
 {
     [GraphQLMember("pilotConnection")]
-    public static StarshipPilotsConnection PilotConnection(this Starship starship,
-        [GraphQLArgument("after", "String")] string after = null, [GraphQLArgument("first", "Int")] int? first = null,
-        [GraphQLArgument("before", "String")] string before = null, [GraphQLArgument("last", "Int")] int? last = null)
+    public static StarshipPilotsConnection PilotConnection(this Starship  starship, [GraphQLArgument("after", "String")] string after = null, [GraphQLArgument("first", "Int")] int? first = null, [GraphQLArgument("before", "String")] string before = null, [GraphQLArgument("last", "Int")] int? last = null)
     {
         return starship.GetMethodValue<StarshipPilotsConnection>("pilotConnection", after, first, before, last);
     }
 
     [GraphQLMember("filmConnection")]
-    public static StarshipFilmsConnection FilmConnection(this Starship starship,
-        [GraphQLArgument("after", "String")] string after = null, [GraphQLArgument("first", "Int")] int? first = null,
-        [GraphQLArgument("before", "String")] string before = null, [GraphQLArgument("last", "Int")] int? last = null)
+    public static StarshipFilmsConnection FilmConnection(this Starship  starship, [GraphQLArgument("after", "String")] string after = null, [GraphQLArgument("first", "Int")] int? first = null, [GraphQLArgument("before", "String")] string before = null, [GraphQLArgument("last", "Int")] int? last = null)
     {
         return starship.GetMethodValue<StarshipFilmsConnection>("filmConnection", after, first, before, last);
     }
+
 }
 
 /// <summary>
-///     A single transport craft that has hyperdrive capability.
+/// A single transport craft that has hyperdrive capability.
 /// </summary>
-public class Starship : GraphQLTypeBase, Node
+public partial class Starship : GraphQLTypeBase, Node
 {
-    private readonly LazyProperty<StarshipFilmsConnection> _filmConnection = new();
-
-    private readonly LazyProperty<StarshipPilotsConnection> _pilotConnection = new();
-
     /// <summary>
-    ///     The name of this starship. The common name, such as "Death Star".
+    /// The name of this starship. The common name, such as "Death Star".
     /// </summary>
     [GraphQLMember("name")]
     [JsonPropertyName("name")]
     public string Name { get; set; }
 
     /// <summary>
-    ///     The model or official name of this starship. Such as "T-65 X-wing" or "DS-1
-    ///     Orbital Battle Station".
+    /// The model or official name of this starship. Such as "T-65 X-wing" or "DS-1
+/// Orbital Battle Station".
     /// </summary>
     [GraphQLMember("model")]
     [JsonPropertyName("model")]
     public string Model { get; set; }
 
     /// <summary>
-    ///     The class of this starship, such as "Starfighter" or "Deep Space Mobile
-    ///     Battlestation"
+    /// The class of this starship, such as "Starfighter" or "Deep Space Mobile
+/// Battlestation"
     /// </summary>
     [GraphQLMember("starshipClass")]
     [JsonPropertyName("starshipClass")]
     public string StarshipClass { get; set; }
 
     /// <summary>
-    ///     The manufacturers of this starship.
+    /// The manufacturers of this starship.
     /// </summary>
     [GraphQLMember("manufacturers")]
     [JsonPropertyName("manufacturers")]
     public List<string> Manufacturers { get; set; }
 
     /// <summary>
-    ///     The cost of this starship new, in galactic credits.
+    /// The cost of this starship new, in galactic credits.
     /// </summary>
     [GraphQLMember("costInCredits")]
     [JsonPropertyName("costInCredits")]
     public double? CostInCredits { get; set; }
 
     /// <summary>
-    ///     The length of this starship in meters.
+    /// The length of this starship in meters.
     /// </summary>
     [GraphQLMember("length")]
     [JsonPropertyName("length")]
     public double? Length { get; set; }
 
     /// <summary>
-    ///     The number of personnel needed to run or pilot this starship.
+    /// The number of personnel needed to run or pilot this starship.
     /// </summary>
     [GraphQLMember("crew")]
     [JsonPropertyName("crew")]
     public string Crew { get; set; }
 
     /// <summary>
-    ///     The number of non-essential people this starship can transport.
+    /// The number of non-essential people this starship can transport.
     /// </summary>
     [GraphQLMember("passengers")]
     [JsonPropertyName("passengers")]
     public string Passengers { get; set; }
 
     /// <summary>
-    ///     The maximum speed of this starship in atmosphere. null if this starship is
-    ///     incapable of atmosphering flight.
+    /// The maximum speed of this starship in atmosphere. null if this starship is
+/// incapable of atmosphering flight.
     /// </summary>
     [GraphQLMember("maxAtmospheringSpeed")]
     [JsonPropertyName("maxAtmospheringSpeed")]
     public int? MaxAtmospheringSpeed { get; set; }
 
     /// <summary>
-    ///     The class of this starships hyperdrive.
+    /// The class of this starships hyperdrive.
     /// </summary>
     [GraphQLMember("hyperdriveRating")]
     [JsonPropertyName("hyperdriveRating")]
     public double? HyperdriveRating { get; set; }
 
     /// <summary>
-    ///     The Maximum number of Megalights this starship can travel in a standard hour.
-    ///     A "Megalight" is a standard unit of distance and has never been defined before
-    ///     within the Star Wars universe. This figure is only really useful for measuring
-    ///     the difference in speed of starships. We can assume it is similar to AU, the
-    ///     distance between our Sun (Sol) and Earth.
+    /// The Maximum number of Megalights this starship can travel in a standard hour.
+/// A "Megalight" is a standard unit of distance and has never been defined before
+/// within the Star Wars universe. This figure is only really useful for measuring
+/// the difference in speed of starships. We can assume it is similar to AU, the
+/// distance between our Sun (Sol) and Earth.
     /// </summary>
     [GraphQLMember("MGLT")]
     [JsonPropertyName("MGLT")]
     public int? MGLT { get; set; }
 
     /// <summary>
-    ///     The maximum number of kilograms that this starship can transport.
+    /// The maximum number of kilograms that this starship can transport.
     /// </summary>
     [GraphQLMember("cargoCapacity")]
     [JsonPropertyName("cargoCapacity")]
     public double? CargoCapacity { get; set; }
 
     /// <summary>
-    ///     The maximum length of time that this starship can provide consumables for its
-    ///     entire crew without having to resupply.
+    /// The maximum length of time that this starship can provide consumables for its
+/// entire crew without having to resupply.
     /// </summary>
     [GraphQLMember("consumables")]
     [JsonPropertyName("consumables")]
     public string Consumables { get; set; }
 
+    private LazyProperty<StarshipPilotsConnection> _pilotConnection = new();
     /// <summary>
-    ///     Do not use in Query, only to retrive result
+    /// Do not use in Query, only to retrive result
     /// </summary>
-    public StarshipPilotsConnection PilotConnection =>
-        _pilotConnection.Value(() => GetFirstMethodValue<StarshipPilotsConnection>("pilotConnection"));
+    public StarshipPilotsConnection PilotConnection => _pilotConnection.Value(() => GetFirstMethodValue<StarshipPilotsConnection>("pilotConnection"));
+
+    private LazyProperty<StarshipFilmsConnection> _filmConnection = new();
+    /// <summary>
+    /// Do not use in Query, only to retrive result
+    /// </summary>
+    public StarshipFilmsConnection FilmConnection => _filmConnection.Value(() => GetFirstMethodValue<StarshipFilmsConnection>("filmConnection"));
 
     /// <summary>
-    ///     Do not use in Query, only to retrive result
-    /// </summary>
-    public StarshipFilmsConnection FilmConnection =>
-        _filmConnection.Value(() => GetFirstMethodValue<StarshipFilmsConnection>("filmConnection"));
-
-    /// <summary>
-    ///     The ISO 8601 date format of the time that this resource was created.
+    /// The ISO 8601 date format of the time that this resource was created.
     /// </summary>
     [GraphQLMember("created")]
     [JsonPropertyName("created")]
     public string Created { get; set; }
 
     /// <summary>
-    ///     The ISO 8601 date format of the time that this resource was edited.
+    /// The ISO 8601 date format of the time that this resource was edited.
     /// </summary>
     [GraphQLMember("edited")]
     [JsonPropertyName("edited")]
     public string Edited { get; set; }
 
     /// <summary>
-    ///     The ID of an object
+    /// The ID of an object
     /// </summary>
     [GraphQLMember("id")]
     [JsonPropertyName("id")]
-    public string Id { get; set; }
+    public ID Id { get; set; }
 
     [GraphQLMember("__typename")]
     [JsonPropertyName("__typename")]

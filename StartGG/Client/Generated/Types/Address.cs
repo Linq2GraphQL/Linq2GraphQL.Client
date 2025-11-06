@@ -5,16 +5,19 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 using Linq2GraphQL.Client.Common;
 
 namespace StartGG.Client;
 
+
 /// <summary>
-///     A user's address
+/// A user's address
 /// </summary>
-public class Address : GraphQLTypeBase
+public partial class Address : GraphQLTypeBase
 {
     [GraphQLMember("id")]
     [JsonPropertyName("id")]
@@ -39,4 +42,5 @@ public class Address : GraphQLTypeBase
     [GraphQLMember("stateId")]
     [JsonPropertyName("stateId")]
     public int? StateId { get; set; }
+
 }

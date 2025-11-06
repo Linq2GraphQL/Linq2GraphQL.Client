@@ -5,28 +5,32 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 using Linq2GraphQL.Client.Common;
 
 namespace StarWars.Client;
 
+
 /// <summary>
-///     An edge in a connection.
+/// An edge in a connection.
 /// </summary>
-public class PlanetResidentsEdge : GraphQLTypeBase
+public partial class PlanetResidentsEdge : GraphQLTypeBase
 {
     /// <summary>
-    ///     The item at the end of the edge
+    /// The item at the end of the edge
     /// </summary>
     [GraphQLMember("node")]
     [JsonPropertyName("node")]
     public Person Node { get; set; }
 
     /// <summary>
-    ///     A cursor for use in pagination
+    /// A cursor for use in pagination
     /// </summary>
     [GraphQLMember("cursor")]
     [JsonPropertyName("cursor")]
     public string Cursor { get; set; }
+
 }

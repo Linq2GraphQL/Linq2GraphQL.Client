@@ -55,4 +55,12 @@ public partial class CustomerInput : GraphInputBase
     	set => SetValue("address", value);
 	}
 
+	[GraphQLMember("created")]
+	[JsonPropertyName("created")]
+	public DateTimeOffset? Created 
+	{
+		get => GetValue<DateTimeOffset?>("created");
+    	set => SetValue("created", value);
+	}
+
 }

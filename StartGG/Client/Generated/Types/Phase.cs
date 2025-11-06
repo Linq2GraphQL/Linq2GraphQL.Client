@@ -5,121 +5,129 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 using Linq2GraphQL.Client.Common;
 
 namespace StartGG.Client;
 
+
 public static class PhaseExtensions
 {
     [GraphQLMember("phaseGroups")]
-    public static PhaseGroupConnection PhaseGroups(this Phase phase,
-        [GraphQLArgument("query", "PhaseGroupPageQuery")] PhaseGroupPageQuery query = null)
+    public static PhaseGroupConnection PhaseGroups(this Phase  phase, [GraphQLArgument("query", "PhaseGroupPageQuery")] PhaseGroupPageQuery query = null)
     {
         return phase.GetMethodValue<PhaseGroupConnection>("phaseGroups", query);
     }
 
     [GraphQLMember("seeds")]
-    public static SeedConnection Seeds(this Phase phase,
-        [GraphQLArgument("query", "SeedPaginationQuery!")] SeedPaginationQuery query,
-        [GraphQLArgument("eventId", "ID")] ID eventId = null)
+    public static SeedConnection Seeds(this Phase  phase, [GraphQLArgument("query", "SeedPaginationQuery!")] SeedPaginationQuery query, [GraphQLArgument("eventId", "ID")] ID eventId = null)
     {
         return phase.GetMethodValue<SeedConnection>("seeds", query, eventId);
     }
 
     [GraphQLMember("sets")]
-    public static SetConnection Sets(this Phase phase, [GraphQLArgument("page", "Int")] int? page = null,
-        [GraphQLArgument("perPage", "Int")] int? perPage = null,
-        [GraphQLArgument("sortType", "SetSortType")] SetSortType? sortType = null,
-        [GraphQLArgument("filters", "SetFilters")] SetFilters filters = null)
+    public static SetConnection Sets(this Phase  phase, [GraphQLArgument("page", "Int")] int? page = null, [GraphQLArgument("perPage", "Int")] int? perPage = null, [GraphQLArgument("sortType", "SetSortType")] SetSortType? sortType = null, [GraphQLArgument("filters", "SetFilters")] SetFilters filters = null)
     {
         return phase.GetMethodValue<SetConnection>("sets", page, perPage, sortType, filters);
     }
+
 }
 
 /// <summary>
-///     A phase in an event
+/// A phase in an event
 /// </summary>
-public class Phase : GraphQLTypeBase
+public partial class Phase : GraphQLTypeBase
 {
-    private readonly LazyProperty<PhaseGroupConnection> _phaseGroups = new();
-
-    private readonly LazyProperty<SeedConnection> _seeds = new();
-
-    private readonly LazyProperty<SetConnection> _sets = new();
-
     [GraphQLMember("id")]
     [JsonPropertyName("id")]
     public ID Id { get; set; }
 
     /// <summary>
-    ///     The bracket type of this phase.
+    /// The bracket type of this phase.
     /// </summary>
     [GraphQLMember("bracketType")]
     [JsonPropertyName("bracketType")]
     public BracketType? BracketType { get; set; }
 
     /// <summary>
-    ///     The Event that this phase belongs to
+    /// The Event that this phase belongs to
     /// </summary>
     [GraphQLMember("event")]
     [JsonPropertyName("event")]
     public Event Event { get; set; }
 
     /// <summary>
-    ///     Number of phase groups in this phase
+    /// Number of phase groups in this phase
     /// </summary>
     [GraphQLMember("groupCount")]
     [JsonPropertyName("groupCount")]
     public int? GroupCount { get; set; }
 
     /// <summary>
-    ///     Is the phase an exhibition or not.
+    /// Is the phase an exhibition or not.
     /// </summary>
     [GraphQLMember("isExhibition")]
     [JsonPropertyName("isExhibition")]
     public bool? IsExhibition { get; set; }
 
     /// <summary>
-    ///     Name of phase e.g. Round 1 Pools
+    /// Name of phase e.g. Round 1 Pools
     /// </summary>
     [GraphQLMember("name")]
     [JsonPropertyName("name")]
     public string Name { get; set; }
 
     /// <summary>
-    ///     The number of seeds this phase contains.
+    /// The number of seeds this phase contains.
     /// </summary>
     [GraphQLMember("numSeeds")]
     [JsonPropertyName("numSeeds")]
     public int? NumSeeds { get; set; }
 
+    private LazyProperty<PhaseGroupConnection> _phaseGroups = new();
     /// <summary>
-    ///     Do not use in Query, only to retrive result
+    /// Do not use in Query, only to retrive result
     /// </summary>
-    public PhaseGroupConnection PhaseGroups =>
-        _phaseGroups.Value(() => GetFirstMethodValue<PhaseGroupConnection>("phaseGroups"));
+    public PhaseGroupConnection PhaseGroups => _phaseGroups.Value(() => GetFirstMethodValue<PhaseGroupConnection>("phaseGroups"));
 
     /// <summary>
-    ///     The relative order of this phase within an event
+    /// The relative order of this phase within an event
     /// </summary>
     [GraphQLMember("phaseOrder")]
     [JsonPropertyName("phaseOrder")]
     public int? PhaseOrder { get; set; }
 
     /// <summary>
-    ///     Do not use in Query, only to retrive result
+    /// Information about the progressions into this phase
+    /// </summary>
+    [GraphQLMember("progressingInData")]
+    [JsonPropertyName("progressingInData")]
+    public List<ProgressionData> ProgressingInData { get; set; }
+
+    /// <summary>
+    /// Information about the progressions out of this phase
+    /// </summary>
+    [GraphQLMember("progressions")]
+    [JsonPropertyName("progressions")]
+    public List<Progression> Progressions { get; set; }
+
+    private LazyProperty<SeedConnection> _seeds = new();
+    /// <summary>
+    /// Do not use in Query, only to retrive result
     /// </summary>
     public SeedConnection Seeds => _seeds.Value(() => GetFirstMethodValue<SeedConnection>("seeds"));
 
+    private LazyProperty<SetConnection> _sets = new();
     /// <summary>
-    ///     Do not use in Query, only to retrive result
+    /// Do not use in Query, only to retrive result
     /// </summary>
     public SetConnection Sets => _sets.Value(() => GetFirstMethodValue<SetConnection>("sets"));
 
     /// <summary>
-    ///     State of the phase
+    /// State of the phase
     /// </summary>
     [GraphQLMember("state")]
     [JsonPropertyName("state")]
@@ -128,4 +136,5 @@ public class Phase : GraphQLTypeBase
     [GraphQLMember("waves")]
     [JsonPropertyName("waves")]
     public List<Wave> Waves { get; set; }
+
 }

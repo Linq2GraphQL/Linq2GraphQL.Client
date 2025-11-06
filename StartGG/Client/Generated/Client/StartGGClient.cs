@@ -11,16 +11,41 @@ using Microsoft.Extensions.Options;
 
 namespace StartGG.Client;
 
-public class StartGGClient
-{
-    public StartGGClient(HttpClient httpClient,
-        [FromKeyedServices("StartGGClient")] IOptions<GraphClientOptions> options, IServiceProvider provider)
+/// <summary>
+/// GraphQL client for StartGGClient operations
+/// </summary>
+/// <remarks>
+/// Provides strongly-typed access to GraphQL queries, mutations, and subscriptions.
+/// Supports dependency injection for better testability and flexibility.
+/// </remarks>
+public class StartGGClient : IStartGGClient
+{ 
+    /// <summary>
+    /// Constructor with dependency injection support
+    /// </summary>
+    /// <param name="httpClient">HTTP client for GraphQL requests</param>
+    /// <param name="options">GraphQL client configuration options</param>
+    /// <param name="provider">Service provider for dependency resolution</param>
+    /// <param name="queryMethods">Optional query methods implementation (uses default if null)</param>
+    /// <param name="mutationMethods">Optional mutation methods implementation (uses default if null)</param>
+    public StartGGClient(
+        HttpClient httpClient, 
+        [FromKeyedServices("StartGGClient")] IOptions<GraphClientOptions> options, 
+        IServiceProvider provider,
+        IQueryMethods queryMethods = null,
+        IMutationMethods mutationMethods = null)
     {
-        var client = new GraphClient(httpClient, options, provider);
-        Query = new(client);
-        Mutation = new(client);
+        var client = new GraphClient(httpClient, options, provider, false);
+        Query = queryMethods ?? new QueryMethods(client);
+        Mutation = mutationMethods ?? new MutationMethods(client);
     }
 
-    public QueryMethods Query { get; private set; }
-    public MutationMethods Mutation { get; private set; }
+    /// <summary>
+    /// Gets the query methods for this GraphQL client
+    /// </summary>
+    public IQueryMethods Query { get; private set; }
+    /// <summary>
+    /// Gets the mutation methods for this GraphQL client
+    /// </summary>
+    public IMutationMethods Mutation { get; private set; }
 }

@@ -11,7 +11,7 @@ public abstract class GraphBase<T, TGraph>
     {
         this.client = client;
         this.operationType = operationType;
-        QueryNode = new(typeof(T), name, arguments, false, true);
+        QueryNode = new(typeof(T), name, arguments, null, true);
     }
 
     public QueryNode QueryNode { get; }

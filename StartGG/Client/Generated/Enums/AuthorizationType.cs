@@ -5,21 +5,31 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using Linq2GraphQL.Client;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
-using Linq2GraphQL.Client;
 
 namespace StartGG.Client;
 
 [JsonConverter(typeof(JsonStringEnumMemberConverter))]
 public enum AuthorizationType
 {
-    [EnumMember(Value = "TWITTER")] Twitter,
-    [EnumMember(Value = "TWITCH")] Twitch,
-    [EnumMember(Value = "STEAM")] Steam,
-    [EnumMember(Value = "DISCORD")] Discord,
-    [EnumMember(Value = "XBOX")] Xbox,
-    [EnumMember(Value = "EPIC")] Epic,
-    [EnumMember(Value = "BATTLENET")] Battlenet,
-    [EnumMember(Value = "MIXER")] Mixer
+    [EnumMember(Value = "TWITTER")]
+    Twitter,
+    [EnumMember(Value = "TWITCH")]
+    Twitch,
+    [EnumMember(Value = "STEAM")]
+    Steam,
+    [EnumMember(Value = "DISCORD")]
+    Discord,
+    [EnumMember(Value = "XBOX")]
+    Xbox,
+    [EnumMember(Value = "EPIC")]
+    Epic,
+    [EnumMember(Value = "BATTLENET")]
+    Battlenet,
+    [EnumMember(Value = "RIOT")]
+    Riot,
+    [EnumMember(Value = "MIXER")]
+    Mixer,
 }

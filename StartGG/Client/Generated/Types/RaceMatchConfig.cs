@@ -5,38 +5,20 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 using Linq2GraphQL.Client.Common;
 
 namespace StartGG.Client;
 
+
 /// <summary>
-///     Race specific match configuration
+/// Race specific match configuration
 /// </summary>
-public class RaceMatchConfig : GraphQLTypeBase, MatchConfig
+public partial class RaceMatchConfig : GraphQLTypeBase, MatchConfig
 {
-    /// <summary>
-    ///     Can players report results?
-    /// </summary>
-    [GraphQLMember("playerReportingEnabled")]
-    [JsonPropertyName("playerReportingEnabled")]
-    public bool? PlayerReportingEnabled { get; set; }
-
-    /// <summary>
-    ///     Accepted methods of verification that players can use
-    /// </summary>
-    [GraphQLMember("verificationMethods")]
-    [JsonPropertyName("verificationMethods")]
-    public List<MatchConfigVerificationMethod?> VerificationMethods { get; set; }
-
-    /// <summary>
-    ///     Are players required to submit verification of their reported results?
-    /// </summary>
-    [GraphQLMember("verificationRequired")]
-    [JsonPropertyName("verificationRequired")]
-    public bool? VerificationRequired { get; set; }
-
     [GraphQLMember("id")]
     [JsonPropertyName("id")]
     public ID Id { get; set; }
@@ -44,6 +26,27 @@ public class RaceMatchConfig : GraphQLTypeBase, MatchConfig
     [GraphQLMember("bracketType")]
     [JsonPropertyName("bracketType")]
     public BracketType? BracketType { get; set; }
+
+    /// <summary>
+    /// Can players report results?
+    /// </summary>
+    [GraphQLMember("playerReportingEnabled")]
+    [JsonPropertyName("playerReportingEnabled")]
+    public bool? PlayerReportingEnabled { get; set; }
+
+    /// <summary>
+    /// Accepted methods of verification that players can use
+    /// </summary>
+    [GraphQLMember("verificationMethods")]
+    [JsonPropertyName("verificationMethods")]
+    public List<MatchConfigVerificationMethod?> VerificationMethods { get; set; }
+
+    /// <summary>
+    /// Are players required to submit verification of their reported results?
+    /// </summary>
+    [GraphQLMember("verificationRequired")]
+    [JsonPropertyName("verificationRequired")]
+    public bool? VerificationRequired { get; set; }
 
     [GraphQLMember("__typename")]
     [JsonPropertyName("__typename")]

@@ -11,14 +11,34 @@ using Microsoft.Extensions.Options;
 
 namespace StarWars.Client;
 
-public class StarWarsClient
-{
-    public StarWarsClient(HttpClient httpClient,
-        [FromKeyedServices("StarWarsClient")] IOptions<GraphClientOptions> options, IServiceProvider provider)
+/// <summary>
+/// GraphQL client for StarWarsClient operations
+/// </summary>
+/// <remarks>
+/// Provides strongly-typed access to GraphQL queries, mutations, and subscriptions.
+/// Supports dependency injection for better testability and flexibility.
+/// </remarks>
+public class StarWarsClient : IStarWarsClient
+{ 
+    /// <summary>
+    /// Constructor with dependency injection support
+    /// </summary>
+    /// <param name="httpClient">HTTP client for GraphQL requests</param>
+    /// <param name="options">GraphQL client configuration options</param>
+    /// <param name="provider">Service provider for dependency resolution</param>
+    /// <param name="queryMethods">Optional query methods implementation (uses default if null)</param>
+    public StarWarsClient(
+        HttpClient httpClient, 
+        [FromKeyedServices("StarWarsClient")] IOptions<GraphClientOptions> options, 
+        IServiceProvider provider,
+        IRootMethods queryMethods = null)
     {
-        var client = new GraphClient(httpClient, options, provider);
-        Query = new(client);
+        var client = new GraphClient(httpClient, options, provider, false);
+        Query = queryMethods ?? new RootMethods(client);
     }
 
-    public RootMethods Query { get; private set; }
+    /// <summary>
+    /// Gets the query methods for this GraphQL client
+    /// </summary>
+    public IRootMethods Query { get; private set; }
 }

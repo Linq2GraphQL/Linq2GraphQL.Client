@@ -10,14 +10,16 @@ public class QueryNode
     private string argumentHashCodeId;
 
     public QueryNode(MemberInfo member, string name = null, List<ArgumentValue> arguments = null,
-        bool interfaceProperty = false, bool topLevel = false)
+        bool? interfaceProperty = null, bool topLevel = false)
     {
-        Name = name ?? member.GetCustomAttribute<GraphQLMemberAttribute>()?.GraphQLName ?? member.Name.ToCamelCase();
+        var memberAttribute = member.GetCustomAttribute<GraphQLMemberAttribute>();
+
+        Name = name ?? memberAttribute?.GraphQLName ?? member.Name.ToCamelCase();
         Member = member;
         Arguments = arguments ?? new List<ArgumentValue>();
         underlyingMemberType = member.GetUnderlyingType();
         mustHaveChildren = MustHaveChildren(underlyingMemberType);
-        InterfaceProperty = interfaceProperty;
+        InterfaceProperty =  memberAttribute?.InterfaceProperty == true;
 
         if (!topLevel)
         {

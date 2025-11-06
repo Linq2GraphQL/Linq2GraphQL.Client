@@ -5,11 +5,13 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System.Collections.Generic;
+using System;
 using Linq2GraphQL.Client;
 
 namespace StartGG.Client;
 
-public class MutationMethods
+public class MutationMethods : IMutationMethods
 {
     private readonly GraphClient client;
 
@@ -18,174 +20,227 @@ public class MutationMethods
         this.client = client;
     }
 
+    public GraphQuery<Set> AssignStation(ID setId, ID stationId)
+    {
+	    var arguments = new List<ArgumentValue>
+        {
+    	    new("setId","ID!", setId),
+    	    new("stationId","ID!", stationId),
+        };
+
+        return new GraphQuery<Set>(client,  "assignStation", OperationType.Mutation, arguments); 
+    }
+
+    public GraphQuery<Set> AssignStream(ID setId, ID streamId)
+    {
+	    var arguments = new List<ArgumentValue>
+        {
+    	    new("setId","ID!", setId),
+    	    new("streamId","ID!", streamId),
+        };
+
+        return new GraphQuery<Set>(client,  "assignStream", OperationType.Mutation, arguments); 
+    }
+
     public GraphQuery<bool?> DeletePhase(ID phaseId)
     {
-        var arguments = new List<ArgumentValue> { new("phaseId", "ID!", phaseId) };
+	    var arguments = new List<ArgumentValue>
+        {
+    	    new("phaseId","ID!", phaseId),
+        };
 
-        return new(client, "deletePhase", OperationType.Mutation, arguments);
+        return new GraphQuery<bool?>(client,  "deletePhase", OperationType.Mutation, arguments); 
     }
 
     public GraphQuery<bool?> DeleteStation(ID stationId)
     {
-        var arguments = new List<ArgumentValue> { new("stationId", "ID!", stationId) };
+	    var arguments = new List<ArgumentValue>
+        {
+    	    new("stationId","ID!", stationId),
+        };
 
-        return new(client, "deleteStation", OperationType.Mutation, arguments);
+        return new GraphQuery<bool?>(client,  "deleteStation", OperationType.Mutation, arguments); 
     }
 
     public GraphQuery<bool?> DeleteWave(ID waveId)
     {
-        var arguments = new List<ArgumentValue> { new("waveId", "ID!", waveId) };
+	    var arguments = new List<ArgumentValue>
+        {
+    	    new("waveId","ID!", waveId),
+        };
 
-        return new(client, "deleteWave", OperationType.Mutation, arguments);
+        return new GraphQuery<bool?>(client,  "deleteWave", OperationType.Mutation, arguments); 
     }
 
     public GraphQuery<string> GenerateRegistrationToken(TournamentRegistrationInput registration, ID userId)
     {
-        var arguments = new List<ArgumentValue>
+	    var arguments = new List<ArgumentValue>
         {
-            new("registration", "TournamentRegistrationInput!", registration), new("userId", "ID!", userId)
+    	    new("registration","TournamentRegistrationInput!", registration),
+    	    new("userId","ID!", userId),
         };
 
-        return new(client, "generateRegistrationToken", OperationType.Mutation, arguments);
+        return new GraphQuery<string>(client,  "generateRegistrationToken", OperationType.Mutation, arguments); 
     }
 
     public GraphQuery<Set> MarkSetCalled(ID setId)
     {
-        var arguments = new List<ArgumentValue> { new("setId", "ID!", setId) };
+	    var arguments = new List<ArgumentValue>
+        {
+    	    new("setId","ID!", setId),
+        };
 
-        return new(client, "markSetCalled", OperationType.Mutation, arguments);
+        return new GraphQuery<Set>(client,  "markSetCalled", OperationType.Mutation, arguments); 
     }
 
     public GraphQuery<Set> MarkSetInProgress(ID setId)
     {
-        var arguments = new List<ArgumentValue> { new("setId", "ID!", setId) };
-
-        return new(client, "markSetInProgress", OperationType.Mutation, arguments);
-    }
-
-    public GraphQuery<Participant> RegisterForTournament(TournamentRegistrationInput registration = null,
-        string registrationToken = null)
-    {
-        var arguments = new List<ArgumentValue>
+	    var arguments = new List<ArgumentValue>
         {
-            new("registration", "TournamentRegistrationInput", registration),
-            new("registrationToken", "String", registrationToken)
+    	    new("setId","ID!", setId),
         };
 
-        return new(client, "registerForTournament", OperationType.Mutation, arguments);
+        return new GraphQuery<Set>(client,  "markSetInProgress", OperationType.Mutation, arguments); 
     }
 
-    public GraphQuery<List<Set>> ReportBracketSet(ID setId, ID winnerId = null, bool? isDQ = null,
-        List<BracketSetGameDataInput> gameData = null)
+    public GraphQuery<Participant> RegisterForTournament(TournamentRegistrationInput registration = null, string registrationToken = null)
     {
-        var arguments = new List<ArgumentValue>
+	    var arguments = new List<ArgumentValue>
         {
-            new("setId", "ID!", setId),
-            new("winnerId", "ID", winnerId),
-            new("isDQ", "Boolean", isDQ),
-            new("gameData", "[BracketSetGameDataInput]", gameData)
+    	    new("registration","TournamentRegistrationInput", registration),
+    	    new("registrationToken","String", registrationToken),
         };
 
-        return new(client, "reportBracketSet", OperationType.Mutation, arguments);
+        return new GraphQuery<Participant>(client,  "registerForTournament", OperationType.Mutation, arguments); 
+    }
+
+    public GraphQuery<List<Set>> ReportBracketSet(ID setId, ID winnerId = null, bool? isDQ = null, List<BracketSetGameDataInput> gameData = null)
+    {
+	    var arguments = new List<ArgumentValue>
+        {
+    	    new("setId","ID!", setId),
+    	    new("winnerId","ID", winnerId),
+    	    new("isDQ","Boolean", isDQ),
+    	    new("gameData","[BracketSetGameDataInput]", gameData),
+        };
+
+        return new GraphQuery<List<Set>>(client,  "reportBracketSet", OperationType.Mutation, arguments); 
     }
 
     public GraphQuery<Set> ResetSet(ID setId, bool? resetDependentSets = null)
     {
-        var arguments = new List<ArgumentValue>
+	    var arguments = new List<ArgumentValue>
         {
-            new("setId", "ID!", setId), new("resetDependentSets", "Boolean", resetDependentSets)
+    	    new("setId","ID!", setId),
+    	    new("resetDependentSets","Boolean", resetDependentSets),
         };
 
-        return new(client, "resetSet", OperationType.Mutation, arguments);
+        return new GraphQuery<Set>(client,  "resetSet", OperationType.Mutation, arguments); 
     }
 
     public GraphQuery<List<Seed>> ResolveScheduleConflicts(ID tournamentId, ResolveConflictsOptions options = null)
     {
-        var arguments = new List<ArgumentValue>
+	    var arguments = new List<ArgumentValue>
         {
-            new("tournamentId", "ID!", tournamentId), new("options", "ResolveConflictsOptions", options)
+    	    new("tournamentId","ID!", tournamentId),
+    	    new("options","ResolveConflictsOptions", options),
         };
 
-        return new(client, "resolveScheduleConflicts", OperationType.Mutation, arguments);
+        return new GraphQuery<List<Seed>>(client,  "resolveScheduleConflicts", OperationType.Mutation, arguments); 
     }
 
     public GraphQuery<List<Seed>> SwapSeeds(ID phaseId, ID seed1Id, ID seed2Id)
     {
-        var arguments = new List<ArgumentValue>
+	    var arguments = new List<ArgumentValue>
         {
-            new("phaseId", "ID!", phaseId), new("seed1Id", "ID!", seed1Id), new("seed2Id", "ID!", seed2Id)
+    	    new("phaseId","ID!", phaseId),
+    	    new("seed1Id","ID!", seed1Id),
+    	    new("seed2Id","ID!", seed2Id),
         };
 
-        return new(client, "swapSeeds", OperationType.Mutation, arguments);
+        return new GraphQuery<List<Seed>>(client,  "swapSeeds", OperationType.Mutation, arguments); 
     }
 
-    public GraphQuery<Set> UpdateBracketSet(ID setId, ID winnerId = null, bool? isDQ = null,
-        List<BracketSetGameDataInput> gameData = null)
+    public GraphQuery<Set> UpdateBracketSet(ID setId, ID winnerId = null, bool? isDQ = null, List<BracketSetGameDataInput> gameData = null)
     {
-        var arguments = new List<ArgumentValue>
+	    var arguments = new List<ArgumentValue>
         {
-            new("setId", "ID!", setId),
-            new("winnerId", "ID", winnerId),
-            new("isDQ", "Boolean", isDQ),
-            new("gameData", "[BracketSetGameDataInput]", gameData)
+    	    new("setId","ID!", setId),
+    	    new("winnerId","ID", winnerId),
+    	    new("isDQ","Boolean", isDQ),
+    	    new("gameData","[BracketSetGameDataInput]", gameData),
         };
 
-        return new(client, "updateBracketSet", OperationType.Mutation, arguments);
+        return new GraphQuery<Set>(client,  "updateBracketSet", OperationType.Mutation, arguments); 
     }
 
     public GraphQuery<List<PhaseGroup>> UpdatePhaseGroups(List<PhaseGroupUpdateInput> groupConfigs)
     {
-        var arguments = new List<ArgumentValue> { new("groupConfigs", "[PhaseGroupUpdateInput]!", groupConfigs) };
-
-        return new(client, "updatePhaseGroups", OperationType.Mutation, arguments);
-    }
-
-    public GraphQuery<Phase> UpdatePhaseSeeding(ID phaseId, List<UpdatePhaseSeedInfo> seedMapping,
-        UpdatePhaseSeedingOptions options = null)
-    {
-        var arguments = new List<ArgumentValue>
+	    var arguments = new List<ArgumentValue>
         {
-            new("phaseId", "ID!", phaseId),
-            new("seedMapping", "[UpdatePhaseSeedInfo]!", seedMapping),
-            new("options", "UpdatePhaseSeedingOptions", options)
+    	    new("groupConfigs","[PhaseGroupUpdateInput]!", groupConfigs),
         };
 
-        return new(client, "updatePhaseSeeding", OperationType.Mutation, arguments);
+        return new GraphQuery<List<PhaseGroup>>(client,  "updatePhaseGroups", OperationType.Mutation, arguments); 
+    }
+
+    public GraphQuery<Phase> UpdatePhaseSeeding(ID phaseId, List<UpdatePhaseSeedInfo> seedMapping, UpdatePhaseSeedingOptions options = null)
+    {
+	    var arguments = new List<ArgumentValue>
+        {
+    	    new("phaseId","ID!", phaseId),
+    	    new("seedMapping","[UpdatePhaseSeedInfo]!", seedMapping),
+    	    new("options","UpdatePhaseSeedingOptions", options),
+        };
+
+        return new GraphQuery<Phase>(client,  "updatePhaseSeeding", OperationType.Mutation, arguments); 
+    }
+
+    public GraphQuery<Set> UpdateVodUrl(ID setId, string vodUrl = null)
+    {
+	    var arguments = new List<ArgumentValue>
+        {
+    	    new("setId","ID!", setId),
+    	    new("vodUrl","String", vodUrl),
+        };
+
+        return new GraphQuery<Set>(client,  "updateVodUrl", OperationType.Mutation, arguments); 
     }
 
     public GraphQuery<Phase> UpsertPhase(PhaseUpsertInput payload, ID phaseId = null, ID eventId = null)
     {
-        var arguments = new List<ArgumentValue>
+	    var arguments = new List<ArgumentValue>
         {
-            new("phaseId", "ID", phaseId),
-            new("eventId", "ID", eventId),
-            new("payload", "PhaseUpsertInput!", payload)
+    	    new("phaseId","ID", phaseId),
+    	    new("eventId","ID", eventId),
+    	    new("payload","PhaseUpsertInput!", payload),
         };
 
-        return new(client, "upsertPhase", OperationType.Mutation, arguments);
+        return new GraphQuery<Phase>(client,  "upsertPhase", OperationType.Mutation, arguments); 
     }
 
     public GraphQuery<Stations> UpsertStation(StationUpsertInput fields, ID stationId = null, ID tournamentId = null)
     {
-        var arguments = new List<ArgumentValue>
+	    var arguments = new List<ArgumentValue>
         {
-            new("stationId", "ID", stationId),
-            new("tournamentId", "ID", tournamentId),
-            new("fields", "StationUpsertInput!", fields)
+    	    new("stationId","ID", stationId),
+    	    new("tournamentId","ID", tournamentId),
+    	    new("fields","StationUpsertInput!", fields),
         };
 
-        return new(client, "upsertStation", OperationType.Mutation, arguments);
+        return new GraphQuery<Stations>(client,  "upsertStation", OperationType.Mutation, arguments); 
     }
 
     public GraphQuery<Wave> UpsertWave(WaveUpsertInput fields, ID waveId = null, ID tournamentId = null)
     {
-        var arguments = new List<ArgumentValue>
+	    var arguments = new List<ArgumentValue>
         {
-            new("waveId", "ID", waveId),
-            new("tournamentId", "ID", tournamentId),
-            new("fields", "WaveUpsertInput!", fields)
+    	    new("waveId","ID", waveId),
+    	    new("tournamentId","ID", tournamentId),
+    	    new("fields","WaveUpsertInput!", fields),
         };
 
-        return new(client, "upsertWave", OperationType.Mutation, arguments);
+        return new GraphQuery<Wave>(client,  "upsertWave", OperationType.Mutation, arguments); 
     }
-}
+
+    }

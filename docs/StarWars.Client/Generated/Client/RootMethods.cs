@@ -11,7 +11,7 @@ using Linq2GraphQL.Client;
 
 namespace StarWars.Client;
 
-public class RootMethods
+public class RootMethods : IRootMethods
 {
     private readonly GraphClient client;
 
@@ -33,7 +33,7 @@ public class RootMethods
         return new GraphCursorQuery<FilmsConnection>(client,  "allFilms", OperationType.Query, arguments); 
     }
 
-    public GraphQuery<Film> Film(string id = null, string filmID = null)
+    public GraphQuery<Film> Film(ID id = null, ID filmID = null)
     {
 	    var arguments = new List<ArgumentValue>
         {
@@ -57,7 +57,7 @@ public class RootMethods
         return new GraphCursorQuery<PeopleConnection>(client,  "allPeople", OperationType.Query, arguments); 
     }
 
-    public GraphQuery<Person> Person(string id = null, string personID = null)
+    public GraphQuery<Person> Person(ID id = null, ID personID = null)
     {
 	    var arguments = new List<ArgumentValue>
         {
@@ -81,7 +81,7 @@ public class RootMethods
         return new GraphCursorQuery<PlanetsConnection>(client,  "allPlanets", OperationType.Query, arguments); 
     }
 
-    public GraphQuery<Planet> Planet(string id = null, string planetID = null)
+    public GraphQuery<Planet> Planet(ID id = null, ID planetID = null)
     {
 	    var arguments = new List<ArgumentValue>
         {
@@ -105,7 +105,7 @@ public class RootMethods
         return new GraphCursorQuery<SpeciesConnection>(client,  "allSpecies", OperationType.Query, arguments); 
     }
 
-    public GraphQuery<Species> Species(string id = null, string speciesID = null)
+    public GraphQuery<Species> Species(ID id = null, ID speciesID = null)
     {
 	    var arguments = new List<ArgumentValue>
         {
@@ -129,7 +129,7 @@ public class RootMethods
         return new GraphCursorQuery<StarshipsConnection>(client,  "allStarships", OperationType.Query, arguments); 
     }
 
-    public GraphQuery<Starship> Starship(string id = null, string starshipID = null)
+    public GraphQuery<Starship> Starship(ID id = null, ID starshipID = null)
     {
 	    var arguments = new List<ArgumentValue>
         {
@@ -153,7 +153,7 @@ public class RootMethods
         return new GraphCursorQuery<VehiclesConnection>(client,  "allVehicles", OperationType.Query, arguments); 
     }
 
-    public GraphQuery<Vehicle> Vehicle(string id = null, string vehicleID = null)
+    public GraphQuery<Vehicle> Vehicle(ID id = null, ID vehicleID = null)
     {
 	    var arguments = new List<ArgumentValue>
         {
@@ -164,7 +164,7 @@ public class RootMethods
         return new GraphQuery<Vehicle>(client,  "vehicle", OperationType.Query, arguments); 
     }
 
-    public GraphQuery<Node> Node(string id)
+    public GraphQuery<Node> Node(ID id)
     {
 	    var arguments = new List<ArgumentValue>
         {
