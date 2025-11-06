@@ -139,7 +139,7 @@ public partial class Species : GraphQLTypeBase, Node
     /// </summary>
     [GraphQLMember("id")]
     [JsonPropertyName("id")]
-    public string Id { get; set; }
+    public ID Id { get; set; }
 
     [GraphQLMember("__typename")]
     [JsonPropertyName("__typename")]

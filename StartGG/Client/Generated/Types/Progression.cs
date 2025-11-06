@@ -39,4 +39,8 @@ public partial class Progression : GraphQLTypeBase
     [JsonPropertyName("originPlacement")]
     public int? OriginPlacement { get; set; }
 
+    [GraphQLMember("placeholderName")]
+    [JsonPropertyName("placeholderName")]
+    public string PlaceholderName { get; set; }
+
 }

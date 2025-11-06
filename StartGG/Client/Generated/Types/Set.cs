@@ -5,92 +5,103 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 using Linq2GraphQL.Client.Common;
 
 namespace StartGG.Client;
 
+
 public static class SetExtensions
 {
     [GraphQLMember("displayScore")]
-    public static string DisplayScore(this Set set, [GraphQLArgument("mainEntrantId", "ID")] ID mainEntrantId = null)
+    public static string DisplayScore(this Set  set, [GraphQLArgument("mainEntrantId", "ID")] ID mainEntrantId = null)
     {
         return set.GetMethodValue<string>("displayScore", mainEntrantId);
     }
 
     [GraphQLMember("game")]
-    public static Game Game(this Set set, [GraphQLArgument("orderNum", "Int!")] int orderNum)
+    public static Game Game(this Set  set, [GraphQLArgument("orderNum", "Int!")] int orderNum)
     {
         return set.GetMethodValue<Game>("game", orderNum);
     }
 
     [GraphQLMember("images")]
-    public static List<Image> Images(this Set set, [GraphQLArgument("type", "String")] string type = null)
+    public static List<Image> Images(this Set  set, [GraphQLArgument("type", "String")] string type = null)
     {
         return set.GetMethodValue<List<Image>>("images", type);
     }
 
     [GraphQLMember("slots")]
-    public static List<SetSlot> Slots(this Set set,
-        [GraphQLArgument("includeByes", "Boolean")] bool? includeByes = null)
+    public static List<SetSlot> Slots(this Set  set, [GraphQLArgument("includeByes", "Boolean")] bool? includeByes = null)
     {
         return set.GetMethodValue<List<SetSlot>>("slots", includeByes);
     }
+
 }
 
 /// <summary>
-///     A set
+/// A set
 /// </summary>
-public class Set : GraphQLTypeBase
+public partial class Set : GraphQLTypeBase
 {
-    private readonly LazyProperty<string> _displayScore = new();
-
-    private readonly LazyProperty<Game> _game = new();
-
-    private readonly LazyProperty<List<Image>> _images = new();
-
-    private readonly LazyProperty<List<SetSlot>> _slots = new();
-
     [GraphQLMember("id")]
     [JsonPropertyName("id")]
     public ID Id { get; set; }
 
     /// <summary>
-    ///     The time this set was marked as completed
+    /// The time this set was marked as completed
     /// </summary>
     [GraphQLMember("completedAt")]
     [JsonPropertyName("completedAt")]
     public Timestamp CompletedAt { get; set; }
 
     /// <summary>
-    ///     The time this set was created
+    /// The time this set was created
     /// </summary>
     [GraphQLMember("createdAt")]
     [JsonPropertyName("createdAt")]
     public Timestamp CreatedAt { get; set; }
 
+    private LazyProperty<string> _displayScore = new();
     /// <summary>
-    ///     Do not use in Query, only to retrive result
+    /// Do not use in Query, only to retrive result
     /// </summary>
     public string DisplayScore => _displayScore.Value(() => GetFirstMethodValue<string>("displayScore"));
 
     /// <summary>
-    ///     Event that this set belongs to.
+    /// The source of the first entrant in this set
+    /// </summary>
+    [GraphQLMember("entrant1Source")]
+    [JsonPropertyName("entrant1Source")]
+    public SetEntrantSource Entrant1Source { get; set; }
+
+    /// <summary>
+    /// The source of the second entrant in this set
+    /// </summary>
+    [GraphQLMember("entrant2Source")]
+    [JsonPropertyName("entrant2Source")]
+    public SetEntrantSource Entrant2Source { get; set; }
+
+    /// <summary>
+    /// Event that this set belongs to.
     /// </summary>
     [GraphQLMember("event")]
     [JsonPropertyName("event")]
     public Event Event { get; set; }
 
     /// <summary>
-    ///     Full round text of this set.
+    /// Full round text of this set.
     /// </summary>
     [GraphQLMember("fullRoundText")]
     [JsonPropertyName("fullRoundText")]
     public string FullRoundText { get; set; }
 
+    private LazyProperty<Game> _game = new();
     /// <summary>
-    ///     Do not use in Query, only to retrive result
+    /// Do not use in Query, only to retrive result
     /// </summary>
     public Game Game => _game.Value(() => GetFirstMethodValue<Game>("game"));
 
@@ -99,21 +110,22 @@ public class Set : GraphQLTypeBase
     public List<Game> Games { get; set; }
 
     /// <summary>
-    ///     Whether this set contains a placeholder entrant
+    /// Whether this set contains a placeholder entrant
     /// </summary>
     [GraphQLMember("hasPlaceholder")]
     [JsonPropertyName("hasPlaceholder")]
     public bool? HasPlaceholder { get; set; }
 
     /// <summary>
-    ///     The letters that describe a unique identifier within the pool. Eg. F, AT
+    /// The letters that describe a unique identifier within the pool. Eg. F, AT
     /// </summary>
     [GraphQLMember("identifier")]
     [JsonPropertyName("identifier")]
     public string Identifier { get; set; }
 
+    private LazyProperty<List<Image>> _images = new();
     /// <summary>
-    ///     Do not use in Query, only to retrive result
+    /// Do not use in Query, only to retrive result
     /// </summary>
     public List<Image> Images => _images.Value(() => GetFirstMethodValue<List<Image>>("images"));
 
@@ -122,42 +134,49 @@ public class Set : GraphQLTypeBase
     public int? LPlacement { get; set; }
 
     /// <summary>
-    ///     Phase group that this Set belongs to.
+    /// The progression seed that the loser of this set will be placed into (if applicable)
+    /// </summary>
+    [GraphQLMember("loserProgressionSeed")]
+    [JsonPropertyName("loserProgressionSeed")]
+    public Seed LoserProgressionSeed { get; set; }
+
+    /// <summary>
+    /// Phase group that this Set belongs to.
     /// </summary>
     [GraphQLMember("phaseGroup")]
     [JsonPropertyName("phaseGroup")]
     public PhaseGroup PhaseGroup { get; set; }
 
     /// <summary>
-    ///     The sets that are affected from resetting this set
+    /// The sets that are affected from resetting this set
     /// </summary>
     [GraphQLMember("resetAffectedData")]
     [JsonPropertyName("resetAffectedData")]
     public ResetAffectedData ResetAffectedData { get; set; }
 
     /// <summary>
-    ///     The round number of the set. Negative numbers are losers bracket
+    /// The round number of the set. Negative numbers are losers bracket
     /// </summary>
     [GraphQLMember("round")]
     [JsonPropertyName("round")]
     public int? Round { get; set; }
 
     /// <summary>
-    ///     Indicates whether the set is in best of or total games mode. This instructs
-    ///     which field is used to figure out how many games are in this set.
+    /// Indicates whether the set is in best of or total games mode. This instructs
+/// which field is used to figure out how many games are in this set.
     /// </summary>
     [GraphQLMember("setGamesType")]
     [JsonPropertyName("setGamesType")]
     public int? SetGamesType { get; set; }
 
+    private LazyProperty<List<SetSlot>> _slots = new();
     /// <summary>
-    ///     Do not use in Query, only to retrive result
+    /// Do not use in Query, only to retrive result
     /// </summary>
     public List<SetSlot> Slots => _slots.Value(() => GetFirstMethodValue<List<SetSlot>>("slots"));
 
     /// <summary>
-    ///     The start time of the Set. If there is no startAt time on the Set, will pull it from phaseGroup rounds
-    ///     configuration.
+    /// The start time of the Set. If there is no startAt time on the Set, will pull it from phaseGroup rounds configuration.
     /// </summary>
     [GraphQLMember("startAt")]
     [JsonPropertyName("startAt")]
@@ -172,28 +191,35 @@ public class Set : GraphQLTypeBase
     public int? State { get; set; }
 
     /// <summary>
-    ///     Tournament event station for a set
+    /// Tournament event station for a set
     /// </summary>
     [GraphQLMember("station")]
     [JsonPropertyName("station")]
     public Stations Station { get; set; }
 
     /// <summary>
-    ///     Tournament event stream for a set
+    /// Tournament event stream for a set
     /// </summary>
     [GraphQLMember("stream")]
     [JsonPropertyName("stream")]
     public Streams Stream { get; set; }
 
     /// <summary>
-    ///     If setGamesType is in total games mode, this defined the number of games in the set.
+    /// If setGamesType is in total games mode, this defined the number of games in the set.
     /// </summary>
     [GraphQLMember("totalGames")]
     [JsonPropertyName("totalGames")]
     public int? TotalGames { get; set; }
 
     /// <summary>
-    ///     Url of a VOD for this set
+    /// The time this set was last updated
+    /// </summary>
+    [GraphQLMember("updatedAt")]
+    [JsonPropertyName("updatedAt")]
+    public Timestamp UpdatedAt { get; set; }
+
+    /// <summary>
+    /// Url of a VOD for this set
     /// </summary>
     [GraphQLMember("vodUrl")]
     [JsonPropertyName("vodUrl")]
@@ -206,4 +232,12 @@ public class Set : GraphQLTypeBase
     [GraphQLMember("winnerId")]
     [JsonPropertyName("winnerId")]
     public int? WinnerId { get; set; }
+
+    /// <summary>
+    /// The progression seed that the winner of this set will be placed into (if applicable)
+    /// </summary>
+    [GraphQLMember("winnerProgressionSeed")]
+    [JsonPropertyName("winnerProgressionSeed")]
+    public Seed WinnerProgressionSeed { get; set; }
+
 }

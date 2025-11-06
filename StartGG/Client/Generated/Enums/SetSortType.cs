@@ -5,19 +5,25 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using Linq2GraphQL.Client;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
-using Linq2GraphQL.Client;
 
 namespace StartGG.Client;
 
 [JsonConverter(typeof(JsonStringEnumMemberConverter))]
 public enum SetSortType
 {
-    [EnumMember(Value = "NONE")] None,
-    [EnumMember(Value = "CALL_ORDER")] CallOrder,
-    [EnumMember(Value = "MAGIC")] Magic,
-    [EnumMember(Value = "RECENT")] Recent,
-    [EnumMember(Value = "STANDARD")] Standard,
-    [EnumMember(Value = "ROUND")] Round
+    [EnumMember(Value = "NONE")]
+    None,
+    [EnumMember(Value = "CALL_ORDER")]
+    CallOrder,
+    [EnumMember(Value = "MAGIC")]
+    Magic,
+    [EnumMember(Value = "RECENT")]
+    Recent,
+    [EnumMember(Value = "STANDARD")]
+    Standard,
+    [EnumMember(Value = "ROUND")]
+    Round,
 }

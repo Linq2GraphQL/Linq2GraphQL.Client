@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Linq2GraphQL.Client.Subscriptions\Linq2GraphQL.Client.Subscriptions.csproj"/>
-        <ProjectReference Include="..\..\src\Linq2GraphQL.Client\Linq2GraphQL.Client.csproj"/>
+        <ProjectReference Include="..\..\src\Linq2GraphQL.Client.Subscriptions\Linq2GraphQL.Client.Subscriptions.csproj" />
+        <ProjectReference Include="..\..\src\Linq2GraphQL.Client\Linq2GraphQL.Client.csproj" />
     </ItemGroup>
 
 </Project>

@@ -11,26 +11,26 @@ using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 using Linq2GraphQL.Client.Common;
 
-namespace StarWars.Client;
+namespace StartGG.Client;
 
 
 /// <summary>
-/// An edge in a connection.
+/// Data on phase progression, keyed on destination PhaseId
 /// </summary>
-public partial class PlanetResidentsEdge : GraphQLTypeBase
+public partial class ProgressionData : GraphQLTypeBase
 {
     /// <summary>
-    /// The item at the end of the edge
+    /// Origin phase ID that is the source of this progression.
     /// </summary>
-    [GraphQLMember("node")]
-    [JsonPropertyName("node")]
-    public Person Node { get; set; }
+    [GraphQLMember("origin")]
+    [JsonPropertyName("origin")]
+    public int? Origin { get; set; }
 
     /// <summary>
-    /// A cursor for use in pagination
+    /// Amount of seeds per phase group that are progressing.
     /// </summary>
-    [GraphQLMember("cursor")]
-    [JsonPropertyName("cursor")]
-    public string Cursor { get; set; }
+    [GraphQLMember("numProgressing")]
+    [JsonPropertyName("numProgressing")]
+    public int? NumProgressing { get; set; }
 
 }

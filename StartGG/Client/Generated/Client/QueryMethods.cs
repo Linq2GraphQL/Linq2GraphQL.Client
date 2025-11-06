@@ -11,7 +11,7 @@ using Linq2GraphQL.Client;
 
 namespace StartGG.Client;
 
-public class QueryMethods
+public class QueryMethods : IQueryMethods
 {
     private readonly GraphClient client;
 

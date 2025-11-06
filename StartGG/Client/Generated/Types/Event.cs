@@ -124,6 +124,13 @@ public partial class Event : GraphQLTypeBase
     public EntrantConnection Entrants => _entrants.Value(() => GetFirstMethodValue<EntrantConnection>("entrants"));
 
     /// <summary>
+    /// How much it costs to enter this event
+    /// </summary>
+    [GraphQLMember("entryFee")]
+    [JsonPropertyName("entryFee")]
+    public double? EntryFee { get; set; }
+
+    /// <summary>
     /// Whether the event has decks
     /// </summary>
     [GraphQLMember("hasDecks")]

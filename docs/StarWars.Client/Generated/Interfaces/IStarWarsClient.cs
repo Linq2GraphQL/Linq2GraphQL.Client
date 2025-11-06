@@ -6,14 +6,10 @@
 //---------------------------------------------------------------------
 
 using Linq2GraphQL.Client;
-using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
 
-namespace StartGG.Client;
+namespace StarWars.Client;
 
-[JsonConverter(typeof(JsonStringEnumMemberConverter))]
-public enum GameSelectionType
+public interface IStarWarsClient
 {
-    [EnumMember(Value = "CHARACTER")]
-    Character,
+    IRootMethods Query { get; }
 }

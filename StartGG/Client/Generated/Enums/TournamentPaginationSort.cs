@@ -5,21 +5,21 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using Linq2GraphQL.Client;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
-using Linq2GraphQL.Client;
 
 namespace StartGG.Client;
 
 [JsonConverter(typeof(JsonStringEnumMemberConverter))]
 public enum TournamentPaginationSort
 {
-    [EnumMember(Value = "startAt")] Startat,
-    [EnumMember(Value = "endAt")] Endat,
-
+    [EnumMember(Value = "startAt")]
+    Startat,
+    [EnumMember(Value = "endAt")]
+    Endat,
     [EnumMember(Value = "eventRegistrationClosesAt")]
     Eventregistrationclosesat,
-
     [EnumMember(Value = "computedUpdatedAt")]
-    Computedupdatedat
+    Computedupdatedat,
 }

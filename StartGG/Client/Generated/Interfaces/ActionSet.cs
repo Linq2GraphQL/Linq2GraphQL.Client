@@ -5,6 +5,7 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -13,43 +14,79 @@ using Linq2GraphQL.Client.Converters;
 
 namespace StartGG.Client;
 
-public static class ActionSetExtentions
+/// <summary>
+/// Extension methods for ActionSet interface type casting
+/// </summary>
+public static class ActionSetExtensions
 {
-    [GraphInterface]
+    /// <summary>
+    /// Casts ActionSet to TeamActionSet if the runtime type matches
+    /// </summary>
+    /// <param name="value">The interface value to cast</param>
+    /// <returns>TeamActionSet instance or null if type doesn't match</returns>
+    [GraphQLMember("TeamActionSet", true)]
     public static TeamActionSet TeamActionSet(this ActionSet value)
     {
         if (value.__TypeName == "TeamActionSet")
         {
             return (TeamActionSet)value;
         }
-
         return null;
     }
+
 }
 
+/// <summary>
+/// JSON converter for ActionSet interface deserialization
+/// </summary>
 internal class ActionSetConverter : InterfaceJsonConverter<ActionSet>
 {
-    public override ActionSet Deserialize(string typeName, JsonObject json)
+    /// <summary>
+    /// Deserializes JSON to the appropriate concrete type based on __typename
+    /// </summary>
+    /// <param name="typeName">The GraphQL type name from __typename field</param>
+    /// <param name="json">The JSON object to deserialize</param>
+    /// <returns>Deserialized instance of the appropriate concrete type</returns>
+    public override ActionSet Deserialize(string typeName, JsonObject json) => typeName switch
     {
-        return typeName switch
-        {
-            "TeamActionSet" => json.Deserialize<TeamActionSet>(),
-            _ => json.Deserialize<ActionSet__Concrete>()
-        };
-    }
+        "TeamActionSet" => json.Deserialize<TeamActionSet>(),
+        _ => json.Deserialize<ActionSet__Concrete>()
+    };
 }
 
+/// <summary>
+/// GraphQL interface ActionSet with all common fields
+/// </summary>
 [JsonConverter(typeof(ActionSetConverter))]
-public interface ActionSet
+public interface ActionSet 
 {
-    [GraphQLMember("id")] public ID Id { get; set; }
+    /// <summary>
+    /// id field from GraphQL schema
+    /// </summary>
+    [GraphQLMember("id")]
+    ID Id { get; set; }
 
-    [GraphQLMember("__typename")] public string __TypeName { get; set; }
+    /// <summary>
+    /// GraphQL __typename field for runtime type resolution
+    /// </summary>
+    [GraphQLMember("__typename")]
+    string __TypeName { get; set; }
 }
 
+/// <summary>
+/// Concrete implementation of ActionSet interface for fallback deserialization
+/// </summary>
 internal class ActionSet__Concrete : ActionSet
 {
-    [GraphQLMember("id")] public ID Id { get; set; }
+    /// <summary>
+    /// id field from GraphQL schema
+    /// </summary>
+    [GraphQLMember("id")]
+    public ID Id { get; set; }
 
-    [GraphQLMember("__typename")] public string __TypeName { get; set; }
+    /// <summary>
+    /// GraphQL __typename field for runtime type resolution
+    /// </summary>
+    [GraphQLMember("__typename")]
+    public string __TypeName { get; set; }
 }

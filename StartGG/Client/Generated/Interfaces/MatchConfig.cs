@@ -5,6 +5,7 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -13,47 +14,91 @@ using Linq2GraphQL.Client.Converters;
 
 namespace StartGG.Client;
 
-public static class MatchConfigExtentions
+/// <summary>
+/// Extension methods for MatchConfig interface type casting
+/// </summary>
+public static class MatchConfigExtensions
 {
-    [GraphInterface]
+    /// <summary>
+    /// Casts MatchConfig to RaceMatchConfig if the runtime type matches
+    /// </summary>
+    /// <param name="value">The interface value to cast</param>
+    /// <returns>RaceMatchConfig instance or null if type doesn't match</returns>
+    [GraphQLMember("RaceMatchConfig", true)]
     public static RaceMatchConfig RaceMatchConfig(this MatchConfig value)
     {
         if (value.__TypeName == "RaceMatchConfig")
         {
             return (RaceMatchConfig)value;
         }
-
         return null;
     }
+
 }
 
+/// <summary>
+/// JSON converter for MatchConfig interface deserialization
+/// </summary>
 internal class MatchConfigConverter : InterfaceJsonConverter<MatchConfig>
 {
-    public override MatchConfig Deserialize(string typeName, JsonObject json)
+    /// <summary>
+    /// Deserializes JSON to the appropriate concrete type based on __typename
+    /// </summary>
+    /// <param name="typeName">The GraphQL type name from __typename field</param>
+    /// <param name="json">The JSON object to deserialize</param>
+    /// <returns>Deserialized instance of the appropriate concrete type</returns>
+    public override MatchConfig Deserialize(string typeName, JsonObject json) => typeName switch
     {
-        return typeName switch
-        {
-            "RaceMatchConfig" => json.Deserialize<RaceMatchConfig>(),
-            _ => json.Deserialize<MatchConfig__Concrete>()
-        };
-    }
+        "RaceMatchConfig" => json.Deserialize<RaceMatchConfig>(),
+        _ => json.Deserialize<MatchConfig__Concrete>()
+    };
 }
 
+/// <summary>
+/// GraphQL interface MatchConfig with all common fields
+/// </summary>
 [JsonConverter(typeof(MatchConfigConverter))]
-public interface MatchConfig
+public interface MatchConfig 
 {
-    [GraphQLMember("id")] public ID Id { get; set; }
+    /// <summary>
+    /// id field from GraphQL schema
+    /// </summary>
+    [GraphQLMember("id")]
+    ID Id { get; set; }
 
-    [GraphQLMember("bracketType")] public BracketType? BracketType { get; set; }
+    /// <summary>
+    /// bracketType field from GraphQL schema
+    /// </summary>
+    [GraphQLMember("bracketType")]
+    BracketType? BracketType { get; set; }
 
-    [GraphQLMember("__typename")] public string __TypeName { get; set; }
+    /// <summary>
+    /// GraphQL __typename field for runtime type resolution
+    /// </summary>
+    [GraphQLMember("__typename")]
+    string __TypeName { get; set; }
 }
 
+/// <summary>
+/// Concrete implementation of MatchConfig interface for fallback deserialization
+/// </summary>
 internal class MatchConfig__Concrete : MatchConfig
 {
-    [GraphQLMember("id")] public ID Id { get; set; }
+    /// <summary>
+    /// id field from GraphQL schema
+    /// </summary>
+    [GraphQLMember("id")]
+    public ID Id { get; set; }
 
-    [GraphQLMember("bracketType")] public BracketType? BracketType { get; set; }
+    /// <summary>
+    /// bracketType field from GraphQL schema
+    /// </summary>
+    [GraphQLMember("bracketType")]
+    public BracketType? BracketType { get; set; }
 
-    [GraphQLMember("__typename")] public string __TypeName { get; set; }
+    /// <summary>
+    /// GraphQL __typename field for runtime type resolution
+    /// </summary>
+    [GraphQLMember("__typename")]
+    public string __TypeName { get; set; }
 }

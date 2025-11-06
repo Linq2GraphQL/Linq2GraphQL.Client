@@ -5,28 +5,30 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 using Linq2GraphQL.Client.Common;
 
 namespace StartGG.Client;
 
+
 public static class ShopLevelExtensions
 {
     [GraphQLMember("images")]
-    public static List<Image> Images(this ShopLevel shopLevel, [GraphQLArgument("type", "String")] string type = null)
+    public static List<Image> Images(this ShopLevel  shopLevel, [GraphQLArgument("type", "String")] string type = null)
     {
         return shopLevel.GetMethodValue<List<Image>>("images", type);
     }
+
 }
 
 /// <summary>
-///     A shop level
+/// A shop level
 /// </summary>
-public class ShopLevel : GraphQLTypeBase
+public partial class ShopLevel : GraphQLTypeBase
 {
-    private readonly LazyProperty<List<Image>> _images = new();
-
     [GraphQLMember("id")]
     [JsonPropertyName("id")]
     public ID Id { get; set; }
@@ -43,12 +45,14 @@ public class ShopLevel : GraphQLTypeBase
     [JsonPropertyName("goalAmount")]
     public double? GoalAmount { get; set; }
 
+    private LazyProperty<List<Image>> _images = new();
     /// <summary>
-    ///     Do not use in Query, only to retrive result
+    /// Do not use in Query, only to retrive result
     /// </summary>
     public List<Image> Images => _images.Value(() => GetFirstMethodValue<List<Image>>("images"));
 
     [GraphQLMember("name")]
     [JsonPropertyName("name")]
     public string Name { get; set; }
+
 }

@@ -89,4 +89,6 @@ public partial class GlobalTeam : GraphQLTypeBase, Team
     [GraphQLMember("__typename")]
     [JsonPropertyName("__typename")]
     public string __TypeName { get; set; }
+    List<Image> Team.Images { get => Images; set => throw new NotImplementedException(); }
+    List<TeamMember> Team.Members { get => Members; set => throw new NotImplementedException(); }
 }

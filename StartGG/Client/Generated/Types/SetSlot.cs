@@ -5,16 +5,19 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 using Linq2GraphQL.Client.Common;
 
 namespace StartGG.Client;
 
+
 /// <summary>
-///     A slot in a set where a seed currently or will eventually exist in order to participate in the set.
+/// A slot in a set where a seed currently or will eventually exist in order to participate in the set.
 /// </summary>
-public class SetSlot : GraphQLTypeBase
+public partial class SetSlot : GraphQLTypeBase
 {
     [GraphQLMember("id")]
     [JsonPropertyName("id")]
@@ -25,21 +28,21 @@ public class SetSlot : GraphQLTypeBase
     public Entrant Entrant { get; set; }
 
     /// <summary>
-    ///     Pairs with prereqType, is the ID of the prereq.
+    /// Pairs with prereqType, is the ID of the prereq.
     /// </summary>
     [GraphQLMember("prereqId")]
     [JsonPropertyName("prereqId")]
     public string PrereqId { get; set; }
 
     /// <summary>
-    ///     Given a set prereq type, defines the placement required in the origin set to end up in this slot.
+    /// Given a set prereq type, defines the placement required in the origin set to end up in this slot.
     /// </summary>
     [GraphQLMember("prereqPlacement")]
     [JsonPropertyName("prereqPlacement")]
     public int? PrereqPlacement { get; set; }
 
     /// <summary>
-    ///     Describes where the entity in this slot comes from.
+    /// Describes where the entity in this slot comes from.
     /// </summary>
     [GraphQLMember("prereqType")]
     [JsonPropertyName("prereqType")]
@@ -50,16 +53,17 @@ public class SetSlot : GraphQLTypeBase
     public Seed Seed { get; set; }
 
     /// <summary>
-    ///     The index of the slot. Unique per set.
+    /// The index of the slot. Unique per set.
     /// </summary>
     [GraphQLMember("slotIndex")]
     [JsonPropertyName("slotIndex")]
     public int? SlotIndex { get; set; }
 
     /// <summary>
-    ///     The standing within this set for the seed currently assigned to this slot.
+    /// The standing within this set for the seed currently assigned to this slot.
     /// </summary>
     [GraphQLMember("standing")]
     [JsonPropertyName("standing")]
     public Standing Standing { get; set; }
+
 }

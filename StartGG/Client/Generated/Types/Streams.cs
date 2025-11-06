@@ -19,13 +19,13 @@ namespace StartGG.Client;
 /// </summary>
 public partial class Streams : GraphQLTypeBase
 {
-    [GraphQLMember("id")]
-    [JsonPropertyName("id")]
-    public ID Id { get; set; }
-
     [GraphQLMember("enabled")]
     [JsonPropertyName("enabled")]
     public bool? Enabled { get; set; }
+
+    [GraphQLMember("id")]
+    [JsonPropertyName("id")]
+    public ID Id { get; set; }
 
     [GraphQLMember("followerCount")]
     [JsonPropertyName("followerCount")]
@@ -42,6 +42,10 @@ public partial class Streams : GraphQLTypeBase
     [GraphQLMember("parentStreamId")]
     [JsonPropertyName("parentStreamId")]
     public int? ParentStreamId { get; set; }
+
+    [GraphQLMember("shortName")]
+    [JsonPropertyName("shortName")]
+    public string ShortName { get; set; }
 
     [GraphQLMember("streamGame")]
     [JsonPropertyName("streamGame")]

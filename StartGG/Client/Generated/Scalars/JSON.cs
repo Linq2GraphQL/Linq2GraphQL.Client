@@ -6,16 +6,14 @@
 //---------------------------------------------------------------------
 
 
-using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
+using System.Text.Json.Serialization;
 
 namespace StartGG.Client;
 
-/// <summary>
-///     The `JSON` scalar type represents JSON values as specified by
-///     [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
-/// </summary>
-[JsonConverter(typeof(CustomScalarConverter<JSON>))]
-public class JSON : CustomScalar
-{
-}
+    /// <summary>
+    /// The `JSON` scalar type represents JSON values as specified by
+/// 		[ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+    /// </summary>
+    [JsonConverter(typeof(CustomScalarConverter<JSON>))]
+    public partial class JSON : CustomScalar {}

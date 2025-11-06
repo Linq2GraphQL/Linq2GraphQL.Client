@@ -67,6 +67,13 @@ public partial class Stations : GraphQLTypeBase
     [JsonPropertyName("state")]
     public int? State { get; set; }
 
+    /// <summary>
+    /// Tournament event stream for a station
+    /// </summary>
+    [GraphQLMember("stream")]
+    [JsonPropertyName("stream")]
+    public Streams Stream { get; set; }
+
     [GraphQLMember("updatedAt")]
     [JsonPropertyName("updatedAt")]
     public Timestamp UpdatedAt { get; set; }

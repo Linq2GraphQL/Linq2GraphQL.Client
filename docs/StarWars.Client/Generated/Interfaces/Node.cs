@@ -14,11 +14,17 @@ using Linq2GraphQL.Client.Converters;
 
 namespace StarWars.Client;
 
-public static class NodeExtentions
+/// <summary>
+/// Extension methods for Node interface type casting
+/// </summary>
+public static class NodeExtensions
 {
-
-
-    [GraphInterface]
+    /// <summary>
+    /// Casts Node to Film if the runtime type matches
+    /// </summary>
+    /// <param name="value">The interface value to cast</param>
+    /// <returns>Film instance or null if type doesn't match</returns>
+    [GraphQLMember("Film", true)]
     public static Film Film(this Node value)
     {
         if (value.__TypeName == "Film")
@@ -28,7 +34,12 @@ public static class NodeExtentions
         return null;
     }
 
-    [GraphInterface]
+    /// <summary>
+    /// Casts Node to Person if the runtime type matches
+    /// </summary>
+    /// <param name="value">The interface value to cast</param>
+    /// <returns>Person instance or null if type doesn't match</returns>
+    [GraphQLMember("Person", true)]
     public static Person Person(this Node value)
     {
         if (value.__TypeName == "Person")
@@ -38,7 +49,12 @@ public static class NodeExtentions
         return null;
     }
 
-    [GraphInterface]
+    /// <summary>
+    /// Casts Node to Planet if the runtime type matches
+    /// </summary>
+    /// <param name="value">The interface value to cast</param>
+    /// <returns>Planet instance or null if type doesn't match</returns>
+    [GraphQLMember("Planet", true)]
     public static Planet Planet(this Node value)
     {
         if (value.__TypeName == "Planet")
@@ -48,7 +64,12 @@ public static class NodeExtentions
         return null;
     }
 
-    [GraphInterface]
+    /// <summary>
+    /// Casts Node to Species if the runtime type matches
+    /// </summary>
+    /// <param name="value">The interface value to cast</param>
+    /// <returns>Species instance or null if type doesn't match</returns>
+    [GraphQLMember("Species", true)]
     public static Species Species(this Node value)
     {
         if (value.__TypeName == "Species")
@@ -58,7 +79,12 @@ public static class NodeExtentions
         return null;
     }
 
-    [GraphInterface]
+    /// <summary>
+    /// Casts Node to Starship if the runtime type matches
+    /// </summary>
+    /// <param name="value">The interface value to cast</param>
+    /// <returns>Starship instance or null if type doesn't match</returns>
+    [GraphQLMember("Starship", true)]
     public static Starship Starship(this Node value)
     {
         if (value.__TypeName == "Starship")
@@ -68,7 +94,12 @@ public static class NodeExtentions
         return null;
     }
 
-    [GraphInterface]
+    /// <summary>
+    /// Casts Node to Vehicle if the runtime type matches
+    /// </summary>
+    /// <param name="value">The interface value to cast</param>
+    /// <returns>Vehicle instance or null if type doesn't match</returns>
+    [GraphQLMember("Vehicle", true)]
     public static Vehicle Vehicle(this Node value)
     {
         if (value.__TypeName == "Vehicle")
@@ -77,42 +108,65 @@ public static class NodeExtentions
         }
         return null;
     }
+
 }
 
-
+/// <summary>
+/// JSON converter for Node interface deserialization
+/// </summary>
 internal class NodeConverter : InterfaceJsonConverter<Node>
 {
+    /// <summary>
+    /// Deserializes JSON to the appropriate concrete type based on __typename
+    /// </summary>
+    /// <param name="typeName">The GraphQL type name from __typename field</param>
+    /// <param name="json">The JSON object to deserialize</param>
+    /// <returns>Deserialized instance of the appropriate concrete type</returns>
     public override Node Deserialize(string typeName, JsonObject json) => typeName switch
     {
-          "Film" => json.Deserialize<Film>(),
-      "Person" => json.Deserialize<Person>(),
-      "Planet" => json.Deserialize<Planet>(),
-      "Species" => json.Deserialize<Species>(),
-      "Starship" => json.Deserialize<Starship>(),
-      "Vehicle" => json.Deserialize<Vehicle>(),
-        _ => json.Deserialize< Node__Concrete>()
+        "Film" => json.Deserialize<Film>(),
+        "Person" => json.Deserialize<Person>(),
+        "Planet" => json.Deserialize<Planet>(),
+        "Species" => json.Deserialize<Species>(),
+        "Starship" => json.Deserialize<Starship>(),
+        "Vehicle" => json.Deserialize<Vehicle>(),
+        _ => json.Deserialize<Node__Concrete>()
     };
 }
 
-
-
-
+/// <summary>
+/// GraphQL interface Node with all common fields
+/// </summary>
 [JsonConverter(typeof(NodeConverter))]
 public interface Node 
 {
-	[GraphQLMember("id")]
-	public string Id { get; set; }  
-    [GraphQLMember("__typename")]
-    public string __TypeName { get; set; }
+    /// <summary>
+    /// id field from GraphQL schema
+    /// </summary>
+    [GraphQLMember("id")]
+    ID Id { get; set; }
 
+    /// <summary>
+    /// GraphQL __typename field for runtime type resolution
+    /// </summary>
+    [GraphQLMember("__typename")]
+    string __TypeName { get; set; }
 }
 
+/// <summary>
+/// Concrete implementation of Node interface for fallback deserialization
+/// </summary>
 internal class Node__Concrete : Node
 {
-	[GraphQLMember("id")]
-	public string Id { get; set; }  
+    /// <summary>
+    /// id field from GraphQL schema
+    /// </summary>
+    [GraphQLMember("id")]
+    public ID Id { get; set; }
 
+    /// <summary>
+    /// GraphQL __typename field for runtime type resolution
+    /// </summary>
     [GraphQLMember("__typename")]
     public string __TypeName { get; set; }
-
 }

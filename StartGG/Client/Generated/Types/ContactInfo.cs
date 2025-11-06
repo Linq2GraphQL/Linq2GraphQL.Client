@@ -5,37 +5,40 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Linq2GraphQL.Client;
 using Linq2GraphQL.Client.Common;
 
 namespace StartGG.Client;
 
+
 /// <summary>
-///     Name, address, etc
+/// Name, address, etc
 /// </summary>
-public class ContactInfo : GraphQLTypeBase
+public partial class ContactInfo : GraphQLTypeBase
 {
     [GraphQLMember("id")]
     [JsonPropertyName("id")]
     public ID Id { get; set; }
 
     /// <summary>
-    ///     Participant City Name
+    /// Participant City Name
     /// </summary>
     [GraphQLMember("city")]
     [JsonPropertyName("city")]
     public string City { get; set; }
 
     /// <summary>
-    ///     Participant Country Name
+    /// Participant Country Name
     /// </summary>
     [GraphQLMember("country")]
     [JsonPropertyName("country")]
     public string Country { get; set; }
 
     /// <summary>
-    ///     Participant Country (region) id
+    /// Participant Country (region) id
     /// </summary>
     [GraphQLMember("countryId")]
     [JsonPropertyName("countryId")]
@@ -46,37 +49,38 @@ public class ContactInfo : GraphQLTypeBase
     public string Name { get; set; }
 
     /// <summary>
-    ///     First Name
+    /// First Name
     /// </summary>
     [GraphQLMember("nameFirst")]
     [JsonPropertyName("nameFirst")]
     public string NameFirst { get; set; }
 
     /// <summary>
-    ///     Last Name
+    /// Last Name
     /// </summary>
     [GraphQLMember("nameLast")]
     [JsonPropertyName("nameLast")]
     public string NameLast { get; set; }
 
     /// <summary>
-    ///     Participant State Name
+    /// Participant State Name
     /// </summary>
     [GraphQLMember("state")]
     [JsonPropertyName("state")]
     public string State { get; set; }
 
     /// <summary>
-    ///     Participant State (region) id
+    /// Participant State (region) id
     /// </summary>
     [GraphQLMember("stateId")]
     [JsonPropertyName("stateId")]
     public int? StateId { get; set; }
 
     /// <summary>
-    ///     Zip or Postal Code
+    /// Zip or Postal Code
     /// </summary>
     [GraphQLMember("zipcode")]
     [JsonPropertyName("zipcode")]
     public string Zipcode { get; set; }
+
 }
