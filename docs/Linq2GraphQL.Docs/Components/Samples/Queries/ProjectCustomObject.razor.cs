@@ -17,7 +17,7 @@ public partial class ProjectCustomObject
 
 public class FilmProjection
 {
-    public string Id { get; set; }
+    public ID Id { get; set; }
     public string Title { get; set; }
     public string Created { get; set; }
     public List<string> Producers { get; set; }

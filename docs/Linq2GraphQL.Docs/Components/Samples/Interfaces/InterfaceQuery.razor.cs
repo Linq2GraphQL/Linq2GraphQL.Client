@@ -9,7 +9,7 @@ public partial class InterfaceQuery
     {
         return starWarsClient
             .Query
-            .Node("ZmlsbXM6MQ==")
+            .Node(new ID { Value = "ZmlsbXM6MQ==" })
             .Include(e => e.Film())
             .Select();
     }
