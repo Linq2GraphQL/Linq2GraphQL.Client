@@ -17,97 +17,97 @@ public partial class LocalDateOperationFilterInput : GraphInputBase
 {
 	[GraphQLMember("eq")]
 	[JsonPropertyName("eq")]
-	public DateTime? Eq 
+	public DateOnly? Eq 
 	{
-		get => GetValue<DateTime?>("eq");
+		get => GetValue<DateOnly?>("eq");
     	set => SetValue("eq", value);
 	}
 
 	[GraphQLMember("neq")]
 	[JsonPropertyName("neq")]
-	public DateTime? Neq 
+	public DateOnly? Neq 
 	{
-		get => GetValue<DateTime?>("neq");
+		get => GetValue<DateOnly?>("neq");
     	set => SetValue("neq", value);
 	}
 
 	[GraphQLMember("in")]
 	[JsonPropertyName("in")]
-	public List<DateTime?> In 
+	public List<DateOnly?> In 
 	{
-		get => GetValue<List<DateTime?>>("in");
+		get => GetValue<List<DateOnly?>>("in");
     	set => SetValue("in", value);
 	}
 
 	[GraphQLMember("nin")]
 	[JsonPropertyName("nin")]
-	public List<DateTime?> Nin 
+	public List<DateOnly?> Nin 
 	{
-		get => GetValue<List<DateTime?>>("nin");
+		get => GetValue<List<DateOnly?>>("nin");
     	set => SetValue("nin", value);
 	}
 
 	[GraphQLMember("gt")]
 	[JsonPropertyName("gt")]
-	public DateTime? Gt 
+	public DateOnly? Gt 
 	{
-		get => GetValue<DateTime?>("gt");
+		get => GetValue<DateOnly?>("gt");
     	set => SetValue("gt", value);
 	}
 
 	[GraphQLMember("ngt")]
 	[JsonPropertyName("ngt")]
-	public DateTime? Ngt 
+	public DateOnly? Ngt 
 	{
-		get => GetValue<DateTime?>("ngt");
+		get => GetValue<DateOnly?>("ngt");
     	set => SetValue("ngt", value);
 	}
 
 	[GraphQLMember("gte")]
 	[JsonPropertyName("gte")]
-	public DateTime? Gte 
+	public DateOnly? Gte 
 	{
-		get => GetValue<DateTime?>("gte");
+		get => GetValue<DateOnly?>("gte");
     	set => SetValue("gte", value);
 	}
 
 	[GraphQLMember("ngte")]
 	[JsonPropertyName("ngte")]
-	public DateTime? Ngte 
+	public DateOnly? Ngte 
 	{
-		get => GetValue<DateTime?>("ngte");
+		get => GetValue<DateOnly?>("ngte");
     	set => SetValue("ngte", value);
 	}
 
 	[GraphQLMember("lt")]
 	[JsonPropertyName("lt")]
-	public DateTime? Lt 
+	public DateOnly? Lt 
 	{
-		get => GetValue<DateTime?>("lt");
+		get => GetValue<DateOnly?>("lt");
     	set => SetValue("lt", value);
 	}
 
 	[GraphQLMember("nlt")]
 	[JsonPropertyName("nlt")]
-	public DateTime? Nlt 
+	public DateOnly? Nlt 
 	{
-		get => GetValue<DateTime?>("nlt");
+		get => GetValue<DateOnly?>("nlt");
     	set => SetValue("nlt", value);
 	}
 
 	[GraphQLMember("lte")]
 	[JsonPropertyName("lte")]
-	public DateTime? Lte 
+	public DateOnly? Lte 
 	{
-		get => GetValue<DateTime?>("lte");
+		get => GetValue<DateOnly?>("lte");
     	set => SetValue("lte", value);
 	}
 
 	[GraphQLMember("nlte")]
 	[JsonPropertyName("nlte")]
-	public DateTime? Nlte 
+	public DateOnly? Nlte 
 	{
-		get => GetValue<DateTime?>("nlte");
+		get => GetValue<DateOnly?>("nlte");
     	set => SetValue("nlte", value);
 	}
 

@@ -47,6 +47,22 @@ public partial class OrderSortInput : GraphInputBase
     	set => SetValue("orderDate", value);
 	}
 
+	[GraphQLMember("orderDateTime")]
+	[JsonPropertyName("orderDateTime")]
+	public SortEnumType? OrderDateTime 
+	{
+		get => GetValue<SortEnumType?>("orderDateTime");
+    	set => SetValue("orderDateTime", value);
+	}
+
+	[GraphQLMember("orderDay")]
+	[JsonPropertyName("orderDay")]
+	public SortEnumType? OrderDay 
+	{
+		get => GetValue<SortEnumType?>("orderDay");
+    	set => SetValue("orderDay", value);
+	}
+
 	[GraphQLMember("entryTime")]
 	[JsonPropertyName("entryTime")]
 	public SortEnumType? EntryTime 

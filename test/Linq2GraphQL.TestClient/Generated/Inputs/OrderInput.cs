@@ -47,6 +47,22 @@ public partial class OrderInput : GraphInputBase
     	set => SetValue("orderDate", value);
 	}
 
+	[GraphQLMember("orderDateTime")]
+	[JsonPropertyName("orderDateTime")]
+	public DateTimeOffset OrderDateTime 
+	{
+		get => GetValue<DateTimeOffset>("orderDateTime");
+    	set => SetValue("orderDateTime", value);
+	}
+
+	[GraphQLMember("orderDay")]
+	[JsonPropertyName("orderDay")]
+	public DateOnly OrderDay 
+	{
+		get => GetValue<DateOnly>("orderDay");
+    	set => SetValue("orderDay", value);
+	}
+
 	[GraphQLMember("lines")]
 	[JsonPropertyName("lines")]
 	public List<OrderLineInput> Lines 
@@ -57,9 +73,9 @@ public partial class OrderInput : GraphInputBase
 
 	[GraphQLMember("entryTime")]
 	[JsonPropertyName("entryTime")]
-	public TimeSpan? EntryTime 
+	public TimeOnly? EntryTime 
 	{
-		get => GetValue<TimeSpan?>("entryTime");
+		get => GetValue<TimeOnly?>("entryTime");
     	set => SetValue("entryTime", value);
 	}
 

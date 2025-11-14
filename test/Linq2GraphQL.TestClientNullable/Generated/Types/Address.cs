@@ -31,6 +31,6 @@ public partial class Address : GraphQLTypeBase
 
     [GraphQLMember("createdDate")]
     [JsonPropertyName("createdDate")]
-    public DateTime CreatedDate { get; set; }
+    public DateOnly CreatedDate { get; set; }
 
 }

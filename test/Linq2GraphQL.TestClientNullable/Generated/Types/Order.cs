@@ -75,13 +75,21 @@ public partial class Order : GraphQLTypeBase
     [JsonPropertyName("orderDate")]
     public DateTimeOffset OrderDate { get; set; }
 
+    [GraphQLMember("orderDateTime")]
+    [JsonPropertyName("orderDateTime")]
+    public DateTimeOffset OrderDateTime { get; set; }
+
+    [GraphQLMember("orderDay")]
+    [JsonPropertyName("orderDay")]
+    public DateOnly OrderDay { get; set; }
+
     [GraphQLMember("lines")]
     [JsonPropertyName("lines")]
     public List<OrderLine> Lines { get; set; }
 
     [GraphQLMember("entryTime")]
     [JsonPropertyName("entryTime")]
-    public TimeSpan? EntryTime { get; set; }
+    public TimeOnly? EntryTime { get; set; }
 
     [Obsolete("This propery is obsolete and should not be used!")]
     [GraphQLMember("grade")]

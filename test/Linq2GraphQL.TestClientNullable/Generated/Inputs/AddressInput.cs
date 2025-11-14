@@ -41,9 +41,9 @@ public partial class AddressInput : GraphInputBase
 
 	[GraphQLMember("createdDate")]
 	[JsonPropertyName("createdDate")]
-	public required DateTime CreatedDate 
+	public required DateOnly CreatedDate 
 	{
-		get => GetValue<DateTime>("createdDate");
+		get => GetValue<DateOnly>("createdDate");
     	set => SetValue("createdDate", value);
 	}
 

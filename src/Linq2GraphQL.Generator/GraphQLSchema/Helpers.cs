@@ -120,10 +120,7 @@ public static class Helpers
             { "Decimal", new ValueTuple<string, Type>("decimal", typeof(decimal)) },
             { "TimeSpan", new ValueTuple<string, Type>("TimeSpan", typeof(TimeSpan)) },
             { "Byte", new ValueTuple<string, Type>("byte", typeof(byte)) },
-            
-            { "LocalDate", new ValueTuple<string, Type>("DateTime", typeof(DateTime)) },
-            { "LocalTime", new ValueTuple<string, Type>("TimeSpan", typeof(TimeSpan)) },
+            { "LocalDate", new ValueTuple<string, Type>("DateOnly", typeof(DateOnly)) },
+            { "LocalTime", new ValueTuple<string, Type>("TimeOnly", typeof(TimeOnly)) },
         };
-
-
 }
