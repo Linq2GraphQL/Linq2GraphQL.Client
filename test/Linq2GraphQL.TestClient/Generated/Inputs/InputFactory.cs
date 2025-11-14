@@ -212,7 +212,7 @@ public static class AddressInputExtensions
     }
 
 
-    public static AddressInput CreatedDate(this AddressInput input, DateTime val)
+    public static AddressInput CreatedDate(this AddressInput input, DateOnly val)
     {
          input.CreatedDate = val;
          return input;
@@ -1140,84 +1140,84 @@ public static class ListFilterInputTypeOfOrderLineFilterInputExtensions
 public static class LocalDateOperationFilterInputExtensions
 { 
 	
-    public static LocalDateOperationFilterInput Eq(this LocalDateOperationFilterInput input, DateTime? val)
+    public static LocalDateOperationFilterInput Eq(this LocalDateOperationFilterInput input, DateOnly? val)
     {
          input.Eq = val;
          return input;
     }
 
 
-    public static LocalDateOperationFilterInput Neq(this LocalDateOperationFilterInput input, DateTime? val)
+    public static LocalDateOperationFilterInput Neq(this LocalDateOperationFilterInput input, DateOnly? val)
     {
          input.Neq = val;
          return input;
     }
 
 
-    public static LocalDateOperationFilterInput In(this LocalDateOperationFilterInput input, List<DateTime?> val)
+    public static LocalDateOperationFilterInput In(this LocalDateOperationFilterInput input, List<DateOnly?> val)
     {
          input.In = val;
          return input;
     }
 
 
-    public static LocalDateOperationFilterInput Nin(this LocalDateOperationFilterInput input, List<DateTime?> val)
+    public static LocalDateOperationFilterInput Nin(this LocalDateOperationFilterInput input, List<DateOnly?> val)
     {
          input.Nin = val;
          return input;
     }
 
 
-    public static LocalDateOperationFilterInput Gt(this LocalDateOperationFilterInput input, DateTime? val)
+    public static LocalDateOperationFilterInput Gt(this LocalDateOperationFilterInput input, DateOnly? val)
     {
          input.Gt = val;
          return input;
     }
 
 
-    public static LocalDateOperationFilterInput Ngt(this LocalDateOperationFilterInput input, DateTime? val)
+    public static LocalDateOperationFilterInput Ngt(this LocalDateOperationFilterInput input, DateOnly? val)
     {
          input.Ngt = val;
          return input;
     }
 
 
-    public static LocalDateOperationFilterInput Gte(this LocalDateOperationFilterInput input, DateTime? val)
+    public static LocalDateOperationFilterInput Gte(this LocalDateOperationFilterInput input, DateOnly? val)
     {
          input.Gte = val;
          return input;
     }
 
 
-    public static LocalDateOperationFilterInput Ngte(this LocalDateOperationFilterInput input, DateTime? val)
+    public static LocalDateOperationFilterInput Ngte(this LocalDateOperationFilterInput input, DateOnly? val)
     {
          input.Ngte = val;
          return input;
     }
 
 
-    public static LocalDateOperationFilterInput Lt(this LocalDateOperationFilterInput input, DateTime? val)
+    public static LocalDateOperationFilterInput Lt(this LocalDateOperationFilterInput input, DateOnly? val)
     {
          input.Lt = val;
          return input;
     }
 
 
-    public static LocalDateOperationFilterInput Nlt(this LocalDateOperationFilterInput input, DateTime? val)
+    public static LocalDateOperationFilterInput Nlt(this LocalDateOperationFilterInput input, DateOnly? val)
     {
          input.Nlt = val;
          return input;
     }
 
 
-    public static LocalDateOperationFilterInput Lte(this LocalDateOperationFilterInput input, DateTime? val)
+    public static LocalDateOperationFilterInput Lte(this LocalDateOperationFilterInput input, DateOnly? val)
     {
          input.Lte = val;
          return input;
     }
 
 
-    public static LocalDateOperationFilterInput Nlte(this LocalDateOperationFilterInput input, DateTime? val)
+    public static LocalDateOperationFilterInput Nlte(this LocalDateOperationFilterInput input, DateOnly? val)
     {
          input.Nlte = val;
          return input;
@@ -1228,84 +1228,84 @@ public static class LocalDateOperationFilterInputExtensions
 public static class LocalTimeOperationFilterInputExtensions
 { 
 	
-    public static LocalTimeOperationFilterInput Eq(this LocalTimeOperationFilterInput input, TimeSpan? val)
+    public static LocalTimeOperationFilterInput Eq(this LocalTimeOperationFilterInput input, TimeOnly? val)
     {
          input.Eq = val;
          return input;
     }
 
 
-    public static LocalTimeOperationFilterInput Neq(this LocalTimeOperationFilterInput input, TimeSpan? val)
+    public static LocalTimeOperationFilterInput Neq(this LocalTimeOperationFilterInput input, TimeOnly? val)
     {
          input.Neq = val;
          return input;
     }
 
 
-    public static LocalTimeOperationFilterInput In(this LocalTimeOperationFilterInput input, List<TimeSpan?> val)
+    public static LocalTimeOperationFilterInput In(this LocalTimeOperationFilterInput input, List<TimeOnly?> val)
     {
          input.In = val;
          return input;
     }
 
 
-    public static LocalTimeOperationFilterInput Nin(this LocalTimeOperationFilterInput input, List<TimeSpan?> val)
+    public static LocalTimeOperationFilterInput Nin(this LocalTimeOperationFilterInput input, List<TimeOnly?> val)
     {
          input.Nin = val;
          return input;
     }
 
 
-    public static LocalTimeOperationFilterInput Gt(this LocalTimeOperationFilterInput input, TimeSpan? val)
+    public static LocalTimeOperationFilterInput Gt(this LocalTimeOperationFilterInput input, TimeOnly? val)
     {
          input.Gt = val;
          return input;
     }
 
 
-    public static LocalTimeOperationFilterInput Ngt(this LocalTimeOperationFilterInput input, TimeSpan? val)
+    public static LocalTimeOperationFilterInput Ngt(this LocalTimeOperationFilterInput input, TimeOnly? val)
     {
          input.Ngt = val;
          return input;
     }
 
 
-    public static LocalTimeOperationFilterInput Gte(this LocalTimeOperationFilterInput input, TimeSpan? val)
+    public static LocalTimeOperationFilterInput Gte(this LocalTimeOperationFilterInput input, TimeOnly? val)
     {
          input.Gte = val;
          return input;
     }
 
 
-    public static LocalTimeOperationFilterInput Ngte(this LocalTimeOperationFilterInput input, TimeSpan? val)
+    public static LocalTimeOperationFilterInput Ngte(this LocalTimeOperationFilterInput input, TimeOnly? val)
     {
          input.Ngte = val;
          return input;
     }
 
 
-    public static LocalTimeOperationFilterInput Lt(this LocalTimeOperationFilterInput input, TimeSpan? val)
+    public static LocalTimeOperationFilterInput Lt(this LocalTimeOperationFilterInput input, TimeOnly? val)
     {
          input.Lt = val;
          return input;
     }
 
 
-    public static LocalTimeOperationFilterInput Nlt(this LocalTimeOperationFilterInput input, TimeSpan? val)
+    public static LocalTimeOperationFilterInput Nlt(this LocalTimeOperationFilterInput input, TimeOnly? val)
     {
          input.Nlt = val;
          return input;
     }
 
 
-    public static LocalTimeOperationFilterInput Lte(this LocalTimeOperationFilterInput input, TimeSpan? val)
+    public static LocalTimeOperationFilterInput Lte(this LocalTimeOperationFilterInput input, TimeOnly? val)
     {
          input.Lte = val;
          return input;
     }
 
 
-    public static LocalTimeOperationFilterInput Nlte(this LocalTimeOperationFilterInput input, TimeSpan? val)
+    public static LocalTimeOperationFilterInput Nlte(this LocalTimeOperationFilterInput input, TimeOnly? val)
     {
          input.Nlte = val;
          return input;
@@ -1366,6 +1366,24 @@ public static class OrderFilterInputExtensions
         mod ??= _ => { };
         mod(filter); 
         input.OrderDate = filter;
+        return input;
+    }
+
+    public static OrderFilterInput OrderDateTime(this OrderFilterInput input, Action<DateTimeOperationFilterInput> mod)
+    {
+        var filter = new DateTimeOperationFilterInput();
+        mod ??= _ => { };
+        mod(filter); 
+        input.OrderDateTime = filter;
+        return input;
+    }
+
+    public static OrderFilterInput OrderDay(this OrderFilterInput input, Action<LocalDateOperationFilterInput> mod)
+    {
+        var filter = new LocalDateOperationFilterInput();
+        mod ??= _ => { };
+        mod(filter); 
+        input.OrderDay = filter;
         return input;
     }
 
@@ -1432,6 +1450,20 @@ public static class OrderInputExtensions
          return input;
     }
 
+
+    public static OrderInput OrderDateTime(this OrderInput input, DateTimeOffset val)
+    {
+         input.OrderDateTime = val;
+         return input;
+    }
+
+
+    public static OrderInput OrderDay(this OrderInput input, DateOnly val)
+    {
+         input.OrderDay = val;
+         return input;
+    }
+
     public static OrderInput Lines(this OrderInput input, Action<List<OrderLineInput>> mod)
     {
         var filter = new List<OrderLineInput>();
@@ -1442,7 +1474,7 @@ public static class OrderInputExtensions
     }
 
 
-    public static OrderInput EntryTime(this OrderInput input, TimeSpan? val)
+    public static OrderInput EntryTime(this OrderInput input, TimeOnly? val)
     {
          input.EntryTime = val;
          return input;
@@ -1598,6 +1630,20 @@ public static class OrderSortInputExtensions
     public static OrderSortInput OrderDate(this OrderSortInput input, SortEnumType? val)
     {
          input.OrderDate = val;
+         return input;
+    }
+
+
+    public static OrderSortInput OrderDateTime(this OrderSortInput input, SortEnumType? val)
+    {
+         input.OrderDateTime = val;
+         return input;
+    }
+
+
+    public static OrderSortInput OrderDay(this OrderSortInput input, SortEnumType? val)
+    {
+         input.OrderDay = val;
          return input;
     }
 

@@ -63,6 +63,22 @@ public partial class OrderFilterInput : GraphInputBase
     	set => SetValue("orderDate", value);
 	}
 
+	[GraphQLMember("orderDateTime")]
+	[JsonPropertyName("orderDateTime")]
+	public DateTimeOperationFilterInput OrderDateTime 
+	{
+		get => GetValue<DateTimeOperationFilterInput>("orderDateTime");
+    	set => SetValue("orderDateTime", value);
+	}
+
+	[GraphQLMember("orderDay")]
+	[JsonPropertyName("orderDay")]
+	public LocalDateOperationFilterInput OrderDay 
+	{
+		get => GetValue<LocalDateOperationFilterInput>("orderDay");
+    	set => SetValue("orderDay", value);
+	}
+
 	[GraphQLMember("lines")]
 	[JsonPropertyName("lines")]
 	public ListFilterInputTypeOfOrderLineFilterInput Lines 
