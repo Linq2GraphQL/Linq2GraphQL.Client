@@ -26,7 +26,7 @@ public class QueryExecutor<T>
         {
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
             throw new GraphQueryRequestException($"Http error! Status code {response.StatusCode} Error: {content}",
-                graphRequest.Query, graphRequest.Variables);
+                response.StatusCode, graphRequest.Query, graphRequest.Variables);
         }
 
         var con = await response.Content.ReadAsStringAsync(cancellationToken);

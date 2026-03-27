@@ -1,14 +1,18 @@
-﻿namespace Linq2GraphQL.Client;
+﻿using System.Net;
+
+namespace Linq2GraphQL.Client;
 
 public class GraphQueryRequestException : Exception
 {
-    public GraphQueryRequestException(string message, string query, Dictionary<string, object> variables) :
+    public GraphQueryRequestException(string message, HttpStatusCode statusCode, string query, Dictionary<string, object> variables) :
         base(message)
     {
+        StatusCode = statusCode;
         GraphQLQuery = query;
         GraphQLVariables = variables;
     }
 
-    public string GraphQLQuery { get; private set; }
-    public Dictionary<string, object> GraphQLVariables { get; private set; }
+    public HttpStatusCode StatusCode { get; }
+    public string GraphQLQuery { get; }
+    public Dictionary<string, object> GraphQLVariables { get; }
 }
