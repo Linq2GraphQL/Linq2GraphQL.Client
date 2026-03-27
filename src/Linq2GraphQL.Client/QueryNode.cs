@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics;
+using System.Reflection;
 using Linq2GraphQL.Client.Schema;
 
 namespace Linq2GraphQL.Client;
@@ -142,7 +143,7 @@ public class QueryNode
                     }
                     else
                     {
-                        Console.WriteLine(
+                        Debug.WriteLine(
                             $"Property: {propertyInfo.Name} Type: {Member.Name} was not present in active schema");
                     }
                 }

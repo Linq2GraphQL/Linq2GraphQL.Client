@@ -14,7 +14,7 @@ public abstract class GraphBaseExecute<T, TResult>
     protected readonly Expression<Func<T, TResult>> selector;
 
     private readonly SemaphoreSlim _lock = new(1, 1);
-    private bool intialized;
+    private bool initialized;
     private GraphQLSchema schema;
 
     public GraphBaseExecute(GraphClient client, OperationType operationType, QueryNode queryNode,
@@ -33,12 +33,12 @@ public abstract class GraphBaseExecute<T, TResult>
         await _lock.WaitAsync();
         try
         {
-            if (!intialized)
+            if (!initialized)
             {
                 schema = await client.GetSchemaForSafeModeAsync();
                 QueryNode.SetAllUniqueVariableNames();
                 QueryNode.AddPrimitiveChildren(true, schema);
-                intialized = true;
+                initialized = true;
             }
 
         }

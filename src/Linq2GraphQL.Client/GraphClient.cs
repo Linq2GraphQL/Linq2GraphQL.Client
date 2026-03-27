@@ -67,9 +67,9 @@ public class GraphClient
             return null;
         }
 
-        var cackeKey = "Linq2GraphQL_Schema:" + HttpClient.BaseAddress;
+        var cacheKey = "Linq2GraphQL_Schema:" + HttpClient.BaseAddress;
 
-        return await cache.GetOrCreateAsync(cackeKey, async entry =>
+        return await cache.GetOrCreateAsync(cacheKey, async entry =>
         {
             var executor = new QueryExecutor<GraphQLSchema>(this);
 
