@@ -1,6 +1,6 @@
 ﻿namespace Linq2GraphQL.Client;
 
-public class ArgumentValue
+public record ArgumentValue
 {
     public ArgumentValue(string graphName, string graphType, object value)
     {
@@ -10,8 +10,8 @@ public class ArgumentValue
         VariableName = graphName;
     }
 
-    public string GraphName { get; set; }
-    public string GraphType { get; set; }
-    public object Value { get; set; }
-    public string VariableName { get; set; }
+    public string GraphName { get; init; }
+    public string GraphType { get; init; }
+    public object Value { get; init; }
+    public string VariableName { get; set; } // mutable: unique suffix appended during query building
 }

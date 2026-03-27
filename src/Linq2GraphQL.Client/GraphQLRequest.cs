@@ -2,9 +2,9 @@
 
 namespace Linq2GraphQL.Client;
 
-public class GraphQLRequest
+public record GraphQLRequest
 {
-    [JsonPropertyName("query")] public string Query { get; set; }
+    [JsonPropertyName("query")] public string Query { get; init; }
 
-    [JsonPropertyName("variables")] public Dictionary<string, object> Variables { get; set; }
+    [JsonPropertyName("variables")] public Dictionary<string, object> Variables { get; init; }
 }
