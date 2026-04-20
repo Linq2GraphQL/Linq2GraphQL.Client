@@ -1,4 +1,4 @@
-﻿using Linq2GraphQL.Client.Common;
+using Linq2GraphQL.Client.Common;
 using System.Linq.Expressions;
 
 namespace Linq2GraphQL.Client;
@@ -27,6 +27,12 @@ public class GraphCursorPager<T, TResult> where T : ICursorPaging
         return query.ConvertResult(baseType);
     }
 
+    private async Task<GraphResult<TResult>> ExecutePagerWithResultAsync(CancellationToken cancellationToken = default)
+    {
+        var result = await query.ExecuteBaseWithResultAsync(cancellationToken);
+        return query.ConvertResultFull(result);
+    }
+
     public async Task<TResult> NextPageAsync(CancellationToken cancellationToken = default)
     {
         query.QueryNode.SetArgumentValue("after", query.BaseResult?.PageInfo?.EndCursor);
@@ -34,10 +40,24 @@ public class GraphCursorPager<T, TResult> where T : ICursorPaging
         return await ExecutePagerAsync(cancellationToken);
     }
 
+    public async Task<GraphResult<TResult>> NextPageWithResultAsync(CancellationToken cancellationToken = default)
+    {
+        query.QueryNode.SetArgumentValue("after", query.BaseResult?.PageInfo?.EndCursor);
+        query.QueryNode.SetArgumentValue("before", null);
+        return await ExecutePagerWithResultAsync(cancellationToken);
+    }
+
     public async Task<TResult> PreviousPageAsync(CancellationToken cancellationToken = default)
     {
         query.QueryNode.SetArgumentValue("after", null);
         query.QueryNode.SetArgumentValue("before", query.BaseResult?.PageInfo?.EndCursor);
         return await ExecutePagerAsync(cancellationToken);
+    }
+
+    public async Task<GraphResult<TResult>> PreviousPageWithResultAsync(CancellationToken cancellationToken = default)
+    {
+        query.QueryNode.SetArgumentValue("after", null);
+        query.QueryNode.SetArgumentValue("before", query.BaseResult?.PageInfo?.EndCursor);
+        return await ExecutePagerWithResultAsync(cancellationToken);
     }
 }

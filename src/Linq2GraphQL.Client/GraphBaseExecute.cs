@@ -1,4 +1,4 @@
-﻿using Linq2GraphQL.Client.Schema;
+using Linq2GraphQL.Client.Schema;
 using System.Linq.Expressions;
 using System.Text.Json;
 
@@ -122,5 +122,15 @@ public abstract class GraphBaseExecute<T, TResult>
         {
             return mapper.Invoke(result);
         }
+    }
+
+    public GraphResult<TResult> ConvertResultFull(GraphResult<T> result)
+    {
+        return new GraphResult<TResult>
+        {
+            Data = ConvertResult(result.Data),
+            Errors = result.Errors,
+            Extensions = result.Extensions
+        };
     }
 }

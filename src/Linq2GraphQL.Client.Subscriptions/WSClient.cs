@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Net.WebSockets;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -14,6 +14,7 @@ public class WSClient : IAsyncDisposable
     private readonly GraphQLRequest payload;
 
     private readonly Subject<string> subscriptionSubject = new();
+    private readonly Subject<GraphQueryExecutionException> errorSubject = new();
     private readonly WebsocketClient client;
 
     private readonly JsonSerializerOptions jsonOptions;
@@ -41,6 +42,7 @@ public class WSClient : IAsyncDisposable
     }
 
     public IObservable<string> Subscription => subscriptionSubject.AsObservable();
+    public IObservable<GraphQueryExecutionException> Errors => errorSubject.AsObservable();
 
 
     public async ValueTask DisposeAsync()
@@ -67,7 +69,30 @@ public class WSClient : IAsyncDisposable
 
         tt.Where(e => e.Type == WebsocketRequestTypes.PING).Subscribe(msg => SendRequest(new WebsocketRequest(WebsocketRequestTypes.PONG)));
 
-        tt.Where(e => !string.IsNullOrEmpty(e?.Id)).Subscribe(r =>
+        tt.Where(e => e.Type == WebsocketRequestTypes.ERROR).Subscribe(r =>
+        {
+            LogMessage($"Subscription error received: {r.Payload}");
+            var errors = r.Payload is JsonElement payloadEl && payloadEl.ValueKind == JsonValueKind.Object
+                && payloadEl.TryGetProperty("errors", out var errorsEl)
+                    ? errorsEl.Deserialize<List<GraphQueryError>>(_graphClient.SerializerOptions)
+                    : new List<GraphQueryError> { new() { Message = r.Payload?.ToString() ?? "Unknown subscription error" } };
+            errorSubject.OnNext(new GraphQueryExecutionException(errors, string.Empty, null));
+        });
+
+        tt.Where(e => e.Type == WebsocketRequestTypes.COMPLETE).Subscribe(r =>
+        {
+            LogMessage($"Subscription completed for id: {r.Id}");
+            subscriptionSubject.OnCompleted();
+            errorSubject.OnCompleted();
+        });
+
+        tt.Where(e => !string.IsNullOrEmpty(e?.Id)
+            && e.Type != WebsocketRequestTypes.ERROR
+            && e.Type != WebsocketRequestTypes.COMPLETE
+            && e.Type != WebsocketRequestTypes.PING
+            && e.Type != WebsocketRequestTypes.PONG
+            && e.Type != WebsocketRequestTypes.CONNECTION_ACK
+            && e.Type != WebsocketRequestTypes.CONNECTION_INIT).Subscribe(r =>
         {
             subscriptionSubject.OnNext(r.Payload?.ToString());
         });

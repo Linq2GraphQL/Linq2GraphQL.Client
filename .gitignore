@@ -364,3 +364,8 @@ FodyWeavers.xsd
 
 .idea
 .idea/*
+
+# Local tool artifacts
+.build-timestamp
+config.json
+local-nuget/

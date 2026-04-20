@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Linq2GraphQL.Client;
 
@@ -33,6 +33,13 @@ public class GraphQueryError
     [JsonPropertyName("locations")] public ErrorLocation[] Locations { get; set; }
 
     [JsonPropertyName("path")] public List<object> Path { get; set; }
+
+    [JsonPropertyName("extensions")] public Dictionary<string, object> Extensions { get; set; }
+
+    public GraphErrorCode ErrorCode =>
+        Extensions?.TryGetValue("code", out var codeObj) == true
+            ? GraphErrorCodeClassifier.Classify(codeObj?.ToString())
+            : GraphErrorCode.Unknown;
 }
 
 public class ErrorLocation

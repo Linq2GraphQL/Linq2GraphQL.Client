@@ -1,4 +1,4 @@
-﻿using System.Net.Http.Headers;
+using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -12,6 +12,7 @@ public class SSEClient : IDisposable
     private readonly GraphClient graphClient;
     private readonly GraphQLRequest payload;
     private readonly Subject<string> subscriptionSubject = new();
+    private readonly Subject<GraphQueryExecutionException> errorSubject = new();
     private HttpResponseMessage response;
     private StreamReader streamReader;
 
@@ -22,6 +23,7 @@ public class SSEClient : IDisposable
     }
 
     public IObservable<string> Subscription => subscriptionSubject.AsObservable();
+    public IObservable<GraphQueryExecutionException> Errors => errorSubject.AsObservable();
 
     public void Dispose()
     {
@@ -39,8 +41,25 @@ public class SSEClient : IDisposable
         };
 
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/event-stream"));
-        response = await graphClient.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-        response.EnsureSuccessStatusCode();
+
+        try
+        {
+            response = await graphClient.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new GraphQueryRequestException(
+                $"SSE connection failed: {ex.Message}",
+                payload.Query, payload.Variables);
+        }
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            throw new GraphQueryRequestException(
+                $"SSE connection failed with status {response.StatusCode}: {content}",
+                payload.Query, payload.Variables);
+        }
 
         streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
 
@@ -48,10 +67,22 @@ public class SSEClient : IDisposable
         {
             var message = await streamReader.ReadLineAsync();
 
+            if (message == null) continue;
+
             if (message.StartsWith("data: "))
             {
                 var jsonData = message.Substring(6);
                 subscriptionSubject.OnNext(jsonData);
+            }
+            else if (message.StartsWith("event: error"))
+            {
+                var errorData = await streamReader.ReadLineAsync();
+                if (errorData != null && errorData.StartsWith("data: "))
+                {
+                    var errorJson = errorData.Substring(6);
+                    var errors = new List<GraphQueryError> { new() { Message = errorJson } };
+                    errorSubject.OnNext(new GraphQueryExecutionException(errors, payload.Query, payload.Variables));
+                }
             }
         }
     }
