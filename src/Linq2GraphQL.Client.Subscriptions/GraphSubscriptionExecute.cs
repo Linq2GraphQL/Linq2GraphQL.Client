@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Reactive.Linq;
 
 namespace Linq2GraphQL.Client.Subscriptions;
@@ -23,11 +24,30 @@ public class GraphSubscriptionExecute<T, TResult> : GraphBaseExecute<T, TResult>
 #pragma warning disable CS4014
             Task.Run(sseClient.Start);
 #pragma warning restore CS4014
-            return sseClient.Subscription.Select(e => ConvertResult(queryExecutor.ProcessResponse(e, QueryNode.Name, request)));
+            return sseClient.Subscription.SelectMany(json => SafeProcessMessage(json, request));
         }
 
         var wsClient = new WSClient(client, request);
         await wsClient.Start();
-        return wsClient.Subscription.Select(e => ConvertResult(queryExecutor.ProcessResponse(e, QueryNode.Name, request)));
+        return wsClient.Subscription.SelectMany(json => SafeProcessMessage(json, request));
+    }
+
+    private IEnumerable<TResult> SafeProcessMessage(string json, GraphQLRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return Array.Empty<TResult>();
+        }
+
+        try
+        {
+            var result = queryExecutor.ProcessResponse(json, QueryNode.Name, request);
+            return new[] { ConvertResult(result) };
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Subscription message error: {ex.Message}");
+            return Array.Empty<TResult>();
+        }
     }
 }

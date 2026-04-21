@@ -14,6 +14,18 @@ public class GraphClient
     private readonly IOptions<GraphClientOptions> options;
     private readonly bool includeDeprecated;
 
+    /// <summary>
+    /// Constructor for backward compatibility with code compiled against 0.13.83 and earlier.
+    /// This constructor calls the 4-parameter constructor with includeDeprecated = false.
+    /// </summary>
+    public GraphClient(HttpClient httpClient, IOptions<GraphClientOptions> options, IServiceProvider provider)
+        : this(httpClient, options, provider, false)
+    {
+    }
+
+    /// <summary>
+    /// Constructor with optional includeDeprecated parameter.
+    /// </summary>
     public GraphClient(HttpClient httpClient, IOptions<GraphClientOptions> options, IServiceProvider provider,
         bool includeDeprecated = false)
     {

@@ -112,6 +112,103 @@ Turning on *SafeMode* will make the client before the first request to do an int
 schema will be used to make sure that any auto included properties are available. This is an advanced feature that
 require the endpoint to support introspection. By default safe mode is turned of.
 
+# Error Handling
+
+## Throwing Behavior (Default)
+
+By default, `ExecuteAsync` throws `GraphQueryExecutionException` when the GraphQL response contains errors:
+
+```cs
+try
+{
+    var customer = await sampleClient
+        .Query
+        .Customer(id: "abc-123")
+        .Select(e => e)
+        .ExecuteAsync();
+}
+catch (GraphQueryExecutionException ex)
+{
+    foreach (var error in ex.Errors)
+    {
+        Console.WriteLine($"Error: {error.Message}");
+        Console.WriteLine($"Code: {error.ErrorCode}");
+    }
+}
+catch (GraphQueryRequestException ex)
+{
+    Console.WriteLine($"HTTP error: {ex.Message}");
+}
+```
+
+`GraphQueryExecutionException` provides:
+- **Errors** — list of `GraphQueryError` with `Message`, `Locations`, `Path`, `Extensions`
+- **ErrorCode** — classified error code (Authentication, Forbidden, Validation, BadRequest, etc.)
+- **Extensions** — full error extensions from the server (custom codes, status codes, etc.)
+- **GraphQLQuery** / **GraphQLVariables** — the request that caused the error
+
+## Result API (No Throw)
+
+Use `ExecuteWithResultAsync` to get both data and errors without exceptions:
+
+```cs
+var result = await sampleClient
+    .Query
+    .Customer(id: "abc-123")
+    .Select(e => e)
+    .ExecuteWithResultAsync();
+
+if (result.HasErrors)
+{
+    foreach (var error in result.Errors)
+    {
+        Console.WriteLine($"{error.ErrorCode}: {error.Message}");
+    }
+}
+
+if (result.HasData)
+{
+    Console.WriteLine(result.Data.CustomerName);
+}
+```
+
+`GraphResult<T>` provides:
+- **Data** — the response data (may be present even with partial errors)
+- **Errors** — list of `GraphQueryError`
+- **Extensions** — response-level extensions from the server
+- **HasErrors** / **HasData** — quick checks
+- **EnsureNoErrors()** — throws if errors exist (opt-in to throwing)
+
+## Error Codes
+
+`GraphQueryError.ErrorCode` classifies known error codes from popular GraphQL servers:
+
+| Code | Enum |
+|------|------|
+| `UNAUTHENTICATED` | `GraphErrorCode.Authentication` |
+| `FORBIDDEN` | `GraphErrorCode.Forbidden` |
+| `BAD_USER_INPUT` | `GraphErrorCode.BadRequest` |
+| `GRAPHQL_VALIDATION_FAILED` | `GraphErrorCode.Validation` |
+| `INTERNAL_SERVER_ERROR` | `GraphErrorCode.InternalServerError` |
+| `RATE_LIMITED` | `GraphErrorCode.RateLimited` |
+| `TIMEOUT` | `GraphErrorCode.Timeout` |
+
+Unrecognized codes return `GraphErrorCode.Unknown`.
+
+## Cursor Paging
+
+`NextPageWithResultAsync` and `PreviousPageWithResultAsync` follow the same pattern:
+
+```cs
+var pager = sampleClient
+    .Query
+    .Orders(first: 10)
+    .AsPager();
+
+var page = await pager.NextPageWithResultAsync();
+if (page.HasErrors) { /* handle */ }
+```
+
 # Acknowledgments
 
 Linq2GraphQL is inspired by [GraphQLinq](https://github.com/Giorgi/GraphQLinq) , thank

@@ -1,4 +1,4 @@
-﻿using System.Net.Http.Json;
+using System.Net.Http.Json;
 using System.Text.Json;
 
 namespace Linq2GraphQL.Client;
@@ -19,6 +19,19 @@ public class QueryExecutor<T>
     internal async Task<T> ExecuteRequestAsync(string name, GraphQLRequest graphRequest,
         CancellationToken cancellationToken = default)
     {
+        var result = await ExecuteRawAsync(name, graphRequest, cancellationToken);
+
+        if (result.HasErrors)
+        {
+            throw new GraphQueryExecutionException(result.Errors, graphRequest.Query, graphRequest.Variables);
+        }
+
+        return result.Data;
+    }
+
+    internal async Task<GraphResult<T>> ExecuteRawAsync(string name, GraphQLRequest graphRequest,
+        CancellationToken cancellationToken = default)
+    {
         using var response = await client.HttpClient.PostAsJsonAsync("", graphRequest, client.SerializerOptions,
             cancellationToken: cancellationToken);
 
@@ -30,28 +43,52 @@ public class QueryExecutor<T>
         }
 
         var con = await response.Content.ReadAsStringAsync(cancellationToken);
-        return ProcessResponse(con, name, graphRequest);
+        return ProcessResponseFull(con, name);
     }
 
     public T ProcessResponse(string con, string name, GraphQLRequest request)
     {
+        var result = ProcessResponseFull(con, name);
+
+        if (result.HasErrors)
+        {
+            throw new GraphQueryExecutionException(result.Errors, request.Query, request.Variables);
+        }
+
+        return result.Data;
+    }
+
+    public GraphResult<T> ProcessResponseFull(string con, string name)
+    {
         var document = JsonDocument.Parse(con);
-        var hasError = document.RootElement.TryGetProperty(ErrorPropertyName, out var errorElement);
+        var root = document.RootElement;
 
-        if (hasError)
+        List<GraphQueryError> errors = null;
+        if (root.TryGetProperty(ErrorPropertyName, out var errorElement))
         {
-            var errors = errorElement.Deserialize<List<GraphQueryError>>(client.SerializerOptions);
-            throw new GraphQueryExecutionException(errors, request.Query, request.Variables);
+            errors = errorElement.Deserialize<List<GraphQueryError>>(client.SerializerOptions);
         }
 
-        document.RootElement.TryGetProperty(DataPropertyName, out var dataElement);
-        dataElement.TryGetProperty(name, out var resultElement);
-
-        if (resultElement.ValueKind == JsonValueKind.Null)
+        T data = default;
+        if (root.TryGetProperty(DataPropertyName, out var dataElement) && dataElement.ValueKind != JsonValueKind.Null)
         {
-            return default;
+            if (dataElement.TryGetProperty(name, out var resultElement) && resultElement.ValueKind != JsonValueKind.Null)
+            {
+                data = resultElement.Deserialize<T>(client.SerializerOptions);
+            }
         }
 
-        return resultElement.Deserialize<T>(client.SerializerOptions);
+        Dictionary<string, object> extensions = null;
+        if (root.TryGetProperty(ExtensionsPropertyName, out var extensionsElement))
+        {
+            extensions = extensionsElement.Deserialize<Dictionary<string, object>>(client.SerializerOptions);
+        }
+
+        return new GraphResult<T>
+        {
+            Data = data,
+            Errors = errors,
+            Extensions = extensions
+        };
     }
 }

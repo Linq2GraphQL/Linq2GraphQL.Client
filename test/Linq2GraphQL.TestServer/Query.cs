@@ -1,4 +1,5 @@
-﻿using Linq2GraphQL.TestServer.Data;
+using HotChocolate;
+using Linq2GraphQL.TestServer.Data;
 using Linq2GraphQL.TestServer.Models;
 
 namespace Linq2GraphQL.TestServer;
@@ -9,6 +10,23 @@ public class Query
     public string Hello(string name = "World")
     {
         return $"Hello, {name}!";
+    }
+
+    public string RaiseError(string message = "Test error")
+    {
+        throw new GraphQLException(ErrorBuilder.New()
+            .SetMessage(message)
+            .SetCode("TEST_ERROR")
+            .SetExtension("statusCode", 400)
+            .Build());
+    }
+
+    public string RaiseAuthError()
+    {
+        throw new GraphQLException(ErrorBuilder.New()
+            .SetMessage("Not authenticated")
+            .SetCode("UNAUTHENTICATED")
+            .Build());
     }
 
     public Customer GetCustomerReturnNull()

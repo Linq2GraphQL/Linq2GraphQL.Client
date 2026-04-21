@@ -1,4 +1,4 @@
-﻿using Linq2GraphQL.Client.Common;
+using Linq2GraphQL.Client.Common;
 using System.Linq.Expressions;
 
 namespace Linq2GraphQL.Client;
@@ -28,8 +28,20 @@ public class GraphQueryExecute<T, TResult> : GraphBaseExecute<T, TResult>
         return BaseResult;
     }
 
+    public async Task<GraphResult<T>> ExecuteBaseWithResultAsync(CancellationToken cancellationToken = default)
+    {
+        var result = await queryExecutor.ExecuteRawAsync(QueryNode.Name, await GetRequestAsync(), cancellationToken);
+        BaseResult = result.Data;
+        return result;
+    }
+
     public async Task<TResult> ExecuteAsync(CancellationToken cancellationToken = default)
     {
         return ConvertResult(await ExecuteBaseAsync(cancellationToken));
+    }
+
+    public async Task<GraphResult<TResult>> ExecuteWithResultAsync(CancellationToken cancellationToken = default)
+    {
+        return ConvertResultFull(await ExecuteBaseWithResultAsync(cancellationToken));
     }
 }
