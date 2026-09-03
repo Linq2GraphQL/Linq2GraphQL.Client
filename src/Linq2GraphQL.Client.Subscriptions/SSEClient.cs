@@ -63,12 +63,8 @@ public class SSEClient : IDisposable
 
         streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
 
-        while (!streamReader.EndOfStream)
+        while (await streamReader.ReadLineAsync() is { } message)
         {
-            var message = await streamReader.ReadLineAsync();
-
-            if (message == null) continue;
-
             if (message.StartsWith("data: "))
             {
                 var jsonData = message.Substring(6);

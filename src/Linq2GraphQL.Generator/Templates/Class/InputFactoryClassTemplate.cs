@@ -111,7 +111,13 @@ namespace Linq2GraphQL.Generator.Templates.Class
             
             #line default
             #line hidden
-            this.Write("\r\n    public static ");
+            this.Write("\r\n");
+            if (field.IsDeprecated) {
+            this.Write("    [Obsolete(\"");
+            this.Write(this.ToStringHelper.ToStringWithCulture(field.SafeDeprecationReason));
+            this.Write("\")]\r\n");
+            }
+            this.Write("    public static ");
             
             #line 44 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Class\InputFactoryClassTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(input.CSharpName));
@@ -157,6 +163,11 @@ namespace Linq2GraphQL.Generator.Templates.Class
             
             #line default
             #line hidden
+            if (field.IsDeprecated) {
+            this.Write("    [Obsolete(\"");
+            this.Write(this.ToStringHelper.ToStringWithCulture(field.SafeDeprecationReason));
+            this.Write("\")]\r\n");
+            }
             this.Write("    public static ");
             
             #line 55 "C:\Data\Linq2GraphQL.Client-1\src\Linq2GraphQL.Generator\Templates\Class\InputFactoryClassTemplate.tt"

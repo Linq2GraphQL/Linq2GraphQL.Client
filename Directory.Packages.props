@@ -12,28 +12,27 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="HotChocolate.AspNetCore" Version="15.1.11" />
-    <PackageVersion Include="HotChocolate.Data" Version="15.1.11" />
-    <PackageVersion Include="HotChocolate.Types.Scalars" Version="15.1.11" />
-    <PackageVersion Include="HotChocolate.Types.Analyzers" Version="15.1.11" />
+    <PackageVersion Include="HotChocolate.AspNetCore" Version="15.1.17" />
+    <PackageVersion Include="HotChocolate.Data" Version="15.1.17" />
+    <PackageVersion Include="HotChocolate.Types.Scalars" Version="15.1.17" />
+    <PackageVersion Include="HotChocolate.Types.Analyzers" Version="15.1.17" />
     <PackageVersion Include="Macross.Json.Extensions" Version="3.0.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.FileExtensions" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.Extensions.Http" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.Extensions.Logging" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="9.0.9" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.FileExtensions" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.Extensions.Logging" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.11" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
-    <PackageVersion Include="System.CodeDom" Version="9.0.9" />
+    <PackageVersion Include="System.CodeDom" Version="10.0.11" />
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
-    <PackageVersion Include="System.Text.Json" Version="9.0.9" />
     <PackageVersion Include="TabBlazor" Version="0.8.1.1-alpha" />
     <PackageVersion Include="Websocket.Client" Version="5.3.0" />
     <PackageVersion Include="xunit" Version="2.9.3" />

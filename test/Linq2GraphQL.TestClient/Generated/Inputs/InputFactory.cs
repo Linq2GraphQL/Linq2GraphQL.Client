@@ -1481,6 +1481,7 @@ public static class OrderInputExtensions
     }
 
 
+    [Obsolete("This propery is obsolete and should not be used!")]
     public static OrderInput Grade(this OrderInput input, string val)
     {
          input.Grade = val;
