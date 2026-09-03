@@ -79,7 +79,7 @@ internal class Program
             foreach (var entry in dirName)
             {
                 var filePath = Path.Combine(directory, entry.FileName);
-                await File.WriteAllTextAsync(filePath, entry.Content);
+                await File.WriteAllTextAsync(filePath, entry.Content.ReplaceLineEndings("\n"));
             }
         }
     }
