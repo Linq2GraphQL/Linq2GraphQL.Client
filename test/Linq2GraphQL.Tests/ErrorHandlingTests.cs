@@ -177,7 +177,7 @@ public class ErrorHandlingTests : IClassFixture<SampleClientFixture>
     [Fact]
     public void GraphResult_EnsureNoErrors_ThrowsWhenHasErrors()
     {
-        var result = new GraphResult<string>
+        var result = new GraphResult<string?>
         {
             Data = null,
             Errors = new List<GraphQueryError> { new() { Message = "fail" } },
@@ -224,7 +224,7 @@ public class ErrorHandlingTests : IClassFixture<SampleClientFixture>
     [Fact]
     public void GraphResult_HasData_NullData_ReturnsFalse()
     {
-        var result = new GraphResult<string> { Data = null };
+        var result = new GraphResult<string?> { Data = null };
         result.HasData.ShouldBeFalse();
     }
 

@@ -1,0 +1,17 @@
+{
+  "solution": {
+    "path": "Linq2GraphQL.sln",
+    "projects": [
+      "src\\Linq2GraphQL.Client\\Linq2GraphQL.Client.csproj",
+      "src\\Linq2GraphQL.Client.Subscriptions\\Linq2GraphQL.Client.Subscriptions.csproj",
+      "src\\Linq2GraphQL.Generator\\Linq2GraphQL.Generator.csproj",
+      "test\\Linq2GraphQL.Console\\Linq2GraphQL.Console.csproj",
+      "test\\Linq2GraphQL.TestClient\\Linq2GraphQL.TestClient.csproj",
+      "test\\Linq2GraphQL.TestClientNullable\\Linq2GraphQL.TestClientNullable.csproj",
+      "test\\Linq2GraphQL.TestServer\\Linq2GraphQL.TestServer.csproj",
+      "test\\Linq2GraphQL.TestServer.Shared\\Linq2GraphQL.TestServer.Shared.csproj",
+      "test\\Linq2GraphQL.TestServerNullable\\Linq2GraphQL.TestServerNullable.csproj",
+      "test\\Linq2GraphQL.Tests\\Linq2GraphQL.Tests.csproj"
+    ]
+  }
+}

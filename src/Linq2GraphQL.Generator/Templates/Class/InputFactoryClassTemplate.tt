@@ -41,6 +41,9 @@ public static class <#= input.CSharpName #>Extensions
             {
 #>
 
+<# if (field.IsDeprecated) { #>
+    [Obsolete("<#= field.SafeDeprecationReason #>")]
+<# } #>
     public static <#= input.CSharpName #> <#= field.CSharpName #>(this <#= input.CSharpName #> input, <#= coreType.CSharpTypeDefinition #> val)
     {
          input.<#= field.CSharpName #> = val;
@@ -52,6 +55,9 @@ public static class <#= input.CSharpName #>Extensions
             else
             {
 #>
+<# if (field.IsDeprecated) { #>
+    [Obsolete("<#= field.SafeDeprecationReason #>")]
+<# } #>
     public static <#= input.CSharpName #> <#= field.CSharpName #>(this <#= input.CSharpName #> input, Action<<#= coreType.CSharpTypeDefinition #>> mod)
     {
         var filter = new <#= coreType.CSharpTypeDefinitionNeverNull #>();

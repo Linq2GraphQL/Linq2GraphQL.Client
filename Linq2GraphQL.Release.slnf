@@ -1,0 +1,10 @@
+{
+  "solution": {
+    "path": "Linq2GraphQL.sln",
+    "projects": [
+      "src\\Linq2GraphQL.Client\\Linq2GraphQL.Client.csproj",
+      "src\\Linq2GraphQL.Client.Subscriptions\\Linq2GraphQL.Client.Subscriptions.csproj",
+      "src\\Linq2GraphQL.Generator\\Linq2GraphQL.Generator.csproj"
+    ]
+  }
+}
