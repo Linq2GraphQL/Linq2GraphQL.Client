@@ -119,7 +119,8 @@ public static class Helpers
             { "DateTime", new ValueTuple<string, Type>("DateTimeOffset", typeof(DateTimeOffset)) },
             { "Decimal", new ValueTuple<string, Type>("decimal", typeof(decimal)) },
             { "TimeSpan", new ValueTuple<string, Type>("TimeSpan", typeof(TimeSpan)) },
-            { "Byte", new ValueTuple<string, Type>("byte", typeof(byte)) },
+            { "UnsignedByte", new ValueTuple<string, Type>("byte", typeof(byte)) },
+            { "Byte", new ValueTuple<string, Type>("sbyte", typeof(sbyte)) },
             { "LocalDate", new ValueTuple<string, Type>("DateOnly", typeof(DateOnly)) },
             { "LocalTime", new ValueTuple<string, Type>("TimeOnly", typeof(TimeOnly)) },
         };
