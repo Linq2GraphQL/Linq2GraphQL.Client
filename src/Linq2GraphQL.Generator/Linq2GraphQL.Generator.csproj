@@ -25,105 +25,41 @@
         <PackageReference Include="Macross.Json.Extensions"/>
     </ItemGroup>
 
+    <!--
+      T4 templates are preprocessed at build time by the dotnet-t4 CLI tool
+      (pinned in .config/dotnet-tools.json) into "<Template>.g.cs" next to each
+      .tt file. That output is generated, gitignored and never checked in, so
+      editing a .tt file can never silently build stale logic. See DEVELOPER.md.
+    -->
     <ItemGroup>
-        <None Update="Templates\Class\InputClassTemplate.tt">
-            <LastGenOutput>InputClassTemplate.cs</LastGenOutput>
-            <Generator>TextTemplatingFilePreprocessor</Generator>
-        </None>
-        <None Update="Templates\Class\ClassTemplate.tt">
-            <Generator>TextTemplatingFilePreprocessor</Generator>
-            <LastGenOutput>ClassTemplate.cs</LastGenOutput>
-        </None>
-        <None Update="Templates\Client\ClientTemplate.tt">
-            <Generator>TextTemplatingFilePreprocessor</Generator>
-            <LastGenOutput>ClientTemplate.cs</LastGenOutput>
-        </None>
-        <None Update="Templates\Client\IClientTemplate.tt">
-            <Generator>TextTemplatingFilePreprocessor</Generator>
-            <LastGenOutput>IClientTemplate.cs</LastGenOutput>
-        </None>
-        <None Update="Templates\Enum\EnumTemplate.tt">
-            <Generator>TextTemplatingFilePreprocessor</Generator>
-            <LastGenOutput>EnumTemplate.cs</LastGenOutput>
-        </None>
-        <None Update="Templates\Interface\InterfaceTemplate.tt">
-            <LastGenOutput>InterfaceTemplate.cs</LastGenOutput>
-            <Generator>TextTemplatingFilePreprocessor</Generator>
-        </None>
-        <None Update="Templates\Methods\IMethodsTemplate.tt">
-            <Generator>TextTemplatingFilePreprocessor</Generator>
-            <LastGenOutput>IMethodsTemplate.cs</LastGenOutput>
-        </None>
-        <None Update="Templates\Class\InputFactoryClassTemplate.tt">
-            <LastGenOutput>InputFactoryClassTemplate.cs</LastGenOutput>
-            <Generator>TextTemplatingFilePreprocessor</Generator>
-        </None>
-        <None Update="Templates\Client\ClientExtensionsTemplate.tt">
-            <Generator>TextTemplatingFilePreprocessor</Generator>
-            <LastGenOutput>ClientExtensionsTemplate.cs</LastGenOutput>
-        </None>
-        <None Update="Templates\Scalars\ScalarTemplate.tt">
-            <Generator>TextTemplatingFilePreprocessor</Generator>
-            <LastGenOutput>ScalarTemplate.cs</LastGenOutput>
-        </None>
+        <T4Template Include="Templates\Class\*.tt" TemplateNamespace="Templates.Class"/>
+        <T4Template Include="Templates\Client\*.tt" TemplateNamespace="Templates.Client"/>
+        <T4Template Include="Templates\Enum\*.tt" TemplateNamespace="Templates.Enum"/>
+        <T4Template Include="Templates\Interface\*.tt" TemplateNamespace="Templates.Interface"/>
+        <T4Template Include="Templates\Methods\*.tt" TemplateNamespace="Templates.Methods"/>
+        <T4Template Include="Templates\Scalars\*.tt" TemplateNamespace="Templates.Scalars"/>
+
+        <!-- Added by IncludeT4Output below, once the files exist. -->
+        <Compile Remove="Templates\**\*.g.cs"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}"/>
-    </ItemGroup>
+    <Target Name="RestoreT4Tool" Inputs="$(MSBuildThisFileFullPath)" Outputs="$(IntermediateOutputPath)t4-tool.restored">
+        <Exec Command="dotnet tool restore"/>
+        <Touch Files="$(IntermediateOutputPath)t4-tool.restored" AlwaysCreate="true"/>
+    </Target>
 
-    <ItemGroup>
-        <Compile Update="Templates\Class\InputClassTemplate.cs">
-            <DependentUpon>InputClassTemplate.tt</DependentUpon>
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-        </Compile>
-        <Compile Update="Templates\Class\ClassTemplate.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ClassTemplate.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Templates\Client\ClientExtensionsTemplate.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ClientExtensionsTemplate.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Templates\Client\ClientTemplate.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ClientTemplate.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Templates\Client\IClientTemplate.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>IClientTemplate.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Templates\Enum\EnumTemplate.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>EnumTemplate.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Templates\Interface\InterfaceTemplate.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>InterfaceTemplate.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Templates\Methods\IMethodsTemplate.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>IMethodsTemplate.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Templates\Class\InputFactoryClassTemplate.cs">
-            <AutoGen>True</AutoGen>
-            <DesignTime>True</DesignTime>
-            <DependentUpon>InputFactoryClassTemplate.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Templates\Scalars\ScalarTemplate.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ScalarTemplate.tt</DependentUpon>
-        </Compile>
-    </ItemGroup>
+    <Target Name="PreprocessT4Templates"
+            DependsOnTargets="RestoreT4Tool"
+            Inputs="@(T4Template)"
+            Outputs="@(T4Template->'%(RelativeDir)%(Filename).g.cs')">
+        <Exec Command="dotnet t4 --class=&quot;$(RootNamespace).%(T4Template.TemplateNamespace).%(T4Template.Filename)&quot; --out=&quot;%(T4Template.RelativeDir)%(T4Template.Filename).g.cs&quot; &quot;%(T4Template.Identity)&quot;"/>
+    </Target>
+
+    <Target Name="IncludeT4Output" DependsOnTargets="PreprocessT4Templates" BeforeTargets="BeforeCompile">
+        <ItemGroup>
+            <Compile Include="@(T4Template->'%(RelativeDir)%(Filename).g.cs')"/>
+        </ItemGroup>
+    </Target>
 
     <ItemGroup>
         <ProjectReference Include="..\Linq2GraphQL.Client\Linq2GraphQL.Client.csproj"/>

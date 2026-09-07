@@ -28,6 +28,9 @@ jobs:
           cache: true
           cache-dependency-path: '**/packages.lock.json'
 
+      - name: Restore tools
+        run: dotnet tool restore
+
       - name: Restore
         run: dotnet restore Linq2GraphQL.CI.slnf --locked-mode
 

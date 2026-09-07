@@ -31,6 +31,9 @@ jobs:
         id: nbgv
       - run: echo 'SemVer2=${{ steps.nbgv.outputs.SemVer2 }}'
 
+      - name: Restore tools
+        run: dotnet tool restore
+
       - name: Restore
         run: dotnet restore Linq2GraphQL.Release.slnf --locked-mode
 

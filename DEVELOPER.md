@@ -13,9 +13,11 @@ This document provides comprehensive guidance for developers working on the Linq
 
 ## Prerequisites
 
-- **Visual Studio 2022** (recommended) or Visual Studio 2019/2022
-- **.NET 8.0 SDK** or later
-- **T4 Template Support** - Ensure the "Text Template Transformation" workload is installed in Visual Studio
+- **.NET 10.0 SDK** or later
+- **Any editor** - Visual Studio, Rider, VS Code or plain `dotnet build` all work;
+  T4 preprocessing runs as part of the build, so no IDE-specific tooling is required
+- **`dotnet tool restore`** once per clone, to fetch the pinned `dotnet-t4` CLI tool
+  (the build does this for you)
 
 ## Project Structure
 
@@ -27,7 +29,8 @@ src/
 │   │   ├── Class/                     # Class generation templates
 │   │   ├── Interface/                 # Interface generation templates
 │   │   ├── Methods/                   # Method generation templates
-│   │   └── Enum/                      # Enum generation templates
+│   │   ├── Enum/                      # Enum generation templates
+│   │   └── Scalars/                   # Custom scalar templates
 │   ├── GraphQLSchema/                 # Schema parsing and processing
 │   └── ClientGenerator.cs             # Main generation orchestration
 └── Linq2GraphQL.Client/              # Core client library
@@ -43,7 +46,8 @@ This project uses **T4 (Text Template Transformation Toolkit)** for code generat
 
 - **`.tt`** - Source T4 template files (human-editable)
 - **`.tt.cs`** - Partial class definitions for template variables and helper methods
-- **`.cs`** - Preprocessed T4 templates (auto-generated, contains the actual `TransformText()` method)
+- **`.g.cs`** - Preprocessed T4 templates (contains the actual `TransformText()` method).
+  **Generated at build time, gitignored, never checked in.**
 
 ### Template Development Workflow
 
@@ -52,27 +56,44 @@ This project uses **T4 (Text Template Transformation Toolkit)** for code generat
 When modifying `.tt` files:
 
 1. **Edit the `.tt` file** with your changes
-2. **Manually regenerate the `.cs` file** using Visual Studio's custom tool
-3. **Build the project** to ensure compilation
-4. **Test the generation** by running the client generator
+2. **Build the project** - the `.g.cs` file is regenerated automatically
+3. **Test the generation** by running the client generator
 
-#### 2. Manual Template Regeneration
+That is the whole loop. There is no manual regeneration step, and no way to build
+stale template logic: compile errors in a template point straight back at the
+`.tt` file and line number.
 
-**⚠️ IMPORTANT: After modifying any `.tt` file, you MUST manually regenerate the corresponding `.cs` file.**
+#### 2. How Build-Time Preprocessing Works
 
-**In Visual Studio 2022:**
+`Linq2GraphQL.Generator.csproj` preprocesses every `Templates\**\*.tt` into a
+sibling `<Template>.g.cs` before compiling, using the
+[dotnet-t4](https://www.nuget.org/packages/dotnet-t4) CLI tool pinned in
+`.config/dotnet-tools.json`:
 
-1. Right-click on the `.tt` file in Solution Explorer
-2. Select **"Run Custom Tool"**
-3. This will regenerate the `.cs` file with your changes
-4. Verify the `.cs` file contains your updated template logic
+| Target | Does |
+| --- | --- |
+| `RestoreT4Tool` | Runs `dotnet tool restore` (once per project file change) |
+| `PreprocessT4Templates` | Runs `dotnet t4 --class=<ns>.<Name> --out=<Name>.g.cs <Name>.tt` per template, incrementally |
+| `IncludeT4Output` | Adds the `.g.cs` files to `Compile` before `BeforeCompile` |
 
-**Alternative method:**
-1. Right-click on the `.tt` file
-2. Select **"Properties"**
-3. Set **"Custom Tool"** to `TextTemplatingFilePreprocessor`
-4. Set **"Custom Tool Namespace"** to your desired namespace
-5. Save the file to trigger regeneration
+New template folders need one line in the `T4Template` item group so the class
+namespace can be derived:
+
+```xml
+<T4Template Include="Templates\MyFolder\*.tt" TemplateNamespace="Templates.MyFolder"/>
+```
+
+To preprocess a single template by hand (rarely needed - the build does it):
+
+```powershell
+dotnet tool restore
+cd src/Linq2GraphQL.Generator
+dotnet t4 --class="Linq2GraphQL.Generator.Templates.Enum.EnumTemplate" --out="Templates/Enum/EnumTemplate.g.cs" "Templates/Enum/EnumTemplate.tt"
+```
+
+Visual Studio's *Run Custom Tool* is **no longer used** and the `.tt` files
+deliberately carry no `Generator`/`LastGenOutput` metadata - the build owns
+generation on every platform, IDE or CI.
 
 #### 3. Template File Dependencies
 
@@ -80,7 +101,7 @@ Each T4 template requires:
 
 - **`.tt` file** - Contains the template logic and output format
 - **`.tt.cs` file** - Provides the partial class with constructor parameters and helper methods
-- **`.cs` file** - Auto-generated preprocessed template (regenerated from `.tt`)
+- **`.g.cs` file** - Preprocessed template, produced by the build (never edited or committed)
 
 ### Template Syntax
 
@@ -130,7 +151,7 @@ public partial class TemplateName
 ### 1. Development Cycle
 
 ```
-Edit .tt file → Run Custom Tool → Build Project → Test Generation → Repeat
+Edit .tt file → Build Project → Test Generation → Repeat
 ```
 
 ### 2. Testing Changes
@@ -161,19 +182,26 @@ dotnet run --project src/Linq2GraphQL.Generator -- <endpoint> [options]
 **Problem:** Changes to `.tt` files not reflected in generated output.
 
 **Solution:**
-1. Ensure you've run the **"Run Custom Tool"** on the `.tt` file
-2. Check that the `.cs` file was updated with your changes
-3. Clean and rebuild the project
-4. Verify the T4 preprocessor is working in Visual Studio
+1. Confirm the template folder has a `T4Template` entry in
+   `Linq2GraphQL.Generator.csproj` - a template outside those globs is never preprocessed
+2. Check the timestamp of the sibling `.g.cs` file; delete it and rebuild to force regeneration
+3. Run `dotnet build src/Linq2GraphQL.Generator -v:n` and look for the `dotnet t4` command lines
+
+#### `dotnet t4` Not Found
+
+**Problem:** Build fails with "Cannot find command 'dotnet t4'".
+
+**Solution:** Run `dotnet tool restore` from the repository root - the tool is a local
+tool pinned in `.config/dotnet-tools.json`. The build normally does this for you.
 
 #### Missing TransformText Method
 
 **Problem:** Compilation error "does not contain a definition for 'TransformText'".
 
 **Solution:**
-1. The `.cs` file is missing or outdated
-2. Run **"Run Custom Tool"** on the corresponding `.tt` file
-3. Ensure the `.tt.cs` file exists and has the correct partial class definition
+1. The `.g.cs` file was not produced - see *T4 Templates Not Regenerating* above
+2. Ensure the `.tt.cs` file exists, and that its namespace and class name match the
+   `--class` value the build derives (`$(RootNamespace).<TemplateNamespace>.<Filename>`)
 
 #### Template Variables Not Available
 
@@ -186,10 +214,12 @@ dotnet run --project src/Linq2GraphQL.Generator -- <endpoint> [options]
 
 ### Debugging Tips
 
-1. **Check the `.cs` file content** - It should contain your template logic in the `TransformText()` method
-2. **Verify template compilation** - Build errors often indicate template syntax issues
-3. **Use Visual Studio's T4 debugging** - Set breakpoints in the generated `.cs` files
-4. **Check build output** - Look for T4-related error messages
+1. **Read the compile error location** - errors inside template code are reported against
+   the `.tt` file and line, thanks to the `#line` pragmas in the generated `.g.cs`
+2. **Inspect the `.g.cs` file** - it sits next to the `.tt` and contains the generated
+   `TransformText()` method
+3. **Set breakpoints in the `.g.cs` file** to step through template execution
+4. **Check build output** - `dotnet t4` failures surface as `Exec` task errors
 
 ## Best Practices
 
@@ -217,7 +247,7 @@ dotnet run --project src/Linq2GraphQL.Generator -- <endpoint> [options]
 ### Version Control
 
 1. **Commit `.tt` and `.tt.cs` files** - These are source files
-2. **Ignore generated `.cs` files** - Add `**/*.cs` to `.gitignore` for auto-generated files
+2. **Never commit `.g.cs` files** - they are build output and are gitignored
 3. **Document template changes** - Include clear commit messages for template modifications
 4. **Review generated output** - Verify that template changes produce the expected results
 
