@@ -369,3 +369,6 @@ FodyWeavers.xsd
 .build-timestamp
 config.json
 local-nuget/
+
+# Preprocessed T4 templates (generated at build time by dotnet-t4)
+src/Linq2GraphQL.Generator/Templates/**/*.g.cs

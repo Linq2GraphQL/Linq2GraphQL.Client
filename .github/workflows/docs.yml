@@ -25,6 +25,9 @@ jobs:
           cache: true
           cache-dependency-path: '**/packages.lock.json'
 
+      - name: Restore tools
+        run: dotnet tool restore
+
       - name: Publish
         working-directory: docs/Linq2GraphQL.Docs
         run: dotnet publish -c:Release -o:publish
