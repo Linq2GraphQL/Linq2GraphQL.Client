@@ -68,7 +68,7 @@ public class Schema
 
     public List<GraphqlType> GetCustomScalars()
     {
-        var mappers = Helpers.TypeMapping;
+        var mappers = Helpers.EffectiveTypeMapping;
         return GetAllTypesExceptSystemTypes().Where(e => e.Kind == TypeKind.Scalar && !mappers.ContainsKey(e.Name))
             .ToList();
     }

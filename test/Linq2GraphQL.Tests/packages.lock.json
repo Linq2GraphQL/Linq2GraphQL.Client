@@ -890,6 +890,15 @@
           "Websocket.Client": "[5.3.0, )"
         }
       },
+      "linq2graphql.generator": {
+        "type": "Project",
+        "dependencies": {
+          "Linq2GraphQL.Client": "[1.0.0, )",
+          "Macross.Json.Extensions": "[3.0.0, )",
+          "System.CodeDom": "[10.0.11, )",
+          "System.CommandLine": "[2.0.0-beta4.22272.1, )"
+        }
+      },
       "linq2graphql.testclient": {
         "type": "Project",
         "dependencies": {
@@ -975,6 +984,12 @@
         "dependencies": {
           "HotChocolate.Types": "16.6.4"
         }
+      },
+      "Macross.Json.Extensions": {
+        "type": "CentralTransitive",
+        "requested": "[3.0.0, )",
+        "resolved": "3.0.0",
+        "contentHash": "AkNshs6dopj8FXsmkkJxvLivN2SyDJQDbjcds5lo9+Y6L4zpcoXdmzXQ3VVN+AIWQr0CTD5A7vkuHGAr2aypZg=="
       },
       "Microsoft.Extensions.Caching.Memory": {
         "type": "CentralTransitive",
@@ -1070,6 +1085,12 @@
           "Microsoft.Extensions.Logging.Configuration": "10.0.11",
           "Microsoft.Extensions.Options": "10.0.11"
         }
+      },
+      "System.CommandLine": {
+        "type": "CentralTransitive",
+        "requested": "[2.0.0-beta4.22272.1, )",
+        "resolved": "2.0.0-beta4.22272.1",
+        "contentHash": "1uqED/q2H0kKoLJ4+hI2iPSBSEdTuhfCYADeJrAqERmiGQ2NNacYKRNEQ+gFbU4glgVyK8rxI+ZOe1onEtr/Pg=="
       },
       "Websocket.Client": {
         "type": "CentralTransitive",
