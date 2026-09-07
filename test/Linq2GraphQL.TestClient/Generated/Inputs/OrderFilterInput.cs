@@ -95,6 +95,7 @@ public partial class OrderFilterInput : GraphInputBase
     	set => SetValue("entryTime", value);
 	}
 
+    [Obsolete("This propery is obsolete and should not be used!")]
 	[GraphQLMember("grade")]
 	[JsonPropertyName("grade")]
 	public StringOperationFilterInput Grade 

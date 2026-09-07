@@ -33,9 +33,9 @@ public partial class ItemInput : GraphInputBase
 
 	[GraphQLMember("data")]
 	[JsonPropertyName("data")]
-	public List<sbyte>? Data 
+	public List<byte>? Data 
 	{
-		get => GetValue<List<sbyte>?>("data");
+		get => GetValue<List<byte>?>("data");
     	set => SetValue("data", value);
 	}
 

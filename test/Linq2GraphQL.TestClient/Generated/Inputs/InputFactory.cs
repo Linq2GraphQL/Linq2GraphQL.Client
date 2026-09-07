@@ -26,10 +26,6 @@ public static class IF
 	{
 		return new AddressSortInput();
 	}
-	public static ByteOperationFilterInput ByteOperationFilter() 
-	{
-		return new ByteOperationFilterInput();
-	}
 	public static CustomerFilterInput CustomerFilter() 
 	{
 		return new CustomerFilterInput();
@@ -78,10 +74,6 @@ public static class IF
 	{
 		return new ItemInput();
 	}
-	public static ListByteOperationFilterInput ListByteOperationFilter() 
-	{
-		return new ListByteOperationFilterInput();
-	}
 	public static ListFilterInputTypeOfOrderFilterInput ListFilterInputTypeOfOrderFilter() 
 	{
 		return new ListFilterInputTypeOfOrderFilterInput();
@@ -89,6 +81,10 @@ public static class IF
 	public static ListFilterInputTypeOfOrderLineFilterInput ListFilterInputTypeOfOrderLineFilter() 
 	{
 		return new ListFilterInputTypeOfOrderLineFilterInput();
+	}
+	public static ListUnsignedByteOperationFilterInput ListUnsignedByteOperationFilter() 
+	{
+		return new ListUnsignedByteOperationFilterInput();
 	}
 	public static LocalDateOperationFilterInput LocalDateOperationFilter() 
 	{
@@ -121,6 +117,10 @@ public static class IF
 	public static StringOperationFilterInput StringOperationFilter() 
 	{
 		return new StringOperationFilterInput();
+	}
+	public static UnsignedByteOperationFilterInput UnsignedByteOperationFilter() 
+	{
+		return new UnsignedByteOperationFilterInput();
 	}
 	public static UuidOperationFilterInput UuidOperationFilter() 
 	{
@@ -247,94 +247,6 @@ public static class AddressSortInputExtensions
     public static AddressSortInput CreatedDate(this AddressSortInput input, SortEnumType? val)
     {
          input.CreatedDate = val;
-         return input;
-    }
-
-}
-
-public static class ByteOperationFilterInputExtensions
-{ 
-	
-    public static ByteOperationFilterInput Eq(this ByteOperationFilterInput input, sbyte? val)
-    {
-         input.Eq = val;
-         return input;
-    }
-
-
-    public static ByteOperationFilterInput Neq(this ByteOperationFilterInput input, sbyte? val)
-    {
-         input.Neq = val;
-         return input;
-    }
-
-
-    public static ByteOperationFilterInput In(this ByteOperationFilterInput input, List<sbyte?> val)
-    {
-         input.In = val;
-         return input;
-    }
-
-
-    public static ByteOperationFilterInput Nin(this ByteOperationFilterInput input, List<sbyte?> val)
-    {
-         input.Nin = val;
-         return input;
-    }
-
-
-    public static ByteOperationFilterInput Gt(this ByteOperationFilterInput input, sbyte? val)
-    {
-         input.Gt = val;
-         return input;
-    }
-
-
-    public static ByteOperationFilterInput Ngt(this ByteOperationFilterInput input, sbyte? val)
-    {
-         input.Ngt = val;
-         return input;
-    }
-
-
-    public static ByteOperationFilterInput Gte(this ByteOperationFilterInput input, sbyte? val)
-    {
-         input.Gte = val;
-         return input;
-    }
-
-
-    public static ByteOperationFilterInput Ngte(this ByteOperationFilterInput input, sbyte? val)
-    {
-         input.Ngte = val;
-         return input;
-    }
-
-
-    public static ByteOperationFilterInput Lt(this ByteOperationFilterInput input, sbyte? val)
-    {
-         input.Lt = val;
-         return input;
-    }
-
-
-    public static ByteOperationFilterInput Nlt(this ByteOperationFilterInput input, sbyte? val)
-    {
-         input.Nlt = val;
-         return input;
-    }
-
-
-    public static ByteOperationFilterInput Lte(this ByteOperationFilterInput input, sbyte? val)
-    {
-         input.Lte = val;
-         return input;
-    }
-
-
-    public static ByteOperationFilterInput Nlte(this ByteOperationFilterInput input, sbyte? val)
-    {
-         input.Nlte = val;
          return input;
     }
 
@@ -987,9 +899,9 @@ public static class ItemFilterInputExtensions
         return input;
     }
 
-    public static ItemFilterInput Data(this ItemFilterInput input, Action<ListByteOperationFilterInput> mod)
+    public static ItemFilterInput Data(this ItemFilterInput input, Action<ListUnsignedByteOperationFilterInput> mod)
     {
-        var filter = new ListByteOperationFilterInput();
+        var filter = new ListUnsignedByteOperationFilterInput();
         mod ??= _ => { };
         mod(filter); 
         input.Data = filter;
@@ -1015,47 +927,9 @@ public static class ItemInputExtensions
     }
 
 
-    public static ItemInput Data(this ItemInput input, List<sbyte> val)
+    public static ItemInput Data(this ItemInput input, List<byte> val)
     {
          input.Data = val;
-         return input;
-    }
-
-}
-
-public static class ListByteOperationFilterInputExtensions
-{ 
-	    public static ListByteOperationFilterInput All(this ListByteOperationFilterInput input, Action<ByteOperationFilterInput> mod)
-    {
-        var filter = new ByteOperationFilterInput();
-        mod ??= _ => { };
-        mod(filter); 
-        input.All = filter;
-        return input;
-    }
-
-    public static ListByteOperationFilterInput None(this ListByteOperationFilterInput input, Action<ByteOperationFilterInput> mod)
-    {
-        var filter = new ByteOperationFilterInput();
-        mod ??= _ => { };
-        mod(filter); 
-        input.None = filter;
-        return input;
-    }
-
-    public static ListByteOperationFilterInput Some(this ListByteOperationFilterInput input, Action<ByteOperationFilterInput> mod)
-    {
-        var filter = new ByteOperationFilterInput();
-        mod ??= _ => { };
-        mod(filter); 
-        input.Some = filter;
-        return input;
-    }
-
-
-    public static ListByteOperationFilterInput Any(this ListByteOperationFilterInput input, bool? val)
-    {
-         input.Any = val;
          return input;
     }
 
@@ -1130,6 +1004,44 @@ public static class ListFilterInputTypeOfOrderLineFilterInputExtensions
 
 
     public static ListFilterInputTypeOfOrderLineFilterInput Any(this ListFilterInputTypeOfOrderLineFilterInput input, bool? val)
+    {
+         input.Any = val;
+         return input;
+    }
+
+}
+
+public static class ListUnsignedByteOperationFilterInputExtensions
+{ 
+	    public static ListUnsignedByteOperationFilterInput All(this ListUnsignedByteOperationFilterInput input, Action<UnsignedByteOperationFilterInput> mod)
+    {
+        var filter = new UnsignedByteOperationFilterInput();
+        mod ??= _ => { };
+        mod(filter); 
+        input.All = filter;
+        return input;
+    }
+
+    public static ListUnsignedByteOperationFilterInput None(this ListUnsignedByteOperationFilterInput input, Action<UnsignedByteOperationFilterInput> mod)
+    {
+        var filter = new UnsignedByteOperationFilterInput();
+        mod ??= _ => { };
+        mod(filter); 
+        input.None = filter;
+        return input;
+    }
+
+    public static ListUnsignedByteOperationFilterInput Some(this ListUnsignedByteOperationFilterInput input, Action<UnsignedByteOperationFilterInput> mod)
+    {
+        var filter = new UnsignedByteOperationFilterInput();
+        mod ??= _ => { };
+        mod(filter); 
+        input.Some = filter;
+        return input;
+    }
+
+
+    public static ListUnsignedByteOperationFilterInput Any(this ListUnsignedByteOperationFilterInput input, bool? val)
     {
          input.Any = val;
          return input;
@@ -1405,6 +1317,7 @@ public static class OrderFilterInputExtensions
         return input;
     }
 
+    [Obsolete("This propery is obsolete and should not be used!")]
     public static OrderFilterInput Grade(this OrderFilterInput input, Action<StringOperationFilterInput> mod)
     {
         var filter = new StringOperationFilterInput();
@@ -1656,6 +1569,7 @@ public static class OrderSortInputExtensions
     }
 
 
+    [Obsolete("This propery is obsolete and should not be used!")]
     public static OrderSortInput Grade(this OrderSortInput input, SortEnumType? val)
     {
          input.Grade = val;
@@ -1751,6 +1665,94 @@ public static class StringOperationFilterInputExtensions
     public static StringOperationFilterInput NendsWith(this StringOperationFilterInput input, string val)
     {
          input.NendsWith = val;
+         return input;
+    }
+
+}
+
+public static class UnsignedByteOperationFilterInputExtensions
+{ 
+	
+    public static UnsignedByteOperationFilterInput Eq(this UnsignedByteOperationFilterInput input, byte? val)
+    {
+         input.Eq = val;
+         return input;
+    }
+
+
+    public static UnsignedByteOperationFilterInput Neq(this UnsignedByteOperationFilterInput input, byte? val)
+    {
+         input.Neq = val;
+         return input;
+    }
+
+
+    public static UnsignedByteOperationFilterInput In(this UnsignedByteOperationFilterInput input, List<byte?> val)
+    {
+         input.In = val;
+         return input;
+    }
+
+
+    public static UnsignedByteOperationFilterInput Nin(this UnsignedByteOperationFilterInput input, List<byte?> val)
+    {
+         input.Nin = val;
+         return input;
+    }
+
+
+    public static UnsignedByteOperationFilterInput Gt(this UnsignedByteOperationFilterInput input, byte? val)
+    {
+         input.Gt = val;
+         return input;
+    }
+
+
+    public static UnsignedByteOperationFilterInput Ngt(this UnsignedByteOperationFilterInput input, byte? val)
+    {
+         input.Ngt = val;
+         return input;
+    }
+
+
+    public static UnsignedByteOperationFilterInput Gte(this UnsignedByteOperationFilterInput input, byte? val)
+    {
+         input.Gte = val;
+         return input;
+    }
+
+
+    public static UnsignedByteOperationFilterInput Ngte(this UnsignedByteOperationFilterInput input, byte? val)
+    {
+         input.Ngte = val;
+         return input;
+    }
+
+
+    public static UnsignedByteOperationFilterInput Lt(this UnsignedByteOperationFilterInput input, byte? val)
+    {
+         input.Lt = val;
+         return input;
+    }
+
+
+    public static UnsignedByteOperationFilterInput Nlt(this UnsignedByteOperationFilterInput input, byte? val)
+    {
+         input.Nlt = val;
+         return input;
+    }
+
+
+    public static UnsignedByteOperationFilterInput Lte(this UnsignedByteOperationFilterInput input, byte? val)
+    {
+         input.Lte = val;
+         return input;
+    }
+
+
+    public static UnsignedByteOperationFilterInput Nlte(this UnsignedByteOperationFilterInput input, byte? val)
+    {
+         input.Nlte = val;
          return input;
     }
 
