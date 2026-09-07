@@ -39,3 +39,32 @@ jobs:
 
       - name: Test
         run: dotnet test Linq2GraphQL.CI.slnf --no-build --verbosity normal
+
+  generated-clients:
+
+    name: Test clients up to date
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      - name: Restore tools
+        run: dotnet tool restore
+
+      - name: Restore
+        run: dotnet restore Linq2GraphQL.CI.slnf --locked-mode
+
+      # Regenerates test/Linq2GraphQL.TestClient* from the test servers' live
+      # schemas and fails if the result differs from what is committed.
+      - name: Check checked-in test clients
+        shell: pwsh
+        run: ./scripts/regenerate-test-clients.ps1 -Check

@@ -5,120 +5,196 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClient;
 
+/// <summary>
+/// Implementation of QueryMethods GraphQL operations
+/// </summary>
 public class QueryMethods : IQueryMethods
 {
     private readonly GraphClient client;
 
+    /// <summary>
+    /// Initializes a new instance of the QueryMethods class
+    /// </summary>
+    /// <param name="client">The GraphQL client instance</param>
     public QueryMethods(GraphClient client)
     {
-        this.client = client;
+        this.client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
+    /// <summary>
+    /// Executes hello GraphQL operation
+    /// </summary>
+    /// <param name="hello">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<string></returns>
     public GraphQuery<string> Hello(string name = null)
     {
-	    var arguments = new List<ArgumentValue>
+        var arguments = new List<ArgumentValue>
         {
-    	    new("name","String", name),
+            new("name", "String", name),
         };
 
-        return new GraphQuery<string>(client,  "hello", OperationType.Query, arguments); 
+        return new GraphQuery<string>(client, "hello", OperationType.Query, arguments);
     }
 
+    /// <summary>
+    /// Executes raiseError GraphQL operation
+    /// </summary>
+    /// <param name="raiseError">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<string></returns>
+    public GraphQuery<string> RaiseError(string message = null)
+    {
+        var arguments = new List<ArgumentValue>
+        {
+            new("message", "String", message),
+        };
+
+        return new GraphQuery<string>(client, "raiseError", OperationType.Query, arguments);
+    }
+
+    /// <summary>
+    /// Executes raiseAuthError GraphQL operation
+    /// </summary>
+    /// <param name="raiseAuthError">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<string></returns>
+    public GraphQuery<string> RaiseAuthError()
+    {
+        var arguments = new List<ArgumentValue>
+        {
+        };
+
+        return new GraphQuery<string>(client, "raiseAuthError", OperationType.Query, arguments);
+    }
+
+    /// <summary>
+    /// Executes customerReturnNull GraphQL operation
+    /// </summary>
+    /// <param name="customerReturnNull">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<Customer></returns>
     public GraphQuery<Customer> CustomerReturnNull()
     {
-	    var arguments = new List<ArgumentValue>
+        var arguments = new List<ArgumentValue>
         {
         };
 
-        return new GraphQuery<Customer>(client,  "customerReturnNull", OperationType.Query, arguments); 
+        return new GraphQuery<Customer>(client, "customerReturnNull", OperationType.Query, arguments);
     }
 
+    /// <summary>
+    /// Executes customers GraphQL operation
+    /// </summary>
+    /// <param name="customers">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<List<Customer>></returns>
     public GraphQuery<List<Customer>> Customers()
     {
-	    var arguments = new List<ArgumentValue>
+        var arguments = new List<ArgumentValue>
         {
         };
 
-        return new GraphQuery<List<Customer>>(client,  "customers", OperationType.Query, arguments); 
+        return new GraphQuery<List<Customer>>(client, "customers", OperationType.Query, arguments);
     }
 
+    /// <summary>
+    /// Executes ordersNoBackwardPagination GraphQL operation
+    /// </summary>
+    /// <param name="ordersNoBackwardPagination">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<OrdersNoBackwardPaginationConnection></returns>
     public GraphQuery<OrdersNoBackwardPaginationConnection> OrdersNoBackwardPagination(int? first = null, string after = null, OrderFilterInput where = null, List<OrderSortInput> order = null)
     {
-	    var arguments = new List<ArgumentValue>
+        var arguments = new List<ArgumentValue>
         {
-    	    new("first","Int", first),
-    	    new("after","String", after),
-    	    new("where","OrderFilterInput", where),
-    	    new("order","[OrderSortInput!]", order),
+            new("first", "Int", first),
+            new("after", "String", after),
+            new("where", "OrderFilterInput", where),
+            new("order", "[OrderSortInput!]", order),
         };
 
-        return new GraphQuery<OrdersNoBackwardPaginationConnection>(client,  "ordersNoBackwardPagination", OperationType.Query, arguments); 
+        return new GraphQuery<OrdersNoBackwardPaginationConnection>(client, "ordersNoBackwardPagination", OperationType.Query, arguments);
     }
 
+    /// <summary>
+    /// Executes ordersNoTotalCount GraphQL operation
+    /// </summary>
+    /// <param name="ordersNoTotalCount">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphCursorQuery<OrdersNoTotalCountConnection></returns>
     public GraphCursorQuery<OrdersNoTotalCountConnection> OrdersNoTotalCount(int? first = null, string after = null, int? last = null, string before = null, OrderFilterInput where = null, List<OrderSortInput> order = null)
     {
-	    var arguments = new List<ArgumentValue>
+        var arguments = new List<ArgumentValue>
         {
-    	    new("first","Int", first),
-    	    new("after","String", after),
-    	    new("last","Int", last),
-    	    new("before","String", before),
-    	    new("where","OrderFilterInput", where),
-    	    new("order","[OrderSortInput!]", order),
+            new("first", "Int", first),
+            new("after", "String", after),
+            new("last", "Int", last),
+            new("before", "String", before),
+            new("where", "OrderFilterInput", where),
+            new("order", "[OrderSortInput!]", order),
         };
 
-        return new GraphCursorQuery<OrdersNoTotalCountConnection>(client,  "ordersNoTotalCount", OperationType.Query, arguments); 
+        return new GraphCursorQuery<OrdersNoTotalCountConnection>(client, "ordersNoTotalCount", OperationType.Query, arguments);
     }
 
+    /// <summary>
+    /// Executes orders GraphQL operation
+    /// </summary>
+    /// <param name="orders">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphCursorQuery<OrdersConnection></returns>
     public GraphCursorQuery<OrdersConnection> Orders(int? first = null, string after = null, int? last = null, string before = null, OrderFilterInput where = null, List<OrderSortInput> order = null)
     {
-	    var arguments = new List<ArgumentValue>
+        var arguments = new List<ArgumentValue>
         {
-    	    new("first","Int", first),
-    	    new("after","String", after),
-    	    new("last","Int", last),
-    	    new("before","String", before),
-    	    new("where","OrderFilterInput", where),
-    	    new("order","[OrderSortInput!]", order),
+            new("first", "Int", first),
+            new("after", "String", after),
+            new("last", "Int", last),
+            new("before", "String", before),
+            new("where", "OrderFilterInput", where),
+            new("order", "[OrderSortInput!]", order),
         };
 
-        return new GraphCursorQuery<OrdersConnection>(client,  "orders", OperationType.Query, arguments); 
+        return new GraphCursorQuery<OrdersConnection>(client, "orders", OperationType.Query, arguments);
     }
 
+    /// <summary>
+    /// Executes animals GraphQL operation
+    /// </summary>
+    /// <param name="animals">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphCursorQuery<AnimalsConnection></returns>
     public GraphCursorQuery<AnimalsConnection> Animals(int? first = null, string after = null, int? last = null, string before = null, IAnimalFilterInput where = null, List<IAnimalSortInput> order = null)
     {
-	    var arguments = new List<ArgumentValue>
+        var arguments = new List<ArgumentValue>
         {
-    	    new("first","Int", first),
-    	    new("after","String", after),
-    	    new("last","Int", last),
-    	    new("before","String", before),
-    	    new("where","IAnimalFilterInput", where),
-    	    new("order","[IAnimalSortInput!]", order),
+            new("first", "Int", first),
+            new("after", "String", after),
+            new("last", "Int", last),
+            new("before", "String", before),
+            new("where", "IAnimalFilterInput", where),
+            new("order", "[IAnimalSortInput!]", order),
         };
 
-        return new GraphCursorQuery<AnimalsConnection>(client,  "animals", OperationType.Query, arguments); 
+        return new GraphCursorQuery<AnimalsConnection>(client, "animals", OperationType.Query, arguments);
     }
 
+    /// <summary>
+    /// Executes ordersOffsetPaging GraphQL operation
+    /// </summary>
+    /// <param name="ordersOffsetPaging">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphCursorQuery<OrdersOffsetPagingConnection></returns>
     public GraphCursorQuery<OrdersOffsetPagingConnection> OrdersOffsetPaging(int? first = null, string after = null, int? last = null, string before = null, OrderFilterInput where = null, List<OrderSortInput> order = null)
     {
-	    var arguments = new List<ArgumentValue>
+        var arguments = new List<ArgumentValue>
         {
-    	    new("first","Int", first),
-    	    new("after","String", after),
-    	    new("last","Int", last),
-    	    new("before","String", before),
-    	    new("where","OrderFilterInput", where),
-    	    new("order","[OrderSortInput!]", order),
+            new("first", "Int", first),
+            new("after", "String", after),
+            new("last", "Int", last),
+            new("before", "String", before),
+            new("where", "OrderFilterInput", where),
+            new("order", "[OrderSortInput!]", order),
         };
 
-        return new GraphCursorQuery<OrdersOffsetPagingConnection>(client,  "ordersOffsetPaging", OperationType.Query, arguments); 
+        return new GraphCursorQuery<OrdersOffsetPagingConnection>(client, "ordersOffsetPaging", OperationType.Query, arguments);
     }
 
-    }
+}

@@ -255,84 +255,84 @@ public static class AddressSortInputExtensions
 public static class ByteOperationFilterInputExtensions
 { 
 	
-    public static ByteOperationFilterInput Eq(this ByteOperationFilterInput input, byte? val)
+    public static ByteOperationFilterInput Eq(this ByteOperationFilterInput input, sbyte? val)
     {
          input.Eq = val;
          return input;
     }
 
 
-    public static ByteOperationFilterInput Neq(this ByteOperationFilterInput input, byte? val)
+    public static ByteOperationFilterInput Neq(this ByteOperationFilterInput input, sbyte? val)
     {
          input.Neq = val;
          return input;
     }
 
 
-    public static ByteOperationFilterInput In(this ByteOperationFilterInput input, List<byte?> val)
+    public static ByteOperationFilterInput In(this ByteOperationFilterInput input, List<sbyte?> val)
     {
          input.In = val;
          return input;
     }
 
 
-    public static ByteOperationFilterInput Nin(this ByteOperationFilterInput input, List<byte?> val)
+    public static ByteOperationFilterInput Nin(this ByteOperationFilterInput input, List<sbyte?> val)
     {
          input.Nin = val;
          return input;
     }
 
 
-    public static ByteOperationFilterInput Gt(this ByteOperationFilterInput input, byte? val)
+    public static ByteOperationFilterInput Gt(this ByteOperationFilterInput input, sbyte? val)
     {
          input.Gt = val;
          return input;
     }
 
 
-    public static ByteOperationFilterInput Ngt(this ByteOperationFilterInput input, byte? val)
+    public static ByteOperationFilterInput Ngt(this ByteOperationFilterInput input, sbyte? val)
     {
          input.Ngt = val;
          return input;
     }
 
 
-    public static ByteOperationFilterInput Gte(this ByteOperationFilterInput input, byte? val)
+    public static ByteOperationFilterInput Gte(this ByteOperationFilterInput input, sbyte? val)
     {
          input.Gte = val;
          return input;
     }
 
 
-    public static ByteOperationFilterInput Ngte(this ByteOperationFilterInput input, byte? val)
+    public static ByteOperationFilterInput Ngte(this ByteOperationFilterInput input, sbyte? val)
     {
          input.Ngte = val;
          return input;
     }
 
 
-    public static ByteOperationFilterInput Lt(this ByteOperationFilterInput input, byte? val)
+    public static ByteOperationFilterInput Lt(this ByteOperationFilterInput input, sbyte? val)
     {
          input.Lt = val;
          return input;
     }
 
 
-    public static ByteOperationFilterInput Nlt(this ByteOperationFilterInput input, byte? val)
+    public static ByteOperationFilterInput Nlt(this ByteOperationFilterInput input, sbyte? val)
     {
          input.Nlt = val;
          return input;
     }
 
 
-    public static ByteOperationFilterInput Lte(this ByteOperationFilterInput input, byte? val)
+    public static ByteOperationFilterInput Lte(this ByteOperationFilterInput input, sbyte? val)
     {
          input.Lte = val;
          return input;
     }
 
 
-    public static ByteOperationFilterInput Nlte(this ByteOperationFilterInput input, byte? val)
+    public static ByteOperationFilterInput Nlte(this ByteOperationFilterInput input, sbyte? val)
     {
          input.Nlte = val;
          return input;
@@ -1015,7 +1015,7 @@ public static class ItemInputExtensions
     }
 
 
-    public static ItemInput Data(this ItemInput input, List<byte> val)
+    public static ItemInput Data(this ItemInput input, List<sbyte> val)
     {
          input.Data = val;
          return input;

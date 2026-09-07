@@ -5,39 +5,56 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using Linq2GraphQL.Client;
 using Linq2GraphQL.Client.Subscriptions;
 
 namespace Linq2GraphQL.TestClient;
 
+/// <summary>
+/// Implementation of SubscriptionMethods GraphQL operations
+/// </summary>
 public class SubscriptionMethods : ISubscriptionMethods
 {
     private readonly GraphClient client;
 
+    /// <summary>
+    /// Initializes a new instance of the SubscriptionMethods class
+    /// </summary>
+    /// <param name="client">The GraphQL client instance</param>
     public SubscriptionMethods(GraphClient client)
     {
-        this.client = client;
+        this.client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
+    /// <summary>
+    /// Executes customerAdded GraphQL operation
+    /// </summary>
+    /// <param name="customerAdded">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphSubscription<Customer></returns>
     public GraphSubscription<Customer> CustomerAdded()
     {
-	    var arguments = new List<ArgumentValue>
+        var arguments = new List<ArgumentValue>
         {
         };
 
-        return new GraphSubscription<Customer>(client,  "customerAdded", OperationType.Subscription, arguments); 
+        return new GraphSubscription<Customer>(client, "customerAdded", OperationType.Subscription, arguments);
     }
 
+    /// <summary>
+    /// Executes customerNameAdded GraphQL operation
+    /// </summary>
+    /// <param name="customerNameAdded">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphSubscription<Customer></returns>
     public GraphSubscription<Customer> CustomerNameAdded(string name = null)
     {
-	    var arguments = new List<ArgumentValue>
+        var arguments = new List<ArgumentValue>
         {
-    	    new("name","String", name),
+            new("name", "String", name),
         };
 
-        return new GraphSubscription<Customer>(client,  "customerNameAdded", OperationType.Subscription, arguments); 
+        return new GraphSubscription<Customer>(client, "customerNameAdded", OperationType.Subscription, arguments);
     }
 
-    }
+}
