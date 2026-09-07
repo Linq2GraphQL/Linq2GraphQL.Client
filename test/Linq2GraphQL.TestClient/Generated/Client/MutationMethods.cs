@@ -5,39 +5,56 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClient;
 
+/// <summary>
+/// Implementation of MutationMethods GraphQL operations
+/// </summary>
 public class MutationMethods : IMutationMethods
 {
     private readonly GraphClient client;
 
+    /// <summary>
+    /// Initializes a new instance of the MutationMethods class
+    /// </summary>
+    /// <param name="client">The GraphQL client instance</param>
     public MutationMethods(GraphClient client)
     {
-        this.client = client;
+        this.client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
+    /// <summary>
+    /// Executes setName GraphQL operation
+    /// </summary>
+    /// <param name="setName">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<string></returns>
     public GraphQuery<string> SetName(string name = null)
     {
-	    var arguments = new List<ArgumentValue>
+        var arguments = new List<ArgumentValue>
         {
-    	    new("name","String", name),
+            new("name", "String", name),
         };
 
-        return new GraphQuery<string>(client,  "setName", OperationType.Mutation, arguments); 
+        return new GraphQuery<string>(client, "setName", OperationType.Mutation, arguments);
     }
 
+    /// <summary>
+    /// Executes addCustomer GraphQL operation
+    /// </summary>
+    /// <param name="addCustomer">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<Customer></returns>
     public GraphQuery<Customer> AddCustomer(CustomerInput customer = null)
     {
-	    var arguments = new List<ArgumentValue>
+        var arguments = new List<ArgumentValue>
         {
-    	    new("customer","CustomerInput", customer),
+            new("customer", "CustomerInput", customer),
         };
 
-        return new GraphQuery<Customer>(client,  "addCustomer", OperationType.Mutation, arguments); 
+        return new GraphQuery<Customer>(client, "addCustomer", OperationType.Mutation, arguments);
     }
 
-    }
+}

@@ -26,6 +26,6 @@ public partial class Item : GraphQLTypeBase
 
     [GraphQLMember("data")]
     [JsonPropertyName("data")]
-    public List<byte> Data { get; set; }
+    public List<sbyte> Data { get; set; }
 
 }

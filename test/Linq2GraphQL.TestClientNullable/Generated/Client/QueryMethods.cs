@@ -5,92 +5,142 @@
 // Url: https://linq2graphql.com
 //---------------------------------------------------------------------
 
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClientNullable;
 
+/// <summary>
+/// Implementation of QueryMethods GraphQL operations
+/// </summary>
 public class QueryMethods : IQueryMethods
 {
     private readonly GraphClient client;
 
+    /// <summary>
+    /// Initializes a new instance of the QueryMethods class
+    /// </summary>
+    /// <param name="client">The GraphQL client instance</param>
     public QueryMethods(GraphClient client)
     {
-        this.client = client;
+        this.client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
+    /// <summary>
+    /// Executes item GraphQL operation
+    /// </summary>
+    /// <param name="item">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<Item></returns>
     public GraphQuery<Item> Item()
     {
-	    var arguments = new List<ArgumentValue>
+        var arguments = new List<ArgumentValue>
         {
         };
 
-        return new GraphQuery<Item>(client,  "item", OperationType.Query, arguments); 
+        return new GraphQuery<Item>(client, "item", OperationType.Query, arguments);
     }
 
+    /// <summary>
+    /// Executes itemDraft GraphQL operation
+    /// </summary>
+    /// <remarks>
+    /// This operation is deprecated: This is an really old method! please d not use it!!
+    /// </remarks>
     [Obsolete("This is an really old method! please d not use it!!")]
+    /// <param name="itemDraft">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<Item></returns>
     public GraphQuery<Item> ItemDraft()
     {
-	    var arguments = new List<ArgumentValue>
+        var arguments = new List<ArgumentValue>
         {
         };
 
-        return new GraphQuery<Item>(client,  "itemDraft", OperationType.Query, arguments); 
+        return new GraphQuery<Item>(client, "itemDraft", OperationType.Query, arguments);
     }
 
+    /// <summary>
+    /// Executes customerList GraphQL operation
+    /// </summary>
+    /// <param name="customerList">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<List<Customer>></returns>
     public GraphQuery<List<Customer>> CustomerList()
     {
-	    var arguments = new List<ArgumentValue>
+        var arguments = new List<ArgumentValue>
         {
         };
 
-        return new GraphQuery<List<Customer>>(client,  "customerList", OperationType.Query, arguments); 
+        return new GraphQuery<List<Customer>>(client, "customerList", OperationType.Query, arguments);
     }
 
+    /// <summary>
+    /// Executes customerNullable GraphQL operation
+    /// </summary>
+    /// <param name="customerNullable">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<Customer?></returns>
     public GraphQuery<Customer?> CustomerNullable()
     {
-	    var arguments = new List<ArgumentValue>
+        var arguments = new List<ArgumentValue>
         {
         };
 
-        return new GraphQuery<Customer?>(client,  "customerNullable", OperationType.Query, arguments); 
+        return new GraphQuery<Customer?>(client, "customerNullable", OperationType.Query, arguments);
     }
 
+    /// <summary>
+    /// Executes customerListAllNullable GraphQL operation
+    /// </summary>
+    /// <param name="customerListAllNullable">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<List<Customer?>?></returns>
     public GraphQuery<List<Customer?>?> CustomerListAllNullable()
     {
-	    var arguments = new List<ArgumentValue>
+        var arguments = new List<ArgumentValue>
         {
         };
 
-        return new GraphQuery<List<Customer?>?>(client,  "customerListAllNullable", OperationType.Query, arguments); 
+        return new GraphQuery<List<Customer?>?>(client, "customerListAllNullable", OperationType.Query, arguments);
     }
 
+    /// <summary>
+    /// Executes customerListNullable GraphQL operation
+    /// </summary>
+    /// <param name="customerListNullable">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<List<Customer>?></returns>
     public GraphQuery<List<Customer>?> CustomerListNullable()
     {
-	    var arguments = new List<ArgumentValue>
+        var arguments = new List<ArgumentValue>
         {
         };
 
-        return new GraphQuery<List<Customer>?>(client,  "customerListNullable", OperationType.Query, arguments); 
+        return new GraphQuery<List<Customer>?>(client, "customerListNullable", OperationType.Query, arguments);
     }
 
+    /// <summary>
+    /// Executes customerListInList GraphQL operation
+    /// </summary>
+    /// <param name="customerListInList">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<List<List<Customer>>></returns>
     public GraphQuery<List<List<Customer>>> CustomerListInList()
     {
-	    var arguments = new List<ArgumentValue>
+        var arguments = new List<ArgumentValue>
         {
         };
 
-        return new GraphQuery<List<List<Customer>>>(client,  "customerListInList", OperationType.Query, arguments); 
+        return new GraphQuery<List<List<Customer>>>(client, "customerListInList", OperationType.Query, arguments);
     }
 
+    /// <summary>
+    /// Executes person GraphQL operation
+    /// </summary>
+    /// <param name="person">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<Person></returns>
     public GraphQuery<Person> Person()
     {
-	    var arguments = new List<ArgumentValue>
+        var arguments = new List<ArgumentValue>
         {
         };
 
-        return new GraphQuery<Person>(client,  "person", OperationType.Query, arguments); 
+        return new GraphQuery<Person>(client, "person", OperationType.Query, arguments);
     }
 
-    }
+}

@@ -24,6 +24,20 @@ public interface IQueryMethods
     GraphQuery<string> Hello(string name = null);
 
     /// <summary>
+    /// Executes raiseError GraphQL operation
+    /// </summary>
+    /// <param name="raiseError">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<string></returns>
+    GraphQuery<string> RaiseError(string message = null);
+
+    /// <summary>
+    /// Executes raiseAuthError GraphQL operation
+    /// </summary>
+    /// <param name="raiseAuthError">The operation parameters</param>
+    /// <returns>GraphQL query result of type GraphQuery<string></returns>
+    GraphQuery<string> RaiseAuthError();
+
+    /// <summary>
     /// Executes customerReturnNull GraphQL operation
     /// </summary>
     /// <param name="customerReturnNull">The operation parameters</param>

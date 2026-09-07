@@ -34,7 +34,8 @@ public class QueryNullableTests : IClassFixture<SampleNullableClientFixture>
             .Select()
             .ExecuteAsync();
 
-        var data = Encoding.UTF8.GetString(result.Data!.ToArray());
+        // The GraphQL Byte scalar is signed (HotChocolate), so Data is List<sbyte>.
+        var data = Encoding.UTF8.GetString(result.Data!.Select(e => (byte)e).ToArray());
 
         Assert.Equal(result.ItemName, data);
     }
