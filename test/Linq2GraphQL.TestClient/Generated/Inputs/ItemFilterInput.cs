@@ -49,9 +49,9 @@ public partial class ItemFilterInput : GraphInputBase
 
 	[GraphQLMember("data")]
 	[JsonPropertyName("data")]
-	public ListByteOperationFilterInput Data 
+	public ListUnsignedByteOperationFilterInput Data 
 	{
-		get => GetValue<ListByteOperationFilterInput>("data");
+		get => GetValue<ListUnsignedByteOperationFilterInput>("data");
     	set => SetValue("data", value);
 	}
 

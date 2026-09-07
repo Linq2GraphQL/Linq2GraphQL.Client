@@ -12,102 +12,102 @@ using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClient;
 
-[JsonConverter(typeof(GraphInputConverter<ByteOperationFilterInput>))]
-public partial class ByteOperationFilterInput : GraphInputBase
+[JsonConverter(typeof(GraphInputConverter<UnsignedByteOperationFilterInput>))]
+public partial class UnsignedByteOperationFilterInput : GraphInputBase
 {
 	[GraphQLMember("eq")]
 	[JsonPropertyName("eq")]
-	public sbyte? Eq 
+	public byte? Eq 
 	{
-		get => GetValue<sbyte?>("eq");
+		get => GetValue<byte?>("eq");
     	set => SetValue("eq", value);
 	}
 
 	[GraphQLMember("neq")]
 	[JsonPropertyName("neq")]
-	public sbyte? Neq 
+	public byte? Neq 
 	{
-		get => GetValue<sbyte?>("neq");
+		get => GetValue<byte?>("neq");
     	set => SetValue("neq", value);
 	}
 
 	[GraphQLMember("in")]
 	[JsonPropertyName("in")]
-	public List<sbyte?> In 
+	public List<byte?> In 
 	{
-		get => GetValue<List<sbyte?>>("in");
+		get => GetValue<List<byte?>>("in");
     	set => SetValue("in", value);
 	}
 
 	[GraphQLMember("nin")]
 	[JsonPropertyName("nin")]
-	public List<sbyte?> Nin 
+	public List<byte?> Nin 
 	{
-		get => GetValue<List<sbyte?>>("nin");
+		get => GetValue<List<byte?>>("nin");
     	set => SetValue("nin", value);
 	}
 
 	[GraphQLMember("gt")]
 	[JsonPropertyName("gt")]
-	public sbyte? Gt 
+	public byte? Gt 
 	{
-		get => GetValue<sbyte?>("gt");
+		get => GetValue<byte?>("gt");
     	set => SetValue("gt", value);
 	}
 
 	[GraphQLMember("ngt")]
 	[JsonPropertyName("ngt")]
-	public sbyte? Ngt 
+	public byte? Ngt 
 	{
-		get => GetValue<sbyte?>("ngt");
+		get => GetValue<byte?>("ngt");
     	set => SetValue("ngt", value);
 	}
 
 	[GraphQLMember("gte")]
 	[JsonPropertyName("gte")]
-	public sbyte? Gte 
+	public byte? Gte 
 	{
-		get => GetValue<sbyte?>("gte");
+		get => GetValue<byte?>("gte");
     	set => SetValue("gte", value);
 	}
 
 	[GraphQLMember("ngte")]
 	[JsonPropertyName("ngte")]
-	public sbyte? Ngte 
+	public byte? Ngte 
 	{
-		get => GetValue<sbyte?>("ngte");
+		get => GetValue<byte?>("ngte");
     	set => SetValue("ngte", value);
 	}
 
 	[GraphQLMember("lt")]
 	[JsonPropertyName("lt")]
-	public sbyte? Lt 
+	public byte? Lt 
 	{
-		get => GetValue<sbyte?>("lt");
+		get => GetValue<byte?>("lt");
     	set => SetValue("lt", value);
 	}
 
 	[GraphQLMember("nlt")]
 	[JsonPropertyName("nlt")]
-	public sbyte? Nlt 
+	public byte? Nlt 
 	{
-		get => GetValue<sbyte?>("nlt");
+		get => GetValue<byte?>("nlt");
     	set => SetValue("nlt", value);
 	}
 
 	[GraphQLMember("lte")]
 	[JsonPropertyName("lte")]
-	public sbyte? Lte 
+	public byte? Lte 
 	{
-		get => GetValue<sbyte?>("lte");
+		get => GetValue<byte?>("lte");
     	set => SetValue("lte", value);
 	}
 
 	[GraphQLMember("nlte")]
 	[JsonPropertyName("nlte")]
-	public sbyte? Nlte 
+	public byte? Nlte 
 	{
-		get => GetValue<sbyte?>("nlte");
+		get => GetValue<byte?>("nlte");
     	set => SetValue("nlte", value);
 	}
 

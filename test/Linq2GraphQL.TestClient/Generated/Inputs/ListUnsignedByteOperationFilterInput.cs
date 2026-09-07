@@ -12,30 +12,30 @@ using Linq2GraphQL.Client;
 
 namespace Linq2GraphQL.TestClient;
 
-[JsonConverter(typeof(GraphInputConverter<ListByteOperationFilterInput>))]
-public partial class ListByteOperationFilterInput : GraphInputBase
+[JsonConverter(typeof(GraphInputConverter<ListUnsignedByteOperationFilterInput>))]
+public partial class ListUnsignedByteOperationFilterInput : GraphInputBase
 {
 	[GraphQLMember("all")]
 	[JsonPropertyName("all")]
-	public ByteOperationFilterInput All 
+	public UnsignedByteOperationFilterInput All 
 	{
-		get => GetValue<ByteOperationFilterInput>("all");
+		get => GetValue<UnsignedByteOperationFilterInput>("all");
     	set => SetValue("all", value);
 	}
 
 	[GraphQLMember("none")]
 	[JsonPropertyName("none")]
-	public ByteOperationFilterInput None 
+	public UnsignedByteOperationFilterInput None 
 	{
-		get => GetValue<ByteOperationFilterInput>("none");
+		get => GetValue<UnsignedByteOperationFilterInput>("none");
     	set => SetValue("none", value);
 	}
 
 	[GraphQLMember("some")]
 	[JsonPropertyName("some")]
-	public ByteOperationFilterInput Some 
+	public UnsignedByteOperationFilterInput Some 
 	{
-		get => GetValue<ByteOperationFilterInput>("some");
+		get => GetValue<UnsignedByteOperationFilterInput>("some");
     	set => SetValue("some", value);
 	}
 

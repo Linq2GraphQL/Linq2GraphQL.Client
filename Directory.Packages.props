@@ -12,10 +12,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="HotChocolate.AspNetCore" Version="15.1.17" />
-    <PackageVersion Include="HotChocolate.Data" Version="15.1.17" />
-    <PackageVersion Include="HotChocolate.Types.Scalars" Version="15.1.17" />
-    <PackageVersion Include="HotChocolate.Types.Analyzers" Version="15.1.17" />
+    <PackageVersion Include="HotChocolate.AspNetCore" Version="16.6.4" />
+    <PackageVersion Include="HotChocolate.Data" Version="16.6.4" />
+    <PackageVersion Include="HotChocolate.Types.Scalars" Version="16.6.4" />
+    <PackageVersion Include="HotChocolate.Types.Analyzers" Version="16.6.4" />
     <PackageVersion Include="Macross.Json.Extensions" Version="3.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.11" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.11" />

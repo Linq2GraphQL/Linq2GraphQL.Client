@@ -71,6 +71,7 @@ public partial class OrderSortInput : GraphInputBase
     	set => SetValue("entryTime", value);
 	}
 
+    [Obsolete("This propery is obsolete and should not be used!")]
 	[GraphQLMember("grade")]
 	[JsonPropertyName("grade")]
 	public SortEnumType? Grade 
