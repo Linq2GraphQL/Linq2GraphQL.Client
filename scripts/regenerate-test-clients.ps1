@@ -125,17 +125,27 @@ try {
 
     $paths = $clients | ForEach-Object { $_.Output }
 
-    # git status refreshes the index first, so files rewritten with identical
-    # content are not reported as changed just because their mtime moved.
-    $drifted = @(git status --porcelain -- @paths)
-    $diff = git diff --stat -- @paths
+    # Compare normalized content rather than the bytes on disk. The generator always
+    # writes LF, while .gitattributes "text=auto" gives a CRLF working tree on Windows,
+    # so git status reports every regenerated file as modified even when its content is
+    # unchanged. git diff applies the same normalization git would apply on checkin, so
+    # it reports only real drift.
+    $diff = @(git diff --stat -- @paths)
+
+    # git diff only compares tracked files, so a newly generated file needs its own check.
+    $added = @(git ls-files --others --exclude-standard -- @paths)
 
     git checkout -- @paths
 
-    if ($drifted.Count -gt 0) {
+    if ($diff.Count -gt 0 -or $added.Count -gt 0) {
         Write-Host ''
         Write-Host 'The checked-in test clients do not match the generator output:' -ForegroundColor Red
-        Write-Host ($diff -join [Environment]::NewLine)
+        if ($diff.Count -gt 0) {
+            Write-Host ($diff -join [Environment]::NewLine)
+        }
+        foreach ($file in $added) {
+            Write-Host "new file: $file"
+        }
         Write-Host ''
         Write-Host 'Run ./scripts/regenerate-test-clients.ps1 and commit the result.' -ForegroundColor Red
         exit 1
