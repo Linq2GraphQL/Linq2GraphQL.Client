@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -15,6 +16,17 @@ public class GeneratorConfig
         ReadCommentHandling = JsonCommentHandling.Skip,
         AllowTrailingCommas = true
     };
+
+    /// <summary>
+    /// The settings this file understands, derived from the properties below so the two cannot fall
+    /// out of sync. Compared case insensitively, like the deserializer itself.
+    /// </summary>
+    private static readonly HashSet<string> KnownSettings =
+        typeof(GeneratorConfig)
+            .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .Where(e => e.CanWrite)
+            .Select(e => JsonNamingPolicy.CamelCase.ConvertName(e.Name))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
     public string Endpoint { get; set; }
 
@@ -74,10 +86,13 @@ public class GeneratorConfig
 
         Console.WriteLine($"Reading configuration from {fullPath}");
 
+        var json = File.ReadAllText(fullPath);
+
         GeneratorConfig config;
         try
         {
-            config = JsonSerializer.Deserialize<GeneratorConfig>(File.ReadAllText(fullPath), SerializerOptions);
+            ValidateKnownSettings(json, fullPath);
+            config = JsonSerializer.Deserialize<GeneratorConfig>(json, SerializerOptions);
         }
         catch (JsonException ex)
         {
@@ -85,5 +100,36 @@ public class GeneratorConfig
         }
 
         return config ?? new GeneratorConfig();
+    }
+
+    /// <summary>
+    /// Rejects a setting we do not understand. System.Text.Json drops unmapped members silently, so
+    /// without this a typo like "scalarMapping" would be ignored and the run would quietly produce
+    /// the wrong client. Only top level settings are checked - the keys inside
+    /// <see cref="ScalarMappings"/> are scalar names, which we cannot know up front.
+    /// </summary>
+    private static void ValidateKnownSettings(string json, string fullPath)
+    {
+        using var document = JsonDocument.Parse(json,
+            new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true });
+
+        if (document.RootElement.ValueKind != JsonValueKind.Object)
+        {
+            throw new GeneratorConfigurationException($"Config file {fullPath} must contain a json object.");
+        }
+
+        var unknown = document.RootElement.EnumerateObject()
+            .Select(e => e.Name)
+            .Where(e => !KnownSettings.Contains(e))
+            .ToList();
+
+        if (unknown.Count == 0)
+        {
+            return;
+        }
+
+        throw new GeneratorConfigurationException(
+            $"Unknown setting{(unknown.Count == 1 ? "" : "s")} in {fullPath}: {string.Join(", ", unknown)}. " +
+            $"Supported settings are: {string.Join(", ", KnownSettings.OrderBy(e => e, StringComparer.Ordinal))}.");
     }
 }

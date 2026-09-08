@@ -288,4 +288,90 @@ public class ScalarMappingTests
             Directory.Delete(directory, true);
         }
     }
+
+    private static GeneratorConfig LoadJson(string json)
+    {
+        var directory = NewTempDirectory();
+        try
+        {
+            var path = Path.Combine(directory, GeneratorConfig.DefaultFileName);
+            File.WriteAllText(path, json);
+            return GeneratorConfig.Load(path);
+        }
+        finally
+        {
+            Directory.Delete(directory, true);
+        }
+    }
+
+    [Fact]
+    public void Load_UnknownSetting_FailsInsteadOfBeingIgnored()
+    {
+        // The singular "scalarMapping" is the typo this is really guarding against: System.Text.Json
+        // would drop it and generate a client with none of the mappings applied.
+        var ex = Should.Throw<GeneratorConfigurationException>(
+            () => LoadJson("""{ "scalarMapping": { "BigInt": "long" } }"""));
+
+        ex.Message.ShouldContain("scalarMapping");
+        ex.Message.ShouldContain("scalarMappings");
+        ex.Message.ShouldContain("enumStrategy");
+    }
+
+    [Fact]
+    public void Load_SeveralUnknownSettings_AreAllReported()
+    {
+        var ex = Should.Throw<GeneratorConfigurationException>(
+            () => LoadJson("""{ "nope": 1, "alsoNope": 2 }"""));
+
+        ex.Message.ShouldContain("nope");
+        ex.Message.ShouldContain("alsoNope");
+        ex.Message.ShouldContain("Unknown settings");
+    }
+
+    [Fact]
+    public void Load_AcceptsEverySettingTheCommandLineHas()
+    {
+        var config = LoadJson("""
+        {
+          "endpoint": "https://example.com/graphql",
+          "output": "Generated",
+          "namespace": "My.Ns",
+          "client": "MyClient",
+          "token": "secret",
+          "subscriptions": true,
+          "enumStrategy": "AddUnknownOption",
+          "nullable": true,
+          "deprecated": true,
+          "scalarMappings": { "BigInt": "long" }
+        }
+        """);
+
+        config.Endpoint.ShouldBe("https://example.com/graphql");
+        config.Output.ShouldBe("Generated");
+        config.Namespace.ShouldBe("My.Ns");
+        config.Client.ShouldBe("MyClient");
+        config.Token.ShouldBe("secret");
+        config.Subscriptions.ShouldBe(true);
+        config.EnumStrategy.ShouldBe("AddUnknownOption");
+        config.Nullable.ShouldBe(true);
+        config.Deprecated.ShouldBe(true);
+        config.ScalarMappings!["BigInt"].ShouldBe("long");
+    }
+
+    [Fact]
+    public void Load_SettingNamesAreCaseInsensitive()
+    {
+        var config = LoadJson("""{ "Endpoint": "https://example.com/graphql", "NULLABLE": true }""");
+
+        config.Endpoint.ShouldBe("https://example.com/graphql");
+        config.Nullable.ShouldBe(true);
+    }
+
+    [Fact]
+    public void Load_RootThatIsNotAnObject_FailsWithAHelpfulMessage()
+    {
+        var ex = Should.Throw<GeneratorConfigurationException>(() => LoadJson("[]"));
+
+        ex.Message.ShouldContain("must contain a json object");
+    }
 }

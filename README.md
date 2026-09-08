@@ -103,6 +103,8 @@ file is allowed to be absent.
   "output": "Generated",
   "nullable": false,
   "subscriptions": false,
+  "deprecated": false,
+  "enumStrategy": "FailIfMissing",
   "scalarMappings": {
     "DateTime": "System.DateTime",
     "BigInt": "long",
@@ -110,6 +112,29 @@ file is allowed to be absent.
   }
 }
 ```
+
+| Setting          | Type   | Default                  | Command line          |
+|------------------|--------|--------------------------|-----------------------|
+| `endpoint`       | string | *required*               | `<endpoint>` argument |
+| `output`         | string | `Linq2GraphQL_Generated` | `-o`, `--output`      |
+| `namespace`      | string | `YourNamespace`          | `-n`, `--namespace`   |
+| `client`         | string | `GraphQLClient`          | `-c`, `--client`      |
+| `token`          | string | none                     | `-t`, `--token`       |
+| `subscriptions`  | bool   | `false`                  | `-s`, `--subscriptions` |
+| `enumStrategy`   | string | `FailIfMissing`          | `-es`, `--enum-strategy` |
+| `nullable`       | bool   | `false`                  | `-nu`, `--nullable`   |
+| `deprecated`     | bool   | `false`                  | `-d`, `--deprecated`  |
+| `scalarMappings` | object | none                     | *no equivalent*       |
+
+`endpoint` is required only in the sense that it has to come from somewhere - the file or the
+command line argument. `enumStrategy` takes `AddUnknownOption` to give every generated enum an extra
+`Unknown` member; any other value means `FailIfMissing`. `token` is settable here for completeness,
+but a bearer token is usually better passed as `-t` than checked into a file.
+
+Setting names are matched case insensitively. A name that is not in the table above fails the run,
+so a typo like `scalarMapping` is reported rather than silently ignored. `scalarMappings` has no
+command line equivalent, so it is the one setting a discovered file supplies that you cannot
+override back off from the command line.
 
 Everything in the file is optional, and an option you pass explicitly on the command line always wins
 over the file - so you can keep the shared settings in the file and override one of them for a single
