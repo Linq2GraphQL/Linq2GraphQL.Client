@@ -15,15 +15,18 @@ internal enum LinqOperatorKind
     Projection,
 
     /// <summary>
-    ///     The operator keeps the source element type, or reduces the sequence to one of its elements or to a
-    ///     scalar computed from them (<c>Where</c>, <c>OrderBy</c>, <c>First</c>, <c>Count</c>, ...).
+    ///     The operator keeps the source element type, or reduces the sequence to one of its elements, to a
+    ///     scalar computed from them, or to another container holding them (<c>Where</c>, <c>OrderBy</c>,
+    ///     <c>First</c>, <c>Count</c>, <c>ToDictionary</c>, <c>GroupBy</c>, ...).
     ///     The selection stays on the source node; any lambda is a client side predicate or key selector whose
     ///     members still have to be fetched for it to work.
     /// </summary>
     PassThrough,
 
     /// <summary>
-    ///     A known LINQ operator that cannot be translated, typically because it combines several sequences.
+    ///     A known LINQ operator that cannot be translated, because it combines several sequences
+    ///     (<c>Concat</c>, <c>Join</c>, <c>Zip</c>, ...) or folds the elements into an accumulator that the
+    ///     selection cannot follow (<c>Aggregate</c>).
     /// </summary>
     Unsupported
 }
@@ -40,12 +43,15 @@ internal static class LinqOperator
     [
         "All",
         "Any",
+        "Append",
         "AsEnumerable",
         "AsQueryable",
         "Average",
         "Cast",
         "Chunk",
+        "Contains",
         "Count",
+        "CountBy",
         "DefaultIfEmpty",
         "Distinct",
         "DistinctBy",
@@ -53,6 +59,8 @@ internal static class LinqOperator
         "ElementAtOrDefault",
         "First",
         "FirstOrDefault",
+        "GroupBy",
+        "Index",
         "Last",
         "LastOrDefault",
         "LongCount",
@@ -65,7 +73,9 @@ internal static class LinqOperator
         "OrderBy",
         "OrderByDescending",
         "OrderDescending",
+        "Prepend",
         "Reverse",
+        "Shuffle",
         "Single",
         "SingleOrDefault",
         "Skip",
@@ -78,8 +88,11 @@ internal static class LinqOperator
         "ThenBy",
         "ThenByDescending",
         "ToArray",
+        "ToDictionary",
         "ToHashSet",
         "ToList",
+        "ToLookup",
+        "TryGetNonEnumeratedCount",
         "Where"
     ];
 

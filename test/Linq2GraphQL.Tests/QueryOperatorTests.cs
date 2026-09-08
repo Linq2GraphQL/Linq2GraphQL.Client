@@ -1,3 +1,4 @@
+using Linq2GraphQL.Client;
 using Linq2GraphQL.TestClient;
 using Shouldly;
 
@@ -116,13 +117,52 @@ public class QueryOperatorTests : IClassFixture<SampleClientFixture>
     }
 
     [Fact]
-    public async Task UnsupportedOperator_IsReported()
+    public async Task ToDictionary_FetchesTheKeyAndElementFields()
     {
-        var exception = Should.Throw<NotSupportedException>(() => sampleClient
+        var query = sampleClient
             .Query
             .Orders()
-            .Select(e => e.Nodes.GroupBy(n => n.OrderId)));
+            .Select(e => e.Nodes.ToDictionary(n => n.OrderId.ToString(), n => n.Customer.CustomerName,
+                StringComparer.OrdinalIgnoreCase));
 
-        exception.Message.ShouldContain("GroupBy");
+        var request = await query.GetRequestAsync();
+        request.Query.ShouldContain("customerName");
+        request.Query.ShouldContain("orderId");
+
+        var result = await query.ExecuteAsync();
+
+        result.ShouldNotBeEmpty();
+        result.Values.ShouldAllBe(e => e != null);
+    }
+
+    [Fact]
+    public async Task GroupBy_FetchesTheKeyFields()
+    {
+        var query = sampleClient
+            .Query
+            .Orders()
+            .Select(e => e.Nodes
+                .GroupBy(n => n.Customer.CustomerName, (name, orders) => orders.Select(o => o.OrderId)));
+
+        var request = await query.GetRequestAsync();
+        request.Query.ShouldContain("customerName");
+
+        var result = (await query.ExecuteAsync()).ToList();
+
+        result.ShouldNotBeEmpty();
+        result.SelectMany(e => e).ShouldAllBe(e => e != Guid.Empty);
+    }
+
+    [Fact]
+    public async Task UnsupportedOperator_IsReported()
+    {
+        var exception = Should.Throw<GraphQueryTranslationException>(() => sampleClient
+            .Query
+            .Orders()
+            .Select(e => e.Nodes.Concat(e.Nodes)));
+
+        exception.Message.ShouldContain("Concat");
+        exception.Message.ShouldContain("ExecuteAsync");
+        exception.MemberName.ShouldBe("Concat");
     }
 }

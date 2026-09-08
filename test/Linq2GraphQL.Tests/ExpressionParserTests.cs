@@ -283,12 +283,66 @@ public class ExpressionParserTests
     }
 
     [Fact]
+    public void MaterialisingOperator_FetchesWhatItReads()
+    {
+        ShouldSelect((OrdersConnection e) => e.Nodes.ToDictionary(n => n.OrderId, n => n.Customer),
+            """
+            nodes*
+            nodes.orderId*
+            nodes.customer*
+            """);
+    }
+
+    [Fact]
+    public void MaterialisingOperator_WithComparer_FetchesWhatItReads()
+    {
+        ShouldSelect(
+            (OrdersConnection e) => e.Nodes.ToDictionary(n => n.Customer.CustomerName, n => n,
+                StringComparer.OrdinalIgnoreCase),
+            """
+            nodes*
+            nodes.customer
+            nodes.customer.customerName*
+            """);
+    }
+
+    [Fact]
+    public void GroupBy_FetchesTheKeyFields()
+    {
+        ShouldSelect((OrdersConnection e) => e.Nodes.GroupBy(n => n.OrderId),
+            """
+            nodes*
+            nodes.orderId*
+            """);
+    }
+
+    [Fact]
+    public void GroupBy_WithResultSelector_BindsTheElements()
+    {
+        ShouldSelect(
+            (OrdersConnection e) => e.Nodes.GroupBy(n => n.Customer.CustomerName,
+                (name, orders) => orders.Select(o => o.OrderId)),
+            """
+            nodes*
+            nodes.customer
+            nodes.customer.customerName*
+            nodes.orderId*
+            """);
+    }
+
+    [Fact]
     public void UnsupportedOperator_IsReported()
     {
-        var exception = Should.Throw<NotSupportedException>(() =>
-            Parse((OrdersConnection e) => e.Nodes.GroupBy(n => n.OrderId)));
+        var exception = Should.Throw<GraphQueryTranslationException>(() =>
+            Parse((OrdersConnection e) => e.Nodes.Concat(e.Nodes)));
 
-        exception.Message.ShouldContain("GroupBy");
+        exception.Message.ShouldContain("Concat");
+        exception.Message.ShouldContain("ExecuteAsync");
+        exception.MemberName.ShouldBe("Concat");
+        exception.Expression.ShouldNotBeNull();
+
+        // The parser threw NotSupportedException before the exception got a name of its own.
+        exception.ShouldBeAssignableTo<NotSupportedException>();
     }
 
     [Fact]
@@ -302,8 +356,9 @@ public class ExpressionParserTests
 
         var root = new QueryNode(typeof(OrdersConnection), "root", null, null, true);
 
-        var exception = Should.Throw<NotSupportedException>(() => Utilities.ParseExpression(lambda, root));
+        var exception = Should.Throw<GraphQueryTranslationException>(() => Utilities.ParseExpression(lambda, root));
         exception.Message.ShouldContain("stray");
+        exception.Expression.ShouldBe(stray);
     }
 }
 
