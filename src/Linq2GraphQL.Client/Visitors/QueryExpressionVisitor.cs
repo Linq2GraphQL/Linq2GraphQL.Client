@@ -131,7 +131,11 @@ internal class QueryExpressionVisitor : ExpressionVisitor
 
             case LinqOperatorKind.Unsupported:
                 throw Unsupported(call,
-                    $"the LINQ operator '{call.Method.Name}' cannot be translated to a GraphQL selection");
+                    $"the LINQ operator '{call.Method.Name}' has no GraphQL equivalent and the selection cannot " +
+                    "follow what it returns",
+                    $"Select the fields the query needs and call '{call.Method.Name}' on the result of " +
+                    "ExecuteAsync instead.",
+                    call.Method.Name);
 
             default:
                 // An ordinary method such as string.ToUpper(). It selects nothing itself, but its target and
@@ -155,7 +159,8 @@ internal class QueryExpressionVisitor : ExpressionVisitor
         if (parent == null)
         {
             throw Unsupported(call,
-                $"the target of '{call.Method.Name}' is not part of the query");
+                $"the target of '{call.Method.Name}' is not part of the query",
+                memberName: call.Method.Name);
         }
 
         return parent.AddChildNode(new QueryNode(call.Method, arguments: GetArguments(call)));
@@ -181,9 +186,21 @@ internal class QueryExpressionVisitor : ExpressionVisitor
         {
             // Predicates and key selectors run on the client, so the members they touch must be fetched, but
             // the selection itself stays on the sequence.
+            var elementType = GetElementType(call.Arguments[0].Type);
+
             foreach (var lambda in lambdas)
             {
                 Bind(lambda.Parameters[0], source);
+
+                // GroupBy's result selector takes (key, elements): the elements are the sequence itself.
+                for (var i = 1; i < lambda.Parameters.Count; i++)
+                {
+                    if (elementType != null && GetElementType(lambda.Parameters[i].Type) == elementType)
+                    {
+                        Bind(lambda.Parameters[i], source);
+                    }
+                }
+
                 Select(lambda.Body);
             }
 
@@ -215,6 +232,21 @@ internal class QueryExpressionVisitor : ExpressionVisitor
         }
 
         return projected;
+    }
+
+    /// <summary>
+    ///     The element type of a sequence type, or null when the type is not a sequence.
+    /// </summary>
+    private static Type GetElementType(Type type)
+    {
+        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+        {
+            return type.GetGenericArguments()[0];
+        }
+
+        return type.GetInterfaces()
+            .FirstOrDefault(e => e.IsGenericType && e.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+            ?.GetGenericArguments()[0];
     }
 
     private static List<LambdaExpression> GetLambdas(MethodCallExpression call)
@@ -298,9 +330,10 @@ internal class QueryExpressionVisitor : ExpressionVisitor
             return node;
         }
 
-        throw new NotSupportedException(
+        throw new GraphQueryTranslationException(
             $"Cannot translate '{parameter.Name}' of type '{parameter.Type.Name}': it is not bound to a field of " +
-            "the query. Only the parameters of the lambdas passed to Include and Select can be used to select fields.");
+            "the query. Only the parameters of the lambdas passed to Include and Select can be used to select fields.",
+            parameter);
     }
 
     private static Expression Unwrap(Expression expression)
@@ -325,8 +358,12 @@ internal class QueryExpressionVisitor : ExpressionVisitor
         return null;
     }
 
-    private static NotSupportedException Unsupported(Expression expression, string reason)
+    private static GraphQueryTranslationException Unsupported(Expression expression, string reason,
+        string hint = null, string memberName = null)
     {
-        return new NotSupportedException($"Cannot translate '{expression}' into a GraphQL selection: {reason}.");
+        var message = $"Cannot translate '{expression}' into a GraphQL selection: {reason}.";
+
+        return new GraphQueryTranslationException(hint == null ? message : message + " " + hint, expression,
+            memberName);
     }
 }
