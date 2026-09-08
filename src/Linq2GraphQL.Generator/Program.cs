@@ -14,7 +14,8 @@ internal class Program
         };
 
         var configFile = new Option<string>(new[] { "--config", "-cf" },
-            "Json settings file. Every setting in it is optional and is overridden by an explicitly passed option");
+            $"Json settings file, defaults to {GeneratorConfig.DefaultFileName} in the current directory. Every " +
+            "setting in it is optional and is overridden by an explicitly passed option");
         var outputFolder = new Option<string>(new[] { "--output", "-o" }, "Output folder, relative to current location");
         var namespaceName = new Option<string>(new[] { "--namespace", "-n" }, "Namespace of generated classes");
         var clientName = new Option<string>(new[] { "--client", "-c" }, "Name of the generated client");
@@ -45,7 +46,7 @@ internal class Program
                 try
                 {
                     var configPath = result.GetValueForOption(configFile);
-                    var config = configPath == null ? new GeneratorConfig() : GeneratorConfig.Load(configPath);
+                    var config = GeneratorConfig.Resolve(configPath);
 
                     // Fail before touching the network if a mapping target is bad.
                     var scalarMappings = Helpers.ResolveScalarMappings(config.ScalarMappings);

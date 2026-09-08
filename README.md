@@ -86,6 +86,15 @@ scripts and gives you somewhere to check the settings in:
 
     Linq2GraphQL --config linq2graphql.json
 
+If the file is called `linq2graphql.json` and sits in the current directory it is picked up on its
+own, so a repository with one in it just needs:
+
+    Linq2GraphQL
+
+The generator prints the path of the file it read. An explicit `--config` always wins over the
+discovered one, and pointing `--config` at a file that does not exist is an error - only the default
+file is allowed to be absent.
+
 ```json
 {
   "endpoint": "https://spacex-production.up.railway.app/",

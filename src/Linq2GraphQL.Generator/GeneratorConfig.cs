@@ -41,6 +41,28 @@ public class GeneratorConfig
     /// </summary>
     public Dictionary<string, string> ScalarMappings { get; set; }
 
+    /// <summary>
+    /// The file name looked for in the current directory when no --config is passed.
+    /// </summary>
+    public const string DefaultFileName = "linq2graphql.json";
+
+    /// <summary>
+    /// The explicit --config file when one is given, otherwise a <see cref="DefaultFileName"/> in
+    /// the working directory if there is one, otherwise an empty config. An explicit path that does
+    /// not exist is an error; a missing default file is not.
+    /// </summary>
+    public static GeneratorConfig Resolve(string configPath, string workingDirectory = null)
+    {
+        if (!string.IsNullOrWhiteSpace(configPath))
+        {
+            return Load(configPath);
+        }
+
+        var discovered = Path.Combine(workingDirectory ?? Environment.CurrentDirectory, DefaultFileName);
+
+        return File.Exists(discovered) ? Load(discovered) : new GeneratorConfig();
+    }
+
     public static GeneratorConfig Load(string path)
     {
         var fullPath = Path.GetFullPath(path, Environment.CurrentDirectory);

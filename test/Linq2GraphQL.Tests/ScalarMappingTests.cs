@@ -207,4 +207,85 @@ public class ScalarMappingTests
             File.Delete(path);
         }
     }
+
+    private static string NewTempDirectory()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), $"linq2graphql-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(directory);
+        return directory;
+    }
+
+    [Fact]
+    public void Resolve_PicksUpTheDefaultFileInTheWorkingDirectory()
+    {
+        var directory = NewTempDirectory();
+        try
+        {
+            File.WriteAllText(Path.Combine(directory, GeneratorConfig.DefaultFileName),
+                """{ "client": "FromDefaultFile" }""");
+
+            GeneratorConfig.Resolve(null, directory).Client.ShouldBe("FromDefaultFile");
+        }
+        finally
+        {
+            Directory.Delete(directory, true);
+        }
+    }
+
+    [Fact]
+    public void Resolve_WithoutAnyFile_ReturnsAnEmptyConfig()
+    {
+        var directory = NewTempDirectory();
+        try
+        {
+            var config = GeneratorConfig.Resolve(null, directory);
+
+            config.Client.ShouldBeNull();
+            config.Endpoint.ShouldBeNull();
+            config.ScalarMappings.ShouldBeNull();
+        }
+        finally
+        {
+            Directory.Delete(directory, true);
+        }
+    }
+
+    [Fact]
+    public void Resolve_ExplicitPathWinsOverTheDefaultFile()
+    {
+        var directory = NewTempDirectory();
+        try
+        {
+            File.WriteAllText(Path.Combine(directory, GeneratorConfig.DefaultFileName),
+                """{ "client": "FromDefaultFile" }""");
+
+            var explicitPath = Path.Combine(directory, "other.json");
+            File.WriteAllText(explicitPath, """{ "client": "FromExplicitFile" }""");
+
+            GeneratorConfig.Resolve(explicitPath, directory).Client.ShouldBe("FromExplicitFile");
+        }
+        finally
+        {
+            Directory.Delete(directory, true);
+        }
+    }
+
+    [Fact]
+    public void Resolve_ExplicitPathThatDoesNotExist_StillFails()
+    {
+        var directory = NewTempDirectory();
+        try
+        {
+            // The default file being present must not paper over a bad --config.
+            File.WriteAllText(Path.Combine(directory, GeneratorConfig.DefaultFileName),
+                """{ "client": "FromDefaultFile" }""");
+
+            Should.Throw<GeneratorConfigurationException>(
+                () => GeneratorConfig.Resolve(Path.Combine(directory, "missing.json"), directory));
+        }
+        finally
+        {
+            Directory.Delete(directory, true);
+        }
+    }
 }
