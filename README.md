@@ -70,6 +70,7 @@ Usage:
       -es --enum-strategy          If AddUnknownOption all enums will have an additional Unknown option
       -nu --nullabel               Nullable client [default: false]
 	  -d  --deprecated			   Include Deprecated as Obsolete
+      -cf --config                 Json settings file, see Configuration file below
 
 As an example:
 
@@ -77,6 +78,89 @@ As an example:
 
 Would generate a client from url *https://spacex-production.up.railway.app/* with the name *SpaceXClient* in the
 namespace *SpaceX* to folder *Generated*
+
+## Configuration file
+
+Every option above can also be set in a json file, which keeps a long command line out of your build
+scripts and gives you somewhere to check the settings in:
+
+    Linq2GraphQL --config linq2graphql.json
+
+If the file is called `linq2graphql.json` and sits in the current directory it is picked up on its
+own, so a repository with one in it just needs:
+
+    Linq2GraphQL
+
+The generator prints the path of the file it read. An explicit `--config` always wins over the
+discovered one, and pointing `--config` at a file that does not exist is an error - only the default
+file is allowed to be absent.
+
+```json
+{
+  "endpoint": "https://spacex-production.up.railway.app/",
+  "client": "SpaceXClient",
+  "namespace": "SpaceX",
+  "output": "Generated",
+  "nullable": false,
+  "subscriptions": false,
+  "deprecated": false,
+  "enumStrategy": "FailIfMissing",
+  "scalarMappings": {
+    "DateTime": "System.DateTime",
+    "BigInt": "long",
+    "Json": null
+  }
+}
+```
+
+| Setting          | Type   | Default                  | Command line          |
+|------------------|--------|--------------------------|-----------------------|
+| `endpoint`       | string | *required*               | `<endpoint>` argument |
+| `output`         | string | `Linq2GraphQL_Generated` | `-o`, `--output`      |
+| `namespace`      | string | `YourNamespace`          | `-n`, `--namespace`   |
+| `client`         | string | `GraphQLClient`          | `-c`, `--client`      |
+| `token`          | string | none                     | `-t`, `--token`       |
+| `subscriptions`  | bool   | `false`                  | `-s`, `--subscriptions` |
+| `enumStrategy`   | string | `FailIfMissing`          | `-es`, `--enum-strategy` |
+| `nullable`       | bool   | `false`                  | `-nu`, `--nullable`   |
+| `deprecated`     | bool   | `false`                  | `-d`, `--deprecated`  |
+| `scalarMappings` | object | none                     | *no equivalent*       |
+
+`endpoint` is required only in the sense that it has to come from somewhere - the file or the
+command line argument. `enumStrategy` takes `AddUnknownOption` to give every generated enum an extra
+`Unknown` member; any other value means `FailIfMissing`. `token` is settable here for completeness,
+but a bearer token is usually better passed as `-t` than checked into a file.
+
+Setting names are matched case insensitively. A name that is not in the table above fails the run,
+so a typo like `scalarMapping` is reported rather than silently ignored. `scalarMappings` has no
+command line equivalent, so it is the one setting a discovered file supplies that you cannot
+override back off from the command line.
+
+Everything in the file is optional, and an option you pass explicitly on the command line always wins
+over the file - so you can keep the shared settings in the file and override one of them for a single
+run:
+
+    Linq2GraphQL --config linq2graphql.json -o="SomewhereElse"
+
+### Mapping scalars to your own types
+
+By default the generator maps the well known GraphQL scalars to CLR types (`Int` to `int`, `DateTime`
+to `DateTimeOffset`, and so on) and generates a `CustomScalar` class for every scalar it does not
+recognise. `scalarMappings` lets you override both halves of that:
+
+* Map a scalar to a **simple type** and it is emitted as that type - no `CustomScalar` class is
+  generated for it. `"BigInt": "long"` gives you `public long? Id { get; set; }`.
+* Change an existing mapping the same way. `"DateTime": "System.DateTime"` emits `DateTime` instead
+  of the default `DateTimeOffset`.
+* Map a scalar to **null** to opt it out of the built-in mapping, so a `CustomScalar` class is
+  generated for it instead and you control the conversion yourself.
+
+Scalar names are matched case insensitively. The target must be one of the supported simple types -
+`bool`, `byte`, `sbyte`, `char`, `short`, `ushort`, `int`, `uint`, `long`, `ulong`, `float`,
+`double`, `decimal`, `string`, `Guid`, `Uri`, `DateTime`, `DateTimeOffset`, `DateOnly`, `TimeOnly`,
+`TimeSpan` - written either as the C# keyword (`long`), the type name (`Int64`) or its full name
+(`System.Int64`). Anything else fails the run with an error rather than generating a client that does
+not compile.
 
 ## Add Nuget
 

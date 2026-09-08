@@ -65,6 +65,9 @@ Key details that bite:
 
 `GeneratorSettings.Current.Nullable` is ambient static state read from inside templates; the nullable and non-nullable clients differ mainly in nullable annotations and `#pragma warning disable CS8618`.
 
+`GeneratorSettings.Current.TypeMapping` is the GraphQL-scalar-to-CLR-type table for the run: `Helpers.DefaultTypeMapping` with any `scalarMappings` from the `--config` settings file applied on top (`GeneratorConfig`). It is read in exactly two places - `BaseType.GetCoreType` for the emitted type name and `Schema.GetCustomScalars`, which treats absence from the table as "generate a `CustomScalar` class for this scalar" - so mapping a scalar to a simple type also suppresses its generated class, and mapping it to `null` does the reverse. Override targets are validated against `Helpers.SupportedTargetTypes`, an allow-list, because a null `CoreType.CSharpType` silently changes nullability and the input-factory template rather than failing.
+
+
 ## Tests (test/)
 
 `Linq2GraphQL.Tests` is xUnit + Shouldly + Moq. It spins up the real GraphQL server in-process with `WebApplicationFactory<Program>` — `Linq2GraphQL.TestServer` is HotChocolate over the POCOs in `TestServer.Shared`, and `TestServerNullable` is the same schema for the nullable client. `SampleClientFixture` / `SampleClientNullableFixture` wire the generated client to that in-memory host (safe mode on, SSE subscriptions), and test classes take them via `IClassFixture<>`. So most tests are end-to-end: an assertion failure can come from the expression parser, the query text, or the server's own resolvers.

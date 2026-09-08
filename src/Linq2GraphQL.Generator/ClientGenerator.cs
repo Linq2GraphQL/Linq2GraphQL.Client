@@ -16,8 +16,11 @@ namespace Linq2GraphQL.Generator
         bool includeSubscriptions,
         EnumGeneratorStrategy enumGeneratorStrategy,
         bool nullable,
-        bool includeDeprecated)
+        bool includeDeprecated,
+        IReadOnlyDictionary<string, (string Name, Type type)?> scalarMappings = null)
     {
+        private static readonly Dictionary<string, (string Name, Type type)?> EmptyScalarMappings = new();
+
         private readonly List<FileEntry> entries = new();
 
         private void AddFile(string directory, string fileName, string content)
@@ -74,7 +77,16 @@ namespace Linq2GraphQL.Generator
         {
             entries.Clear();
 
-            GeneratorSettings.Current = new GeneratorSettings { Nullable = nullable };
+            var typeMapping = Helpers.CreateTypeMapping();
+            Helpers.ApplyScalarMappings(typeMapping, scalarMappings);
+            GeneratorSettings.Current = new GeneratorSettings { Nullable = nullable, TypeMapping = typeMapping };
+
+            foreach (var scalarMapping in scalarMappings ?? EmptyScalarMappings)
+            {
+                Console.WriteLine(scalarMapping.Value == null
+                    ? $"Scalar {scalarMapping.Key} opted out of type mapping, generating a CustomScalar for it"
+                    : $"Scalar {scalarMapping.Key} mapped to {scalarMapping.Value.Value.Name}");
+            }
 
             var rootSchema = JsonSerializer.Deserialize<RootSchema>(schemaJson,
                 new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });

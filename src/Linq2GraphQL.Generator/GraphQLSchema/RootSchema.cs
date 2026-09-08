@@ -302,7 +302,7 @@ public class BaseType
 
         result.Lists.Reverse();
 
-        if (Helpers.TypeMapping.TryGetValue(result.BaseType.Name, out var typeMapping))
+        if (Helpers.EffectiveTypeMapping.TryGetValue(result.BaseType.Name, out var typeMapping))
         {
             result.CSharpTypeName = typeMapping.Name;
             result.CSharpType = typeMapping.type;

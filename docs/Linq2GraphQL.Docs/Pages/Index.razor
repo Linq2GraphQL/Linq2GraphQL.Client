@@ -56,12 +56,124 @@ Options:
   -nu --nullabel                     Nullable client [default: false]
   -es --enum-strategy                If AddUnknownOption all enums will have an additional Unknown option
   -s, --subscriptions                Include subscriptions (Exprimental)
+  -d, --deprecated                   Include Deprecated as Obsolete
+  -cf --config                       Json settings file, defaults to linq2graphql.json in the current directory
 </code></pre>
 <p>As an example:</p>
 <pre><code>Linq2GraphQL https://spacex-production.up.railway.app/ -c=&quot;SpaceXClient&quot; -n=&quot;SpaceX&quot; -o=&quot;Generated&quot;
 </code></pre>
 <p>Would generate a client from url <em><a href="https://spacex-production.up.railway.app/">https://spacex-production.up.railway.app/</a></em>
     with the name <em>SpaceXClient</em> in the namespace <em>SpaceX</em> to folder <em>Generated</em></p>
+<h2 id="configuration-file">Configuration file</h2>
+<p>
+    Every option above can also be set in a json file, which keeps a long command line out of your
+    build scripts and gives you somewhere to check the settings in:
+</p>
+<pre><code>Linq2GraphQL --config linq2graphql.json
+</code></pre>
+<p>
+    If the file is called <em>linq2graphql.json</em> and sits in the current directory it is picked
+    up on its own, so a repository with one in it just needs:
+</p>
+<pre><code>Linq2GraphQL
+</code></pre>
+<p>
+    The generator prints the path of the file it read. An explicit <em>--config</em> always wins over
+    the discovered one, and pointing <em>--config</em> at a file that does not exist is an error -
+    only the default file is allowed to be absent.
+</p>
+<pre><code>{
+  &quot;endpoint&quot;: &quot;https://spacex-production.up.railway.app/&quot;,
+  &quot;client&quot;: &quot;SpaceXClient&quot;,
+  &quot;namespace&quot;: &quot;SpaceX&quot;,
+  &quot;output&quot;: &quot;Generated&quot;,
+  &quot;nullable&quot;: false,
+  &quot;subscriptions&quot;: false,
+  &quot;deprecated&quot;: false,
+  &quot;enumStrategy&quot;: &quot;FailIfMissing&quot;,
+  &quot;scalarMappings&quot;: {
+    &quot;DateTime&quot;: &quot;System.DateTime&quot;,
+    &quot;BigInt&quot;: &quot;long&quot;,
+    &quot;Json&quot;: null
+  }
+}
+</code></pre>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Setting</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Command line</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr><td><em>endpoint</em></td><td>string</td><td>required</td><td>&lt;endpoint&gt; argument</td></tr>
+    <tr><td><em>output</em></td><td>string</td><td>Linq2GraphQL_Generated</td><td>-o, --output</td></tr>
+    <tr><td><em>namespace</em></td><td>string</td><td>YourNamespace</td><td>-n, --namespace</td></tr>
+    <tr><td><em>client</em></td><td>string</td><td>GraphQLClient</td><td>-c, --client</td></tr>
+    <tr><td><em>token</em></td><td>string</td><td>none</td><td>-t, --token</td></tr>
+    <tr><td><em>subscriptions</em></td><td>bool</td><td>false</td><td>-s, --subscriptions</td></tr>
+    <tr><td><em>enumStrategy</em></td><td>string</td><td>FailIfMissing</td><td>-es, --enum-strategy</td></tr>
+    <tr><td><em>nullable</em></td><td>bool</td><td>false</td><td>-nu, --nullable</td></tr>
+    <tr><td><em>deprecated</em></td><td>bool</td><td>false</td><td>-d, --deprecated</td></tr>
+    <tr><td><em>scalarMappings</em></td><td>object</td><td>none</td><td>no equivalent</td></tr>
+    </tbody>
+</table>
+<p>
+    <em>endpoint</em> is required only in the sense that it has to come from somewhere - the file or
+    the command line argument. <em>enumStrategy</em> takes <em>AddUnknownOption</em> to give every
+    generated enum an extra <em>Unknown</em> member; any other value means <em>FailIfMissing</em>.
+    <em>token</em> is settable here for completeness, but a bearer token is usually better passed as
+    <em>-t</em> than checked into a file.
+</p>
+<p>
+    Setting names are matched case insensitively. A name that is not in the table above fails the
+    run, so a typo like <em>scalarMapping</em> is reported rather than silently ignored.
+    <em>scalarMappings</em> has no command line equivalent, so it is the one setting a discovered
+    file supplies that you cannot override back off from the command line.
+</p>
+<p>
+    Everything in the file is optional, and an option you pass explicitly on the command line always
+    wins over the file - so you can keep the shared settings in the file and override one of them for
+    a single run:
+</p>
+<pre><code>Linq2GraphQL --config linq2graphql.json -o=&quot;SomewhereElse&quot;
+</code></pre>
+<h3 id="mapping-scalars">Mapping scalars to your own types</h3>
+<p>
+    By default the generator maps the well known GraphQL scalars to CLR types (<em>Int</em> to
+    <em>int</em>, <em>DateTime</em> to <em>DateTimeOffset</em>, and so on) and generates a
+    <em>CustomScalar</em> class for every scalar it does not recognise. <em>scalarMappings</em> lets
+    you override both halves of that:
+</p>
+<ul>
+    <li>
+        Map a scalar to a <strong>simple type</strong> and it is emitted as that type - no
+        <em>CustomScalar</em> class is generated for it. <em>&quot;BigInt&quot;: &quot;long&quot;</em>
+        gives you <em>public long? Id { get; set; }</em>.
+    </li>
+    <li>
+        Change an existing mapping the same way. <em>&quot;DateTime&quot;:
+        &quot;System.DateTime&quot;</em> emits <em>DateTime</em> instead of the default
+        <em>DateTimeOffset</em>.
+    </li>
+    <li>
+        Map a scalar to <strong>null</strong> to opt it out of the built-in mapping, so a
+        <em>CustomScalar</em> class is generated for it instead and you control the conversion
+        yourself.
+    </li>
+</ul>
+<p>
+    Scalar names are matched case insensitively. The target must be one of the supported simple types
+    - <em>bool</em>, <em>byte</em>, <em>sbyte</em>, <em>char</em>, <em>short</em>, <em>ushort</em>,
+    <em>int</em>, <em>uint</em>, <em>long</em>, <em>ulong</em>, <em>float</em>, <em>double</em>,
+    <em>decimal</em>, <em>string</em>, <em>Guid</em>, <em>Uri</em>, <em>DateTime</em>,
+    <em>DateTimeOffset</em>, <em>DateOnly</em>, <em>TimeOnly</em>, <em>TimeSpan</em> - written either
+    as the C# keyword (<em>long</em>), the type name (<em>Int64</em>) or its full name
+    (<em>System.Int64</em>). Anything else fails the run with an error rather than generating a
+    client that does not compile.
+</p>
 <h2 id="add-nuget">Add Nuget</h2>
 <p>Add the Nuget Package <a href="https://www.nuget.org/packages/Linq2GraphQL.Client">Linq2GraphQL.Client</a></p>
 <pre><code>dotnet add package Linq2GraphQL.Client --prerelease
