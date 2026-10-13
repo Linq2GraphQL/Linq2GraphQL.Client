@@ -7,9 +7,14 @@ public class GraphCursorPager<T, TResult> where T : ICursorPaging
 {
     private GraphCursorQueryExecute<T, TResult> query;
 
+    // The page size the query was built with. Moving forward pages with `first`, moving
+    // back with `last`; a server only counts back from `before` when `last` is set.
+    private readonly object pageSize;
+
     public GraphCursorPager(GraphCursorQueryExecute<T, TResult> graphCursorQueryExecute)
     {
         this.query = graphCursorQueryExecute;
+        pageSize = GetArgumentValue("first") ?? GetArgumentValue("last");
         IncludeT(e => e.PageInfo);
     }
 
@@ -33,31 +38,48 @@ public class GraphCursorPager<T, TResult> where T : ICursorPaging
         return query.ConvertResultFull(result);
     }
 
+    private object GetArgumentValue(string graphName)
+    {
+        return query.QueryNode.Arguments.FirstOrDefault(e => e.GraphName == graphName)?.Value;
+    }
+
+    private void SetNextPageArguments()
+    {
+        query.QueryNode.SetArgumentValue("first", pageSize);
+        query.QueryNode.SetArgumentValue("after", query.BaseResult?.PageInfo?.EndCursor);
+        query.QueryNode.SetArgumentValue("last", null);
+        query.QueryNode.SetArgumentValue("before", null);
+    }
+
+    private void SetPreviousPageArguments()
+    {
+        query.QueryNode.SetArgumentValue("first", null);
+        query.QueryNode.SetArgumentValue("after", null);
+        query.QueryNode.SetArgumentValue("last", pageSize);
+        query.QueryNode.SetArgumentValue("before", query.BaseResult?.PageInfo?.StartCursor);
+    }
+
     public async Task<TResult> NextPageAsync(CancellationToken cancellationToken = default)
     {
-        query.QueryNode.SetArgumentValue("after", query.BaseResult?.PageInfo?.EndCursor);
-        query.QueryNode.SetArgumentValue("before", null);
+        SetNextPageArguments();
         return await ExecutePagerAsync(cancellationToken);
     }
 
     public async Task<GraphResult<TResult>> NextPageWithResultAsync(CancellationToken cancellationToken = default)
     {
-        query.QueryNode.SetArgumentValue("after", query.BaseResult?.PageInfo?.EndCursor);
-        query.QueryNode.SetArgumentValue("before", null);
+        SetNextPageArguments();
         return await ExecutePagerWithResultAsync(cancellationToken);
     }
 
     public async Task<TResult> PreviousPageAsync(CancellationToken cancellationToken = default)
     {
-        query.QueryNode.SetArgumentValue("after", null);
-        query.QueryNode.SetArgumentValue("before", query.BaseResult?.PageInfo?.EndCursor);
+        SetPreviousPageArguments();
         return await ExecutePagerAsync(cancellationToken);
     }
 
     public async Task<GraphResult<TResult>> PreviousPageWithResultAsync(CancellationToken cancellationToken = default)
     {
-        query.QueryNode.SetArgumentValue("after", null);
-        query.QueryNode.SetArgumentValue("before", query.BaseResult?.PageInfo?.EndCursor);
+        SetPreviousPageArguments();
         return await ExecutePagerWithResultAsync(cancellationToken);
     }
 }

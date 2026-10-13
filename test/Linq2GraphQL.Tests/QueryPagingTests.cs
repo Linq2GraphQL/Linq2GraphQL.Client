@@ -73,4 +73,40 @@ public class QueryPagingTests : IClassFixture<SampleClientFixture>
         Assert.NotEqual(firstPage.First().OrderId, secondPage.First().OrderId);
         Assert.Equal(firstPage.First().OrderId, firstPageAgain.First().OrderId);
     }
+
+    [Fact]
+    public async Task Orders_PreviousPage_ReturnsPageBeforeCurrent()
+    {
+        var pager = sampleClient
+            .Query
+            .Orders(first: 1)
+            .Select(e => e.Nodes.Select(e => new { e.OrderId }))
+            .AsPager();
+
+        await pager.NextPageAsync();
+        var secondPage = await pager.NextPageAsync();
+        var thirdPage = await pager.NextPageAsync();
+        var secondPageAgain = await pager.PreviousPageAsync();
+        var thirdPageAgain = await pager.NextPageAsync();
+
+        Assert.Equal(secondPage.Select(e => e.OrderId), secondPageAgain.Select(e => e.OrderId));
+        Assert.Equal(thirdPage.Select(e => e.OrderId), thirdPageAgain.Select(e => e.OrderId));
+    }
+
+    [Fact]
+    public async Task Orders_PreviousPageWithResult_ReturnsPageBeforeCurrent()
+    {
+        var pager = sampleClient
+            .Query
+            .Orders(first: 1)
+            .Select(e => e.Nodes.Select(e => new { e.OrderId }))
+            .AsPager();
+
+        await pager.NextPageWithResultAsync();
+        var secondPage = await pager.NextPageWithResultAsync();
+        await pager.NextPageWithResultAsync();
+        var secondPageAgain = await pager.PreviousPageWithResultAsync();
+
+        Assert.Equal(secondPage.Data.Select(e => e.OrderId), secondPageAgain.Data.Select(e => e.OrderId));
+    }
 }
