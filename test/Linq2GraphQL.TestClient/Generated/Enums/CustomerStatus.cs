@@ -6,6 +6,7 @@
 //---------------------------------------------------------------------
 
 using Linq2GraphQL.Client;
+using System.ComponentModel;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
