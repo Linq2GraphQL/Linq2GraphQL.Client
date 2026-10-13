@@ -293,6 +293,17 @@ var page = await pager.NextPageWithResultAsync();
 if (page.HasErrors) { /* handle */ }
 ```
 
+`GetAllPagesAsync` pages forward from the first page until the server reports no next page. Pages are fetched one at a time as you enumerate, so you can stop early; pass `maxPages` to cap the number of requests:
+
+```cs
+await foreach (var orders in pager.GetAllPagesAsync(maxPages: 50))
+{
+    // one page at a time
+}
+```
+
+`GetAllPagesWithResultAsync` yields each page's `GraphResult<T>` and stops after the first page with errors.
+
 # Acknowledgments
 
 Linq2GraphQL is inspired by [GraphQLinq](https://github.com/Giorgi/GraphQLinq) , thank

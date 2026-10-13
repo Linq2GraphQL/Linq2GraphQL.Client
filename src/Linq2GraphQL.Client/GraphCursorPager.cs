@@ -1,5 +1,6 @@
 using Linq2GraphQL.Client.Common;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace Linq2GraphQL.Client;
 
@@ -81,5 +82,83 @@ public class GraphCursorPager<T, TResult> where T : ICursorPaging
     {
         SetPreviousPageArguments();
         return await ExecutePagerWithResultAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Pages forward from the first page until the server reports no next page, yielding one result per page.
+    /// Each page is requested only when the caller asks for it, so breaking out of the loop stops paging;
+    /// the pager is then left on the last page that was read.
+    /// </summary>
+    /// <param name="maxPages">Stop after this many pages even if the server reports more.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxPages"/> is less than 1.</exception>
+    public async IAsyncEnumerable<TResult> GetAllPagesAsync(int? maxPages = null,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        ValidateMaxPages(maxPages);
+        SetFirstPageArguments();
+
+        for (var pageCount = 1; ; pageCount++)
+        {
+            var previousEndCursor = query.BaseResult?.PageInfo?.EndCursor;
+            yield return await ExecutePagerAsync(cancellationToken);
+
+            if (!HasMorePages(previousEndCursor, pageCount, maxPages))
+            {
+                yield break;
+            }
+
+            SetNextPageArguments();
+        }
+    }
+
+    /// <summary>
+    /// Like <see cref="GetAllPagesAsync"/>, but yields each page's <see cref="GraphResult{T}"/> so errors and
+    /// extensions are kept. Paging stops after the first page that has errors or no data.
+    /// </summary>
+    /// <param name="maxPages">Stop after this many pages even if the server reports more.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxPages"/> is less than 1.</exception>
+    public async IAsyncEnumerable<GraphResult<TResult>> GetAllPagesWithResultAsync(int? maxPages = null,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        ValidateMaxPages(maxPages);
+        SetFirstPageArguments();
+
+        for (var pageCount = 1; ; pageCount++)
+        {
+            var previousEndCursor = query.BaseResult?.PageInfo?.EndCursor;
+            var result = await ExecutePagerWithResultAsync(cancellationToken);
+            yield return result;
+
+            if (result.HasErrors || !result.HasData || !HasMorePages(previousEndCursor, pageCount, maxPages))
+            {
+                yield break;
+            }
+
+            SetNextPageArguments();
+        }
+    }
+
+    private void SetFirstPageArguments()
+    {
+        query.BaseResult = default;
+        SetNextPageArguments();
+    }
+
+    // Also stops when the end cursor does not move, so a server that keeps reporting a next page
+    // without advancing cannot keep the loop going forever.
+    private bool HasMorePages(string previousEndCursor, int pageCount, int? maxPages)
+    {
+        var pageInfo = query.BaseResult?.PageInfo;
+        return pageInfo is { HasNextPage: true, EndCursor: not null }
+               && pageInfo.EndCursor != previousEndCursor
+               && (maxPages == null || pageCount < maxPages);
+    }
+
+    private static void ValidateMaxPages(int? maxPages)
+    {
+        if (maxPages < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(maxPages), maxPages, "Must be at least 1.");
+        }
     }
 }
