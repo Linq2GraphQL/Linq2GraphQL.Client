@@ -1,6 +1,7 @@
 ﻿<#@ template language="C#" #>
 <#@ assembly name="System.Core" #>
 using Linq2GraphQL.Client;
+using System.ComponentModel;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
@@ -31,6 +32,8 @@ public enum <#= enumType.Name #>
     /// Don't set explicitly. 
     /// </summary>
     [EnumMember(Value = "")]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Browsable(false)]
     __Unknown
 <#
     }
