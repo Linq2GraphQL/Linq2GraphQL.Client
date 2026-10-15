@@ -51,6 +51,62 @@ public class QueryExecutor<T>
         return ProcessResponseFull(con, name);
     }
 
+    /// <summary>
+    /// Sends a request and returns the whole <c>data</c> object as JSON, for queries written as text rather
+    /// than built from expressions.
+    /// </summary>
+    internal async Task<GraphResult<JsonElement>> ExecuteDocumentAsync(GraphQLRequest graphRequest,
+        CancellationToken cancellationToken = default)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Post, "")
+        {
+            Content = JsonContent.Create(graphRequest, options: client.SerializerOptions)
+        };
+        await client.ConfigureRequestAsync(request, cancellationToken);
+
+        using var response = await client.HttpClient.SendAsync(request, cancellationToken);
+        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+        if (!response.IsSuccessStatusCode && !IsGraphQLResponse(content))
+        {
+            throw new GraphQueryRequestException($"Http error! Status code {response.StatusCode} Error: {content}",
+                graphRequest.Query, graphRequest.Variables);
+        }
+
+        using var document = JsonDocument.Parse(content);
+        var root = document.RootElement;
+
+        return new GraphResult<JsonElement>
+        {
+            Data = root.TryGetProperty(DataPropertyName, out var data) ? data.Clone() : default,
+            Errors = root.TryGetProperty(ErrorPropertyName, out var errors)
+                ? errors.Deserialize<List<GraphQueryError>>(client.SerializerOptions)
+                : null,
+            Extensions = root.TryGetProperty(ExtensionsPropertyName, out var extensions)
+                ? extensions.Deserialize<Dictionary<string, object>>(client.SerializerOptions)
+                : null
+        };
+    }
+
+    /// <summary>
+    /// GraphQL servers answer a request they reject (for example a validation error) with a non-success
+    /// status but a regular GraphQL body; that body is a result, not a transport failure.
+    /// </summary>
+    private static bool IsGraphQLResponse(string content)
+    {
+        try
+        {
+            using var document = JsonDocument.Parse(content);
+            return document.RootElement.ValueKind == JsonValueKind.Object &&
+                   (document.RootElement.TryGetProperty(ErrorPropertyName, out _) ||
+                    document.RootElement.TryGetProperty(DataPropertyName, out _));
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
+    }
+
     public T ProcessResponse(string con, string name, GraphQLRequest request)
     {
         var result = ProcessResponseFull(con, name);

@@ -72,6 +72,25 @@ public class GraphClient
         return new GraphClient(this, configureRequest);
     }
 
+    /// <summary>
+    /// Executes a query written as GraphQL text and returns the whole <c>data</c> object as JSON, together
+    /// with any errors and extensions. GraphQL errors, including a server rejecting the document, are
+    /// returned in the result rather than thrown; only transport failures throw
+    /// <see cref="GraphQueryRequestException"/>. The request goes through the same hooks as typed queries.
+    /// </summary>
+    public Task<GraphResult<JsonElement>> ExecuteAsync(string query, IDictionary<string, object> variables = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(query);
+
+        var request = new GraphQLRequest
+        {
+            Query = query,
+            Variables = variables == null ? null : new Dictionary<string, object>(variables)
+        };
+        return new QueryExecutor<JsonElement>(this).ExecuteDocumentAsync(request, cancellationToken);
+    }
+
     public string SubscriptionUrl { get; }
     public SubscriptionProtocol SubscriptionProtocol => options.Value.SubscriptionProtocol;
     public HttpClient HttpClient { get; }
