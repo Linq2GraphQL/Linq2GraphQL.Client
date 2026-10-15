@@ -1,0 +1,130 @@
+namespace Linq2GraphQL.Client.AI.Schema;
+
+/// <summary>
+/// Recognises the plumbing types the renderer collapses: cursor connections (connection, edge, PageInfo) and
+/// HotChocolate-style filter and sort inputs. Detection is by shape, not by name alone, so schemas from other
+/// servers that follow the same conventions are collapsed too, and anything that doesn't fit is rendered as is.
+/// </summary>
+internal sealed class SchemaShape
+{
+    private static readonly HashSet<string> FilterOperators =
+    [
+        "eq", "neq", "contains", "ncontains", "in", "nin", "startsWith", "nstartsWith", "endsWith", "nendsWith",
+        "gt", "ngt", "gte", "ngte", "lt", "nlt", "lte", "nlte"
+    ];
+
+    private static readonly HashSet<string> ListFilterOperators = ["all", "none", "some", "any"];
+
+    private readonly SchemaModel schema;
+    private readonly Dictionary<string, Connection> connections = new();
+    private readonly HashSet<string> plumbing = [];
+
+    public SchemaShape(SchemaModel schema)
+    {
+        this.schema = schema;
+
+        foreach (var type in schema.Types.Values.Where(e => e.Kind == SchemaTypeKind.Object))
+        {
+            if (DetectConnection(type) is { } connection)
+            {
+                connections[type.Name] = connection;
+                plumbing.Add(type.Name);
+                if (connection.EdgeType != null)
+                {
+                    plumbing.Add(connection.EdgeType);
+                }
+
+                plumbing.Add("PageInfo");
+            }
+        }
+
+        foreach (var type in schema.Types.Values)
+        {
+            if (IsEntityFilter(type) || IsOperatorFilter(type) || IsListFilter(type) || IsSortInput(type) ||
+                IsSortEnum(type))
+            {
+                plumbing.Add(type.Name);
+            }
+        }
+    }
+
+    public sealed record Connection(string NodeType, string EdgeType, bool HasNodes, bool HasTotalCount);
+
+    public bool HasConnections => connections.Count > 0;
+
+    public bool HasFilters => schema.Types.Values.Any(IsEntityFilter);
+
+    public bool HasSorting => schema.Types.Values.Any(IsSortInput);
+
+    public Connection ConnectionOf(string typeName) => connections.GetValueOrDefault(typeName);
+
+    /// <summary>
+    /// Connection, edge, PageInfo, filter and sort types: described through conventions and summaries, not
+    /// listed as types.
+    /// </summary>
+    public bool IsPlumbing(string typeName) => plumbing.Contains(typeName);
+
+    /// <summary>
+    /// A filter on an entity (<c>OrderFilterInput</c>): <c>and</c>/<c>or</c> lists of itself plus one filter
+    /// per filterable field.
+    /// </summary>
+    public bool IsEntityFilter(SchemaType type) =>
+        type.Kind == SchemaTypeKind.InputObject &&
+        IsSelfList(type, "and") && IsSelfList(type, "or") &&
+        type.Fields.Any(e => e.Name is not ("and" or "or")) &&
+        type.Fields.Where(e => e.Name is not ("and" or "or")).Any(e => !FilterOperators.Contains(e.Name));
+
+    /// <summary>
+    /// A filter on one value (<c>StringOperationFilterInput</c>): only operators such as <c>eq</c> and <c>in</c>.
+    /// </summary>
+    public bool IsOperatorFilter(SchemaType type) =>
+        type.Kind == SchemaTypeKind.InputObject &&
+        type.Fields.Any(e => FilterOperators.Contains(e.Name)) &&
+        type.Fields.All(e => FilterOperators.Contains(e.Name) || e.Name is "and" or "or");
+
+    /// <summary>
+    /// A filter on a list field (<c>ListFilterInputTypeOf…</c>): <c>some</c>, <c>all</c>, <c>none</c>, <c>any</c>.
+    /// </summary>
+    public bool IsListFilter(SchemaType type) =>
+        type.Kind == SchemaTypeKind.InputObject &&
+        type.Fields.Count > 0 &&
+        type.Fields.All(e => ListFilterOperators.Contains(e.Name));
+
+    public bool IsSortEnum(SchemaType type) =>
+        type.Kind == SchemaTypeKind.Enum &&
+        type.EnumValues.Select(e => e.Name).OrderBy(e => e).SequenceEqual(["ASC", "DESC"]);
+
+    /// <summary>
+    /// A sort input (<c>OrderSortInput</c>): every field is the sort enum or another sort input.
+    /// </summary>
+    public bool IsSortInput(SchemaType type) =>
+        type.Kind == SchemaTypeKind.InputObject &&
+        type.Fields.Count > 0 &&
+        type.Fields.All(e => schema.Type(e.Type.NamedType) is { } fieldType &&
+                             (IsSortEnum(fieldType) || fieldType.Kind == SchemaTypeKind.InputObject &&
+                                 fieldType.Name != type.Name && fieldType.Name.EndsWith("SortInput")));
+
+    private bool IsSelfList(SchemaType type, string fieldName) =>
+        type.Field(fieldName) is { Type.OfType: not null } field && field.Type.NamedType == type.Name;
+
+    private Connection DetectConnection(SchemaType type)
+    {
+        if (type.Field("pageInfo")?.Type.NamedType != "PageInfo")
+        {
+            return null;
+        }
+
+        var nodes = type.Field("nodes");
+        var edges = type.Field("edges");
+        var edgeType = edges == null ? null : schema.Type(edges.Type.NamedType);
+        var edgeNode = edgeType?.Field("node");
+
+        var nodeType = nodes?.Type.NamedType ?? edgeNode?.Type.NamedType;
+        if (nodeType == null)
+        {
+            return null;
+        }
+
+        return new Connection(nodeType, edgeType?.Name, nodes != null, type.Field("totalCount") != null);
+    }
+}

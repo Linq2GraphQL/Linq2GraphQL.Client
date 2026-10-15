@@ -1,0 +1,18 @@
+Conventions:
+- @paged fields return a page: select `nodes { ... }` and `pageInfo { hasNextPage endCursor }`, and pass `after: <endCursor>` for the next page. @paged(totalCount) also has `totalCount`. @paged(edges) has no `nodes`: select `edges { node { ... } }`.
+- `where` filters: `where: { field: { operator: value } }`, combined with `and: [ ... ]` and `or: [ ... ]`. A field of a related type nests: `{ customer: { status: { eq: ACTIVE } } }`. List fields take `some`, `all` or `none: { ... }`, or `any: true`.
+- `order` sorts: `order: [{ field: ASC }]`, or DESC.
+
+Queries:
+  hello(name): String
+  raiseError(message): String
+  raiseAuthError: String
+  customerReturnNull: Customer
+  customers: [Customer]
+  ordersNoBackwardPagination(first, after, where, order): [Order] @paged(totalCount)
+  ordersNoTotalCount(first, after, last, before, where, order): [Order] @paged
+  orders(first, after, last, before, where, order): [Order] @paged(totalCount)
+  animals(first, after, last, before, where, order): [IAnimal] @paged(totalCount)
+  ordersOffsetPaging(first, after, last, before, where, order): [Order] @paged
+
+Types: IAnimal, Pig, Spider, Order, Customer, OrderLine, Address, Item, CustomerStatus, AddressType, UUID, DateTime, LocalDate, LocalTime, Decimal, UnsignedByte
