@@ -32,23 +32,56 @@ public class QueryExecutor<T>
     internal async Task<GraphResult<T>> ExecuteRawAsync(string name, GraphQLRequest graphRequest,
         CancellationToken cancellationToken = default)
     {
-        using var request = new HttpRequestMessage(HttpMethod.Post, "")
-        {
-            Content = JsonContent.Create(graphRequest, options: client.SerializerOptions)
-        };
+        using var request = new HttpRequestMessage(HttpMethod.Post, "");
+        request.Content = JsonContent.Create(graphRequest, options: client.SerializerOptions);
         await client.ConfigureRequestAsync(request, cancellationToken);
 
-        using var response = await client.HttpClient.SendAsync(request, cancellationToken);
-
-        if (!response.IsSuccessStatusCode)
+        // With ResponseHeadersRead, HttpClient.Timeout only covers the time until the
+        // headers arrive. Extend it over reading the body with a linked token source.
+        using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        if (client.HttpClient.Timeout != Timeout.InfiniteTimeSpan)
         {
-            var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            throw new GraphQueryRequestException($"Http error! Status code {response.StatusCode} Error: {content}",
-                graphRequest.Query, graphRequest.Variables);
+            timeoutCts.CancelAfter(client.HttpClient.Timeout);
         }
 
-        var con = await response.Content.ReadAsStringAsync(cancellationToken);
-        return ProcessResponseFull(con, name);
+        try
+        {
+            using var response = await client.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead,
+                timeoutCts.Token);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync(timeoutCts.Token);
+                content = Truncate(content, MaxErrorMessageLength);
+                throw new GraphQueryRequestException($"Http error! Status code {response.StatusCode} Error: {content}",
+                    graphRequest.Query, graphRequest.Variables);
+            }
+
+            await using var stream = await response.Content.ReadAsStreamAsync(timeoutCts.Token);
+            using var memory = new MemoryStream();
+            await stream.CopyToAsync(memory, timeoutCts.Token);
+
+            // Parse in place — GetBuffer avoids copying the body a second time.
+            return Common.GraphEnvelopeReader.Read<T>(
+                memory.GetBuffer().AsSpan(0, (int)memory.Length), name, client.SerializerOptions);
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            // Only the timeout fired — surface it the way HttpClient does.
+            throw new TaskCanceledException("The request timed out.", new TimeoutException());
+        }
+    }
+
+    private const int MaxErrorMessageLength = 4096;
+
+    private static string Truncate(string value, int maxLength)
+    {
+        if (value == null || value.Length <= maxLength)
+        {
+            return value;
+        }
+
+        return value.Substring(0, maxLength) + "...(truncated)";
     }
 
     /// <summary>
@@ -119,11 +152,55 @@ public class QueryExecutor<T>
         return result.Data;
     }
 
+    /// <summary>
+    ///     Parses a response from an already-materialized <see cref="JsonElement"/> root
+    ///     (the full envelope) and throws <see cref="GraphQueryExecutionException"/> on errors.
+    /// </summary>
+    public T ProcessResponse(JsonElement root, string name, GraphQLRequest request)
+    {
+        var result = ProcessResponseFull(root, name);
+
+        if (result.HasErrors)
+        {
+            throw new GraphQueryExecutionException(result.Errors, request.Query, request.Variables);
+        }
+
+        return result.Data;
+    }
+
+    /// <summary>
+    ///     Parses a response envelope from raw UTF-8 bytes (used by the SSE byte path):
+    ///     only the requested root field is deserialized — no JsonDocument and no UTF-16
+    ///     round trip, matching the query path.
+    /// </summary>
+    public T ProcessResponse(byte[] utf8Json, string name, GraphQLRequest request)
+    {
+        var result = Common.GraphEnvelopeReader.Read<T>(utf8Json, name, client.SerializerOptions);
+
+        if (result.HasErrors)
+        {
+            throw new GraphQueryExecutionException(result.Errors, request.Query, request.Variables);
+        }
+
+        return result.Data;
+    }
+
+    /// <summary>
+    ///     Full-envelope parse from raw UTF-8 bytes (SSE/WS byte path). Returns data and
+    ///     errors together and never throws on GraphQL <c>errors</c>.
+    /// </summary>
+    public GraphResult<T> ProcessResponseFull(byte[] utf8Json, string name)
+    {
+        return Common.GraphEnvelopeReader.Read<T>(utf8Json, name, client.SerializerOptions);
+    }
     public GraphResult<T> ProcessResponseFull(string con, string name)
     {
-        var document = JsonDocument.Parse(con);
-        var root = document.RootElement;
+        using var document = JsonDocument.Parse(con);
+        return ProcessResponseFull(document.RootElement, name);
+    }
 
+    public GraphResult<T> ProcessResponseFull(JsonElement root, string name)
+    {
         List<GraphQueryError> errors = null;
         if (root.TryGetProperty(ErrorPropertyName, out var errorElement))
         {

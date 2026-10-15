@@ -1,164 +1,636 @@
-using System.Diagnostics;
 using System.Net.WebSockets;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Websocket.Client;
 
 namespace Linq2GraphQL.Client.Subscriptions;
 
 public class WSClient : IAsyncDisposable
 {
-    private readonly GraphClient _graphClient;
+    private readonly GraphClient graphClient;
     private readonly GraphQLRequest payload;
-
+    // Raw string feed kept for backward compatibility; emissions are serialized by the
+    // transport's single receive loop, so the unsynchronized Subject is safe.
     private readonly Subject<string> subscriptionSubject = new();
-    private readonly Subject<GraphQueryExecutionException> errorSubject = new();
+    private readonly ISubject<JsonElement> payloadSubject = Subject.Synchronize(new Subject<JsonElement>());
+    private readonly ISubject<GraphQueryExecutionException> errorSubject =
+        Subject.Synchronize(new Subject<GraphQueryExecutionException>());
+    private readonly ISubject<Exception> failureSubject = Subject.Synchronize(new Subject<Exception>());
     private readonly WebsocketClient client;
-
-    private readonly JsonSerializerOptions jsonOptions;
+    // Shared frozen options (same instance as GraphClient.SerializerOptions) — outgoing
+    // protocol messages only, but reusing it keeps one metadata cache process-wide.
+    private readonly JsonSerializerOptions jsonOptions = Linq2GraphQL.Client.Common.ClientJson.Default;
+    private readonly string subscriptionId = Guid.NewGuid().ToString();
+    private readonly object stateLock = new();
+    private TaskCompletionSource<bool> ackSource;
+    private readonly CancellationTokenSource cancellationSource = new();
+    private readonly IDisposable messageSubscription;
+    private readonly IDisposable disconnectionSubscription;
+    private Task initializationTask;
+    private bool acknowledged;
+    private int retryAttemptsUsed;
+    private readonly int maxRetryAttempts;
+    private bool retryLoopRunning;
+    private bool subscriptionSent;
+    private bool initSent;
+    private bool disposed;
+    private bool intentionalDisconnection;
+    private int terminalFailure;
+    private string subprotocol;
+    // Own no-message watchdog: Websocket.Client's ReconnectTimeout only acts when its own
+    // reconnection is enabled, which this class disables (verified: no NoMessageReceived event).
+    private Timer watchdog;
+    private long lastMessageTicks;
 
     public WSClient(GraphClient graphClient, GraphQLRequest payload)
     {
-        _graphClient = graphClient;
+        this.graphClient = graphClient;
         this.payload = payload;
-        jsonOptions = new JsonSerializerOptions
-        {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
+        maxRetryAttempts = Math.Max(0, graphClient.ClientOptions.SubscriptionRetryAttempts);
 
         var factory = new Func<ClientWebSocket>(() =>
         {
-            var ws = new ClientWebSocket();
-            ws.Options.AddSubProtocol(GetSubprotocolString());
-            return ws;
+            var socket = new ClientWebSocket();
+            socket.Options.AddSubProtocol(subprotocol ?? GetSubprotocolString());
+            return socket;
         });
 
-        client = new WebsocketClient(new Uri(_graphClient.SubscriptionUrl), factory)
+        client = new WebsocketClient(new Uri(graphClient.SubscriptionUrl), factory)
         {
-            ReconnectTimeout = TimeSpan.FromSeconds(30)
+            // This class owns reconnection (bounded, with backoff) and silence detection. The
+            // library's own loop retries forever and goes silent after an Error.
+            ReconnectTimeout = null,
+            IsReconnectionEnabled = false,
         };
+
+        messageSubscription = client.MessageReceived.Subscribe(HandleMessage, ReportFailure);
+        disconnectionSubscription = client.DisconnectionHappened.Subscribe(HandleDisconnection, ReportFailure);
     }
 
     public IObservable<string> Subscription => subscriptionSubject.AsObservable();
+    internal IObservable<JsonElement> Payloads => payloadSubject.AsObservable();
     public IObservable<GraphQueryExecutionException> Errors => errorSubject.AsObservable();
+    internal IObservable<Exception> Failures => failureSubject.AsObservable();
 
+    /// <summary>
+    ///     A connection that delivers no frame (data, ping or keep-alive) for this long is treated
+    ///     as lost and goes through the reconnect loop. Mirrors the previous 30 s ReconnectTimeout.
+    /// </summary>
+    internal TimeSpan NoMessageTimeout { get; set; } = TimeSpan.FromSeconds(30);
 
     public async ValueTask DisposeAsync()
     {
-        if (client == null)
+        lock (stateLock)
+        {
+            if (disposed)
+            {
+                return;
+            }
+
+            disposed = true;
+            intentionalDisconnection = true;
+        }
+
+        cancellationSource.Cancel();
+        watchdog?.Dispose();
+        messageSubscription.Dispose();
+        disconnectionSubscription.Dispose();
+
+        try
+        {
+            if (client.IsRunning)
+            {
+                await client.SendInstant(JsonSerializer.Serialize(
+                    new WebsocketRequest(GetCompleteCommand()) { Id = subscriptionId }, jsonOptions)).ConfigureAwait(false);
+            }
+
+            await client.Stop(WebSocketCloseStatus.NormalClosure, string.Empty).ConfigureAwait(false);
+        }
+        catch (Exception)
+        {
+            // Disposal must still release client resources if the transport already failed.
+        }
+
+        client.Dispose();
+        payloadSubject.OnCompleted();
+        subscriptionSubject.OnCompleted();
+        errorSubject.OnCompleted();
+        failureSubject.OnCompleted();
+        // cancellationSource is intentionally not disposed: a retry loop still unwinding after
+        // Cancel() may read its token, and an undisposed CTS without timers holds no resources.
+    }
+
+    public Task Start()
+    {
+        lock (stateLock)
+        {
+            if (disposed)
+            {
+                throw new ObjectDisposedException(nameof(WSClient));
+            }
+
+            initializationTask ??= InitializeAsync();
+            return initializationTask;
+        }
+    }
+
+    private async Task InitializeAsync()
+    {
+        // Created before StartOrFail so an eager ack arriving during the handshake
+        // completes this generation's source instead of racing a null field (L2).
+        ackSource = CreateAckSource();
+        await client.StartOrFail().ConfigureAwait(false);
+
+        // Initial connect: a missing subprotocol is a protocol violation and stays terminal.
+        var negotiated = client.NativeClient?.SubProtocol;
+        if (string.IsNullOrEmpty(negotiated))
+        {
+            throw new InvalidDataException("WebSocket server did not negotiate a GraphQL subprotocol.");
+        }
+
+        subprotocol = ValidateNegotiatedSubprotocol(negotiated);
+        await SendConnectionInitAsync().ConfigureAwait(false);
+        await WaitForAckAsync().ConfigureAwait(false);
+        StartWatchdog();
+    }
+
+    private void StartWatchdog()
+    {
+        Volatile.Write(ref lastMessageTicks, Environment.TickCount64);
+        var period = TimeSpan.FromMilliseconds(Math.Max(100, NoMessageTimeout.TotalMilliseconds / 4));
+        lock (stateLock)
+        {
+            if (disposed || watchdog is not null)
+            {
+                return;
+            }
+
+            watchdog = new Timer(_ => CheckSilence(), null, period, period);
+        }
+    }
+
+    private void CheckSilence()
+    {
+        var silentMs = Environment.TickCount64 - Volatile.Read(ref lastMessageTicks);
+        if (silentMs < NoMessageTimeout.TotalMilliseconds)
         {
             return;
         }
 
-        await client.Stop(WebSocketCloseStatus.NormalClosure, string.Empty);
-        client.Dispose();
-    }
-
-    public async Task Start()
-    {
-        client.ReconnectionHappened.Subscribe(info => LogMessage($"Reconnection, type: {info.Type}"));
-
-        //General log message
-        client.MessageReceived.Subscribe(msg => LogMessage($"Message received: {msg}"));
-
-
-        //Filter General response
-        var tt = client.MessageReceived.Select(m => JsonSerializer.Deserialize<WebsocketResponse>(m.ToString()));
-
-        tt.Where(e => e.Type == WebsocketRequestTypes.PING).Subscribe(msg => SendRequest(new WebsocketRequest(WebsocketRequestTypes.PONG)));
-
-        tt.Where(e => e.Type == WebsocketRequestTypes.ERROR).Subscribe(r =>
+        lock (stateLock)
         {
-            LogMessage($"Subscription error received: {r.Payload}");
-            var errors = r.Payload is JsonElement payloadEl && payloadEl.ValueKind == JsonValueKind.Object
-                && payloadEl.TryGetProperty("errors", out var errorsEl)
-                    ? errorsEl.Deserialize<List<GraphQueryError>>(_graphClient.SerializerOptions)
-                    : new List<GraphQueryError> { new() { Message = r.Payload?.ToString() ?? "Unknown subscription error" } };
-            errorSubject.OnNext(new GraphQueryExecutionException(errors, string.Empty, null));
-        });
-
-        tt.Where(e => e.Type == WebsocketRequestTypes.COMPLETE).Subscribe(r =>
-        {
-            LogMessage($"Subscription completed for id: {r.Id}");
-            subscriptionSubject.OnCompleted();
-            errorSubject.OnCompleted();
-        });
-
-        tt.Where(e => !string.IsNullOrEmpty(e?.Id)
-            && e.Type != WebsocketRequestTypes.ERROR
-            && e.Type != WebsocketRequestTypes.COMPLETE
-            && e.Type != WebsocketRequestTypes.PING
-            && e.Type != WebsocketRequestTypes.PONG
-            && e.Type != WebsocketRequestTypes.CONNECTION_ACK
-            && e.Type != WebsocketRequestTypes.CONNECTION_INIT).Subscribe(r =>
-        {
-            subscriptionSubject.OnNext(r.Payload?.ToString());
-        });
-
-        await client.Start();
-
-        var initRequest = new WebsocketRequest(WebsocketRequestTypes.CONNECTION_INIT);
-        if (_graphClient.WSConnectionInitPayload is not null) 
-        {
-            var initPayload = await _graphClient.WSConnectionInitPayload(_graphClient);
-            if (initPayload is not null)
+            if (disposed || retryLoopRunning || Volatile.Read(ref terminalFailure) != 0)
             {
-                initRequest.Payload = initPayload;
+                return;
             }
         }
-        SendRequest(initRequest);
 
-        var subscriptionRequest = new WebsocketRequest(GetSubscribeCommand())
+        StartRetryLoop(new IOException(
+            $"No WebSocket message received for {NoMessageTimeout.TotalSeconds:0.#} s; connection treated as lost."));
+    }
+
+    private async Task WaitForAckAsync()
+    {
+        var source = ackSource;
+        using var registration = cancellationSource.Token.Register(
+            () => source.TrySetCanceled(cancellationSource.Token));
+        try
         {
-            Id = Guid.NewGuid().ToString(),
-            Payload = payload
-        };
+            await source.Task.WaitAsync(TimeSpan.FromSeconds(10), cancellationSource.Token).ConfigureAwait(false);
+        }
+        catch (TimeoutException)
+        {
+            throw new GraphQueryRequestException(
+                "WebSocket connection_ack was not received within 10 seconds.",
+                payload.Query, payload.Variables);
+        }
+    }
 
-        SendRequest(subscriptionRequest);
+    private static TaskCompletionSource<bool> CreateAckSource()
+    {
+        return new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+    }
+
+    private async Task SendConnectionInitAsync()
+    {
+        var initRequest = new WebsocketRequest(WebsocketRequestTypes.CONNECTION_INIT);
+        if (graphClient.WSConnectionInitPayload is not null)
+        {
+            initRequest.Payload = await graphClient.WSConnectionInitPayload(graphClient).ConfigureAwait(false);
+        }
+
+        SendRequest(initRequest);
+        lock (stateLock)
+        {
+            initSent = true;
+        }
+
+        // An eager server may ack before init was queued; if so, subscribe now.
+        // SendSubscription is idempotent (subscriptionSent) and no-ops otherwise.
+        SendSubscription();
+    }
+
+    private string ValidateNegotiatedSubprotocol(string negotiatedProtocol)
+    {
+        // Null on reconnect can mean the handshake has not completed yet. Skipping
+        // (instead of failing) lets the library's reconnect cycle retry; a wrong
+        // non-null protocol is a real mismatch and stays terminal.
+        if (string.IsNullOrEmpty(negotiatedProtocol))
+        {
+            return null;
+        }
+
+        var expected = GetSubprotocolString();
+        if (!string.Equals(negotiatedProtocol, expected, StringComparison.Ordinal))
+        {
+            throw new InvalidDataException($"WebSocket server negotiated '{negotiatedProtocol}', expected '{expected}'.");
+        }
+
+        return negotiatedProtocol;
+    }
+
+    private void HandleMessage(ResponseMessage message)
+    {
+        Volatile.Write(ref lastMessageTicks, Environment.TickCount64);
+        if (Volatile.Read(ref terminalFailure) != 0 || disposed)
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(message.Text))
+        {
+            ReportFailure(new InvalidDataException("Received an empty WebSocket frame."));
+            return;
+        }
+
+        try
+        {
+            using var document = JsonDocument.Parse(message.Text);
+            var root = document.RootElement;
+            var type = root.TryGetProperty("type", out var typeElement) ? typeElement.GetString() : null;
+            var id = root.TryGetProperty("id", out var idElement) ? idElement.GetString() : null;
+
+            switch (type)
+            {
+                case null:
+                    return;
+                case WebsocketRequestTypes.CONNECTION_ACK:
+                    lock (stateLock)
+                    {
+                        if (disposed)
+                        {
+                            return;
+                        }
+
+                        acknowledged = true;
+                        retryAttemptsUsed = 0;
+                    }
+
+                    ackSource?.TrySetResult(true);
+                    SendSubscription();
+                    return;
+                case WebsocketRequestTypes.CONNECTION_ERROR:
+                    ReportFailure(CreateServerException(root.TryGetProperty("payload", out var connectionError)
+                        ? connectionError
+                        : root));
+                    return;
+                case WebsocketRequestTypes.PING:
+                    SendPong(root.TryGetProperty("payload", out var pingPayload) ? pingPayload : null);
+                    return;
+                case WebsocketRequestTypes.PONG:
+                    return;
+                case "ka":
+                    return;
+                case WebsocketRequestTypes.ERROR:
+                    if (MatchesActiveSubscription(id))
+                    {
+                        ReportFailure(CreateServerException(root.TryGetProperty("payload", out var errorPayload)
+                            ? errorPayload
+                            : default));
+                    }
+
+                    return;
+                case WebsocketRequestTypes.COMPLETE:
+                    if (MatchesActiveSubscription(id))
+                    {
+                        // Typed consumers (GraphSubscriptionExecute) listen to payloadSubject;
+                        // completing only the string feed left their observable open forever.
+                        payloadSubject.OnCompleted();
+                        subscriptionSubject.OnCompleted();
+                    }
+
+                    return;
+                case WebsocketRequestTypes.NEXT:
+                case WebsocketRequestTypes.DATA:
+                    if (MatchesActiveSubscription(id) && root.TryGetProperty("payload", out var nextPayload))
+                    {
+                        // Cloned so the element outlives the disposed JsonDocument.
+                        payloadSubject.OnNext(nextPayload.Clone());
+                        if (subscriptionSubject.HasObservers)
+                        {
+                            subscriptionSubject.OnNext(nextPayload.GetRawText());
+                        }
+                    }
+
+                    return;
+                default:
+                    // Unknown message types (proxy injections, forward-compatible server
+                    // additions like graphql-ws "ping"/"pong") are ignored, matching the
+                    // SSE transport's tolerance for unknown event types — a single
+                    // unknown type must not kill the subscription.
+                    return;
+            }
+        }
+        catch (Exception exception)
+        {
+            ReportFailure(exception);
+        }
+    }
+
+    // graphql-ws reference client (client.ts shouldRetryConnectOrThrow): these close codes are
+    // fatal and never retried. 4403 Forbidden, 4408 init timeout, 4499 and 4504 are retryable.
+    private static readonly int[] FatalCloseCodes =
+    {
+        4004, 4005, 4400, 4401, 4406, 4409, 4429, 4500,
+    };
+
+    // Internal WebSocket close codes in [1000, 1999] are fatal except the normal/transient ones.
+    private static readonly int[] NonFatalInternalCloseCodes = { 1000, 1001, 1005, 1006, 1012, 1013, 1014 };
+
+    internal static bool IsFatalCloseCodeForTests(int code) => IsFatalCloseCode(code);
+
+    private static bool IsFatalCloseCode(int code)
+    {
+        if (Array.IndexOf(FatalCloseCodes, code) >= 0)
+        {
+            return true;
+        }
+
+        return code is >= 1000 and <= 1999 && Array.IndexOf(NonFatalInternalCloseCodes, code) < 0;
+    }
+
+    private void HandleDisconnection(DisconnectionInfo info)
+    {
+        if (info.Type == DisconnectionType.Exit || info.Type == DisconnectionType.ByUser)
+        {
+            return;
+        }
+
+        lock (stateLock)
+        {
+            if (disposed || intentionalDisconnection || Volatile.Read(ref terminalFailure) != 0)
+            {
+                return;
+            }
+        }
+
+        if (info.Type == DisconnectionType.Error)
+        {
+            // A failed connect/reconnect attempt: the retry loop below decides whether to continue.
+            StartRetryLoop(info.Exception);
+            return;
+        }
+
+        // A protocol-level close code means the server rejected this client or operation;
+        // reconnecting would retry into the same rejection (spec: fatal, never retried).
+        if (info.CloseStatus is { } closeStatus && IsFatalCloseCode((int)closeStatus))
+        {
+            // Stop the transport from reconnecting in the background after a terminal close.
+            info.CancelReconnection = true;
+            ReportFailure(new IOException(
+                $"WebSocket closed with fatal protocol code {(int)closeStatus}: {info.CloseStatusDescription}"));
+            return;
+        }
+
+        // Recoverable disconnect (Lost / NoMessageReceived / ByServer): reconnect through the
+        // bounded retry loop so a transient outage does not terminate the subscription.
+        StartRetryLoop(info.Exception);
+    }
+
+    private void StartRetryLoop(Exception cause)
+    {
+        lock (stateLock)
+        {
+            if (retryLoopRunning)
+            {
+                return;
+            }
+
+            retryLoopRunning = true;
+            acknowledged = false;
+            subscriptionSent = false;
+            initSent = false;
+        }
+
+        _ = RunRetryLoopAsync(cause);
+    }
+
+    // graphql-ws reference client behaviour: bounded retries, exponential backoff with jitter
+    // (2^n seconds + 300-3000 ms), a fatal close or an exhausted budget reports ONE terminal error.
+    private async Task RunRetryLoopAsync(Exception lastException)
+    {
+        try
+        {
+            while (true)
+            {
+                int attempt;
+                bool exhausted;
+                lock (stateLock)
+                {
+                    if (disposed || Volatile.Read(ref terminalFailure) != 0)
+                    {
+                        return;
+                    }
+
+                    attempt = retryAttemptsUsed;
+                    exhausted = attempt >= maxRetryAttempts;
+                    if (!exhausted)
+                    {
+                        retryAttemptsUsed++;
+                    }
+                }
+
+                if (exhausted)
+                {
+                    // Reported outside stateLock: subscribers may dispose synchronously from OnError,
+                    // and DisposeAsync takes stateLock. Keeps the last cause as the inner exception.
+                    ReportFailure(new IOException(
+                        $"WebSocket reconnect failed after {attempt} attempts; giving up.", lastException));
+                    return;
+                }
+
+                var delay = BackoffDelay(attempt);
+                await Task.Delay(delay, cancellationSource.Token).ConfigureAwait(false);
+
+                try
+                {
+                    // Websocket.Client keeps a failed/aborted socket as its current one: a bare StartOrFail()
+                    // after a failed attempt returns at once with State=Aborted and no connection (verified).
+                    // Stop() resets it so every attempt opens a real socket.
+                    await client.Stop(WebSocketCloseStatus.NormalClosure, string.Empty).ConfigureAwait(false);
+                    await client.StartOrFail().ConfigureAwait(false);
+                    // A fresh ack source per handshake: the previous one is already completed and would
+                    // make WaitForAckAsync return without waiting for this connection's connection_ack.
+                    subprotocol = ValidateNegotiatedSubprotocol(client.NativeClient?.SubProtocol);
+                    ackSource = CreateAckSource();
+                    await SendConnectionInitAsync().ConfigureAwait(false);
+                    await WaitForAckAsync().ConfigureAwait(false);
+                    Volatile.Write(ref lastMessageTicks, Environment.TickCount64);
+                    return;
+                }
+                catch (OperationCanceledException) when (cancellationSource.IsCancellationRequested)
+                {
+                    return;
+                }
+                catch (Exception exception)
+                {
+                    lastException = exception;
+                }
+            }
+        }
+        catch (OperationCanceledException) when (cancellationSource.IsCancellationRequested)
+        {
+            // Disposal ends the loop without reporting.
+        }
+        finally
+        {
+            lock (stateLock)
+            {
+                retryLoopRunning = false;
+            }
+        }
+    }
+
+    private static TimeSpan BackoffDelay(int attempt)
+    {
+        // attempt 0 -> 1 s, 1 -> 2 s, 2 -> 4 s ... capped at 30 s; plus 300-3000 ms jitter.
+        var seconds = Math.Min(30, Math.Pow(2, attempt));
+        var jitterMs = Random.Shared.Next(300, 3001);
+        return TimeSpan.FromSeconds(seconds) + TimeSpan.FromMilliseconds(jitterMs);
+    }
+
+    private void SendSubscription()
+    {
+        lock (stateLock)
+        {
+            if (disposed || !initSent || !acknowledged || subscriptionSent
+                || Volatile.Read(ref terminalFailure) != 0)
+            {
+                return;
+            }
+
+            subscriptionSent = true;
+        }
+
+        SendRequest(new WebsocketRequest(GetSubscribeCommand())
+        {
+            Id = subscriptionId,
+            Payload = payload
+        });
+    }
+
+    private bool MatchesActiveSubscription(string id)
+    {
+        return !string.IsNullOrEmpty(id) && string.Equals(id, subscriptionId, StringComparison.Ordinal);
+    }
+
+    private Exception CreateServerException(JsonElement payloadElement)
+    {
+        List<GraphQueryError> errors;
+        if (payloadElement.ValueKind == JsonValueKind.Object
+            && payloadElement.TryGetProperty("errors", out var errorsElement))
+        {
+            errors = errorsElement.Deserialize<List<GraphQueryError>>(graphClient.SerializerOptions);
+        }
+        else if (payloadElement.ValueKind == JsonValueKind.Array)
+        {
+            errors = payloadElement.Deserialize<List<GraphQueryError>>(graphClient.SerializerOptions);
+        }
+        else
+        {
+            errors = new List<GraphQueryError>
+            {
+                new() { Message = payloadElement.ValueKind is JsonValueKind.Undefined or JsonValueKind.Null
+                    ? "Unknown subscription error"
+                    : payloadElement.GetRawText() }
+            };
+        }
+
+        return new GraphQueryExecutionException(errors, payload.Query, payload.Variables);
+    }
+
+    private void ReportFailure(Exception exception)
+    {
+        // Idempotent: the first failure terminates the stream; late/concurrent
+        // callbacks (message pump, reconnect, disconnect) must not re-emit after
+        // OnCompleted, and the recoverable paths must not resubscribe post-failure.
+        if (Interlocked.Exchange(ref terminalFailure, 1) != 0)
+        {
+            return;
+        }
+
+        intentionalDisconnection = true;
+
+        if (exception is GraphQueryExecutionException executionException)
+        {
+            errorSubject.OnNext(executionException);
+        }
+
+        failureSubject.OnNext(exception);
+        failureSubject.OnCompleted();
+        // Failure was already published above, so the typed pipeline keeps the error
+        // (its terminal transition is first-wins); this only releases the feed.
+        payloadSubject.OnCompleted();
+        subscriptionSubject.OnCompleted();
+        ackSource?.TrySetException(exception);
+    }
+
+    private void SendPong(JsonElement? payloadElement)
+    {
+        var response = new WebsocketRequest(WebsocketRequestTypes.PONG);
+        if (payloadElement is { } value && value.ValueKind is not (JsonValueKind.Null or JsonValueKind.Undefined))
+        {
+            // Serialize the element directly (valid while the parsed document is alive).
+            response.Payload = value;
+        }
+
+        SendRequest(response);
     }
 
     private string GetSubprotocolString()
     {
-        switch (_graphClient.SubscriptionProtocol)
+        return graphClient.SubscriptionProtocol switch
         {
-            case SubscriptionProtocol.GraphQLWebSocket:
-                return SubscriptionProtocols.GRAPGQL_TRANSPORT_WS;
-
-            case SubscriptionProtocol.ApolloWebSocket:
-                return SubscriptionProtocols.GRAPHQL_WS;
-
-            default:
-                throw new Exception($"{_graphClient.SubscriptionProtocol} is unknown");
-        }
+            SubscriptionProtocol.GraphQLWebSocket => SubscriptionProtocols.GRAPGQL_TRANSPORT_WS,
+            SubscriptionProtocol.ApolloWebSocket => SubscriptionProtocols.GRAPHQL_WS,
+            _ => throw new InvalidOperationException($"{graphClient.SubscriptionProtocol} is unknown")
+        };
     }
 
     private string GetSubscribeCommand()
     {
-        switch (_graphClient.SubscriptionProtocol)
+        return graphClient.SubscriptionProtocol switch
         {
-            case SubscriptionProtocol.GraphQLWebSocket:
-                return SubscribeCommands.SUBSCRIBE;
-
-            case SubscriptionProtocol.ApolloWebSocket:
-                return SubscribeCommands.START;
-
-            default:
-                throw new Exception($"{_graphClient.SubscriptionProtocol} is unknown");
-        }
+            SubscriptionProtocol.GraphQLWebSocket => SubscribeCommands.SUBSCRIBE,
+            SubscriptionProtocol.ApolloWebSocket => SubscribeCommands.START,
+            _ => throw new InvalidOperationException($"{graphClient.SubscriptionProtocol} is unknown")
+        };
     }
 
-    private static void LogMessage(string message)
+    private string GetCompleteCommand()
     {
-        // Write logs to debug console
-        Debug.WriteLine($"{message} - {DateTime.Now.ToString("T")}");
+        return graphClient.SubscriptionProtocol == SubscriptionProtocol.ApolloWebSocket
+            ? SubscribeCommands.STOP
+            : WebsocketRequestTypes.COMPLETE;
     }
 
     private void SendRequest(WebsocketRequest request)
     {
         var json = JsonSerializer.Serialize(request, jsonOptions);
-        client.Send(json);
-        LogMessage($"Message sent: {json}");
+        if (!client.Send(json))
+        {
+            throw new IOException("WebSocket message could not be queued for sending.");
+        }
     }
 }

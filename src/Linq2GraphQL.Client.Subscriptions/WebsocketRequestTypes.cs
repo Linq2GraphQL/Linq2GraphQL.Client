@@ -8,5 +8,8 @@ namespace Linq2GraphQL.Client.Subscriptions
         internal const string CONNECTION_ACK = "connection_ack";
         internal const string ERROR = "error";
         internal const string COMPLETE = "complete";
+        internal const string NEXT = "next";
+        internal const string DATA = "data";
+        internal const string CONNECTION_ERROR = "connection_error";
     }
 }

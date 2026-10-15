@@ -1,5 +1,6 @@
 using System.Net.Http.Headers;
 using Linq2GraphQL.Client;
+using Linq2GraphQL.Client.Subscriptions;
 using Linq2GraphQL.TestClient;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -138,5 +139,25 @@ public class GraphClientOptionsTests : IDisposable
 
             return await base.SendAsync(request, cancellationToken);
         }
+    }
+}
+
+/// <summary>
+///     Pins the documented defaults of GraphClientOptions — changing one of these is a
+///     breaking behavioral change and must be deliberate.
+/// </summary>
+public class GraphClientDefaultsTests
+{
+    [Fact]
+    public void Defaults_ArePinned()
+    {
+        var options = new GraphClientOptions();
+
+        Assert.False(options.UseSafeMode);
+        Assert.Equal(SubscriptionProtocol.GraphQLWebSocket, options.SubscriptionProtocol);
+        Assert.Equal(128, options.SubscriptionMaxBufferedEvents);
+        Assert.Equal(SubscriptionOverflowPolicy.Fault, options.SubscriptionOverflowPolicy);
+        Assert.Null(options.SubscriptionIdleTimeout);
+        Assert.NotNull(options.WSConnectionInitPayload);
     }
 }
