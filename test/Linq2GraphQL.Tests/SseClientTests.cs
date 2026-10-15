@@ -50,6 +50,22 @@ public class SseClientTests
         Assert.Empty(failures);
     }
 
+    [Fact]
+    public async Task Subscription_DecodesUtf8PayloadToString()
+    {
+        var handler = FakeSseHandler.Streaming(out var stream);
+        using var client = CreateClient(handler);
+        var payload = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        client.Subscription.Subscribe(value => payload.TrySetResult(value));
+
+        _ = client.Start();
+        await client.Connected.WaitAsync(TimeSpan.FromSeconds(10));
+        const string json = """{"name":"café","emoji":"🧪"}""";
+        stream.Push($"event: next\ndata: {json}\n\n");
+
+        Assert.Equal(json, await payload.Task.WaitAsync(TimeSpan.FromSeconds(10)));
+    }
+
     private static async Task WaitUntilAsync(Func<bool> condition, int seconds = 10)
     {
         var deadline = DateTime.UtcNow + TimeSpan.FromSeconds(seconds);
@@ -144,6 +160,21 @@ public class SseClientTests
         await started.WaitAsync(TimeSpan.FromSeconds(10));
         var error = Assert.Single(errors);
         Assert.Equal("not-json-at-all", Assert.Single(error.Errors).Message);
+    }
+
+    [Fact]
+    public async Task ErrorEvent_ScalarJsonPayload_FallsBackToRawText()
+    {
+        var handler = FakeSseHandler.Streaming(out var stream);
+        using var client = CreateClient(handler);
+        var (_, errors, _) = Subscribe(client);
+
+        var started = client.Start();
+        stream.Push("event: error\ndata: 42\n\n");
+
+        await started.WaitAsync(TimeSpan.FromSeconds(10));
+        var error = Assert.Single(errors);
+        Assert.Equal("42", Assert.Single(error.Errors).Message);
     }
 
     [Fact]
@@ -327,8 +358,10 @@ public class SseClientTests
         var client = CreateClient(handler);
         var (payloads, _, failures) = Subscribe(client);
         var payloadsCompleted = false;
+        var subscriptionCompleted = false;
         var failuresCompleted = false;
         client.Payloads.Subscribe(_ => { }, () => payloadsCompleted = true);
+        client.Subscription.Subscribe(_ => { }, () => subscriptionCompleted = true);
         client.Failures.Subscribe(_ => { }, () => failuresCompleted = true);
 
         var started = client.Start();
@@ -341,6 +374,7 @@ public class SseClientTests
         Assert.Single(payloads);
         Assert.Empty(failures);
         Assert.True(payloadsCompleted);
+        Assert.True(subscriptionCompleted);
         Assert.True(failuresCompleted);
     }
 }

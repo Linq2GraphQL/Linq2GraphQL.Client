@@ -41,6 +41,11 @@ internal sealed class WsTestSession(WebSocket socket)
         return SendText("""{"type":"ping"}""");
     }
 
+    public Task SendPing(string payloadJson)
+    {
+        return SendText($$"""{"type":"ping","payload":{{payloadJson}}}""");
+    }
+
     public Task SendEmptyFrame()
     {
         return socket.SendAsync(Array.Empty<byte>(), WebSocketMessageType.Text, true, CancellationToken.None);

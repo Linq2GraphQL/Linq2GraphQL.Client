@@ -168,6 +168,32 @@ public class WsClientTests
     }
 
     [Fact]
+    public async Task ErrorArrayPayloadFromServer_SurfacesViaOnError()
+    {
+        await using var server = await GraphQLWsTestServer.StartAsync();
+        var graphClient = WsTestGraphClientFactory.Create(server);
+        var (client, payloads, errors, failures) = CreateClient(graphClient);
+
+        server.OnMessage = async (session, text) =>
+        {
+            if (text.Contains("subscribe"))
+            {
+                var id = GetSubscriptionId(text);
+                await session.SendNext(id, """{"customerId":"44444444-4444-4444-4444-444444444444"}""");
+                await session.SendError(id, """[{"message":"array-form boom"}]""");
+            }
+        };
+
+        await using var _ = client;
+        await client.Start().WaitAsync(TimeSpan.FromSeconds(10));
+        await WaitUntilAsync(() => errors.Count == 1);
+
+        Assert.Single(payloads);
+        Assert.Equal("array-form boom", Assert.Single(Assert.Single(errors).Errors).Message);
+        Assert.Single(failures);
+    }
+
+    [Fact]
     public async Task CompleteFromServer_CompletesTheStream()
     {
         await using var server = await GraphQLWsTestServer.StartAsync();
@@ -210,13 +236,37 @@ public class WsClientTests
 
             if (text.Contains("subscribe"))
             {
-                await session.SendPing();
+                await session.SendPing("""{"probe":17}""");
             }
         };
 
         await using var _ = client;
         await client.Start().WaitAsync(TimeSpan.FromSeconds(10));
         await WaitForIncomingAsync(server, t => t.Contains("\"pong\""), TimeSpan.FromSeconds(10));
+        var pong = server.Incoming.First(t => t.Contains("\"pong\""));
+        using var document = JsonDocument.Parse(pong);
+        Assert.Equal("pong", document.RootElement.GetProperty("type").GetString());
+        Assert.Equal(17, document.RootElement.GetProperty("payload").GetProperty("probe").GetInt32());
+    }
+
+    [Fact]
+    public async Task ConnectionErrorFromServer_FailsInitialConnectWithGraphQLDetails()
+    {
+        await using var server = await GraphQLWsTestServer.StartAsync();
+        server.NeverAck = true;
+        var graphClient = WsTestGraphClientFactory.Create(server);
+        var (client, _, errors, failures) = CreateClient(graphClient);
+        server.OnMessage = (session, text) => text.Contains("connection_init")
+            ? session.SendText("""{"type":"connection_error","payload":{"errors":[{"message":"connection rejected"}]}}""")
+            : Task.CompletedTask;
+
+        await using var _ = client;
+        var exception = await Assert.ThrowsAsync<GraphQueryExecutionException>(() =>
+            client.Start().WaitAsync(TimeSpan.FromSeconds(10)));
+
+        Assert.Equal("connection rejected", Assert.Single(exception.Errors).Message);
+        Assert.Single(errors);
+        Assert.Single(failures);
     }
 
     [Fact]
@@ -498,6 +548,28 @@ public class WsClientTests
         Assert.Equal("66666666-6666-6666-6666-666666666666", payloads[0].GetProperty("customerId").GetString());
         Assert.Empty(errors);
         Assert.Empty(failures);
+    }
+
+    [Fact]
+    public async Task ApolloProtocol_Dispose_SendsStopForActiveSubscription()
+    {
+        await using var server = await GraphQLWsTestServer.StartAsync();
+        server.SubProtocol = "graphql-ws";
+        var graphClient = WsTestGraphClientFactory.Create(server, SubscriptionProtocol.ApolloWebSocket);
+        var (client, _, _, _) = CreateClient(graphClient);
+
+        await client.Start().WaitAsync(TimeSpan.FromSeconds(10));
+        await WaitForIncomingAsync(server, t => t.Contains("\"start\""), TimeSpan.FromSeconds(10));
+        var startMessage = server.Incoming.First(t => t.Contains("\"start\""));
+        var subscriptionId = GetSubscriptionId(startMessage);
+
+        await client.DisposeAsync();
+        await WaitForIncomingAsync(server,
+            t => t.Contains("\"stop\"") && t.Contains(subscriptionId), TimeSpan.FromSeconds(10));
+
+        using var stop = JsonDocument.Parse(server.Incoming.First(t => t.Contains("\"stop\"")));
+        Assert.Equal("stop", stop.RootElement.GetProperty("type").GetString());
+        Assert.Equal(subscriptionId, stop.RootElement.GetProperty("id").GetString());
     }
 
     [Fact]

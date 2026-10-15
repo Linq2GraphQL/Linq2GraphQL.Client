@@ -123,9 +123,34 @@ public class IdleTimeoutStreamTests
         Assert.Equal(1, inner.DisposeCount);
     }
 
+    [Fact]
+    public async Task ReadAfterDispose_ThrowsObjectDisposedException()
+    {
+        var stream = new IdleTimeoutStream(new NeverendingStream(), TimeSpan.FromSeconds(10));
+        await stream.DisposeAsync();
+
+#pragma warning disable CA2022 // The disposed stream must throw before reading any bytes.
+        await Assert.ThrowsAsync<ObjectDisposedException>(async () =>
+            await stream.ReadAsync(new byte[1].AsMemory()));
+#pragma warning restore CA2022
+    }
+
+    [Fact]
+    public async Task DoubleDisposeAsync_IsIdempotent()
+    {
+        var inner = new DisposeCountingStream();
+        var stream = new IdleTimeoutStream(inner, TimeSpan.FromSeconds(10));
+
+        await stream.DisposeAsync();
+        await stream.DisposeAsync();
+
+        Assert.Equal(1, inner.DisposeAsyncCount);
+    }
+
     private sealed class DisposeCountingStream : Stream
     {
         public int DisposeCount { get; private set; }
+        public int DisposeAsyncCount { get; private set; }
 
         public override bool CanRead => true;
         public override bool CanSeek => false;
@@ -147,6 +172,13 @@ public class IdleTimeoutStreamTests
         protected override void Dispose(bool disposing)
         {
             DisposeCount++;
+        }
+
+        public override ValueTask DisposeAsync()
+        {
+            DisposeAsyncCount++;
+            GC.SuppressFinalize(this);
+            return ValueTask.CompletedTask;
         }
     }
 

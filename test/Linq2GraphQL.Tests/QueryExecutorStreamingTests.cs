@@ -130,6 +130,20 @@ public class QueryExecutorStreamingTests
             "Error message should not embed the full body.");
     }
 
+    [Fact]
+    public async Task HttpError_ThrowsRequestException_WithShortBody()
+    {
+        const string body = "upstream unavailable";
+        var executor = CreateExecutor(new StaticHandler(HttpStatusCode.BadGateway, body));
+
+        var exception = await Assert.ThrowsAsync<GraphQueryRequestException>(() =>
+            executor.ExecuteRequestAsync("customer", new GraphQLRequest { Query = "query { hello }" }));
+
+        Assert.Contains("BadGateway", exception.Message);
+        Assert.Contains(body, exception.Message);
+        Assert.DoesNotContain("truncated", exception.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
     private static QueryExecutor<QueryExecutorStreamingTests.Customer> CreateExecutor(string response,
         out GraphClient client)
     {

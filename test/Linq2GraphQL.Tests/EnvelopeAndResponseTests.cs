@@ -118,6 +118,22 @@ public class EnvelopeAndResponseTests
     }
 
     [Fact]
+    public void ProcessResponse_StringOverload_ErrorsThrowAndPreserveMetadata()
+    {
+        var executor = CreateExecutor();
+        var variables = new Dictionary<string, object> { ["id"] = 7 };
+        var request = new GraphQLRequest { Query = "query { customer { name } }", Variables = variables };
+
+        var exception = Assert.Throws<GraphQueryExecutionException>(() =>
+            executor.ProcessResponse("""{"errors":[{"message":"string-path failure"}]}""",
+                "customer", request));
+
+        Assert.Equal("string-path failure", Assert.Single(exception.Errors).Message);
+        Assert.Equal(request.Query, exception.GraphQLQuery);
+        Assert.Same(variables, exception.GraphQLVariables);
+    }
+
+    [Fact]
     public void ProcessResponse_JsonElementOverload_ReturnsData()
     {
         var executor = CreateExecutor();
@@ -127,6 +143,22 @@ public class EnvelopeAndResponseTests
         var data = executor.ProcessResponse(document.RootElement.Clone(), "customer", request);
 
         Assert.Equal("element-path", data.name);
+    }
+
+    [Fact]
+    public void ProcessResponse_JsonElementOverload_ErrorsThrowAndPreserveMetadata()
+    {
+        var executor = CreateExecutor();
+        var variables = new Dictionary<string, object> { ["id"] = 7 };
+        var request = new GraphQLRequest { Query = "query { customer { name } }", Variables = variables };
+        using var document = JsonDocument.Parse("""{"errors":[{"message":"element-path failure"}]}""");
+
+        var exception = Assert.Throws<GraphQueryExecutionException>(() =>
+            executor.ProcessResponse(document.RootElement.Clone(), "customer", request));
+
+        Assert.Equal("element-path failure", Assert.Single(exception.Errors).Message);
+        Assert.Equal(request.Query, exception.GraphQLQuery);
+        Assert.Same(variables, exception.GraphQLVariables);
     }
 
     [Fact]
@@ -140,6 +172,20 @@ public class EnvelopeAndResponseTests
 
         Assert.Equal("err", Assert.Single(result.Errors).Message);
         Assert.NotNull(result.Extensions);
+    }
+
+    [Fact]
+    public void ProcessResponseFull_StringOverload_ReturnsDataErrorsAndExtensions()
+    {
+        var executor = CreateExecutor();
+
+        var result = executor.ProcessResponseFull(
+            """{"data":{"customer":{"name":"partial"}},"errors":[{"message":"field failure"}],"extensions":{"trace":"x"}}""",
+            "customer");
+
+        Assert.Equal("partial", result.Data.name);
+        Assert.Equal("field failure", Assert.Single(result.Errors).Message);
+        Assert.Equal("x", ((JsonElement)result.Extensions["trace"]).GetString());
     }
 
     public sealed class ProbeCustomer
