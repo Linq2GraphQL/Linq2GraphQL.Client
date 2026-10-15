@@ -126,6 +126,15 @@ public class QueryValidatorTests
     }
 
     [Fact]
+    public void PagedField_FragmentOnTheNodeType_GetsTheFix()
+    {
+        var errors = ShouldFail("{ animals { ... on Spider { name } } }");
+
+        errors.ShouldContain("animals: This field is paged; put `... on Spider` inside `nodes { ... on Spider { ... } }`");
+        errors.ShouldNotContain("cannot apply");
+    }
+
+    [Fact]
     public void LeafAndCompositeSelections_AreChecked()
     {
         ShouldFail("{ hello { length } }").ShouldContain("hello is a String and has no fields to select.");

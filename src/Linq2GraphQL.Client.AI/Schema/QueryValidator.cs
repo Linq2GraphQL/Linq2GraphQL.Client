@@ -250,6 +250,16 @@ internal sealed class QueryValidator(ScopedSchema schema)
                           parent.PossibleTypes.Contains(type.Name) ||
                           type.PossibleTypes.Contains(parent.Name) ||
                           type.PossibleTypes.Intersect(parent.PossibleTypes).Any();
+            if (!applies && shape.ConnectionOf(parent.Name) is { } connection &&
+                (connection.NodeType == type.Name || model.Type(connection.NodeType)?.PossibleTypes.Contains(type.Name) == true))
+            {
+                var pageField = connection.HasNodes ? "nodes" : "edges { node";
+                var close = connection.HasNodes ? "}" : "} }";
+                Error(path, $"This field is paged; put `... on {type.Name}` inside `{pageField} {{ ... on {type.Name} {{ ... }} {close}`, " +
+                            "for example `{ nodes { __typename ... on " + type.Name + " { ... } } pageInfo { hasNextPage endCursor } }`.");
+                return null;
+            }
+
             if (!applies)
             {
                 Error(path, $"A fragment on {type.Name} cannot apply to {parent.Name}.");
