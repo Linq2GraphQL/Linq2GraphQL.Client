@@ -36,6 +36,40 @@ internal sealed class QueryValidator(ScopedSchema schema)
     private readonly SchemaModel model = schema.Schema;
     private readonly SchemaShape shape = new(schema.Schema);
 
+    /// <summary>
+    /// The root fields a valid query selects, following fragments at the root.
+    /// </summary>
+    public static IReadOnlyList<string> RootFields(string query)
+    {
+        var document = Parser.Parse(query);
+        var fragments = document.Definitions.OfType<GraphQLFragmentDefinition>()
+            .ToDictionary(e => Name(e.FragmentName.Name));
+        var names = new List<string>();
+
+        void Collect(GraphQLSelectionSet selectionSet, HashSet<string> seen)
+        {
+            foreach (var selection in selectionSet.Selections)
+            {
+                switch (selection)
+                {
+                    case GraphQLField field when Name(field.Name) != "__typename":
+                        names.Add(Name(field.Name));
+                        break;
+                    case GraphQLInlineFragment inline:
+                        Collect(inline.SelectionSet, seen);
+                        break;
+                    case GraphQLFragmentSpread spread when fragments.TryGetValue(Name(spread.FragmentName.Name), out var fragment) &&
+                                                          seen.Add(Name(spread.FragmentName.Name)):
+                        Collect(fragment.SelectionSet, seen);
+                        break;
+                }
+            }
+        }
+
+        Collect(document.Definitions.OfType<GraphQLOperationDefinition>().Single().SelectionSet, []);
+        return names.Distinct().ToList();
+    }
+
     public ValidationResult Validate(string query, JsonElement? variables = null)
     {
         var run = new Run(this);

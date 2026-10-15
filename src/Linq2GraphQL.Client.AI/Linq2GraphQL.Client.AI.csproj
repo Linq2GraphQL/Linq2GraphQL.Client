@@ -25,6 +25,7 @@
 
     <ItemGroup>
         <PackageReference Include="GraphQL-Parser"/>
+        <PackageReference Include="Microsoft.Extensions.AI.Abstractions"/>
     </ItemGroup>
 
 </Project>

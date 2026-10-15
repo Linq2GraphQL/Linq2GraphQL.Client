@@ -88,6 +88,13 @@ internal sealed class SchemaType
     public SchemaField Field(string name) => Fields.FirstOrDefault(e => e.Name == name);
 }
 
+/// <summary>
+/// An example for a common task, as the agent sees it: GraphQL text, variables as JSON, and the root
+/// operations it uses.
+/// </summary>
+internal sealed record AgentExample(string Name, string Description, string Query, string Variables,
+    IReadOnlyList<string> Operations);
+
 internal sealed class SchemaModel
 {
     public required Dictionary<string, SchemaType> Types { get; init; }

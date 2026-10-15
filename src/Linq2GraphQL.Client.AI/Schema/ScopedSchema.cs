@@ -21,6 +21,44 @@ internal sealed class ScopedSchema
 
     public IReadOnlyList<string> Instructions { get; }
 
+    /// <summary>
+    /// Examples for common tasks, already validated against this schema.
+    /// </summary>
+    public IReadOnlyList<AgentExample> Examples { get; private set; } = [];
+
+    /// <summary>
+    /// Validates the examples against this schema and attaches them. Every problem is reported in one
+    /// exception, so a broken example surfaces when the tools are set up, not when the agent copies it.
+    /// </summary>
+    internal void SetExamples(IEnumerable<(string Name, string Description, string Query, string Variables)> examples)
+    {
+        var validator = new QueryValidator(this);
+        var list = new List<AgentExample>();
+        var errors = new List<string>();
+
+        foreach (var (name, description, query, variables) in examples)
+        {
+            var result = validator.Validate(query,
+                variables == null ? null : System.Text.Json.JsonDocument.Parse(variables).RootElement);
+            if (!result.IsValid)
+            {
+                errors.AddRange(result.Errors.Select(e => $"Example \"{name}\": {e}"));
+                continue;
+            }
+
+            list.Add(new AgentExample(name, description, query, variables, QueryValidator.RootFields(query)));
+        }
+
+        if (errors.Count > 0)
+        {
+            throw new AgentConfigurationException(
+                "An example does not match the agent's scope:" + Environment.NewLine +
+                string.Join(Environment.NewLine, errors.Select(e => "- " + e)));
+        }
+
+        Examples = list;
+    }
+
     public static ScopedSchema Create<TClient>(string sdl, Action<AgentOptions<TClient>> configure)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(sdl);
