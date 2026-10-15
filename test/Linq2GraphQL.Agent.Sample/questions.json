@@ -1,0 +1,10 @@
+[
+  { "question": "Say hello to Magnus using the API.", "expected": ["Hello, Magnus!"] },
+  { "question": "Which customers are active?", "expected": ["Universal Ltd"] },
+  { "question": "What is the status of the customer Jocke Pocke?", "expected": ["disabled"] },
+  { "question": "How many orders does Universal Ltd have?", "expected": ["2"] },
+  { "question": "Which customer has an order delivered to Garden Inc?", "expected": ["Universal Ltd"] },
+  { "question": "What is the price of item 12345 on Universal Ltd's orders?", "expected": ["56.4"] },
+  { "question": "What is the name of the spider, and how many legs does it have?", "expected": ["Imse", "8"] },
+  { "question": "Which animal is the fastest?", "expected": ["Imse"] }
+]
