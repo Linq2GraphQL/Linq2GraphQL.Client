@@ -1,6 +1,6 @@
 # Linq2GraphQL Agent Mode Design
 
-**Status:** in progress. Plan steps 1-3 (the groundwork, SDL input and SDL output) are implemented. The AI package is being built in slices: (1) package skeleton and scoped schema, (2) renderer, (3) validator, (4) the four tools, (5) the `AsAgentTools` adapter, (6) sample and regression harness. Slices 1 and 2 are merged; slice 3 is in review. See [Plan](#plan-and-risks).
+**Status:** in progress. Plan steps 1-3 (the groundwork, SDL input and SDL output) are implemented. The AI package is being built in slices: (1) package skeleton and scoped schema, (2) renderer, (3) validator, (4) the four tools, (5) the `AsAgentTools` adapter, (6) sample and regression harness. Slices 1 to 3 are merged; slice 4 is in review. See [Plan](#plan-and-risks).
 
 ## Summary
 
@@ -286,7 +286,7 @@ Starter query:
 Examples: those that use this operation, e.g. "Unpaid invoices"
 ```
 
-The starter query is generated from the scoped schema at no cost, and next to developer examples it is probably the strongest single lever for query quality. `describe_operation` also covers mutations later, so it needs no redesign when `graphql_mutate` arrives.
+The starter query is generated from the scoped schema at no cost: required arguments become variables, and paged operations get no page size, because the schema does not publish the server's maximum (the server then uses its default). Every starter query is tested against the test server. Next to developer examples, it is probably the strongest single lever for query quality. `describe_operation` also covers mutations later, so it needs no redesign when `graphql_mutate` arrives.
 
 **All four tools are in the first version.** They work only on the scoped schema, and the three schema tools answer locally with no server calls. Large schemas are common, so the agent explores on demand: the Index lists only operations, types and examples, and details come from the describe and search tools. Small schemas can raise the inline level to Outline or Full.
 
