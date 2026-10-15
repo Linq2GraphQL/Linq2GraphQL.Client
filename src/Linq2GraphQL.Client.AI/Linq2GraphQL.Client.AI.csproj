@@ -15,6 +15,18 @@
         <PackageTags>Linq GraphQL Client AI Agent</PackageTags>
     </PropertyGroup>
 
+    <!--
+      Agent mode ships as a preview until the pilots are evaluated: it keeps the core packages' version but always
+      packs as a prerelease, so a stable release (1.0.45) publishes this package as 1.0.45-preview. Remove this
+      target to release it as stable.
+    -->
+    <Target Name="AddPreviewSuffix" AfterTargets="GetBuildVersion">
+        <PropertyGroup Condition="!$(PackageVersion.Contains('-'))">
+            <PackageVersion>$(PackageVersion)-preview</PackageVersion>
+            <NuGetPackageVersion>$(PackageVersion)</NuGetPackageVersion>
+        </PropertyGroup>
+    </Target>
+
     <ItemGroup>
         <InternalsVisibleTo Include="Linq2GraphQL.Tests"/>
     </ItemGroup>
