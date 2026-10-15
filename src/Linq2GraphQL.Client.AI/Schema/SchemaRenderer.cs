@@ -88,7 +88,7 @@ internal static class SchemaRenderer
     /// The named types at Full detail, for describing them on demand. Plumbing types are explained by the
     /// conventions instead, and unknown names are skipped.
     /// </summary>
-    public static string RenderTypes(ScopedSchema schema, IEnumerable<string> typeNames)
+    public static string RenderTypes(ScopedSchema schema, IEnumerable<string> typeNames, Detail detail = Detail.Full)
     {
         var shape = new SchemaShape(schema.Schema);
         var text = new StringBuilder();
@@ -97,21 +97,21 @@ internal static class SchemaRenderer
         {
             if (schema.Schema.Type(name) is { } type && IsListed(type, shape))
             {
-                RenderType(text, type, shape, Detail.Full, "");
+                RenderType(text, type, shape, detail, "");
             }
         }
 
         return Finish(text);
     }
 
-    private static bool IsListed(SchemaType type, SchemaShape shape) =>
+    internal static bool IsListed(SchemaType type, SchemaShape shape) =>
         !shape.IsPlumbing(type.Name) && !IsBuiltInScalar(type);
 
     /// <summary>
     /// Types are grouped by kind, each group in schema order: the shapes the agent selects from first,
     /// scalars last.
     /// </summary>
-    private static int KindOrder(SchemaTypeKind kind) => kind switch
+    internal static int KindOrder(SchemaTypeKind kind) => kind switch
     {
         SchemaTypeKind.Interface => 0,
         SchemaTypeKind.Object => 1,
@@ -325,7 +325,7 @@ internal static class SchemaRenderer
     /// <summary>
     /// The type as the agent should read it: a connection becomes its node type marked @paged.
     /// </summary>
-    private static string TypeText(TypeRef type, SchemaShape shape)
+    internal static string TypeText(TypeRef type, SchemaShape shape)
     {
         if (shape.ConnectionOf(type.NamedType) is not { } connection)
         {
@@ -353,12 +353,25 @@ internal static class SchemaRenderer
         text.AppendLine("Filters:");
         foreach (var filter in filters)
         {
-            var fields = filter.Fields
-                .Where(e => e.Name is not ("and" or "or"))
-                .Select(e => $"{e.Name} {FilterOperatorsOf(schema, shape, e)}");
-            text.Append(Indent).AppendLine($"{filter.Name}: {string.Join(", ", fields)}");
+            text.Append(Indent).AppendLine($"{filter.Name}: {FilterSummary(schema, shape, filter)}");
         }
     }
+
+    /// <summary>
+    /// One entity filter as a line, for example <c>customerName (text), orders (list of OrderFilterInput: …)</c>.
+    /// </summary>
+    internal static string FilterSummary(SchemaModel schema, SchemaShape shape, SchemaType filter) =>
+        string.Join(", ", filter.Fields
+            .Where(e => e.Name is not ("and" or "or"))
+            .Select(e => $"{e.Name} {FilterOperatorsOf(schema, shape, e)}"));
+
+    /// <summary>
+    /// One sort input as a line, for example <c>orderId, customer (CustomerSortInput)</c>.
+    /// </summary>
+    internal static string SortSummary(SchemaModel schema, SchemaShape shape, SchemaType sort) =>
+        string.Join(", ", sort.Fields.Select(e => shape.IsSortEnum(schema.Type(e.Type.NamedType))
+            ? e.Name
+            : $"{e.Name} ({e.Type.NamedType})"));
 
     private static string FilterOperatorsOf(SchemaModel schema, SchemaShape shape, SchemaField field)
     {
@@ -393,10 +406,7 @@ internal static class SchemaRenderer
         text.AppendLine("Sorting:");
         foreach (var sort in sorts)
         {
-            var fields = sort.Fields.Select(e => shape.IsSortEnum(schema.Type(e.Type.NamedType))
-                ? e.Name
-                : $"{e.Name} ({e.Type.NamedType})");
-            text.Append(Indent).AppendLine($"{sort.Name}: {string.Join(", ", fields)}");
+            text.Append(Indent).AppendLine($"{sort.Name}: {SortSummary(schema, shape, sort)}");
         }
     }
 
@@ -411,7 +421,7 @@ internal static class SchemaRenderer
         text.Append(indent).Append('"').Append(escaped).AppendLine("\"");
     }
 
-    private static string FirstLine(string description)
+    internal static string FirstLine(string description)
     {
         if (string.IsNullOrWhiteSpace(description))
         {

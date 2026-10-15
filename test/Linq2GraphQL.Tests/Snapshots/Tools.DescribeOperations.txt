@@ -1,0 +1,25 @@
+orders
+Arguments:
+  first: Int  – Returns the first _n_ elements from the list. Max 50.
+  after: String  – Returns the elements in the list that come after the specified cursor.
+  last: Int  – Returns the last _n_ elements from the list.
+  before: String  – Returns the elements in the list that come before the specified cursor.
+  where: OrderFilterInput  – filterable: orderId (comparable), customer (CustomerFilterInput), address (AddressFilterInput), orderDate (comparable), orderDateTime (comparable), orderDay (comparable), lines (list of OrderLineFilterInput: some/all/none, any), entryTime (comparable)
+  order: [OrderSortInput!]  – sortable: orderId, customer (CustomerSortInput), address (AddressSortInput), orderDate, orderDateTime, orderDay, entryTime
+Returns: [Order] @paged(totalCount)
+  type Order { orderHello(name: String!, first: Int! = 0): String!  orderAddress(addressType: AddressType!): Address!  orderId: UUID!  customer: Customer!  address: Address  orderDate: DateTime!  orderDateTime: DateTime!  orderDay: LocalDate!  lines: [OrderLine!]!  entryTime: LocalTime }
+Starter query:
+  query { orders { nodes { orderId orderDate orderDateTime orderDay entryTime } pageInfo { hasNextPage endCursor } } }
+
+hello  – Greets someone.
+Arguments:
+  name: String = "World"
+Returns: String
+Starter query:
+  query { hello }
+
+customers  – All customers.
+Returns: [Customer]
+  type Customer { customerId: UUID!  customerName: String!  status: CustomerStatus!  orders: [Order!]!  created: DateTime  relatedCustomers(relationType: Int!): [Customer]  relatedCustomer(relationType: Int!): Customer }
+Starter query:
+  query { customers { customerId customerName status created } }

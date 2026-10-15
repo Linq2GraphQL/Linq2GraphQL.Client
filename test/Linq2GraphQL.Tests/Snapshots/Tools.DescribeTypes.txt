@@ -1,0 +1,19 @@
+"A B2B customer account."
+type Customer {
+  customerId: UUID!
+  customerName: String!
+  status: CustomerStatus!
+  orders: [Order!]!
+  created: DateTime
+  relatedCustomers(relationType: Int!): [Customer]
+  relatedCustomer(relationType: Int!): Customer
+}
+OrderFilterInput (filter): orderId (comparable), customer (CustomerFilterInput), address (AddressFilterInput), orderDate (comparable), orderDateTime (comparable), orderDay (comparable), lines (list of OrderLineFilterInput: some/all/none, any), entryTime (comparable)
+OrderSortInput (sorting): orderId, customer (CustomerSortInput), address (AddressSortInput), orderDate, orderDateTime, orderDay, entryTime
+OrdersConnection is a page of Order; see the @paged convention. Describe Order for its fields.
+String is a built-in scalar.
+Type Custmer is not available. Did you mean `Customer`? Available: IAnimal, Pig, Spider, Order, Customer, OrderLine, Address, Item, CustomerStatus, AddressType, UUID, DateTime, LocalDate, LocalTime, Decimal and 1 more.
+
+Related types:
+enum CustomerStatus { ACTIVE DISABLED }
+type Order { orderHello(name: String!, first: Int! = 0): String!  orderAddress(addressType: AddressType!): Address!  orderId: UUID!  customer: Customer!  address: Address  orderDate: DateTime!  orderDateTime: DateTime!  orderDay: LocalDate!  lines: [OrderLine!]!  entryTime: LocalTime }

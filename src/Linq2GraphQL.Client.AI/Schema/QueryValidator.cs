@@ -31,7 +31,7 @@ internal sealed class ValidationResult(IReadOnlyList<ValidationError> errors)
 /// </summary>
 internal sealed class QueryValidator(ScopedSchema schema)
 {
-    private const int MaxListedNames = 15;
+
 
     private readonly SchemaModel model = schema.Schema;
     private readonly SchemaShape shape = new(schema.Schema);
@@ -111,7 +111,7 @@ internal sealed class QueryValidator(ScopedSchema schema)
 
                 if (model.Type(type.NamedType) is not { } namedType)
                 {
-                    Error(path, $"Type {type.NamedType} is not available.{Suggest(type.NamedType, InputTypeNames())}");
+                    Error(path, $"Type {type.NamedType} is not available.{NameSuggestions.Suggest(type.NamedType, InputTypeNames())}");
                     continue;
                 }
 
@@ -273,7 +273,7 @@ internal sealed class QueryValidator(ScopedSchema schema)
         {
             if (parent.Name == model.QueryType)
             {
-                return $"Query {name} is not available.{Suggest(name, parent.Fields.Select(e => e.Name))}";
+                return $"Query {name} is not available.{NameSuggestions.Suggest(name, parent.Fields.Select(e => e.Name))}";
             }
 
             if (shape.ConnectionOf(parent.Name) is { } connection)
@@ -286,7 +286,7 @@ internal sealed class QueryValidator(ScopedSchema schema)
 
             return parent.Kind == SchemaTypeKind.Union
                 ? $"{parent.Name} is a union; select fields inside `... on {string.Join(" / ", parent.PossibleTypes)} {{ ... }}`."
-                : $"{parent.Name} has no field {name}.{Suggest(name, parent.Fields.Select(e => e.Name))}";
+                : $"{parent.Name} has no field {name}.{NameSuggestions.Suggest(name, parent.Fields.Select(e => e.Name))}";
         }
 
         private void ValidateArguments(SchemaField definition, GraphQLField field, string path)
@@ -300,7 +300,7 @@ internal sealed class QueryValidator(ScopedSchema schema)
                 if (argumentDefinition == null)
                 {
                     Error(argumentPath, $"{definition.Name} has no argument {name}." +
-                                        Suggest(name, definition.Arguments.Select(e => e.Name)));
+                                        NameSuggestions.Suggest(name, definition.Arguments.Select(e => e.Name)));
                     continue;
                 }
 
@@ -397,10 +397,10 @@ internal sealed class QueryValidator(ScopedSchema schema)
                     break;
                 case SchemaTypeKind.Enum when value is GraphQLStringValue text:
                     Error(path, $"{type.Name} values are written without quotes, for example `{text.Value.ToString()}`." +
-                                Suggest(text.Value.ToString(), type.EnumValues.Select(e => e.Name)));
+                                NameSuggestions.Suggest(text.Value.ToString(), type.EnumValues.Select(e => e.Name)));
                     break;
                 case SchemaTypeKind.Enum:
-                    Error(path, $"Expected a {type.Name} value: {Names(type.EnumValues.Select(e => e.Name))}.");
+                    Error(path, $"Expected a {type.Name} value: {NameSuggestions.List(type.EnumValues.Select(e => e.Name))}.");
                     break;
                 case SchemaTypeKind.Scalar when !ScalarAccepts(type.Name, value):
                     Error(path, $"Expected a {type.Name} value.");
@@ -464,7 +464,7 @@ internal sealed class QueryValidator(ScopedSchema schema)
                     ValidateEnumValue(type, value.GetString(), path);
                     break;
                 case SchemaTypeKind.Enum:
-                    Error(path, $"Expected a {type.Name} value as a string: {Names(type.EnumValues.Select(e => e.Name))}.");
+                    Error(path, $"Expected a {type.Name} value as a string: {NameSuggestions.List(type.EnumValues.Select(e => e.Name))}.");
                     break;
                 case SchemaTypeKind.Scalar when !ScalarAccepts(type.Name, value.ValueKind):
                     Error(path, $"Expected a {type.Name} value.");
@@ -477,7 +477,7 @@ internal sealed class QueryValidator(ScopedSchema schema)
             var fieldPath = Join(path, name);
             if (type.Field(name) == null)
             {
-                Error(fieldPath, $"{type.Name} has no field {name}.{Suggest(name, type.Fields.Select(e => e.Name))}");
+                Error(fieldPath, $"{type.Name} has no field {name}.{NameSuggestions.Suggest(name, type.Fields.Select(e => e.Name))}");
                 return;
             }
 
@@ -498,7 +498,7 @@ internal sealed class QueryValidator(ScopedSchema schema)
         {
             if (type.EnumValues.All(e => e.Name != value))
             {
-                Error(path, $"{type.Name} has no value {value}.{Suggest(value, type.EnumValues.Select(e => e.Name))}");
+                Error(path, $"{type.Name} has no value {value}.{NameSuggestions.Suggest(value, type.EnumValues.Select(e => e.Name))}");
             }
         }
 
@@ -555,49 +555,6 @@ internal sealed class QueryValidator(ScopedSchema schema)
         private void Error(string path, string message) => Errors.Add(new ValidationError(path, message));
     }
 
-    /// <summary>
-    /// " Did you mean `x`?" for a near miss, and the available names, so the agent can fix the query in one go.
-    /// </summary>
-    private static string Suggest(string name, IEnumerable<string> candidates)
-    {
-        var list = candidates.ToList();
-        var closest = list
-            .Select(e => (Name: e, Distance: Distance(name.ToLowerInvariant(), e.ToLowerInvariant())))
-            .Where(e => e.Distance <= Math.Max(2, name.Length / 3))
-            .OrderBy(e => e.Distance)
-            .Select(e => e.Name)
-            .FirstOrDefault();
-
-        var suggestion = closest == null ? "" : $" Did you mean `{closest}`?";
-        return list.Count == 0 ? suggestion : $"{suggestion} Available: {Names(list)}.";
-    }
-
-    private static string Names(IEnumerable<string> names)
-    {
-        var list = names.ToList();
-        return list.Count <= MaxListedNames
-            ? string.Join(", ", list)
-            : string.Join(", ", list.Take(MaxListedNames)) + $" and {list.Count - MaxListedNames} more";
-    }
-
-    private static int Distance(string a, string b)
-    {
-        var previous = Enumerable.Range(0, b.Length + 1).ToArray();
-        for (var i = 1; i <= a.Length; i++)
-        {
-            var current = new int[b.Length + 1];
-            current[0] = i;
-            for (var j = 1; j <= b.Length; j++)
-            {
-                var cost = a[i - 1] == b[j - 1] ? 0 : 1;
-                current[j] = Math.Min(Math.Min(current[j - 1] + 1, previous[j] + 1), previous[j - 1] + cost);
-            }
-
-            previous = current;
-        }
-
-        return previous[b.Length];
-    }
 
     private static string Join(string path, string name) => string.IsNullOrEmpty(path) ? name : $"{path}.{name}";
 
