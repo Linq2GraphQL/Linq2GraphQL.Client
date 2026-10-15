@@ -76,6 +76,13 @@ internal sealed record AgentSettings(AgentProvider Provider, string Endpoint, st
             return null;
         }
 
+        endpoint = endpoint.Trim().Trim('"', '\'');
+        if (!Uri.TryCreate(endpoint, UriKind.Absolute, out var uri) || uri.Scheme is not ("https" or "http"))
+        {
+            problem = $"Agent:Endpoint '{endpoint}' is not a valid URL; expected something like https://my-resource.cognitiveservices.azure.com/.";
+            return null;
+        }
+
         problem = "";
         return new AgentSettings(provider, endpoint, deployment, section["ApiKey"]);
     }

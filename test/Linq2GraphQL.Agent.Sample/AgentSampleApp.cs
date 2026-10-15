@@ -3,6 +3,7 @@ using System.Text.Json;
 using Linq2GraphQL.Client;
 using Linq2GraphQL.Client.AI;
 using Linq2GraphQL.TestClient;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
@@ -174,7 +175,10 @@ public static class AgentSampleApp
             return httpClient;
         }
 
-        var application = new WebApplicationFactory<Program>();
+        // The factory looks for the server's content root next to the solution file, which only works from a
+        // test project; the test server reads nothing from it, so the sample's own output folder will do.
+        var application = new WebApplicationFactory<Program>()
+            .WithWebHostBuilder(b => b.UseContentRoot(AppContext.BaseDirectory));
         httpClient = application.CreateClient(new() { BaseAddress = new Uri("https://localhost/graphql/") });
         return application;
     }
