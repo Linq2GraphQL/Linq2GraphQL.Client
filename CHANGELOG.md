@@ -25,14 +25,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **An empty HTTP 200 body now yields Data = default instead of throwing.** Upstream
   main parsed the body with JsonDocument.Parse, which threw on an empty response. The
   envelope reader treats an empty body as "no data". Callers that relied on the exception
-  to detect a broken response must check GraphResult.HasData / Errors explicitly.- **WebSocket: unknown message types are ignored** instead of terminating the
+  to detect a broken response must check GraphResult.HasData / Errors explicitly.
+- **WebSocket: unknown message types are ignored** instead of terminating the
   subscription with `InvalidDataException` — matches the SSE transport's tolerance for
   unknown event types and keeps forward compatibility with proxies/servers.
 
 ### Added
 - GraphSubscriptionExecute.StartWithErrorsAsync() returns IObservable<GraphResult<T>>.
-  Each event carries its data AND its GraphQL rrors. A 
-ext event with field errors
+  Each event carries its data AND its GraphQL `errors`. A `next` event with field errors
   no longer terminates the subscription: partial data and later events keep flowing.
   StartAsync() is unchanged and still ends on any event error (OnError).
 
