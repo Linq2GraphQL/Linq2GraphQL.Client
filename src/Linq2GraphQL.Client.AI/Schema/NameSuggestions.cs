@@ -18,13 +18,30 @@ internal static class NameSuggestions
         return list.Count == 0 ? suggestion : $"{suggestion} Available: {List(list)}.";
     }
 
-    public static string Closest(string name, IEnumerable<string> candidates) =>
-        candidates
-            .Select(e => (Name: e, Distance: Distance(name.ToLowerInvariant(), e.ToLowerInvariant())))
-            .Where(e => e.Distance <= Math.Max(2, name.Length / 3))
-            .OrderBy(e => e.Distance)
-            .Select(e => e.Name)
-            .FirstOrDefault();
+    /// <summary>
+    /// A near miss by spelling, or else a name that ends with the guessed one as a camelCase word: agents
+    /// often ask for <c>name</c> or <c>id</c> where the schema has <c>customerName</c> or <c>customerId</c>.
+    /// </summary>
+    public static string Closest(string name, IEnumerable<string> candidates)
+    {
+        var list = candidates as IList<string> ?? candidates.ToList();
+        return list
+                   .Select(e => (Name: e, Distance: Distance(name.ToLowerInvariant(), e.ToLowerInvariant())))
+                   .Where(e => e.Distance <= Math.Max(2, name.Length / 3))
+                   .OrderBy(e => e.Distance)
+                   .Select(e => e.Name)
+                   .FirstOrDefault()
+               ?? list
+                   .Where(e => EndsWithWord(e, name))
+                   .OrderBy(e => e.Length)
+                   .FirstOrDefault();
+    }
+
+    private static bool EndsWithWord(string candidate, string word) =>
+        word.Length > 0
+        && candidate.Length > word.Length
+        && candidate.EndsWith(word, StringComparison.OrdinalIgnoreCase)
+        && (char.IsUpper(candidate[^word.Length]) || candidate[^(word.Length + 1)] == '_');
 
     public static string List(IEnumerable<string> names)
     {

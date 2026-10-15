@@ -70,7 +70,7 @@ internal sealed class AgentToolset
             return JsonSerializer.Serialize(new
             {
                 data = result.Data.ValueKind == JsonValueKind.Undefined ? (JsonElement?)null : result.Data,
-                errors = result.Errors?.Select(e => new { message = e.Message, path = e.Path })
+                errors = result.Errors?.Select(e => new { message = e.Message, path = e.Path, hint = Hint(e) })
             }, ResultJson);
         }
         catch (GraphQueryRequestException ex)
@@ -78,6 +78,24 @@ internal sealed class AgentToolset
             Log(query, variables, [], [ex.Message], started.Elapsed);
             return JsonSerializer.Serialize(new { requestError = ex.Message }, ResultJson);
         }
+    }
+
+    /// <summary>
+    /// What to do about a server error the schema cannot predict. The page-size limit is the common one: it is
+    /// not in the SDL, so agents guess a page size and retry with smaller guesses unless told the limit.
+    /// </summary>
+    private static string Hint(GraphQueryError error)
+    {
+        if (error.Extensions?.TryGetValue("code", out var code) != true || code?.ToString() != "HC0051")
+        {
+            return null;
+        }
+
+        var max = error.Extensions.TryGetValue("maxAllowedItems", out var value) ? value?.ToString() : null;
+        var field = error.Extensions.TryGetValue("coordinate", out var coordinate) ? $" for {coordinate}" : "";
+        return max == null
+            ? $"The page size{field} is limited. Leave out first/last to get the server's default page, then page with after: endCursor."
+            : $"At most {max} items per page{field}. Use first: {max} or leave it out, then page with after: endCursor while hasNextPage is true.";
     }
 
     /// <summary>

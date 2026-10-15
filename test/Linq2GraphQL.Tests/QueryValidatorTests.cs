@@ -83,6 +83,8 @@ public class QueryValidatorTests
     {
         ShouldFail("{ custmers { customerName } }").ShouldContain("Did you mean `customers`?");
         ShouldFail("{ customers { custmerName } }").ShouldContain("Customer has no field custmerName. Did you mean `customerName`?");
+        ShouldFail("{ customers { name } }").ShouldContain("Customer has no field name. Did you mean `customerName`?");
+        ShouldFail("{ customers { id } }").ShouldContain("Customer has no field id. Did you mean `customerId`?");
     }
 
     [Fact]

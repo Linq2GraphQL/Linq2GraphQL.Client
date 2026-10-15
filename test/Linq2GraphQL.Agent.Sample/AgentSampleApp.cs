@@ -76,7 +76,7 @@ public static class AgentSampleApp
         o.Instructions("Dates are UTC.");
         o.AllowQuery(c => c.Query.Hello).Describe("Greets someone by name; a quick way to test the API.");
         o.AllowQuery(c => c.Query.Customers).Describe("All customers with their orders.");
-        o.AllowQuery(c => c.Query.Orders).Describe("Orders, paged and filterable.");
+        o.AllowQuery(c => c.Query.Orders).Describe("Orders, paged and filterable. At most 2 orders per page.");
         o.AllowQuery(c => c.Query.Animals).Describe("The animals: pigs and spiders.");
         o.Describe<Customer>("A customer account.");
         o.Example("Customer statuses", "Every customer's name and status",
