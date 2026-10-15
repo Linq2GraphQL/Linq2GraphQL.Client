@@ -62,7 +62,9 @@ public class InterfaceContractTests
         var interfaceType = typeof(ISampleClient);
 
         // Act
-        var concreteProperties = GetPublicProperties(concreteType);
+        // GraphClient is infrastructure on the concrete client only, like WithRequestConfiguration and
+        // WithAccessToken, so hand-written implementations of the interface keep compiling.
+        var concreteProperties = GetPublicProperties(concreteType).Where(e => e != nameof(SampleClient.GraphClient));
         var interfaceProperties = GetInterfaceProperties(interfaceType);
 
         // Assert

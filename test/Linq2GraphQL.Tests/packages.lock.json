@@ -883,6 +883,13 @@
           "Microsoft.Extensions.Http": "[10.0.11, )"
         }
       },
+      "linq2graphql.client.ai": {
+        "type": "Project",
+        "dependencies": {
+          "GraphQL-Parser": "[9.5.1, )",
+          "Linq2GraphQL.Client": "[1.0.0, )"
+        }
+      },
       "linq2graphql.client.subscriptions": {
         "type": "Project",
         "dependencies": {

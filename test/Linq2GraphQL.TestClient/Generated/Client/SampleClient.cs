@@ -76,6 +76,12 @@ public class SampleClient : ISampleClient, IGraphSchemaSource
     }
 
     /// <summary>
+    /// The underlying client, for example to execute a query written as GraphQL text with
+    /// <see cref="Linq2GraphQL.Client.GraphClient.ExecuteAsync"/>.
+    /// </summary>
+    public GraphClient GraphClient => client;
+
+    /// <summary>
     /// The schema this client was generated from, as SDL.
     /// </summary>
     public static string Sdl => SampleClientSchema.Sdl;

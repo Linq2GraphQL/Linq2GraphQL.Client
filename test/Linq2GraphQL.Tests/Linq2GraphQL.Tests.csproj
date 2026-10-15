@@ -32,6 +32,7 @@
         <ProjectReference Include="..\Linq2GraphQL.TestServerNullable\Linq2GraphQL.TestServerNullable.csproj"/>
         <ProjectReference Include="..\Linq2GraphQL.TestServer\Linq2GraphQL.TestServer.csproj"/>
         <ProjectReference Include="..\..\src\Linq2GraphQL.Generator\Linq2GraphQL.Generator.csproj"/>
+        <ProjectReference Include="..\..\src\Linq2GraphQL.Client.AI\Linq2GraphQL.Client.AI.csproj"/>
     </ItemGroup>
 
 </Project>
