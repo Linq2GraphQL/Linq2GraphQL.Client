@@ -86,6 +86,26 @@ public class AgentToolsetTests : IClassFixture<SampleClientFixture>
     }
 
     [Fact]
+    public async Task Query_PageSizeTooLarge_HintsTheServerLimit()
+    {
+        var result = Json(await tools.QueryAsync("{ orders(first: 100) { nodes { orderId } } }"));
+
+        result.GetProperty("errors")[0].GetProperty("hint").GetString()
+            .ShouldBe("At most 2 items per page for Query.orders. Use first: 2 or leave it out, then page with after: endCursor while hasNextPage is true.");
+    }
+
+    [Fact]
+    public async Task Query_OtherServerError_HasNoHint()
+    {
+        var tools = new AgentToolset(ScopedSchema.Create<SampleClient>(SampleClient.Sdl, o => o.AllowQuery(c => c.Query.RaiseError)),
+            client.GraphClient);
+
+        var result = Json(await tools.QueryAsync("{ raiseError(message: \"boom\") }"));
+
+        result.GetProperty("errors")[0].TryGetProperty("hint", out _).ShouldBeFalse();
+    }
+
+    [Fact]
     public void DescribeOperations_Snapshot()
     {
         Snapshot.Match(tools.DescribeOperations(["orders", "hello", "customers"]), "Tools.DescribeOperations");
