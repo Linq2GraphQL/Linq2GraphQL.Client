@@ -1,6 +1,6 @@
 # Linq2GraphQL Agent Mode Design
 
-**Status:** in progress. Plan steps 1-3 (the groundwork, SDL input and SDL output) are implemented. The AI package is being built in slices: (1) package skeleton and scoped schema, (2) renderer, (3) validator, (4) the four tools, (5) the `AsAgentTools` adapter, (6) sample and regression harness. Slice 1 is in review. See [Plan](#plan-and-risks).
+**Status:** in progress. Plan steps 1-3 (the groundwork, SDL input and SDL output) are implemented. The AI package is being built in slices: (1) package skeleton and scoped schema, (2) renderer, (3) validator, (4) the four tools, (5) the `AsAgentTools` adapter, (6) sample and regression harness. Slice 1 is merged; slice 2 is in review. See [Plan](#plan-and-risks).
 
 ## Summary
 
@@ -235,7 +235,7 @@ Rules:
 - **Typed wherever possible.** Operations, types, fields and enum values are referenced through the client, so a rename breaks the build. `AsAgentTools<TClient>` is a generic extension, not generated code.
 - **The scoped schema is enforced before sending:** allowed roots, and fields that exist and aren't omitted. Descriptions and instructions only shape what the agent is told.
 - **`AllowAllQueries()` is explicit, never the default.** `o.AllowAllQueries().Except(c => c.Query.AuditLog, ...)` pre-fills the allow-list from the SDL for the fastest start. Everything else (rendering, schema tools, validation, `Omit`, descriptions, examples) still applies, so it isn't the naive generic approach. New roots become available after regeneration, visible in the SDL diff. On large schemas the Index groups roots by return type or caps the list and points to `search_schema`.
-- **`Omit` removes fields from the scope**: noise, and data the agent shouldn't touch or its token can't read. Enforced for the agent; the server remains the boundary for everything else.
+- **`Omit` removes fields from the scope**: noise, and data the agent shouldn't touch or its token can't read. The field is also removed from the type's filter and sort inputs, so the agent cannot infer its values by filtering or sorting on it. Enforced for the agent; the server remains the boundary for everything else.
 - **Descriptions overlay the schema.** `Describe` replaces the schema text, with an append option.
 - **Fail fast.** Unknown names, or describing something omitted, throw when `AsAgentTools` runs.
 - **Created per user or conversation**, so the token delegate captures who the agent acts for.
@@ -249,7 +249,7 @@ The renderer turns the scoped schema into text the agent reads. It stays close t
 
 - Directives, deprecated fields, introspection types and omitted fields are removed.
 - **Connections are collapsed**: `CustomerConnection`, `CustomerEdge` and `PageInfo` become `customers(...): [Customer] @paged`, with one shared rule explaining how to query paged fields.
-- **HotChocolate filter and sort inputs are collapsed**: the many `...OperationFilterInput` types become "filterable: name, status, createdAt" plus one shared explanation of the operator syntax. On HotChocolate schemas this is likely most of the size.
+- **HotChocolate filter and sort inputs are collapsed**: each entity filter becomes one summary line, for example `OrderFilterInput: orderId (comparable), customer (CustomerFilterInput), lines (list of OrderLineFilterInput: some/all/none, any)`. The common operator sets (text, comparable, equality) are spelled out once in the conventions, together with the filter and sort syntax. On HotChocolate schemas this is likely most of the size.
 
 Three detail levels:
 

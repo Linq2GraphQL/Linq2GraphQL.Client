@@ -1,0 +1,46 @@
+Instructions:
+- All dates are UTC.
+
+Conventions:
+- @paged fields return a page: select `nodes { ... }` and `pageInfo { hasNextPage endCursor }`, and pass `after: <endCursor>` for the next page. @paged(totalCount) also has `totalCount`. @paged(edges) has no `nodes`: select `edges { node { ... } }`.
+- `where` filters: `where: { field: { operator: value } }`, combined with `and: [ ... ]` and `or: [ ... ]`. A field of a related type nests: `{ customer: { status: { eq: ACTIVE } } }`. List fields take `some`, `all` or `none: { ... }`, or `any: true`.
+- Operator sets: text = eq neq contains ncontains in nin startsWith nstartsWith endsWith nendsWith; comparable = eq neq in nin gt ngt gte ngte lt nlt lte nlte; equality = eq neq in nin.
+- `order` sorts: `order: [{ field: ASC }]`, or DESC.
+
+Queries:
+  hello(name: String = "World"): String
+  customers: [Customer]
+  orders(first: Int, after: String, last: Int, before: String, where: OrderFilterInput, order: [OrderSortInput!]): [Order] @paged(totalCount)
+  animals(first: Int, after: String, last: Int, before: String, where: IAnimalFilterInput, order: [IAnimalSortInput!]): [IAnimal] @paged(totalCount)
+
+Types:
+  interface IAnimal { name: String!  numberOfLegs: Int! }
+  type Pig implements IAnimal { spices: String!  name: String!  numberOfLegs: Int!  speed: Int! }
+  type Spider implements IAnimal { poisonous: Boolean!  name: String!  numberOfLegs: Int!  speed: Int! }
+  type Order { orderHello(name: String!, first: Int! = 0): String!  orderAddress(addressType: AddressType!): Address!  orderId: UUID!  customer: Customer!  address: Address  orderDate: DateTime!  orderDateTime: DateTime!  orderDay: LocalDate!  lines: [OrderLine!]!  entryTime: LocalTime }
+  type Customer { customerId: UUID!  customerName: String!  status: CustomerStatus!  orders: [Order!]!  created: DateTime  relatedCustomers(relationType: Int!): [Customer]  relatedCustomer(relationType: Int!): Customer }
+  type OrderLine { lineNumber: Int!  order: Order!  item: Item  price: Decimal!  quantity: Float! }
+  type Address { name: String!  street: String!  postalCode: String!  createdDate: LocalDate! }
+  type Item { itemId: String!  itemName: String!  data: [UnsignedByte!] }
+  enum CustomerStatus { ACTIVE DISABLED }
+  enum AddressType { DELIVERY INVOICE }
+  scalar UUID
+  scalar DateTime
+  scalar LocalDate
+  scalar LocalTime
+  scalar Decimal
+  scalar UnsignedByte
+
+Filters:
+  OrderFilterInput: orderId (comparable), customer (CustomerFilterInput), address (AddressFilterInput), orderDate (comparable), orderDateTime (comparable), orderDay (comparable), lines (list of OrderLineFilterInput: some/all/none, any), entryTime (comparable)
+  IAnimalFilterInput: name (text), numberOfLegs (comparable)
+  CustomerFilterInput: customerId (comparable), customerName (text), status (equality), orders (list of OrderFilterInput: some/all/none, any), created (comparable)
+  AddressFilterInput: name (text), street (text), postalCode (text), createdDate (comparable)
+  OrderLineFilterInput: lineNumber (comparable), order (OrderFilterInput), item (ItemFilterInput), price (comparable), quantity (comparable)
+  ItemFilterInput: itemId (text), itemName (text), data (list of comparable: some/all/none, any)
+
+Sorting:
+  OrderSortInput: orderId, customer (CustomerSortInput), address (AddressSortInput), orderDate, orderDateTime, orderDay, entryTime
+  IAnimalSortInput: name, numberOfLegs
+  CustomerSortInput: customerId, customerName, status, created
+  AddressSortInput: name, street, postalCode, createdDate

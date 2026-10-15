@@ -80,6 +80,21 @@ public class ScopedSchemaTests
     }
 
     [Fact]
+    public void Omit_AlsoRemovesTheFieldFromFilterAndSortInputs()
+    {
+        var schema = Scope(o =>
+        {
+            o.AllowQuery(c => c.Query.Orders);
+            o.Omit<Customer>(c => c.Address);
+        });
+
+        Fields(schema, "Customer").ShouldNotContain("address");
+        Fields(schema, "CustomerFilterInput").ShouldNotContain("address");
+        Fields(schema, "CustomerSortInput").ShouldNotContain("address");
+        Fields(schema, "CustomerFilterInput").ShouldContain("customerName");
+    }
+
+    [Fact]
     public void Omit_FieldWithArguments_ResolvesWithoutAnAttribute()
     {
         var schema = Scope(o =>

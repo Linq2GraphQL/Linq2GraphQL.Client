@@ -36,11 +36,11 @@ internal sealed class ScopedSchema
         var resolver = new Resolver(full);
 
         var allowedRoots = AllowedRoots(full, options, resolver);
-        var omitted = options.Omitted
+        var omitted = WithFilterAndSortFields(full, options.Omitted
             .Select(e => resolver.Field(e))
             .Where(e => e != null)
             .Select(e => e!.Value)
-            .ToHashSet();
+            .ToHashSet());
         var descriptions = Descriptions(full, options, resolver, omitted);
 
         if (allowedRoots.Count == 0 && resolver.Errors.Count == 0)
@@ -64,6 +64,27 @@ internal sealed class ScopedSchema
 
         return new ScopedSchema(new SchemaModel { Types = types, QueryType = full.QueryType },
             options.InstructionTexts.ToList());
+    }
+
+    /// <summary>
+    /// An omitted field must not stay usable through the type's filter or sort input, or the agent could
+    /// still infer its values by filtering or sorting on it. HotChocolate names those inputs after the type.
+    /// </summary>
+    private static HashSet<(string Type, string Field)> WithFilterAndSortFields(SchemaModel full,
+        HashSet<(string Type, string Field)> omitted)
+    {
+        foreach (var (type, field) in omitted.ToList())
+        {
+            foreach (var input in new[] { type + "FilterInput", type + "SortInput" })
+            {
+                if (full.Type(input) is { Kind: SchemaTypeKind.InputObject } inputType && inputType.Field(field) != null)
+                {
+                    omitted.Add((input, field));
+                }
+            }
+        }
+
+        return omitted;
     }
 
     private static List<string> AllowedRoots<TClient>(SchemaModel full, AgentOptions<TClient> options,
