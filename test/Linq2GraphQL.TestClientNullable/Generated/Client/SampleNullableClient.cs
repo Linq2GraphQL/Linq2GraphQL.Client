@@ -18,7 +18,7 @@ namespace Linq2GraphQL.TestClientNullable;
 /// Provides strongly-typed access to GraphQL queries, mutations, and subscriptions.
 /// Supports dependency injection for better testability and flexibility.
 /// </remarks>
-public class SampleNullableClient : ISampleNullableClient, IGraphSchemaSource
+public class SampleNullableClient : ISampleNullableClient, IGraphClientSource<SampleNullableClient>, IGraphSchemaSource
 {
     private readonly GraphClient client;
 

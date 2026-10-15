@@ -10,7 +10,9 @@ public partial class ClientTemplate(
     bool nullable,
     bool agent = false)
 {
-    private string Interfaces => agent ? $"I{name}, IGraphSchemaSource" : $"I{name}";
+    private string Interfaces => agent
+        ? $"I{name}, IGraphClientSource<{name}>, IGraphSchemaSource"
+        : $"I{name}, IGraphClientSource<{name}>";
 
     private bool includeQuery => queryType != null;
     private bool includeMutation => mutationType != null;
