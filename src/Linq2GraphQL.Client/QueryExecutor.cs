@@ -32,8 +32,13 @@ public class QueryExecutor<T>
     internal async Task<GraphResult<T>> ExecuteRawAsync(string name, GraphQLRequest graphRequest,
         CancellationToken cancellationToken = default)
     {
-        using var response = await client.HttpClient.PostAsJsonAsync("", graphRequest, client.SerializerOptions,
-            cancellationToken: cancellationToken);
+        using var request = new HttpRequestMessage(HttpMethod.Post, "")
+        {
+            Content = JsonContent.Create(graphRequest, options: client.SerializerOptions)
+        };
+        await client.ConfigureRequestAsync(request, cancellationToken);
+
+        using var response = await client.HttpClient.SendAsync(request, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
         {

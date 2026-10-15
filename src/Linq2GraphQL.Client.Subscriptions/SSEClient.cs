@@ -41,6 +41,7 @@ public class SSEClient : IDisposable
         };
 
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/event-stream"));
+        await graphClient.ConfigureRequestAsync(request, CancellationToken.None);
 
         try
         {
