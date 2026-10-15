@@ -43,19 +43,21 @@ public class IdleTimeoutStreamTests
     [Fact]
     public async Task SlowButRegularData_DoesNotTimeOut()
     {
-        // One byte every 100ms with a 500ms idle timeout — the timer must re-arm per read.
-        using var stream = new IdleTimeoutStream(new DrippingStream(TimeSpan.FromMilliseconds(100)),
-            TimeSpan.FromMilliseconds(500));
+        // One byte every 50ms for ~1s with a 750ms idle timeout: the whole read outlasts the
+        // timeout, so it only passes if the timer re-arms per read. The 15x per-gap margin keeps
+        // it stable when the full suite loads the thread pool.
+        using var stream = new IdleTimeoutStream(new DrippingStream(TimeSpan.FromMilliseconds(50), 20),
+            TimeSpan.FromMilliseconds(750));
 
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
-        var buffer = new byte[16];
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        var buffer = new byte[32];
         var total = 0;
         while (await stream.ReadAsync(buffer.AsMemory(total), cts.Token) > 0)
         {
             total++;
         }
 
-        Assert.Equal(5, total);
+        Assert.Equal(20, total);
     }
 
     [Fact]
@@ -204,9 +206,9 @@ public class IdleTimeoutStreamTests
         public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
     }
 
-    private sealed class DrippingStream(TimeSpan delay) : Stream
+    private sealed class DrippingStream(TimeSpan delay, int count) : Stream
     {
-        private int remaining = 5;
+        private int remaining = count;
 
         public override bool CanRead => true;
         public override bool CanSeek => false;

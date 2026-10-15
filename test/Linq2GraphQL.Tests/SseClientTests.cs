@@ -297,7 +297,7 @@ public class SseClientTests
         var options = new GraphClientOptions
         {
             SubscriptionProtocol = SubscriptionProtocol.ServerSentEvents,
-            SubscriptionIdleTimeout = TimeSpan.FromMilliseconds(250),
+            SubscriptionIdleTimeout = TimeSpan.FromMilliseconds(1000),
         };
         var handler = FakeSseHandler.Streaming(out var stream);
         using var client = CreateClient(handler, options);
@@ -305,10 +305,12 @@ public class SseClientTests
 
         _ = client.Start();
         await client.Connected.WaitAsync(TimeSpan.FromSeconds(10));
-        for (var i = 0; i < 8; i++)
+        for (var i = 0; i < 15; i++)
         {
             stream.Push(": ka\n\n");
-            await Task.Delay(80); // total 640 ms > idle timeout — must stay alive
+            // ~1.5 s total > idle timeout, so only re-arming on comments keeps it alive; the 10x
+            // per-gap margin keeps it stable when the full suite loads the thread pool.
+            await Task.Delay(100);
         }
 
         stream.Push("event: next\ndata: \"alive\"\n\n");
@@ -366,7 +368,9 @@ public class SseClientTests
 
         var started = client.Start();
         stream.Push("event: next\ndata: \"before-dispose\"\n\n");
-        await Task.Delay(50); // let the event flow before disposing
+        // Wait for the event itself, not a fixed delay: under full-suite load 50 ms was not
+        // always enough for it to arrive before Dispose.
+        await WaitUntilAsync(() => payloads.Count == 1);
 
         client.Dispose();
         await started.WaitAsync(TimeSpan.FromSeconds(10));

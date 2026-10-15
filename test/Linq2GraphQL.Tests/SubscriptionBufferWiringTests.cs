@@ -30,6 +30,10 @@ public class SubscriptionBufferWiringTests
         }
     }
 
+    // How long the observer holds the processor on each event. Long enough that the follow-up
+    // frames are parsed and buffered while delivery is stalled, even under full-suite load.
+    private const int StallMs = 1000;
+
     private static async Task<Wiring> CreateAsync(GraphClientOptions options, int observerDelayMs = 0)
     {
         var handler = FakeSseHandler.Streaming(out var stream);
@@ -71,6 +75,19 @@ public class SubscriptionBufferWiringTests
         return "event: next\ndata: " + payload + "\n\n";
     }
 
+    /// <summary>
+    ///     Pushes the first event and waits until the observer has received it. The observer then
+    ///     sleeps inline on the processor thread, so delivery is stalled from this point on and the
+    ///     next frames are guaranteed to land in the buffer. A fixed delay is not enough: under full
+    ///     suite load the processor may not have picked event 1 up yet, so every event ends up
+    ///     buffered and the overflow arithmetic changes.
+    /// </summary>
+    private static Task PushFirstAndWaitUntilStalledAsync(Wiring wiring, string id)
+    {
+        wiring.Stream.Push(PayloadJson(id));
+        return WaitUntilAsync(() => wiring.Events.Count == 1, TimeSpan.FromSeconds(10));
+    }
+
     private static async Task WaitUntilAsync(Func<bool> condition, TimeSpan timeout)
     {
         var deadline = DateTime.UtcNow + timeout;
@@ -94,10 +111,9 @@ public class SubscriptionBufferWiringTests
         {
             SubscriptionMaxBufferedEvents = 1,
             SubscriptionOverflowPolicy = SubscriptionOverflowPolicy.Fault,
-        }, observerDelayMs: 300);
+        }, observerDelayMs: StallMs);
 
-        wiring.Stream.Push(PayloadJson("10000000-0000-0000-0000-000000000001"));
-        await Task.Delay(50); // the processor has picked up event 1 and is now stalled
+        await PushFirstAndWaitUntilStalledAsync(wiring, "10000000-0000-0000-0000-000000000001");
         wiring.Stream.Push(
             PayloadJson("10000000-0000-0000-0000-000000000002") +
             PayloadJson("10000000-0000-0000-0000-000000000003"));
@@ -120,10 +136,9 @@ public class SubscriptionBufferWiringTests
         {
             SubscriptionMaxBufferedEvents = 1,
             SubscriptionOverflowPolicy = SubscriptionOverflowPolicy.KeepLatest,
-        }, observerDelayMs: 300);
+        }, observerDelayMs: StallMs);
 
-        wiring.Stream.Push(PayloadJson("20000000-0000-0000-0000-000000000001"));
-        await Task.Delay(50);
+        await PushFirstAndWaitUntilStalledAsync(wiring, "20000000-0000-0000-0000-000000000001");
         wiring.Stream.Push(
             PayloadJson("20000000-0000-0000-0000-000000000002") +
             PayloadJson("20000000-0000-0000-0000-000000000003"));
@@ -144,10 +159,9 @@ public class SubscriptionBufferWiringTests
         {
             SubscriptionMaxBufferedEvents = 2,
             SubscriptionOverflowPolicy = SubscriptionOverflowPolicy.DropOldest,
-        }, observerDelayMs: 300);
+        }, observerDelayMs: StallMs);
 
-        wiring.Stream.Push(PayloadJson("30000000-0000-0000-0000-000000000001"));
-        await Task.Delay(50);
+        await PushFirstAndWaitUntilStalledAsync(wiring, "30000000-0000-0000-0000-000000000001");
         wiring.Stream.Push(
             PayloadJson("30000000-0000-0000-0000-000000000002") +
             PayloadJson("30000000-0000-0000-0000-000000000003") +
