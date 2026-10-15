@@ -43,6 +43,35 @@ public class GraphClient
         SubscriptionUrl = GetSubscriptionUrl();
     }
 
+    private GraphClient(GraphClient source, Func<HttpRequestMessage, CancellationToken, ValueTask> configureRequest)
+    {
+        options = source.options;
+        includeDeprecated = source.includeDeprecated;
+        cache = source.cache;
+        HttpClient = source.HttpClient;
+        SerializerOptions = source.SerializerOptions;
+        SubscriptionUrl = source.SubscriptionUrl;
+        requestConfigurations = [..source.requestConfigurations, configureRequest];
+    }
+
+    /// <summary>
+    /// Hooks added with <see cref="WithRequestConfiguration"/>, run in order after
+    /// <see cref="GraphClientOptions.ConfigureRequest"/>.
+    /// </summary>
+    private readonly Func<HttpRequestMessage, CancellationToken, ValueTask>[] requestConfigurations = [];
+
+    /// <summary>
+    /// A client that shares this client's HttpClient, options, schema cache and serializer settings, and also
+    /// runs <paramref name="configureRequest"/> on every request it sends, after the hooks already in place.
+    /// Use it for per-user or per-conversation headers such as an access token. Creating one is cheap, and
+    /// this client is not changed.
+    /// </summary>
+    public GraphClient WithRequestConfiguration(Func<HttpRequestMessage, CancellationToken, ValueTask> configureRequest)
+    {
+        ArgumentNullException.ThrowIfNull(configureRequest);
+        return new GraphClient(this, configureRequest);
+    }
+
     public string SubscriptionUrl { get; }
     public SubscriptionProtocol SubscriptionProtocol => options.Value.SubscriptionProtocol;
     public HttpClient HttpClient { get; }
@@ -51,10 +80,17 @@ public class GraphClient
 
     public Func<GraphClient, Task<GraphQLRequest>> WSConnectionInitPayload => options.Value.WSConnectionInitPayload;
 
-    internal ValueTask ConfigureRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    internal async ValueTask ConfigureRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        var configureRequest = options.Value.ConfigureRequest;
-        return configureRequest is null ? ValueTask.CompletedTask : configureRequest(request, cancellationToken);
+        if (options.Value.ConfigureRequest is { } configureRequest)
+        {
+            await configureRequest(request, cancellationToken);
+        }
+
+        foreach (var requestConfiguration in requestConfigurations)
+        {
+            await requestConfiguration(request, cancellationToken);
+        }
     }
 
     private string GetSubscriptionUrl()
