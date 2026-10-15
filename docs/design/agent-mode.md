@@ -1,6 +1,6 @@
 # Linq2GraphQL Agent Mode Design
 
-**Status:** in progress. Plan steps 1-3 (the groundwork, SDL input and SDL output) are implemented; the AI package is next. See [Plan](#plan-and-risks).
+**Status:** in progress. Plan steps 1-3 (the groundwork, SDL input and SDL output) are implemented. The AI package is being built in slices: (1) package skeleton and scoped schema, (2) renderer, (3) validator, (4) the four tools, (5) the `AsAgentTools` adapter, (6) sample and regression harness. Slice 1 is in review. See [Plan](#plan-and-risks).
 
 ## Summary
 
@@ -397,6 +397,7 @@ Subscriptions stay out entirely; they don't fit the request/response shape of to
 - **Per-request hooks** (done). `GraphClientOptions.ConfigureRequest` for headers that are the same for everyone, and derived clients for per-user ones: `client.WithRequestConfiguration(hook)` and `client.WithAccessToken(getToken)` return a client that shares the connection and settings, adds its hook after the existing ones, and leaves the original unchanged. Typed users get a clean OBO story too.
 - **Schema cache key.** The safe-mode schema cache is keyed only by base address (`GraphClient.cs`), so two clients against the same endpoint with different credentials share one cached schema, and `includeDeprecated` is ignored. Agent mode no longer depends on introspection, but this should be fixed regardless.
 - **`IGraphSchemaSource` interface** with a static abstract `Sdl` property. Implemented by clients generated with `--agent`; it lets `AsAgentTools` require agent mode at compile time.
+- **Raw execution** (done). `GraphClient.ExecuteAsync(query, variables)` runs a query written as GraphQL text and returns the whole `data` object as JSON, with GraphQL errors in the result rather than thrown. Generated clients expose their `GraphClient` property (on the concrete client only, like the `With…` methods), so the agent package executes through the same hooks as typed queries without `InternalsVisibleTo`.
 
 **Generator**
 

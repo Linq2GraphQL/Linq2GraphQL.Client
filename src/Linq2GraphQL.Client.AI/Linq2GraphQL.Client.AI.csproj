@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+
+        <Authors>Joakim Dangården,Magnus Ahlberg</Authors>
+        <Company>Linq2GraphQL</Company>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/linq2graphql/linq2graphql.client</RepositoryUrl>
+        <PackageProjectUrl>https://linq2graphql.com/</PackageProjectUrl>
+        <Title>Linq2GraphQL.Client.AI</Title>
+        <Description>Agent mode for Linq2GraphQL: expose a scoped, validated GraphQL schema to AI agents</Description>
+        <Copyright>Copyright 2023 (c) Joakim Dangården. All rights reserved.</Copyright>
+        <PackageTags>Linq GraphQL Client AI Agent</PackageTags>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Linq2GraphQL.Tests"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Linq2GraphQL.Client\Linq2GraphQL.Client.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="GraphQL-Parser"/>
+    </ItemGroup>
+
+</Project>
