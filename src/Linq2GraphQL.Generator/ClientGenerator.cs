@@ -17,7 +17,8 @@ namespace Linq2GraphQL.Generator
         EnumGeneratorStrategy enumGeneratorStrategy,
         bool nullable,
         bool includeDeprecated,
-        IReadOnlyDictionary<string, (string Name, Type type)?> scalarMappings = null)
+        IReadOnlyDictionary<string, (string Name, Type type)?> scalarMappings = null,
+        bool descriptionAttributes = true)
     {
         private static readonly Dictionary<string, (string Name, Type type)?> EmptyScalarMappings = new();
 
@@ -75,11 +76,31 @@ namespace Linq2GraphQL.Generator
 
         public List<FileEntry> Generate(string schemaJson)
         {
+            var rootSchema = JsonSerializer.Deserialize<RootSchema>(schemaJson,
+                new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+
+            return Generate(rootSchema);
+        }
+
+        /// <summary>
+        /// Generates the client from a schema written in SDL instead of an introspection result.
+        /// </summary>
+        public List<FileEntry> GenerateFromSdl(string sdl)
+        {
+            Console.WriteLine("Reading schema from SDL ...");
+            return Generate(SdlSchemaReader.Read(sdl, includeDeprecated));
+        }
+
+        private List<FileEntry> Generate(RootSchema rootSchema)
+        {
             entries.Clear();
 
             var typeMapping = Helpers.CreateTypeMapping();
             Helpers.ApplyScalarMappings(typeMapping, scalarMappings);
-            GeneratorSettings.Current = new GeneratorSettings { Nullable = nullable, TypeMapping = typeMapping };
+            GeneratorSettings.Current = new GeneratorSettings
+            {
+                Nullable = nullable, TypeMapping = typeMapping, DescriptionAttributes = descriptionAttributes
+            };
 
             foreach (var scalarMapping in scalarMappings ?? EmptyScalarMappings)
             {
@@ -87,9 +108,6 @@ namespace Linq2GraphQL.Generator
                     ? $"Scalar {scalarMapping.Key} opted out of type mapping, generating a CustomScalar for it"
                     : $"Scalar {scalarMapping.Key} mapped to {scalarMapping.Value.Value.Name}");
             }
-
-            var rootSchema = JsonSerializer.Deserialize<RootSchema>(schemaJson,
-                new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 
             var schema = rootSchema.Data.Schema;
             var queryType = schema.QueryType;

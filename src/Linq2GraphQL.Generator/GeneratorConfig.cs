@@ -30,6 +30,11 @@ public class GeneratorConfig
 
     public string Endpoint { get; set; }
 
+    /// <summary>
+    /// A schema file (SDL) to generate from instead of an endpoint, relative to the current directory.
+    /// </summary>
+    public string Schema { get; set; }
+
     public string Output { get; set; }
 
     public string Namespace { get; set; }
@@ -45,6 +50,12 @@ public class GeneratorConfig
     public bool? Nullable { get; set; }
 
     public bool? Deprecated { get; set; }
+
+    /// <summary>
+    /// Emit <c>[Description]</c> attributes from schema descriptions. On by default; set to false to
+    /// opt out. Settings file only, there is no command line flag for it.
+    /// </summary>
+    public bool? DescriptionAttributes { get; set; }
 
     /// <summary>
     /// GraphQL scalar name to simple CLR type, e.g. <c>"DateTime": "System.DateTime"</c>. The

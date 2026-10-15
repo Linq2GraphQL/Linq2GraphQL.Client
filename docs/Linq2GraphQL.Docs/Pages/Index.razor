@@ -109,6 +109,7 @@ Options:
     </thead>
     <tbody>
     <tr><td><em>endpoint</em></td><td>string</td><td>required</td><td>&lt;endpoint&gt; argument</td></tr>
+    <tr><td><em>schema</em></td><td>string</td><td>none</td><td>-sc, --schema</td></tr>
     <tr><td><em>output</em></td><td>string</td><td>Linq2GraphQL_Generated</td><td>-o, --output</td></tr>
     <tr><td><em>namespace</em></td><td>string</td><td>YourNamespace</td><td>-n, --namespace</td></tr>
     <tr><td><em>client</em></td><td>string</td><td>GraphQLClient</td><td>-c, --client</td></tr>
@@ -118,20 +119,25 @@ Options:
     <tr><td><em>nullable</em></td><td>bool</td><td>false</td><td>-nu, --nullable</td></tr>
     <tr><td><em>deprecated</em></td><td>bool</td><td>false</td><td>-d, --deprecated</td></tr>
     <tr><td><em>scalarMappings</em></td><td>object</td><td>none</td><td>no equivalent</td></tr>
+    <tr><td><em>descriptionAttributes</em></td><td>bool</td><td>true</td><td>no equivalent</td></tr>
     </tbody>
 </table>
 <p>
     <em>endpoint</em> is required only in the sense that it has to come from somewhere - the file or
-    the command line argument. <em>enumStrategy</em> takes <em>AddUnknownOption</em> to give every
+    the command line argument - unless <em>schema</em> names an SDL file to generate from instead. <em>enumStrategy</em> takes <em>AddUnknownOption</em> to give every
     generated enum an extra <em>Unknown</em> member; any other value means <em>FailIfMissing</em>.
     <em>token</em> is settable here for completeness, but a bearer token is usually better passed as
-    <em>-t</em> than checked into a file.
+    <em>-t</em> than checked into a file. <em>descriptionAttributes</em> controls whether schema
+    descriptions are also emitted as <em>[Description]</em> attributes, next to the XML doc comments,
+    so tools that read them at runtime (JSON schema exporters, OpenAPI, AI function factories) see the
+    schema's text; set it to <em>false</em> to leave them out.
 </p>
 <p>
     Setting names are matched case insensitively. A name that is not in the table above fails the
     run, so a typo like <em>scalarMapping</em> is reported rather than silently ignored.
-    <em>scalarMappings</em> has no command line equivalent, so it is the one setting a discovered
-    file supplies that you cannot override back off from the command line.
+    <em>scalarMappings</em> and <em>descriptionAttributes</em> have no command line equivalent, so
+    they are the settings a discovered file supplies that you cannot override back off from the
+    command line.
 </p>
 <p>
     Everything in the file is optional, and an option you pass explicitly on the command line always

@@ -893,6 +893,7 @@
       "linq2graphql.generator": {
         "type": "Project",
         "dependencies": {
+          "GraphQL-Parser": "[9.5.1, )",
           "Linq2GraphQL.Client": "[1.0.0, )",
           "Macross.Json.Extensions": "[3.0.0, )",
           "System.CodeDom": "[10.0.11, )",
@@ -938,6 +939,12 @@
           "HotChocolate.Types.Scalars": "[16.6.4, )",
           "Linq2GraphQL.TestServer.Shared": "[1.0.0, )"
         }
+      },
+      "GraphQL-Parser": {
+        "type": "CentralTransitive",
+        "requested": "[9.5.1, )",
+        "resolved": "9.5.1",
+        "contentHash": "pUYpupTsVyNcKemko8f0iknJa2z/oZsfzwb4crgEFN9/pKf3k35gxVXDDOkD3NVPF1ea6GUV0jgxkjCozFj7Fg=="
       },
       "HotChocolate.AspNetCore": {
         "type": "CentralTransitive",

@@ -7,6 +7,9 @@ using System.Text.Json.Serialization;
 
 namespace <#= namespaceName #>;
 
+<# if (enumType.HasDescriptionAttribute) { #>
+<#= enumType.DescriptionAttribute #>
+<# } #>
 [JsonConverter(typeof(JsonStringEnumMemberConverter))]
 public enum <#= enumType.Name #>
 {
@@ -14,6 +17,9 @@ public enum <#= enumType.Name #>
     foreach (var enumValue in enumType.EnumValues)
     {
 #>
+<# if (enumValue.HasDescriptionAttribute) { #>
+    <#= enumValue.DescriptionAttribute #>
+<# } #>
 <# if (enumValue.IsDeprecated) { #>
     [Obsolete("<#= enumValue.SafeDeprecationReason #>")]
 <# } #>

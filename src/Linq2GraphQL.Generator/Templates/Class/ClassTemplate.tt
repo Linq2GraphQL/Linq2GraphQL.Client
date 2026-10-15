@@ -16,6 +16,9 @@ namespace <#= namespaceName #>;
 public static class <#= classType.Name #>Extensions
 {
 <# foreach (var field in classType.AllFields.Where(e => e.IsMethod)) { #>
+<# if (field.HasDescriptionAttribute) { #>
+    <#= field.DescriptionAttribute #>
+<# } #>
     [GraphQLMember("<#= field.Name #>")]
 <# if (field.IsDeprecated) { #>
     [Obsolete("<#= field.SafeDeprecationReason #>")]
@@ -35,9 +38,12 @@ public static class <#= classType.Name #>Extensions
 /// <summary>
 /// <#= classType.SummaryDescription #>
 /// </summary>
-<# 
-} 
+<#
+}
 #>
+<# if (classType.HasDescriptionAttribute) { #>
+<#= classType.DescriptionAttribute #>
+<# } #>
 public partial class <#= classType.Name #> <#= classType.GetInterfacesString("GraphQLTypeBase") #>
 {
 <# foreach (var field in classType.AllFields) { #>
@@ -46,6 +52,9 @@ public partial class <#= classType.Name #> <#= classType.GetInterfacesString("Gr
     /// <summary>
     /// Do not use in Query, only to retrive result
     /// </summary>
+<# if (field.HasDescriptionAttribute) { #>
+    <#= field.DescriptionAttribute #>
+<# } #>
 <# if (field.IsDeprecated) { #>
     [Obsolete("<#= field.SafeDeprecationReason #>")]
 <# } #>
@@ -56,6 +65,9 @@ public partial class <#= classType.Name #> <#= classType.GetInterfacesString("Gr
     /// <summary>
     /// <#= field.SummaryDescription #>
     /// </summary>
+<# } #>
+<# if (field.HasDescriptionAttribute) { #>
+    <#= field.DescriptionAttribute #>
 <# } #>
 <# if (field.IsDeprecated) { #>
     [Obsolete("<#= field.SafeDeprecationReason #>")]

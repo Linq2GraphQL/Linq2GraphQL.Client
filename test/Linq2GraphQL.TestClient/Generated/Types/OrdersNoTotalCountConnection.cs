@@ -17,11 +17,13 @@ namespace Linq2GraphQL.TestClient;
 /// <summary>
 /// A connection to a list of items.
 /// </summary>
+[global::System.ComponentModel.Description("A connection to a list of items.")]
 public partial class OrdersNoTotalCountConnection : GraphQLTypeBase, Linq2GraphQL.Client.Common.ICursorPaging
 {
     /// <summary>
     /// Information to aid in pagination.
     /// </summary>
+    [global::System.ComponentModel.Description("Information to aid in pagination.")]
     [GraphQLMember("pageInfo")]
     [JsonPropertyName("pageInfo")]
     public Linq2GraphQL.Client.Common.PageInfo PageInfo { get; set; }
@@ -29,6 +31,7 @@ public partial class OrdersNoTotalCountConnection : GraphQLTypeBase, Linq2GraphQ
     /// <summary>
     /// A list of edges.
     /// </summary>
+    [global::System.ComponentModel.Description("A list of edges.")]
     [GraphQLMember("edges")]
     [JsonPropertyName("edges")]
     public List<OrdersNoTotalCountEdge> Edges { get; set; }
@@ -36,6 +39,7 @@ public partial class OrdersNoTotalCountConnection : GraphQLTypeBase, Linq2GraphQ
     /// <summary>
     /// A flattened list of the nodes.
     /// </summary>
+    [global::System.ComponentModel.Description("A flattened list of the nodes.")]
     [GraphQLMember("nodes")]
     [JsonPropertyName("nodes")]
     public List<Order> Nodes { get; set; }

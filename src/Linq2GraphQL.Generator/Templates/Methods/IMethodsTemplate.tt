@@ -27,6 +27,9 @@ public interface I<#= ClassName #>
 <# } #>
     /// <param name="<#= field.CSharpName.ToCamelCase() #>">The operation parameters</param>
     /// <returns>GraphQL query result of type <#= GetReturnTypeString(field) #></returns>
+<# if (field.HasDescriptionAttribute) { #>
+    <#= field.DescriptionAttribute #>
+<# } #>
     <#= GetReturnTypeString(field) #> <#= field.CSharpName #>(<#= field.GetArgString(false) #>);
 
 <# } #>
