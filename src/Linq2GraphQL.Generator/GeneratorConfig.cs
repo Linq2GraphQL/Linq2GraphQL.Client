@@ -52,6 +52,11 @@ public class GeneratorConfig
     public bool? Deprecated { get; set; }
 
     /// <summary>
+    /// Agent mode: also emit the schema as SDL and implement <c>IGraphSchemaSource</c> on the client.
+    /// </summary>
+    public bool? Agent { get; set; }
+
+    /// <summary>
     /// Emit <c>[Description]</c> attributes from schema descriptions. On by default; set to false to
     /// opt out. Settings file only, there is no command line flag for it.
     /// </summary>

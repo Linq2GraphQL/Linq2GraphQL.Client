@@ -9,6 +9,7 @@ namespace Linq2GraphQL.Tests;
 /// Generating from SDL must produce exactly the client that generating from the endpoint does, so the
 /// two inputs are interchangeable. Each test server is read both ways and every generated file compared.
 /// </summary>
+[Collection(GeneratorCollection.Name)]
 public class SdlInputTests
 {
     [Theory]

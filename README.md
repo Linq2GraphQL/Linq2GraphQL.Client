@@ -71,6 +71,7 @@ Usage:
       -nu --nullabel               Nullable client [default: false]
 	  -d  --deprecated			   Include Deprecated as Obsolete
       -sc --schema                 Schema file (SDL) to generate from instead of an endpoint
+      -ag --agent                  Agent mode: also emit the schema as SDL (see docs/design/agent-mode.md)
       -cf --config                 Json settings file, see Configuration file below
 
 As an example:
@@ -137,6 +138,7 @@ file is allowed to be absent.
 | `enumStrategy`   | string | `FailIfMissing`          | `-es`, `--enum-strategy` |
 | `nullable`       | bool   | `false`                  | `-nu`, `--nullable`   |
 | `deprecated`     | bool   | `false`                  | `-d`, `--deprecated`  |
+| `agent`          | bool   | `false`                  | `-ag`, `--agent`      |
 | `scalarMappings` | object | none                     | *no equivalent*       |
 | `descriptionAttributes` | bool | `true`              | *no equivalent*       |
 
@@ -206,6 +208,34 @@ services
             httpClient.BaseAddress = new Uri("https://spacex-production.up.railway.app/"); 
         });
 ```
+
+## Request headers and access tokens
+
+`ConfigureRequest` in the client options runs on every request the client sends, for headers that are the
+same for everyone:
+
+```cs
+services.SpaceXClient(x =>
+{
+    x.ConfigureRequest = (request, ct) =>
+    {
+        request.Headers.Add("X-Api-Version", "2");
+        return ValueTask.CompletedTask;
+    };
+});
+```
+
+For headers that depend on the current user, such as an on-behalf-of token, derive a client instead. A
+derived client shares the original's connection and settings, adds its own hook on top, and leaves the
+original unchanged, so it is cheap to create one per user or per request:
+
+```cs
+var userClient = spaceXClient.WithAccessToken(ct => tokens.GetAccessTokenForUserAsync(user, ct));
+var launches = await userClient.Query.Launches().Select().ExecuteAsync();
+```
+
+`WithAccessToken` sets `Authorization: Bearer <token>` and asks the delegate for the token on every request;
+`WithRequestConfiguration` takes any hook.
 
 ## Safe Mode
 

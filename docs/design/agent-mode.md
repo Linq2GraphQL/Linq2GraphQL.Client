@@ -1,6 +1,6 @@
 # Linq2GraphQL Agent Mode Design
 
-**Status:** proposal. Nothing is implemented yet beyond the groundwork listed under [Plan](#plan-and-risks).
+**Status:** in progress. Plan steps 1-3 (the groundwork, SDL input and SDL output) are implemented; the AI package is next. See [Plan](#plan-and-risks).
 
 ## Summary
 
@@ -358,7 +358,7 @@ The effective rights are an intersection: what *this user* may see **and** what 
 
 None of this requires owning the server. Any GraphQL API that authorizes by token scope enforces the same way. Owning it only means you can define an agent-specific scope yourself; otherwise you pick the narrowest scope the API offers.
 
-**On-behalf-of.** The library does not perform token exchange; Microsoft.Identity.Web's `ITokenAcquisition` and others already do. It provides a provider-neutral seam: a per-request token delegate, set when the agent tools are created and capturing the user explicitly. It works with any identity provider; Entra ID with Microsoft.Identity.Web is a documented example, not a dependency. This avoids two known traps of doing it in an `HttpClient` `DelegatingHandler`: handlers from `IHttpClientFactory` run in their own DI scope, and ambient `HttpContext` is gone once an agent turn runs off the request thread.
+**On-behalf-of.** The library does not perform token exchange; Microsoft.Identity.Web's `ITokenAcquisition` and others already do. It provides a provider-neutral seam: a per-request token delegate, set when the agent tools are created and capturing the user explicitly. Underneath it is a derived client, `client.WithAccessToken(getToken)`, which shares the original's connection and settings and adds the token on every request. `o.AccessToken` in `AsAgentTools` is sugar for it, and the lambdas of examples and dedicated tools receive the derived client, so raw and typed queries alike carry the user's token. A team that already holds a per-user client can call `userClient.AsAgentTools(...)` directly. It works with any identity provider; Entra ID with Microsoft.Identity.Web is a documented example, not a dependency. This avoids two known traps of doing it in an `HttpClient` `DelegatingHandler`: handlers from `IHttpClientFactory` run in their own DI scope, and ambient `HttpContext` is gone once an agent turn runs off the request thread.
 
 **What remains.** Prompt injection can still make the agent read anything its scope allows and repeat it in an answer. The down-scoped token limits the damage and the root allow-list narrows it further. A separate agent identity also gives server-side audit and rate limiting for agent traffic.
 
@@ -394,7 +394,7 @@ Subscriptions stay out entirely; they don't fit the request/response shape of to
 
 **Core (`Linq2GraphQL.Client`), useful on their own**
 
-- **Per-request token or header hook.** Today auth works only through the `HttpClient` pipeline; `GraphClientOptions` has no request hook. Typed users get a cleaner OBO story too.
+- **Per-request hooks** (done). `GraphClientOptions.ConfigureRequest` for headers that are the same for everyone, and derived clients for per-user ones: `client.WithRequestConfiguration(hook)` and `client.WithAccessToken(getToken)` return a client that shares the connection and settings, adds its hook after the existing ones, and leaves the original unchanged. Typed users get a clean OBO story too.
 - **Schema cache key.** The safe-mode schema cache is keyed only by base address (`GraphClient.cs`), so two clients against the same endpoint with different credentials share one cached schema, and `includeDeprecated` is ignored. Agent mode no longer depends on introspection, but this should be fixed regardless.
 - **`IGraphSchemaSource` interface** with a static abstract `Sdl` property. Implemented by clients generated with `--agent`; it lets `AsAgentTools` require agent mode at compile time.
 
@@ -414,9 +414,9 @@ Subscriptions stay out entirely; they don't fit the request/response shape of to
 
 **Plan**
 
-1. **Core prerequisites:** the per-request token hook and the schema cache-key fix.
-2. **SDL input in the generator:** the already planned feature. It introduces GraphQL-Parser.
-3. **SDL output:** the `--agent` flag and the two extra introspection fields, built on step 2. Always-on `[Description]` attributes can ship independently of agent mode.
+1. **Core prerequisites** (done): the per-request hook and the schema cache-key fix.
+2. **SDL input in the generator** (done): it introduced GraphQL-Parser.
+3. **SDL output** (done): the `--agent` flag, `IGraphSchemaSource`, and derived clients for per-user tokens. `[Description]` attributes and the two extra introspection fields shipped with step 2.
 4. **Preview and pilots:** the first version as a prerelease package (`-preview`), complete enough to run end to end, with a runnable sample against the test server. Usefulness depends on the use case, so it is evaluated in one or two pilot apps with a real schema and real users, ideally different ones (interactive and background, small and large schema). The evaluation is part of the product: `OnQuery` logs (questions, queries, validation errors, tool calls per answer), simple user feedback per answer in the pilot app, and which questions the team moves to dedicated tools. The pilots can start before step 3 by using an exported `schema.graphql`.
 5. **Decide from the pilots:** did the teams get a working agent quickly, were users satisfied with the answers, where did it fail (filters, paging, large schemas), and what did they specialise? If it holds up, release `Linq2GraphQL.Client.AI`. If not, the core and generator improvements still stand.
 
