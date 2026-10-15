@@ -15,6 +15,43 @@ public sealed class AgentOptions<TClient>
     internal List<MemberReference> Omitted { get; } = [];
     internal List<DescriptionOverride> Descriptions { get; } = [];
     internal List<string> InstructionTexts { get; } = [];
+    internal List<ExampleDefinition<TClient>> Examples { get; } = [];
+    internal List<Action<AgentQueryLog>> QueryLoggers { get; } = [];
+
+    /// <summary>
+    /// The access token for the user or conversation the agent acts for, asked for on every request, for
+    /// example an on-behalf-of token from your token acquisition library. Leave it unset to use the client's
+    /// own configuration.
+    /// </summary>
+    public Func<CancellationToken, ValueTask<string>> AccessToken { get; set; }
+
+    /// <summary>
+    /// An example of a common task, written with the typed client, for example
+    /// <c>o.Example("Recent orders", "A customer's most recent orders", c =&gt; c.Query.Customer(id: "4711").Select(...))</c>.
+    /// It is checked by the compiler, validated against the scope when the tools are set up, and shown to the
+    /// agent as GraphQL. A task that always runs the same way is better as a dedicated tool.
+    /// </summary>
+    public AgentOptions<TClient> Example<T, TResult>(string name, string description,
+        Func<TClient, GraphBaseExecute<T, TResult>> query)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentException.ThrowIfNullOrWhiteSpace(description);
+        ArgumentNullException.ThrowIfNull(query);
+        Examples.Add(new ExampleDefinition<TClient>(name, description, client => query(client).GetRequest()));
+        return this;
+    }
+
+    /// <summary>
+    /// Called for every query the agent runs or tries to run: the query, its variables, validation errors if it
+    /// was rejected, server errors and duration. Use it to see what the agent actually does; repeated queries
+    /// are candidates for dedicated tools.
+    /// </summary>
+    public AgentOptions<TClient> OnQuery(Action<AgentQueryLog> log)
+    {
+        ArgumentNullException.ThrowIfNull(log);
+        QueryLoggers.Add(log);
+        return this;
+    }
 
     /// <summary>
     /// Allows the agent to call a query, for example <c>o.AllowQuery(c =&gt; c.Query.Customers)</c>.
@@ -151,3 +188,24 @@ internal sealed record MemberReference(Type ClrType, MemberInfo Member, string E
 }
 
 internal sealed record DescriptionOverride(MemberReference Target, string Text, bool Append);
+
+internal sealed record ExampleDefinition<TClient>(string Name, string Description, Func<TClient, GraphQLRequest> Request);
+
+/// <summary>
+/// One query the agent ran or tried to run, for <see cref="AgentOptions{TClient}.OnQuery"/>.
+/// </summary>
+/// <param name="Query">The GraphQL text the agent wrote.</param>
+/// <param name="Variables">The variables as JSON, or null.</param>
+/// <param name="ValidationErrors">Why the query was rejected before sending; empty when it was sent.</param>
+/// <param name="Errors">GraphQL or request errors from the server; empty when there were none.</param>
+/// <param name="Duration">Time spent validating and, if sent, executing.</param>
+public sealed record AgentQueryLog(
+    string Query,
+    string Variables,
+    IReadOnlyList<string> ValidationErrors,
+    IReadOnlyList<string> Errors,
+    TimeSpan Duration)
+{
+    /// <summary>Whether the query passed validation and was sent.</summary>
+    public bool WasSent => ValidationErrors.Count == 0;
+}

@@ -25,11 +25,13 @@ internal sealed class AgentToolset
     private readonly QueryValidator validator;
     private readonly SchemaShape shape;
     private readonly SchemaModel model;
+    private readonly IReadOnlyList<Action<AgentQueryLog>> queryLoggers;
 
-    public AgentToolset(ScopedSchema schema, GraphClient client)
+    public AgentToolset(ScopedSchema schema, GraphClient client, IReadOnlyList<Action<AgentQueryLog>> queryLoggers = null)
     {
         this.schema = schema;
         this.client = client;
+        this.queryLoggers = queryLoggers ?? [];
         validator = new QueryValidator(schema);
         shape = new SchemaShape(schema.Schema);
         model = schema.Schema;
@@ -48,12 +50,15 @@ internal sealed class AgentToolset
     public async Task<string> QueryAsync(string query, JsonElement? variables = null,
         CancellationToken cancellationToken = default)
     {
+        var started = System.Diagnostics.Stopwatch.StartNew();
         var validation = validator.Validate(query, variables);
         if (!validation.IsValid)
         {
+            var validationErrors = validation.Errors.Select(e => e.ToString()).ToList();
+            Log(query, variables, validationErrors, [], started.Elapsed);
             return JsonSerializer.Serialize(new
             {
-                validationErrors = validation.Errors.Select(e => e.ToString()),
+                validationErrors,
                 note = "The query was not sent. Fix every error listed and try again."
             }, ResultJson);
         }
@@ -61,6 +66,7 @@ internal sealed class AgentToolset
         try
         {
             var result = await client.ExecuteAsync(query, Variables(variables), cancellationToken);
+            Log(query, variables, [], result.Errors?.Select(e => e.Message).ToList() ?? [], started.Elapsed);
             return JsonSerializer.Serialize(new
             {
                 data = result.Data.ValueKind == JsonValueKind.Undefined ? (JsonElement?)null : result.Data,
@@ -69,7 +75,33 @@ internal sealed class AgentToolset
         }
         catch (GraphQueryRequestException ex)
         {
+            Log(query, variables, [], [ex.Message], started.Elapsed);
             return JsonSerializer.Serialize(new { requestError = ex.Message }, ResultJson);
+        }
+    }
+
+    /// <summary>
+    /// Reports a query to the OnQuery loggers. A failing logger must not break the agent's call.
+    /// </summary>
+    private void Log(string query, JsonElement? variables, IReadOnlyList<string> validationErrors,
+        IReadOnlyList<string> errors, TimeSpan duration)
+    {
+        if (queryLoggers.Count == 0)
+        {
+            return;
+        }
+
+        var entry = new AgentQueryLog(query, variables?.GetRawText(), validationErrors, errors, duration);
+        foreach (var logger in queryLoggers)
+        {
+            try
+            {
+                logger(entry);
+            }
+            catch (Exception)
+            {
+                // Logging is best effort; the agent's query result matters more.
+            }
         }
     }
 
@@ -160,7 +192,7 @@ internal sealed class AgentToolset
     }
 
     /// <summary>
-    /// search_schema: operations, types, fields and enum values matching the text, names before descriptions.
+    /// search_schema: operations, examples, types, fields and enum values matching the text, names before descriptions.
     /// </summary>
     public string Search(string text)
     {
@@ -186,6 +218,11 @@ internal sealed class AgentToolset
             }
         }
 
+        foreach (var example in schema.Examples)
+        {
+            Consider(1, example.Name, example.Description, $"example {example.Name}  – {example.Description}");
+        }
+
         foreach (var operation in schema.QueryType.Fields)
         {
             Consider(0, operation.Name, operation.Description,
@@ -194,17 +231,17 @@ internal sealed class AgentToolset
 
         foreach (var type in model.Types.Values.Where(e => e.Name != model.QueryType && SchemaRenderer.IsListed(e, shape)))
         {
-            Consider(1, type.Name, type.Description, $"type {type.Name}{Summary(type.Description)}");
+            Consider(2, type.Name, type.Description, $"type {type.Name}{Summary(type.Description)}");
 
             foreach (var field in type.Fields)
             {
-                Consider(2, field.Name, field.Description,
+                Consider(3, field.Name, field.Description,
                     $"field {type.Name}.{field.Name}: {SchemaRenderer.TypeText(field.Type, shape)}{Summary(field.Description)}");
             }
 
             foreach (var value in type.EnumValues)
             {
-                Consider(3, value.Name, value.Description, $"value {type.Name}.{value.Name}{Summary(value.Description)}");
+                Consider(4, value.Name, value.Description, $"value {type.Name}.{value.Name}{Summary(value.Description)}");
             }
         }
 
@@ -273,6 +310,21 @@ internal sealed class AgentToolset
 
         text.AppendLine("Starter query:");
         text.AppendLine("  " + StarterQuery(operation));
+
+        var examples = schema.Examples.Where(e => e.Operations.Contains(operation.Name)).ToList();
+        if (examples.Count > 0)
+        {
+            text.AppendLine("Examples:");
+            foreach (var example in examples)
+            {
+                text.AppendLine($"  {example.Name}  – {example.Description}");
+                text.AppendLine("    " + example.Query.ReplaceLineEndings(" ").Trim());
+                if (example.Variables != null)
+                {
+                    text.AppendLine("    variables: " + example.Variables);
+                }
+            }
+        }
     }
 
     /// <summary>

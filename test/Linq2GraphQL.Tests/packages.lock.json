@@ -887,7 +887,8 @@
         "type": "Project",
         "dependencies": {
           "GraphQL-Parser": "[9.5.1, )",
-          "Linq2GraphQL.Client": "[1.0.0, )"
+          "Linq2GraphQL.Client": "[1.0.0, )",
+          "Microsoft.Extensions.AI.Abstractions": "[10.10.0, )"
         }
       },
       "linq2graphql.client.subscriptions": {
@@ -1004,6 +1005,12 @@
         "requested": "[3.0.0, )",
         "resolved": "3.0.0",
         "contentHash": "AkNshs6dopj8FXsmkkJxvLivN2SyDJQDbjcds5lo9+Y6L4zpcoXdmzXQ3VVN+AIWQr0CTD5A7vkuHGAr2aypZg=="
+      },
+      "Microsoft.Extensions.AI.Abstractions": {
+        "type": "CentralTransitive",
+        "requested": "[10.10.0, )",
+        "resolved": "10.10.0",
+        "contentHash": "frBHj2ckpevA+KdDLikxv8oxGPrJiyTvaiblYp+vtVEt0q6J73XP5m2SICm86nFK6rl+L1GCKxIy4S5Lb3p2kQ=="
       },
       "Microsoft.Extensions.Caching.Memory": {
         "type": "CentralTransitive",

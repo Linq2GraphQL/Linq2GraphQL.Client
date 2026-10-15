@@ -52,6 +52,16 @@ internal static class SchemaRenderer
             RenderRoot(text, root, shape, detail);
         }
 
+        if (schema.Examples.Count > 0)
+        {
+            text.AppendLine();
+            text.AppendLine("Examples (describe_operation shows their queries):");
+            foreach (var example in schema.Examples)
+            {
+                text.Append(Indent).AppendLine($"{example.Name}  – {example.Description}");
+            }
+        }
+
         var types = schema.Schema.Types.Values
             .Where(e => e.Name != schema.Schema.QueryType && IsListed(e, shape))
             .OrderBy(e => KindOrder(e.Kind))

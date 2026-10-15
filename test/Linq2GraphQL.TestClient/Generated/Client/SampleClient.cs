@@ -18,7 +18,7 @@ namespace Linq2GraphQL.TestClient;
 /// Provides strongly-typed access to GraphQL queries, mutations, and subscriptions.
 /// Supports dependency injection for better testability and flexibility.
 /// </remarks>
-public class SampleClient : ISampleClient, IGraphSchemaSource
+public class SampleClient : ISampleClient, IGraphClientSource<SampleClient>, IGraphSchemaSource
 {
     private readonly GraphClient client;
 

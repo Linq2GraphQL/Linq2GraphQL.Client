@@ -1,0 +1,98 @@
+using System.ComponentModel;
+using System.Text.Json;
+using Linq2GraphQL.Client.AI.Schema;
+using Linq2GraphQL.Client.AI.Tools;
+using Microsoft.Extensions.AI;
+
+namespace Linq2GraphQL.Client.AI;
+
+/// <summary>
+/// Turns a generated client into agent tools: <c>graphql_query</c>, <c>describe_operation</c>,
+/// <c>describe_type</c> and <c>search_schema</c>, as Microsoft.Extensions.AI <see cref="AIFunction"/>s that
+/// plug into any agent built on it. The agent writes GraphQL; the tools keep it inside the configured scope.
+/// </summary>
+public static class AgentToolsExtensions
+{
+    /// <summary>
+    /// The agent tools for a client generated with <c>--agent</c>, using the schema it was generated from.
+    /// Create them per user or conversation when <see cref="AgentOptions{TClient}.AccessToken"/> is set.
+    /// </summary>
+    /// <exception cref="AgentConfigurationException">The configuration does not match the schema.</exception>
+    public static IList<AIFunction> AsAgentTools<TClient>(this TClient client, Action<AgentOptions<TClient>> configure)
+        where TClient : IGraphClientSource<TClient>, IGraphSchemaSource
+    {
+        return client.AsAgentTools(TClient.Sdl, configure);
+    }
+
+    /// <summary>
+    /// The agent tools for any generated client, with the schema given as SDL, for example a schema file
+    /// exported from the server.
+    /// </summary>
+    /// <exception cref="AgentConfigurationException">The configuration does not match the schema.</exception>
+    public static IList<AIFunction> AsAgentTools<TClient>(this TClient client, string sdl,
+        Action<AgentOptions<TClient>> configure)
+        where TClient : IGraphClientSource<TClient>
+    {
+        ArgumentNullException.ThrowIfNull(client);
+        ArgumentException.ThrowIfNullOrWhiteSpace(sdl);
+        ArgumentNullException.ThrowIfNull(configure);
+
+        var options = new AgentOptions<TClient>();
+        configure(options);
+
+        var schema = ScopedSchema.Create(SdlReader.Read(sdl), options);
+
+        // Everything the agent causes goes through this client, so the user's token applies to raw and
+        // typed queries alike.
+        var agentClient = options.AccessToken == null
+            ? client
+            : client.WithRequestConfiguration(RequestConfigurations.BearerToken(options.AccessToken));
+
+        schema.SetExamples(options.Examples.Select(example =>
+        {
+            var request = example.Request(agentClient);
+            var (query, tidyVariables) = ExampleFormatter.Tidy(request.Query, request.Variables);
+            var variables = tidyVariables is { Count: > 0 }
+                ? JsonSerializer.Serialize(tidyVariables, agentClient.GraphClient.SerializerOptions)
+                : null;
+            return (example.Name, example.Description, query, variables);
+        }));
+
+        var tools = new AgentToolset(schema, agentClient.GraphClient, options.QueryLoggers.ToList());
+        return Create(tools);
+    }
+
+    private static List<AIFunction> Create(AgentToolset tools)
+    {
+        return
+        [
+            AIFunctionFactory.Create(
+                ([Description("A GraphQL query document, for example `query { customers { name } }`. Only queries are allowed.")]
+                    string query,
+                    [Description("Values for the variables the query declares, as a JSON object. Omit when there are none.")]
+                    JsonElement? variables = null,
+                    CancellationToken cancellationToken = default) =>
+                    tools.QueryAsync(query, variables, cancellationToken),
+                "graphql_query",
+                "Runs a read-only GraphQL query and returns the data as JSON. The query is checked first; if it is " +
+                "invalid nothing is sent and the errors say how to fix it. Use describe_operation for an operation's " +
+                "arguments and a starter query, describe_type for a type's fields, and search_schema to find a name.\n\n" +
+                tools.Index),
+            AIFunctionFactory.Create(
+                ([Description("Names of the operations to describe, as listed under Queries.")] string[] names) =>
+                    tools.DescribeOperations(names),
+                "describe_operation",
+                "Describes operations: arguments with filters and sorting, the return type, a starter query to adapt, " +
+                "and examples."),
+            AIFunctionFactory.Create(
+                ([Description("Names of the types to describe.")] string[] names) => tools.DescribeTypes(names),
+                "describe_type",
+                "Describes types in full: fields, arguments and descriptions, plus the types they use."),
+            AIFunctionFactory.Create(
+                ([Description("A word to search for in names and descriptions.")] string text) => tools.Search(text),
+                "search_schema",
+                "Finds operations, examples, types, fields and enum values by name or description, when you don't " +
+                "know what something is called.")
+        ];
+    }
+}

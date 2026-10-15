@@ -85,6 +85,35 @@ public abstract class GraphBaseExecute<T, TResult>
     }
 
 
+    /// <summary>
+    /// The request this query would send, built without contacting the server: safe mode's schema check is
+    /// skipped, so automatically included fields are not validated against the live schema. Use it to show or
+    /// log a query; <see cref="GetRequestAsync"/> builds the request the query actually sends.
+    /// </summary>
+    public GraphQLRequest GetRequest()
+    {
+        _lock.Wait();
+        try
+        {
+            if (!intialized)
+            {
+                QueryNode.SetAllUniqueVariableNames();
+                QueryNode.AddPrimitiveChildren(true, null);
+                intialized = true;
+            }
+        }
+        finally
+        {
+            _lock.Release();
+        }
+
+        return new GraphQLRequest
+        {
+            Query = GetGraphQLQuery(),
+            Variables = QueryNode.GetAllActiveArguments().ToDictionary(x => x.VariableName, e => e.Value)
+        };
+    }
+
     public async Task<GraphQLRequest> GetRequestAsync()
     {
         await InitQueryAsync();
