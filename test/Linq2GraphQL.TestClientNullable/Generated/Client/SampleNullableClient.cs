@@ -18,8 +18,10 @@ namespace Linq2GraphQL.TestClientNullable;
 /// Provides strongly-typed access to GraphQL queries, mutations, and subscriptions.
 /// Supports dependency injection for better testability and flexibility.
 /// </remarks>
-public class SampleNullableClient : ISampleNullableClient
-{ 
+public class SampleNullableClient : ISampleNullableClient, IGraphSchemaSource
+{
+    private readonly GraphClient client;
+
     /// <summary>
     /// Constructor with dependency injection support
     /// </summary>
@@ -35,10 +37,44 @@ public class SampleNullableClient : ISampleNullableClient
         IQueryMethods? queryMethods = null,
         IMutationMethods? mutationMethods = null)
     {
-        var client = new GraphClient(httpClient, options, provider, true);
+        client = new GraphClient(httpClient, options, provider, true);
         Query = queryMethods ?? new QueryMethods(client);
         Mutation = mutationMethods ?? new MutationMethods(client);
     }
+
+    private SampleNullableClient(GraphClient client)
+    {
+        this.client = client;
+        Query = new QueryMethods(client);
+        Mutation = new MutationMethods(client);
+    }
+
+    /// <summary>
+    /// A client that shares this client's connection and settings, and also runs
+    /// <paramref name="configureRequest"/> on every request it sends. Use it for per-user or
+    /// per-conversation headers such as an access token. This client is not changed.
+    /// </summary>
+    /// <remarks>
+    /// The new client uses the generated operation implementations, not ones passed to the constructor.
+    /// </remarks>
+    public SampleNullableClient WithRequestConfiguration(Func<HttpRequestMessage, CancellationToken, ValueTask> configureRequest)
+    {
+        return new SampleNullableClient(client.WithRequestConfiguration(configureRequest));
+    }
+
+    /// <summary>
+    /// A client that sends <c>Authorization: Bearer &lt;token&gt;</c> on every request, asking
+    /// <paramref name="getAccessToken"/> for the token each time. This client is not changed.
+    /// </summary>
+    public SampleNullableClient WithAccessToken(Func<CancellationToken, ValueTask<string>> getAccessToken)
+    {
+        return WithRequestConfiguration(RequestConfigurations.BearerToken(getAccessToken));
+    }
+
+    /// <summary>
+    /// The schema this client was generated from, as SDL.
+    /// </summary>
+    public static string Sdl => SampleNullableClientSchema.Sdl;
 
     /// <summary>
     /// Gets the query methods for this GraphQL client

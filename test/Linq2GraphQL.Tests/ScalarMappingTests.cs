@@ -8,6 +8,7 @@ namespace Linq2GraphQL.Tests;
 /// Covers the scalarMappings config: overriding how a GraphQL scalar maps to a CLR type, and the
 /// knock-on effect that a mapped scalar no longer gets a CustomScalar class generated for it.
 /// </summary>
+[Collection(GeneratorCollection.Name)]
 public class ScalarMappingTests
 {
     /// <summary>

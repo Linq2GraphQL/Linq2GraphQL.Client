@@ -18,7 +18,8 @@ namespace Linq2GraphQL.Generator
         bool nullable,
         bool includeDeprecated,
         IReadOnlyDictionary<string, (string Name, Type type)?> scalarMappings = null,
-        bool descriptionAttributes = true)
+        bool descriptionAttributes = true,
+        bool agent = false)
     {
         private static readonly Dictionary<string, (string Name, Type type)?> EmptyScalarMappings = new();
 
@@ -220,10 +221,17 @@ namespace Linq2GraphQL.Generator
 
             Console.WriteLine("Generate Client...");
             var templateText = new ClientTemplate(namespaceName, clientName, queryType, mutationType, subscriptionType,
-                    includeDeprecated, nullable: nullable)
+                    includeDeprecated, nullable: nullable, agent: agent)
                 .TransformText();
             var fileName = clientName + ".cs";
             AddFile(clientDirName, fileName, templateText);
+
+            if (agent)
+            {
+                Console.WriteLine("Generate Schema SDL...");
+                AddFile(clientDirName, clientName + "Schema.cs",
+                    SchemaFileText(SdlSchemaPrinter.Print(schema)));
+            }
 
             Console.WriteLine("Generate Client Extensions...");
             var clientExtensionsTemplateText =
@@ -234,6 +242,34 @@ namespace Linq2GraphQL.Generator
             return entries;
         }
 
+
+        /// <summary>
+        /// The SDL as a raw string literal. The delimiter is one quote longer than the longest run of quotes in
+        /// the SDL (block string descriptions contain three), so the text never needs escaping.
+        /// </summary>
+        private string SchemaFileText(string sdl)
+        {
+            const string indent = "        ";
+            var longestQuoteRun = System.Text.RegularExpressions.Regex.Matches(sdl, "\"+")
+                .Select(e => e.Length).DefaultIfEmpty(0).Max();
+            var delimiter = new string('"', Math.Max(3, longestQuoteRun + 1));
+            var lines = sdl.TrimEnd('\n').Split('\n').Select(e => e.Length == 0 ? e : indent + e);
+
+            return $$"""
+                namespace {{namespaceName}};
+
+                /// <summary>
+                /// The schema {{clientName}} was generated from, as SDL.
+                /// </summary>
+                public static partial class {{clientName}}Schema
+                {
+                    public const string Sdl = {{delimiter}}
+                {{string.Join("\n", lines)}}
+                {{indent}}{{delimiter}};
+                }
+
+                """.ReplaceLineEndings("\n");
+        }
 
         private void GenerateContextMethods(string namespaceName, string directory, GraphqlType methodType,
             string schemaType)

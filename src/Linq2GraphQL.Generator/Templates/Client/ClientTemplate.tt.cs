@@ -7,8 +7,11 @@ public partial class ClientTemplate(
     GraphqlType mutationType,
     GraphqlType subscriptionType,
     bool includeDeprecated,
-    bool nullable)
+    bool nullable,
+    bool agent = false)
 {
+    private string Interfaces => agent ? $"I{name}, IGraphSchemaSource" : $"I{name}";
+
     private bool includeQuery => queryType != null;
     private bool includeMutation => mutationType != null;
     private bool includeSubscriptions => subscriptionType != null;

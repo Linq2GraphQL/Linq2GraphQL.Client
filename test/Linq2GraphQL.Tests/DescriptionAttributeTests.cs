@@ -8,6 +8,7 @@ namespace Linq2GraphQL.Tests;
 /// the descriptionAttributes opt-out, and that the extra introspection fields (possibleTypes,
 /// defaultValue) deserialize.
 /// </summary>
+[Collection(GeneratorCollection.Name)]
 public class DescriptionAttributeTests
 {
     private const string Attribute = "[global::System.ComponentModel.Description(";

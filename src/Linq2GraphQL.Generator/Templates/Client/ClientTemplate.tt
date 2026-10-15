@@ -13,8 +13,10 @@ namespace <#= namespaceName #>;
 /// Provides strongly-typed access to GraphQL queries, mutations, and subscriptions.
 /// Supports dependency injection for better testability and flexibility.
 /// </remarks>
-public class <#= name #> : I<#= name #>
-{ 
+public class <#= name #> : <#= Interfaces #>
+{
+    private readonly GraphClient client;
+
     /// <summary>
     /// Constructor with dependency injection support
     /// </summary>
@@ -38,7 +40,7 @@ public class <#= name #> : I<#= name #>
         I<#= GetParameterName(mutationType) #> mutationMethods = null<# } #><# if (includeSubscriptions) { #>,
         I<#= GetParameterName(subscriptionType) #> subscriptionMethods = null<# } #>)
     {
-        var client = new GraphClient(httpClient, options, provider, <#= includeDeprecated.ToString().ToLower() #>);
+        client = new GraphClient(httpClient, options, provider, <#= includeDeprecated.ToString().ToLower() #>);
 <# if (includeQuery) { #>
         Query = queryMethods ?? new <#= GetTypeName(queryType) #>(client);
 <# } #>
@@ -49,6 +51,49 @@ public class <#= name #> : I<#= name #>
         Subscription = subscriptionMethods ?? new <#= GetTypeName(subscriptionType) #>(client);
 <# } #>
     }
+
+    private <#= name #>(GraphClient client)
+    {
+        this.client = client;
+<# if (includeQuery) { #>
+        Query = new <#= GetTypeName(queryType) #>(client);
+<# } #>
+<# if (includeMutation) { #>
+        Mutation = new <#= GetTypeName(mutationType) #>(client);
+<# } #>
+<# if (includeSubscriptions) { #>
+        Subscription = new <#= GetTypeName(subscriptionType) #>(client);
+<# } #>
+    }
+
+    /// <summary>
+    /// A client that shares this client's connection and settings, and also runs
+    /// <paramref name="configureRequest"/> on every request it sends. Use it for per-user or
+    /// per-conversation headers such as an access token. This client is not changed.
+    /// </summary>
+    /// <remarks>
+    /// The new client uses the generated operation implementations, not ones passed to the constructor.
+    /// </remarks>
+    public <#= name #> WithRequestConfiguration(Func<HttpRequestMessage, CancellationToken, ValueTask> configureRequest)
+    {
+        return new <#= name #>(client.WithRequestConfiguration(configureRequest));
+    }
+
+    /// <summary>
+    /// A client that sends <c>Authorization: Bearer &lt;token&gt;</c> on every request, asking
+    /// <paramref name="getAccessToken"/> for the token each time. This client is not changed.
+    /// </summary>
+    public <#= name #> WithAccessToken(Func<CancellationToken, ValueTask<string>> getAccessToken)
+    {
+        return WithRequestConfiguration(RequestConfigurations.BearerToken(getAccessToken));
+    }
+<# if (agent) { #>
+
+    /// <summary>
+    /// The schema this client was generated from, as SDL.
+    /// </summary>
+    public static string Sdl => <#= name #>Schema.Sdl;
+<# } #>
 
 <# if (includeQuery) { #>
     /// <summary>

@@ -26,6 +26,8 @@ internal class Program
         var includeDeprecated = new Option<bool>(new[] { "--deprecated", "-d" }, "Include Deprecated as Obsolete");
         var schemaFile = new Option<string>(new[] { "--schema", "-sc" },
             "Schema file (SDL) to generate from instead of an endpoint, relative to current location");
+        var agent = new Option<bool>(new[] { "--agent", "-ag" },
+            "Agent mode: also emit the schema as SDL and implement IGraphSchemaSource on the client");
 
         var rootCommand = new RootCommand("Generate GraphQL client")
         {
@@ -39,7 +41,8 @@ internal class Program
             enumStrategy,
             nullable,
             includeDeprecated,
-            schemaFile
+            schemaFile,
+            agent
         };
 
         rootCommand.SetHandler(async context =>
@@ -66,10 +69,11 @@ internal class Program
                     var deprecatedValue = Resolve(result, includeDeprecated, config.Deprecated, false);
 
                     var descriptionAttributesValue = config.DescriptionAttributes ?? true;
+                    var agentValue = Resolve(result, agent, config.Agent, false);
 
                     await GenerateClientAsync(uriValue, schemaFileValue, outputFolderValue, namespaceValue, clientNameValue,
                         includeSubscriptionsValue, authTokenValue, enumStrategyValue, nullableValue, deprecatedValue,
-                        scalarMappings, descriptionAttributesValue);
+                        scalarMappings, descriptionAttributesValue, agentValue);
                 }
                 catch (GeneratorConfigurationException ex)
                 {
@@ -152,7 +156,7 @@ internal class Program
 
     private static async Task GenerateClientAsync(Uri uri, string schemaFile, string outputFolder, string namespaceName, string name,
         bool includeSubscriptions, string authToken, string enumStrategy, bool nullable, bool includeDeprecated,
-        IReadOnlyDictionary<string, (string Name, Type type)?> scalarMappings, bool descriptionAttributes)
+        IReadOnlyDictionary<string, (string Name, Type type)?> scalarMappings, bool descriptionAttributes, bool agent)
     {
         var enumStrat = enumStrategy != null &&
                         enumStrategy.Equals("AddUnknownOption", StringComparison.InvariantCultureIgnoreCase)
@@ -160,7 +164,7 @@ internal class Program
             : EnumGeneratorStrategy.FailIfMissing;
 
         var generator = new ClientGenerator(namespaceName, name, includeSubscriptions, enumStrat, nullable,
-            includeDeprecated, scalarMappings, descriptionAttributes);
+            includeDeprecated, scalarMappings, descriptionAttributes, agent);
         List<FileEntry> entries;
         if (schemaFile != null)
         {

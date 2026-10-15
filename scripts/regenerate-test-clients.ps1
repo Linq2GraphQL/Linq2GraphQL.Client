@@ -96,6 +96,7 @@ try {
                 "-o=$(Join-Path $repoRoot $client.Output)"
                 '-s=true'
                 '-d=true'
+                '--agent=true'
             )
             if ($client.Nullable) { $arguments += '-nu=true' }
 
