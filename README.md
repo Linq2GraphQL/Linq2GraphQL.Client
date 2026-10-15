@@ -237,6 +237,44 @@ var launches = await userClient.Query.Launches().Select().ExecuteAsync();
 `WithAccessToken` sets `Authorization: Bearer <token>` and asks the delegate for the token on every request;
 `WithRequestConfiguration` takes any hook.
 
+## Agent mode (preview)
+
+`Linq2GraphQL.Client.AI` lets an AI agent query your API in plain GraphQL, limited to the operations you
+allow. Generate the client with `--agent` (`-ag`) so it carries the schema, then turn it into tools for
+Microsoft.Extensions.AI:
+
+```cs
+var tools = spaceXClient.AsAgentTools(o =>
+{
+    o.AllowQuery(c => c.Query.Launches);
+    o.AllowQuery(c => c.Query.Rockets);
+    o.Describe<Launch>(l => l.Details, "Free-text mission summary; may be empty.");
+    o.Instructions("Dates are UTC.");
+    o.AccessToken = ct => tokens.GetAccessTokenForUserAsync(user, ct);
+    o.OnQuery(log => logger.LogInformation("{Query} {Errors}", log.Query, log.ValidationErrors));
+});
+
+var response = await chatClient.GetResponseAsync(question, new ChatOptions { Tools = [..tools] });
+```
+
+The agent gets four tools: `search_schema`, `describe_operation`, `describe_type` and `graphql_query`. It
+sees only the allowed operations and the types they reach, and every query is validated against that
+scope before it is sent. The server stays responsible for authorization; give the agent a down-scoped or
+on-behalf-of token.
+
+`test/Linq2GraphQL.Agent.Sample` runs an agent against the test server. It uses Azure AI Foundry through
+your Azure sign-in (`az login`, no keys), or any OpenAI-compatible endpoint such as Ollama:
+
+```powershell
+dotnet user-secrets --project test/Linq2GraphQL.Agent.Sample set Agent:Endpoint "https://<resource>.cognitiveservices.azure.com/"
+dotnet user-secrets --project test/Linq2GraphQL.Agent.Sample set Agent:Deployment "<deployment>"
+dotnet run --project test/Linq2GraphQL.Agent.Sample            # chat
+dotnet run --project test/Linq2GraphQL.Agent.Sample -- eval    # run questions.json and report
+```
+
+For Ollama, set `Agent:Provider` to `OpenAICompatible` and `Agent:Endpoint` to `http://localhost:11434/v1/`.
+Add `--verbose` to see each tool call. See [the design doc](docs/design/agent-mode.md) for the full picture.
+
 ## Safe Mode
 
 Turning on *SafeMode* will make the client before the first request to do an introspection query to the endpoint. The
