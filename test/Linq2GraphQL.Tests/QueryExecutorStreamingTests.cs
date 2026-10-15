@@ -144,6 +144,49 @@ public class QueryExecutorStreamingTests
         Assert.DoesNotContain("truncated", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 
+    // ---- GraphClient.ExecuteAsync (text queries) goes through the same envelope parser ----
+
+    [Fact]
+    public async Task ExecuteDocument_Success_ReturnsWholeDataObject()
+    {
+        var client = CreateClient(new StaticHandler(HttpStatusCode.OK,
+            """{"data":{"hello":"hi","n":2},"extensions":{"trace":"x"}}"""));
+
+        var result = await client.ExecuteAsync("query { hello n }");
+
+        Assert.False(result.HasErrors);
+        Assert.Equal("hi", result.Data.GetProperty("hello").GetString());
+        Assert.Equal(2, result.Data.GetProperty("n").GetInt32());
+        Assert.NotNull(result.Extensions);
+    }
+
+    [Fact]
+    public async Task ExecuteDocument_ErrorStatusWithGraphQLBody_ReturnsErrors()
+    {
+        var client = CreateClient(new StaticHandler(HttpStatusCode.BadRequest,
+            """{"errors":[{"message":"The field `doesNotExist` does not exist."}]}"""));
+
+        var result = await client.ExecuteAsync("query { doesNotExist }");
+
+        Assert.True(result.HasErrors);
+        Assert.Contains("doesNotExist", Assert.Single(result.Errors).Message);
+    }
+
+    [Theory]
+    [InlineData("upstream unavailable")]
+    [InlineData("""{"message":"not a graphql body"}""")]
+    [InlineData("")]
+    public async Task ExecuteDocument_ErrorStatusWithoutGraphQLBody_Throws(string body)
+    {
+        var client = CreateClient(new StaticHandler(HttpStatusCode.BadGateway, body));
+
+        var exception = await Assert.ThrowsAsync<GraphQueryRequestException>(() =>
+            client.ExecuteAsync("query { hello }"));
+
+        Assert.Contains("BadGateway", exception.Message);
+        Assert.Contains(body, exception.Message);
+    }
+
     private static QueryExecutor<QueryExecutorStreamingTests.Customer> CreateExecutor(string response,
         out GraphClient client)
     {

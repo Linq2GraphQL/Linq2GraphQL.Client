@@ -1,14 +1,16 @@
 using System.Net.Http.Json;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.Json;
 
 namespace Linq2GraphQL.Client;
 
+/// <remarks>
+///     Every response path parses the GraphQL envelope with <see cref="Common.GraphEnvelopeReader"/>;
+///     do not add a second envelope parser here.
+/// </remarks>
 public class QueryExecutor<T>
 {
-    private const string ErrorPropertyName = "errors";
-    private const string DataPropertyName = "data";
-    private const string ExtensionsPropertyName = "extensions";
-
     private readonly GraphClient client;
 
     internal QueryExecutor(GraphClient client)
@@ -98,46 +100,34 @@ public class QueryExecutor<T>
         await client.ConfigureRequestAsync(request, cancellationToken);
 
         using var response = await client.HttpClient.SendAsync(request, cancellationToken);
-        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+        var content = await response.Content.ReadAsByteArrayAsync(cancellationToken);
 
-        if (!response.IsSuccessStatusCode && !IsGraphQLResponse(content))
+        if (response.IsSuccessStatusCode)
         {
-            throw new GraphQueryRequestException($"Http error! Status code {response.StatusCode} Error: {content}",
-                graphRequest.Query, graphRequest.Variables);
+            return Common.GraphEnvelopeReader.ReadDocument(content, client.SerializerOptions, out _);
         }
 
-        using var document = JsonDocument.Parse(content);
-        var root = document.RootElement;
-
-        return new GraphResult<JsonElement>
-        {
-            Data = root.TryGetProperty(DataPropertyName, out var data) ? data.Clone() : default,
-            Errors = root.TryGetProperty(ErrorPropertyName, out var errors)
-                ? errors.Deserialize<List<GraphQueryError>>(client.SerializerOptions)
-                : null,
-            Extensions = root.TryGetProperty(ExtensionsPropertyName, out var extensions)
-                ? extensions.Deserialize<Dictionary<string, object>>(client.SerializerOptions)
-                : null
-        };
-    }
-
-    /// <summary>
-    /// GraphQL servers answer a request they reject (for example a validation error) with a non-success
-    /// status but a regular GraphQL body; that body is a result, not a transport failure.
-    /// </summary>
-    private static bool IsGraphQLResponse(string content)
-    {
+        // GraphQL servers answer a request they reject (for example a validation error) with a
+        // non-success status but a regular GraphQL body; that body is a result, not a transport failure.
+        GraphResult<JsonElement> result = null;
+        var isEnvelope = false;
         try
         {
-            using var document = JsonDocument.Parse(content);
-            return document.RootElement.ValueKind == JsonValueKind.Object &&
-                   (document.RootElement.TryGetProperty(ErrorPropertyName, out _) ||
-                    document.RootElement.TryGetProperty(DataPropertyName, out _));
+            result = Common.GraphEnvelopeReader.ReadDocument(content, client.SerializerOptions, out isEnvelope);
         }
         catch (JsonException)
         {
-            return false;
+            // Not JSON (HTML error page, proxy text, ...): a transport failure, reported below.
         }
+
+        if (!isEnvelope)
+        {
+            throw new GraphQueryRequestException(
+                $"Http error! Status code {response.StatusCode} Error: {Encoding.UTF8.GetString(content)}",
+                graphRequest.Query, graphRequest.Variables);
+        }
+
+        return result;
     }
 
     public T ProcessResponse(string con, string name, GraphQLRequest request)
@@ -193,40 +183,29 @@ public class QueryExecutor<T>
     {
         return Common.GraphEnvelopeReader.Read<T>(utf8Json, name, client.SerializerOptions);
     }
+
+    /// <summary>
+    ///     Full-envelope parse from a JSON string. Transcodes to UTF-8 and goes through the same
+    ///     parser as every other response path. An empty string yields a result with no data and
+    ///     no errors.
+    /// </summary>
     public GraphResult<T> ProcessResponseFull(string con, string name)
     {
-        using var document = JsonDocument.Parse(con);
-        return ProcessResponseFull(document.RootElement, name);
+        ArgumentNullException.ThrowIfNull(con);
+        return Common.GraphEnvelopeReader.Read<T>(Encoding.UTF8.GetBytes(con), name, client.SerializerOptions);
     }
 
+    /// <summary>
+    ///     Full-envelope parse from an already-materialized <see cref="JsonElement"/> root. The
+    ///     element's raw UTF-8 text is handed to the same parser as every other response path.
+    /// </summary>
     public GraphResult<T> ProcessResponseFull(JsonElement root, string name)
     {
-        List<GraphQueryError> errors = null;
-        if (root.TryGetProperty(ErrorPropertyName, out var errorElement))
+        if (root.ValueKind != JsonValueKind.Object)
         {
-            errors = errorElement.Deserialize<List<GraphQueryError>>(client.SerializerOptions);
+            throw new JsonException("GraphQL response envelope must be a JSON object.");
         }
 
-        T data = default;
-        if (root.TryGetProperty(DataPropertyName, out var dataElement) && dataElement.ValueKind != JsonValueKind.Null)
-        {
-            if (dataElement.TryGetProperty(name, out var resultElement) && resultElement.ValueKind != JsonValueKind.Null)
-            {
-                data = resultElement.Deserialize<T>(client.SerializerOptions);
-            }
-        }
-
-        Dictionary<string, object> extensions = null;
-        if (root.TryGetProperty(ExtensionsPropertyName, out var extensionsElement))
-        {
-            extensions = extensionsElement.Deserialize<Dictionary<string, object>>(client.SerializerOptions);
-        }
-
-        return new GraphResult<T>
-        {
-            Data = data,
-            Errors = errors,
-            Extensions = extensions
-        };
+        return Common.GraphEnvelopeReader.Read<T>(JsonMarshal.GetRawUtf8Value(root), name, client.SerializerOptions);
     }
 }

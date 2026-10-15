@@ -26,6 +26,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   main parsed the body with JsonDocument.Parse, which threw on an empty response. The
   envelope reader treats an empty body as "no data". Callers that relied on the exception
   to detect a broken response must check GraphResult.HasData / Errors explicitly.
+- **`QueryExecutor.ProcessResponseFull(string, name)` / `ProcessResponse(string, ...)`: an
+  empty string no longer throws.** They used to parse with `JsonDocument.Parse`, which threw
+  `JsonException` on `""`; they now return a result with `Data = default` and no errors, the
+  same as an empty HTTP body. Check `GraphResult.HasData` / `HasErrors` instead of catching
+  the exception. A `null` string throws `ArgumentNullException`; malformed or non-object
+  JSON still throws `JsonException`.
+- **One envelope parser for every response path.** Typed queries, `GraphClient.ExecuteAsync`
+  (GraphQL text), the public `ProcessResponse` / `ProcessResponseFull` overloads (`string`,
+  `byte[]`, `JsonElement`) and subscription payloads all parse `data` / `errors` /
+  `extensions` with the internal `GraphEnvelopeReader` (`Utf8JsonReader`, no
+  `JsonDocument`), so they can no longer disagree. The `JsonElement` overloads now reject
+  a non-object root with `JsonException` instead of `InvalidOperationException`.
 - **WebSocket: unknown message types are ignored** instead of terminating the
   subscription with `InvalidDataException` — matches the SSE transport's tolerance for
   unknown event types and keeps forward compatibility with proxies/servers.
