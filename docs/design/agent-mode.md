@@ -1,6 +1,6 @@
 # Linq2GraphQL Agent Mode Design
 
-**Status:** in progress. Plan steps 1-3 (the groundwork, SDL input and SDL output) are implemented. The AI package is being built in slices: (1) package skeleton and scoped schema, (2) renderer, (3) validator, (4) the four tools, (5) the `AsAgentTools` adapter, (6) sample and regression harness. Slice 1 is merged; slice 2 is in review. See [Plan](#plan-and-risks).
+**Status:** in progress. Plan steps 1-3 (the groundwork, SDL input and SDL output) are implemented. The AI package is being built in slices: (1) package skeleton and scoped schema, (2) renderer, (3) validator, (4) the four tools, (5) the `AsAgentTools` adapter, (6) sample and regression harness. Slices 1 and 2 are merged; slice 3 is in review. See [Plan](#plan-and-risks).
 
 ## Summary
 
@@ -292,7 +292,7 @@ The starter query is generated from the scoped schema at no cost, and next to de
 
 Example flow for "which customers have unpaid invoices?": the agent sees `customers` in the index and calls `describe_operation(["customers"])` for its arguments and a starter query. It calls `search_schema("invoice")`, finds `Customer.invoices` and `Invoice.status`, and calls `describe_type(["Invoice", "InvoiceStatus"])`. Then it adapts the starter query and calls `graphql_query`.
 
-**Validation.** Every query is checked against the scoped schema before it is sent: root fields must be allowed, and every selected field must exist on its type and not be omitted. The validator parses the query and walks it type by type, following fragments and inline fragments through their type conditions (interfaces and unions). Aliases don't matter, because the check uses real field names. Errors name the field and list what is available, for example "`legacyCode` is not available on `Customer`. Available: id, name, status, orders", so the agent can correct itself without a server round-trip. Arguments, input objects (including filters) and enum values are validated in the same walk in the first version; a depth limit can come later.
+**Validation.** Every query is checked against the scoped schema before it is sent: root fields must be allowed, and every selected field must exist on its type and not be omitted. The validator parses the query and walks it type by type, following fragments and inline fragments through their type conditions (interfaces and unions). Aliases don't matter, because the check uses real field names. Errors name the field and list what is available, for example "`legacyCode` is not available on `Customer`. Available: id, name, status, orders", so the agent can correct itself without a server round-trip. Arguments, input objects (including filters) and enum values are validated in the same walk in the first version, and so are variable values, so an omitted field cannot be passed in through a variable either. A depth limit can come later.
 
 ## Path to dedicated tools
 
