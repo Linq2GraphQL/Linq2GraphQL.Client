@@ -44,6 +44,9 @@ query Into {
       interfaces {
         name
       }
+      possibleTypes {
+        name
+      }
       enumValues {
         name
         description
@@ -59,6 +62,7 @@ query Into {
         args {
           name
           description
+          defaultValue
           type {
             ...BaseType
           }
@@ -67,6 +71,7 @@ query Into {
       inputFields {
         name
         description
+        defaultValue
         type {
           ...BaseType
         }
@@ -125,6 +130,9 @@ query Into {
       interfaces {
         name
       }
+      possibleTypes {
+        name
+      }
       enumValues(includeDeprecated: true) {
         name
         description
@@ -144,6 +152,7 @@ query Into {
         args {
           name
           description
+          defaultValue
           type {
             ...BaseType
           }
@@ -152,6 +161,7 @@ query Into {
       inputFields(includeDeprecated: true) {
         name
         description
+        defaultValue
         isDeprecated
         deprecationReason
         type {

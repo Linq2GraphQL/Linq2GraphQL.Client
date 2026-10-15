@@ -12,6 +12,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
+    <PackageVersion Include="GraphQL-Parser" Version="9.5.1" />
     <PackageVersion Include="HotChocolate.AspNetCore" Version="16.6.4" />
     <PackageVersion Include="HotChocolate.Data" Version="16.6.4" />
     <PackageVersion Include="HotChocolate.Types.Scalars" Version="16.6.4" />

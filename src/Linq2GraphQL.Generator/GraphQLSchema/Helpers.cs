@@ -11,6 +11,45 @@ public static class Helpers
         return Regex.Replace(text, @"\r\n?|\n", Environment.NewLine + "/// ");
     }
 
+    /// <summary>
+    /// A <c>[Description]</c> attribute carrying the schema description, or an empty string when there is
+    /// no description or the attributes are turned off. Fully qualified so a schema type named
+    /// <c>Description</c> cannot shadow it.
+    /// </summary>
+    internal static string DescriptionAttribute(string description)
+    {
+        if (string.IsNullOrWhiteSpace(description) || GeneratorSettings.Current?.DescriptionAttributes == false)
+        {
+            return "";
+        }
+
+        return $"[global::System.ComponentModel.Description({ToStringLiteral(description)})]";
+    }
+
+    /// <summary>
+    /// A regular C# string literal for arbitrary text, so multi-line descriptions and ones containing
+    /// quotes or backslashes stay valid code. Line endings are normalised to \n.
+    /// </summary>
+    public static string ToStringLiteral(string text)
+    {
+        var builder = new System.Text.StringBuilder("\"");
+        foreach (var c in text.ReplaceLineEndings("\n"))
+        {
+            builder.Append(c switch
+            {
+                '"' => "\\\"",
+                '\\' => "\\\\",
+                '\n' => "\\n",
+                '\t' => "\\t",
+                '\0' => "\\0",
+                _ when char.IsControl(c) => $"\\u{(int)c:x4}",
+                _ => c.ToString()
+            });
+        }
+
+        return builder.Append('"').ToString();
+    }
+
     internal static string SafeDeprecationReason(string text)
     {
         if (string.IsNullOrEmpty(text)) { return text; }

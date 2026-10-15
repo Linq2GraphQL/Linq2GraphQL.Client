@@ -56,34 +56,34 @@ public interface IQueryMethods
     /// </summary>
     /// <param name="ordersNoBackwardPagination">The operation parameters</param>
     /// <returns>GraphQL query result of type GraphQuery<OrdersNoBackwardPaginationConnection></returns>
-    GraphQuery<OrdersNoBackwardPaginationConnection> OrdersNoBackwardPagination(int? first = null, string after = null, OrderFilterInput where = null, List<OrderSortInput> order = null);
+    GraphQuery<OrdersNoBackwardPaginationConnection> OrdersNoBackwardPagination([global::System.ComponentModel.Description("Returns the first _n_ elements from the list.")] int? first = null, [global::System.ComponentModel.Description("Returns the elements in the list that come after the specified cursor.")] string after = null, OrderFilterInput where = null, List<OrderSortInput> order = null);
 
     /// <summary>
     /// Executes ordersNoTotalCount GraphQL operation
     /// </summary>
     /// <param name="ordersNoTotalCount">The operation parameters</param>
     /// <returns>GraphQL query result of type GraphCursorQuery<OrdersNoTotalCountConnection></returns>
-    GraphCursorQuery<OrdersNoTotalCountConnection> OrdersNoTotalCount(int? first = null, string after = null, int? last = null, string before = null, OrderFilterInput where = null, List<OrderSortInput> order = null);
+    GraphCursorQuery<OrdersNoTotalCountConnection> OrdersNoTotalCount([global::System.ComponentModel.Description("Returns the first _n_ elements from the list.")] int? first = null, [global::System.ComponentModel.Description("Returns the elements in the list that come after the specified cursor.")] string after = null, [global::System.ComponentModel.Description("Returns the last _n_ elements from the list.")] int? last = null, [global::System.ComponentModel.Description("Returns the elements in the list that come before the specified cursor.")] string before = null, OrderFilterInput where = null, List<OrderSortInput> order = null);
 
     /// <summary>
     /// Executes orders GraphQL operation
     /// </summary>
     /// <param name="orders">The operation parameters</param>
     /// <returns>GraphQL query result of type GraphCursorQuery<OrdersConnection></returns>
-    GraphCursorQuery<OrdersConnection> Orders(int? first = null, string after = null, int? last = null, string before = null, OrderFilterInput where = null, List<OrderSortInput> order = null);
+    GraphCursorQuery<OrdersConnection> Orders([global::System.ComponentModel.Description("Returns the first _n_ elements from the list.")] int? first = null, [global::System.ComponentModel.Description("Returns the elements in the list that come after the specified cursor.")] string after = null, [global::System.ComponentModel.Description("Returns the last _n_ elements from the list.")] int? last = null, [global::System.ComponentModel.Description("Returns the elements in the list that come before the specified cursor.")] string before = null, OrderFilterInput where = null, List<OrderSortInput> order = null);
 
     /// <summary>
     /// Executes animals GraphQL operation
     /// </summary>
     /// <param name="animals">The operation parameters</param>
     /// <returns>GraphQL query result of type GraphCursorQuery<AnimalsConnection></returns>
-    GraphCursorQuery<AnimalsConnection> Animals(int? first = null, string after = null, int? last = null, string before = null, IAnimalFilterInput where = null, List<IAnimalSortInput> order = null);
+    GraphCursorQuery<AnimalsConnection> Animals([global::System.ComponentModel.Description("Returns the first _n_ elements from the list.")] int? first = null, [global::System.ComponentModel.Description("Returns the elements in the list that come after the specified cursor.")] string after = null, [global::System.ComponentModel.Description("Returns the last _n_ elements from the list.")] int? last = null, [global::System.ComponentModel.Description("Returns the elements in the list that come before the specified cursor.")] string before = null, IAnimalFilterInput where = null, List<IAnimalSortInput> order = null);
 
     /// <summary>
     /// Executes ordersOffsetPaging GraphQL operation
     /// </summary>
     /// <param name="ordersOffsetPaging">The operation parameters</param>
     /// <returns>GraphQL query result of type GraphCursorQuery<OrdersOffsetPagingConnection></returns>
-    GraphCursorQuery<OrdersOffsetPagingConnection> OrdersOffsetPaging(int? first = null, string after = null, int? last = null, string before = null, OrderFilterInput where = null, List<OrderSortInput> order = null);
+    GraphCursorQuery<OrdersOffsetPagingConnection> OrdersOffsetPaging([global::System.ComponentModel.Description("Returns the first _n_ elements from the list.")] int? first = null, [global::System.ComponentModel.Description("Returns the elements in the list that come after the specified cursor.")] string after = null, [global::System.ComponentModel.Description("Returns the last _n_ elements from the list.")] int? last = null, [global::System.ComponentModel.Description("Returns the elements in the list that come before the specified cursor.")] string before = null, OrderFilterInput where = null, List<OrderSortInput> order = null);
 
 }

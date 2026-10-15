@@ -24,6 +24,8 @@ internal class Program
         var enumStrategy = new Option<string>(new[] { "--enum-strategy", "-es" }, "Enum strategy");
         var nullable = new Option<bool>(new[] { "--nullable", "-nu" }, "Nullable client");
         var includeDeprecated = new Option<bool>(new[] { "--deprecated", "-d" }, "Include Deprecated as Obsolete");
+        var schemaFile = new Option<string>(new[] { "--schema", "-sc" },
+            "Schema file (SDL) to generate from instead of an endpoint, relative to current location");
 
         var rootCommand = new RootCommand("Generate GraphQL client")
         {
@@ -36,7 +38,8 @@ internal class Program
             includeSubscriptions,
             enumStrategy,
             nullable,
-            includeDeprecated
+            includeDeprecated,
+            schemaFile
         };
 
         rootCommand.SetHandler(async context =>
@@ -51,7 +54,8 @@ internal class Program
                     // Fail before touching the network if a mapping target is bad.
                     var scalarMappings = Helpers.ResolveScalarMappings(config.ScalarMappings);
 
-                    var uriValue = ResolveEndpoint(result, uriArgument, config.Endpoint);
+                    var schemaFileValue = Resolve(result, schemaFile, config.Schema, null);
+                    var uriValue = ResolveEndpoint(result, uriArgument, config.Endpoint, schemaFileValue);
                     var outputFolderValue = Resolve(result, outputFolder, config.Output, "Linq2GraphQL_Generated");
                     var namespaceValue = Resolve(result, namespaceName, config.Namespace, "YourNamespace");
                     var clientNameValue = Resolve(result, clientName, config.Client, "GraphQLClient");
@@ -61,9 +65,11 @@ internal class Program
                     var nullableValue = Resolve(result, nullable, config.Nullable, false);
                     var deprecatedValue = Resolve(result, includeDeprecated, config.Deprecated, false);
 
-                    await GenerateClientAsync(uriValue, outputFolderValue, namespaceValue, clientNameValue,
+                    var descriptionAttributesValue = config.DescriptionAttributes ?? true;
+
+                    await GenerateClientAsync(uriValue, schemaFileValue, outputFolderValue, namespaceValue, clientNameValue,
                         includeSubscriptionsValue, authTokenValue, enumStrategyValue, nullableValue, deprecatedValue,
-                        scalarMappings);
+                        scalarMappings, descriptionAttributesValue);
                 }
                 catch (GeneratorConfigurationException ex)
                 {
@@ -103,9 +109,27 @@ internal class Program
         return configValue ?? defaultValue;
     }
 
-    private static Uri ResolveEndpoint(ParseResult result, Argument<Uri> argument, string configEndpoint)
+    /// <summary>
+    /// The endpoint to introspect, or null when the schema comes from a file. A file and an endpoint
+    /// are mutually exclusive, so a run can never silently use the other one.
+    /// </summary>
+    private static Uri ResolveEndpoint(ParseResult result, Argument<Uri> argument, string configEndpoint,
+        string schemaFile)
     {
         var uriValue = result.GetValueForArgument(argument);
+        var hasEndpoint = uriValue != null || !string.IsNullOrWhiteSpace(configEndpoint);
+
+        if (!string.IsNullOrWhiteSpace(schemaFile))
+        {
+            if (hasEndpoint)
+            {
+                throw new GeneratorConfigurationException(
+                    "Both an endpoint and a schema file are given. Use one of them.");
+            }
+
+            return null;
+        }
+
         if (uriValue != null)
         {
             return uriValue;
@@ -114,7 +138,8 @@ internal class Program
         if (string.IsNullOrWhiteSpace(configEndpoint))
         {
             throw new GeneratorConfigurationException(
-                "No endpoint given. Pass it as the first argument or set \"endpoint\" in the config file.");
+                "No endpoint given. Pass it as the first argument, set \"endpoint\" in the config file, " +
+                "or generate from a schema file with --schema.");
         }
 
         if (!Uri.TryCreate(configEndpoint, UriKind.Absolute, out var configUri))
@@ -125,9 +150,9 @@ internal class Program
         return configUri;
     }
 
-    private static async Task GenerateClientAsync(Uri uri, string outputFolder, string namespaceName, string name,
+    private static async Task GenerateClientAsync(Uri uri, string schemaFile, string outputFolder, string namespaceName, string name,
         bool includeSubscriptions, string authToken, string enumStrategy, bool nullable, bool includeDeprecated,
-        IReadOnlyDictionary<string, (string Name, Type type)?> scalarMappings)
+        IReadOnlyDictionary<string, (string Name, Type type)?> scalarMappings, bool descriptionAttributes)
     {
         var enumStrat = enumStrategy != null &&
                         enumStrategy.Equals("AddUnknownOption", StringComparison.InvariantCultureIgnoreCase)
@@ -135,8 +160,23 @@ internal class Program
             : EnumGeneratorStrategy.FailIfMissing;
 
         var generator = new ClientGenerator(namespaceName, name, includeSubscriptions, enumStrat, nullable,
-            includeDeprecated, scalarMappings);
-        var entries = await generator.GenerateAsync(uri, authToken);
+            includeDeprecated, scalarMappings, descriptionAttributes);
+        List<FileEntry> entries;
+        if (schemaFile != null)
+        {
+            var schemaPath = Path.GetFullPath(schemaFile, Environment.CurrentDirectory);
+            if (!File.Exists(schemaPath))
+            {
+                throw new GeneratorConfigurationException($"Schema file not found: {schemaPath}");
+            }
+
+            Console.WriteLine($"Start generating client from schema file {schemaPath}");
+            entries = generator.GenerateFromSdl(await File.ReadAllTextAsync(schemaPath));
+        }
+        else
+        {
+            entries = await generator.GenerateAsync(uri, authToken);
+        }
 
         var outputPath = Path.GetFullPath(outputFolder, Environment.CurrentDirectory);
         Console.WriteLine($"Output path is set to: {outputPath}");

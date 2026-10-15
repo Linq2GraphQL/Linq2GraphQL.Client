@@ -7,6 +7,9 @@ using Linq2GraphQL.Client;
 
 namespace <#= namespaceName #>;
 
+<# if (classType.HasDescriptionAttribute) { #>
+<#= classType.DescriptionAttribute #>
+<# } #>
 [JsonConverter(typeof(GraphInputConverter<<#= classType.Name #>>))]
 public partial class <#= classType.Name #> : GraphInputBase
 {
@@ -15,6 +18,9 @@ public partial class <#= classType.Name #> : GraphInputBase
     {
         var coreType = field.CoreType;
 #>
+<# if (field.HasDescriptionAttribute) { #>
+	<#= field.DescriptionAttribute #>
+<# } #>
 <# if (field.IsDeprecated) { #>
     [Obsolete("<#= field.DeprecationReason #>")]
 <# } #>

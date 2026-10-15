@@ -70,6 +70,7 @@ Usage:
       -es --enum-strategy          If AddUnknownOption all enums will have an additional Unknown option
       -nu --nullabel               Nullable client [default: false]
 	  -d  --deprecated			   Include Deprecated as Obsolete
+      -sc --schema                 Schema file (SDL) to generate from instead of an endpoint
       -cf --config                 Json settings file, see Configuration file below
 
 As an example:
@@ -78,6 +79,17 @@ As an example:
 
 Would generate a client from url *https://spacex-production.up.railway.app/* with the name *SpaceXClient* in the
 namespace *SpaceX* to folder *Generated*
+
+### Generating from a schema file
+
+Instead of an endpoint you can point the generator at a schema written in SDL, for example one exported
+from HotChocolate (`dotnet run -- schema export`) or taken from a schema registry. No server needs to be
+running:
+
+    Linq2GraphQL --schema schema.graphql -c="SpaceXClient" -n="SpaceX" -o="Generated"
+
+The result is the same client the endpoint would give. An endpoint and a schema file are mutually
+exclusive; passing both is an error.
 
 ## Configuration file
 
@@ -116,6 +128,7 @@ file is allowed to be absent.
 | Setting          | Type   | Default                  | Command line          |
 |------------------|--------|--------------------------|-----------------------|
 | `endpoint`       | string | *required*               | `<endpoint>` argument |
+| `schema`         | string | none                     | `-sc`, `--schema`     |
 | `output`         | string | `Linq2GraphQL_Generated` | `-o`, `--output`      |
 | `namespace`      | string | `YourNamespace`          | `-n`, `--namespace`   |
 | `client`         | string | `GraphQLClient`          | `-c`, `--client`      |
@@ -125,16 +138,20 @@ file is allowed to be absent.
 | `nullable`       | bool   | `false`                  | `-nu`, `--nullable`   |
 | `deprecated`     | bool   | `false`                  | `-d`, `--deprecated`  |
 | `scalarMappings` | object | none                     | *no equivalent*       |
+| `descriptionAttributes` | bool | `true`              | *no equivalent*       |
 
 `endpoint` is required only in the sense that it has to come from somewhere - the file or the
-command line argument. `enumStrategy` takes `AddUnknownOption` to give every generated enum an extra
+command line argument - unless `schema` names an SDL file to generate from instead. `enumStrategy` takes `AddUnknownOption` to give every generated enum an extra
 `Unknown` member; any other value means `FailIfMissing`. `token` is settable here for completeness,
-but a bearer token is usually better passed as `-t` than checked into a file.
+but a bearer token is usually better passed as `-t` than checked into a file. `descriptionAttributes`
+controls whether schema descriptions are also emitted as `[Description]` attributes, next to the
+XML doc comments, so tools that read them at runtime (JSON schema exporters, OpenAPI, AI function
+factories) see the schema's text; set it to `false` to leave them out.
 
 Setting names are matched case insensitively. A name that is not in the table above fails the run,
-so a typo like `scalarMapping` is reported rather than silently ignored. `scalarMappings` has no
-command line equivalent, so it is the one setting a discovered file supplies that you cannot
-override back off from the command line.
+so a typo like `scalarMapping` is reported rather than silently ignored. `scalarMappings` and
+`descriptionAttributes` have no command line equivalent, so they are the settings a discovered file
+supplies that you cannot override back off from the command line.
 
 Everything in the file is optional, and an option you pass explicitly on the command line always wins
 over the file - so you can keep the shared settings in the file and override one of them for a single

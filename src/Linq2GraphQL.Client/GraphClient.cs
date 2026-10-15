@@ -51,6 +51,12 @@ public class GraphClient
 
     public Func<GraphClient, Task<GraphQLRequest>> WSConnectionInitPayload => options.Value.WSConnectionInitPayload;
 
+    internal ValueTask ConfigureRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+        var configureRequest = options.Value.ConfigureRequest;
+        return configureRequest is null ? ValueTask.CompletedTask : configureRequest(request, cancellationToken);
+    }
+
     private string GetSubscriptionUrl()
     {
         var baseUrl = HttpClient?.BaseAddress.ToString();
@@ -79,9 +85,9 @@ public class GraphClient
             return null;
         }
 
-        var cackeKey = "Linq2GraphQL_Schema:" + HttpClient.BaseAddress;
+        var cacheKey = $"Linq2GraphQL_Schema:{HttpClient.BaseAddress}:{includeDeprecated}:{options.Value.SchemaCacheKey}";
 
-        return await cache.GetOrCreateAsync(cackeKey, async entry =>
+        return await cache.GetOrCreateAsync(cacheKey, async entry =>
         {
             var executor = new QueryExecutor<GraphQLSchema>(this);
 

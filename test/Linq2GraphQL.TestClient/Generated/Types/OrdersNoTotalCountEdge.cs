@@ -17,11 +17,13 @@ namespace Linq2GraphQL.TestClient;
 /// <summary>
 /// An edge in a connection.
 /// </summary>
+[global::System.ComponentModel.Description("An edge in a connection.")]
 public partial class OrdersNoTotalCountEdge : GraphQLTypeBase
 {
     /// <summary>
     /// A cursor for use in pagination.
     /// </summary>
+    [global::System.ComponentModel.Description("A cursor for use in pagination.")]
     [GraphQLMember("cursor")]
     [JsonPropertyName("cursor")]
     public string Cursor { get; set; }
@@ -29,6 +31,7 @@ public partial class OrdersNoTotalCountEdge : GraphQLTypeBase
     /// <summary>
     /// The item at the end of the edge.
     /// </summary>
+    [global::System.ComponentModel.Description("The item at the end of the edge.")]
     [GraphQLMember("node")]
     [JsonPropertyName("node")]
     public Order Node { get; set; }

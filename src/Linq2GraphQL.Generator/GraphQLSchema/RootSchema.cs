@@ -28,6 +28,11 @@ public class GraphqlType : BaseType
 
     public List<GraphqlType> Interfaces { get; set; }
 
+    /// <summary>
+    /// The member types of a union, or the implementing types of an interface.
+    /// </summary>
+    public List<GraphqlType> PossibleTypes { get; set; }
+
     public bool HasInterfaces => (Interfaces != null && Interfaces.Any());
 
     public string GetInterfacesString(string baseClass = null)
@@ -118,6 +123,9 @@ public class EnumValue
 
     public string SafeDeprecationReason => Helpers.SafeDeprecationReason(DeprecationReason);
 
+    public string DescriptionAttribute => Helpers.DescriptionAttribute(Description);
+
+    public bool HasDescriptionAttribute => DescriptionAttribute != "";
 
     public string GetCSharpName()
     {
@@ -137,6 +145,11 @@ public class BaseField
 
     public string Description { get; set; }
 
+    /// <summary>
+    /// The default value of an argument or input field, as a GraphQL literal. Null for output fields.
+    /// </summary>
+    public string DefaultValue { get; set; }
+
     public bool IsDeprecated { get; set; }
     public string DeprecationReason { get; set; }
 
@@ -145,6 +158,10 @@ public class BaseField
     public bool HasDescription => !string.IsNullOrEmpty(Description);
 
     public string SummaryDescription => Helpers.SummarySafe(Description);
+
+    public string DescriptionAttribute => Helpers.DescriptionAttribute(Description);
+
+    public bool HasDescriptionAttribute => DescriptionAttribute != "";
 
     public string CSharpName => Name?.ToPascalCase();
 
@@ -213,6 +230,11 @@ public class Field : BaseField
                 result += ", ";
             }
 
+            if (arg.HasDescriptionAttribute)
+            {
+                result += arg.DescriptionAttribute + " ";
+            }
+
             if (addTypeAttribute)
             {
                 result +=
@@ -235,7 +257,6 @@ public class Field : BaseField
 
 public class Arg : BaseField
 {
-    public string DefaultValue { get; set; }
 }
 
 public class BaseType
@@ -248,6 +269,10 @@ public class BaseType
     public bool HasDescription => !string.IsNullOrEmpty(Description);
 
     public string SummaryDescription => Helpers.SummarySafe(Description);
+
+    public string DescriptionAttribute => Helpers.DescriptionAttribute(Description);
+
+    public bool HasDescriptionAttribute => DescriptionAttribute != "";
 
     public string CSharpName => Name?.ToPascalCase();
     public string FileName => CSharpName + ".cs";

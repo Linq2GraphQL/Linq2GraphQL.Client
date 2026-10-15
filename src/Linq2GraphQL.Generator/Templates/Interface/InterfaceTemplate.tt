@@ -66,6 +66,9 @@ internal class <#= GetInterfaceConverterName() #> : InterfaceJsonConverter<<#= c
 /// <summary>
 /// GraphQL interface <#= classType.Name #> with all common fields
 /// </summary>
+<# if (classType.HasDescriptionAttribute) { #>
+<#= classType.DescriptionAttribute #>
+<# } #>
 [JsonConverter(typeof(<#= GetInterfaceConverterName() #>))]
 public interface <#= classType.Name #> <#= classType.GetInterfacesString() #>
 {
@@ -77,6 +80,9 @@ public interface <#= classType.Name #> <#= classType.GetInterfacesString() #>
     /// <summary>
     /// <#= field.Name #> field from GraphQL schema
     /// </summary>
+<# if (field.HasDescriptionAttribute) { #>
+    <#= field.DescriptionAttribute #>
+<# } #>
     [GraphQLMember("<#= field.Name #>")]
     <#= coreType.CSharpTypeDefinition #> <#= field.CSharpName #> { get; set; }
 
