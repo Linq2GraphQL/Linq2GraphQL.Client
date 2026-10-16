@@ -901,4 +901,47 @@ public class WsClientTests
         Assert.Equal("Bearer wasm-token", payload.GetProperty("Authorization").GetString());
         Assert.Empty(failures);
     }
+
+    [Fact]
+    public async Task SendAuthorizationInConnectionInit_NonDictionaryPayload_Throws()
+    {
+        await using var server = await GraphQLWsTestServer.StartAsync();
+        var graphClient = WsTestGraphClientFactory.Create(server, configureOptions: options =>
+        {
+            options.SendAuthorizationInConnectionInit = true;
+            options.ConnectionInitPayload = (_, _) => ValueTask.FromResult<object>(new { token = "s3cret" });
+        })
+            .WithRequestConfiguration(RequestConfigurations.BearerToken(_ => ValueTask.FromResult("wasm-token")));
+        var (client, _, _, _) = CreateClient(graphClient);
+
+        await using var _ = client;
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            client.Start().WaitAsync(TimeSpan.FromSeconds(10)));
+
+        Assert.Contains("dictionary", exception.Message);
+        Assert.Contains("Authorization", exception.Message);
+    }
+
+    [Fact]
+    public async Task SlowRequestHook_BeyondDefaultConnectTimeout_StillConnects()
+    {
+        // Websocket.Client's default ConnectTimeout is 5 s and covers the whole connection
+        // factory, request hooks included. WSClient raises it to 30 s so a token hook with a
+        // slow identity-provider round-trip does not fail the connect; this pins that.
+        await using var server = await GraphQLWsTestServer.StartAsync();
+        var graphClient = WsTestGraphClientFactory.Create(server)
+            .WithRequestConfiguration(async (request, _) =>
+            {
+                await Task.Delay(TimeSpan.FromSeconds(6));
+                request.Headers.Authorization = new("Bearer", "slow-token");
+            });
+        var (client, _, _, failures) = CreateClient(graphClient);
+
+        await using var _ = client;
+        await client.Start().WaitAsync(TimeSpan.FromSeconds(20));
+
+        Assert.Empty(failures);
+        var headers = Assert.Single(server.UpgradeHeaders);
+        Assert.Equal("Bearer slow-token", headers["Authorization"]);
+    }
 }

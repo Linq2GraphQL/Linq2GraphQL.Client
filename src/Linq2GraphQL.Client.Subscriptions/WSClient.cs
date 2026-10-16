@@ -198,27 +198,29 @@ public class WSClient : IAsyncDisposable
         try
         {
             await client.StartOrFail().ConfigureAwait(false);
+
+            // Initial connect: a missing subprotocol is a protocol violation and stays terminal.
+            var negotiated = client.NativeClient?.SubProtocol;
+            if (string.IsNullOrEmpty(negotiated))
+            {
+                throw new InvalidDataException("WebSocket server did not negotiate a GraphQL subprotocol.");
+            }
+
+            subprotocol = ValidateNegotiatedSubprotocol(negotiated);
+            await SendConnectionInitAsync().ConfigureAwait(false);
+            await WaitForAckAsync().ConfigureAwait(false);
         }
         catch
         {
-            // The caller sees this exception from Start(). The transport also raises a
-            // DisconnectionHappened(Error) for the same failure; without marking it terminal the
-            // retry loop would run the full bounded budget in the background and surface a
-            // second, delayed error for a failure the caller already handled.
+            // Any failure of the initial connect/handshake propagates to the caller from Start().
+            // The transport may still surface the same failure later (e.g. the server closing on
+            // its own ack timeout); without marking it terminal the retry loop would run the
+            // full bounded budget in the background and report a second, delayed error for a
+            // failure the caller already handled.
             Interlocked.Exchange(ref terminalFailure, 1);
             throw;
         }
 
-        // Initial connect: a missing subprotocol is a protocol violation and stays terminal.
-        var negotiated = client.NativeClient?.SubProtocol;
-        if (string.IsNullOrEmpty(negotiated))
-        {
-            throw new InvalidDataException("WebSocket server did not negotiate a GraphQL subprotocol.");
-        }
-
-        subprotocol = ValidateNegotiatedSubprotocol(negotiated);
-        await SendConnectionInitAsync().ConfigureAwait(false);
-        await WaitForAckAsync().ConfigureAwait(false);
         StartWatchdog();
     }
 
@@ -337,8 +339,8 @@ public class WSClient : IAsyncDisposable
 
         throw new InvalidOperationException(
             "SendAuthorizationInConnectionInit requires the ConnectionInitPayload to be a dictionary "
-            + "with string keys (or null) so the Authorization connection parameter can be merged; "
-            + $"it was {payload.GetType()}.");
+            + "with string keys and object values (or null) so the Authorization connection parameter "
+            + $"can be merged; it was {payload.GetType()}.");
     }
 
     private string ValidateNegotiatedSubprotocol(string negotiatedProtocol)

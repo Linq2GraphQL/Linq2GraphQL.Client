@@ -29,7 +29,8 @@ public class GraphClientOptions
     /// (re)connect, so a refreshed token is picked up, and counted within the connect timeout
     /// (30 s). Overrides the obsolete <see cref="WSConnectionInitPayload"/> when set. When
     /// <see cref="SendAuthorizationInConnectionInit"/> is enabled the payload must be a dictionary
-    /// with string keys (or null) so the <c>Authorization</c> parameter can be merged.
+    /// with string keys and object values (<see cref="Dictionary{TKey, TValue}"/> of string to
+    /// object, or the read-only equivalent) so the <c>Authorization</c> parameter can be merged.
     /// </summary>
     public Func<GraphClient, CancellationToken, ValueTask<object>> ConnectionInitPayload { get; set; }
 

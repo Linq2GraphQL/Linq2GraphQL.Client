@@ -83,7 +83,7 @@ Behaviour changes that callers may notice. None of them changes a public signatu
 - **WebSocket: unknown message types are ignored** instead of terminating the
   subscription with `InvalidDataException`. This matches the SSE transport's tolerance for
   unknown event types and keeps forward compatibility with proxies/servers.
-- **A failed initial WebSocket connect no longer retries in the background.** The
+- **A failed initial WebSocket connect or handshake no longer retries in the background.** The
   exception surfaces from `StartAsync`; previously the transport's `Error` disconnect
   also started the bounded reconnect loop, re-running request hooks up to five times and
   reporting a second, delayed error for a failure the caller had already handled.
