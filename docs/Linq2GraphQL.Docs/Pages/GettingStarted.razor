@@ -1,0 +1,256 @@
+@page "/getting-started"
+
+<PageTitle>Getting started - Linq2GraphQL</PageTitle>
+
+<h1 class="page-heading">Getting started</h1>
+<p class="lead text-secondary">
+    From an empty project to a typed query in four steps. The examples use the public
+    <a href="https://swapi-graphql.netlify.app/graphql" target="_blank" rel="noopener">Star Wars API</a>, which
+    needs no account, so you can follow along as written.
+</p>
+
+<section class="doc-section">
+    <h2 id="install-generator"><span class="step-number">1</span> Install the generator</h2>
+    <p>
+        The generator is a dotnet tool. Install it globally, or as a local tool so everyone working on the
+        repository runs the same version:
+    </p>
+    <CodeBlock Title="Global" Language="shell" Code="@InstallGlobal"/>
+    <CodeBlock Title="Local, pinned in the repository" Language="shell" Code="@InstallLocal"/>
+    <p>
+        Rather not install anything? The <a href="generate-client">online generator</a> produces the same
+        code from a URL or a schema and downloads it as a zip file.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="generate"><span class="step-number">2</span> Generate the client</h2>
+    <p>Run the generator against the endpoint, naming the client, its namespace and the output folder:</p>
+    <CodeBlock Language="shell" Code="@GenerateFromEndpoint"/>
+    <p>
+        The generator runs an introspection query against the endpoint and writes the client as plain C#
+        files. If the server needs authentication, pass a bearer token with <code>-t</code>. If you have the
+        schema as SDL instead, for example exported from HotChocolate or taken from a schema registry, no
+        server needs to be running:
+    </p>
+    <CodeBlock Language="shell" Code="@GenerateFromSchema"/>
+    <p>The output is grouped by kind:</p>
+    <div class="table-responsive">
+        <table class="table table-vcenter card-table border">
+            <tbody>
+            <tr><td><code>Client</code></td><td>The client class, one class for each of the query, mutation and subscription roots, and the dependency injection extensions.</td></tr>
+            <tr><td><code>Types</code></td><td>A class for every object type in the schema.</td></tr>
+            <tr><td><code>Inputs</code></td><td>A class for every input type, used as mutation and query arguments.</td></tr>
+            <tr><td><code>Enums</code></td><td>The schema's enums.</td></tr>
+            <tr><td><code>Interfaces</code></td><td>The schema's interfaces, plus interfaces for the client and its operation roots that you can mock in tests.</td></tr>
+            <tr><td><code>Scalars</code></td><td>A class for each custom scalar that is not mapped to a .NET type.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <p>
+        Check the generated files in with the rest of your code, and run the generator again whenever the
+        schema changes. Generated files start with a header saying so; don't edit them, because the next run
+        overwrites them. The <a href="generator">generator reference</a> lists every option, and shows how to
+        keep them in a <code>linq2graphql.json</code> file so regenerating is just <code>Linq2GraphQL</code>.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="add-package"><span class="step-number">3</span> Add the package and register the client</h2>
+    <p>The generated code needs the runtime package:</p>
+    <CodeBlock Language="shell" Code="@AddPackage"/>
+    <p>
+        If you generated the client with subscriptions (<code>-s</code>), add
+        <code>Linq2GraphQL.Client.Subscriptions</code> as well.
+    </p>
+    <p>
+        The generator writes an extension method named after your client that registers it with dependency
+        injection. Give it the endpoint's address:
+    </p>
+    <CodeBlock Code="@Register"/>
+    <p>
+        The client is a typed <code>HttpClient</code> client from <code>IHttpClientFactory</code>, so the
+        connection is pooled for you. <code>WithHttpClient</code> returns the <code>IHttpClientBuilder</code>,
+        so you can chain the usual extensions on it, such as <code>AddStandardResilienceHandler()</code> or
+        your own <code>DelegatingHandler</code>.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="first-query"><span class="step-number">4</span> Run a query</h2>
+    <p>Inject the client and start from <code>Query</code>:</p>
+    <CodeBlock Code="@FirstQuery"/>
+    <p>Every request is built from the same three parts:</p>
+    <ul>
+        <li>
+            <strong>The operation.</strong> <code>Query</code>, <code>Mutation</code> and <code>Subscription</code>
+            have a method for each field of the schema's root types, with the field's arguments as optional
+            parameters.
+        </li>
+        <li>
+            <strong><code>Include</code>, optional and repeatable.</strong> Scalar fields are always fetched.
+            Related objects and lists of scalars are fetched only when you include them, to any depth. A field
+            that takes arguments is a method. C# doesn't allow named arguments out of position inside a lambda
+            that becomes an expression tree, so pass them by position: <code>f.CharacterConnection(null, 5)</code>
+            sends <code>first: 5</code> to that nested field.
+        </li>
+        <li>
+            <strong><code>Select</code>.</strong> Picks what the call returns: the whole result
+            (<code>Select()</code>), a part of it, or a projection into an anonymous object or a class of your own.
+            Only the fields the projection uses are requested; see <a href="selecting-fields">selecting fields</a>.
+        </li>
+    </ul>
+    <CodeBlock Title="Project into your own shape" Code="@Projection"/>
+    <p>
+        Mutations work the same way, with generated input classes as arguments. The Star Wars API has none, so
+        this one is from a schema that does:
+    </p>
+    <CodeBlock Code="@Mutation"/>
+</section>
+
+<section class="doc-section">
+    <h2 id="client-options">Client options</h2>
+    <p>The action passed to <code>Add…Client</code> configures a <code>GraphClientOptions</code>:</p>
+    <div class="table-responsive">
+        <table class="table table-vcenter card-table border">
+            <thead>
+            <tr><th>Option</th><th>What it does</th></tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><code>UseSafeMode</code></td>
+                <td>
+                    Before the first request, run an introspection query against the endpoint and only auto-include
+                    scalar fields the server actually has. It protects a client generated from an older schema
+                    against fields that were removed since, at the cost of one extra request (the schema is cached).
+                    The server must allow introspection. Off by default.
+                </td>
+            </tr>
+            <tr>
+                <td><code>ConfigureRequest</code></td>
+                <td>Called for every HTTP request just before it is sent, to set headers that are the same for everyone.</td>
+            </tr>
+            <tr>
+                <td><code>SubscriptionProtocol</code></td>
+                <td>The transport for subscriptions: graphql-ws over WebSockets (the default) or server-sent events.</td>
+            </tr>
+            <tr>
+                <td><code>SchemaCacheKey</code></td>
+                <td>Keeps the safe mode schema of this client apart from other clients on the same address that see a different schema, for example because they use other credentials.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <CodeBlock Code="@Options"/>
+    <p>
+        For headers that depend on the current user, such as an on-behalf-of token, derive a client instead.
+        A derived client shares the original's connection and settings and adds its own hook on top, so it
+        is cheap to create one per user or per request:
+    </p>
+    <CodeBlock Code="@AccessToken"/>
+    <p>
+        <code>WithAccessToken</code> sets <code>Authorization: Bearer &lt;token&gt;</code> and asks for the
+        token on every request. <code>WithRequestConfiguration</code> takes any hook.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2>Next steps</h2>
+    <ul>
+        <li><a href="selecting-fields">Selecting fields</a>: fetch exactly the fields you need by projecting the result.</li>
+        <li><a href="generator">Generator reference</a>: every option, the configuration file and mapping scalars to your own types.</li>
+    </ul>
+</section>
+
+@code {
+    private const string InstallGlobal = """
+        dotnet tool update Linq2GraphQL.Generator -g --prerelease
+        """;
+
+    private const string InstallLocal = """
+        dotnet new tool-manifest
+        dotnet tool install Linq2GraphQL.Generator --prerelease
+        """;
+
+    private const string GenerateFromEndpoint = """
+        Linq2GraphQL https://swapi-graphql.netlify.app/graphql -c=StarWarsClient -n=StarWars.Client -o=Generated
+        """;
+
+    private const string GenerateFromSchema = """
+        Linq2GraphQL --schema schema.graphql -c=StarWarsClient -n=StarWars.Client -o=Generated
+        """;
+
+    private const string AddPackage = """
+        dotnet add package Linq2GraphQL.Client --prerelease
+        """;
+
+    private const string Register = """
+        using Linq2GraphQL.Client;
+        using StarWars.Client;
+
+        builder.Services
+            .AddStarWarsClient()
+            .WithHttpClient(httpClient =>
+            {
+                httpClient.BaseAddress = new Uri("https://swapi-graphql.netlify.app/graphql");
+            });
+        """;
+
+    private const string FirstQuery = """
+        public class FilmService(StarWarsClient starWarsClient)
+        {
+            public async Task<List<Film>> GetFilmsAsync()
+            {
+                return await starWarsClient
+                    .Query
+                    .AllFilms(first: 3)
+                    .Include(e => e.Films.Select(f => f.CharacterConnection().Characters))
+                    .Select(e => e.Films)
+                    .ExecuteAsync();
+            }
+        }
+        """;
+
+    private const string Projection = """
+        var titles = await starWarsClient
+            .Query
+            .AllFilms()
+            .Select(e => e.Films.Select(f => new { f.Title, f.ReleaseDate }))
+            .ExecuteAsync();
+        """;
+
+    private const string Mutation = """
+        var customerId = await sampleClient
+            .Mutation
+            .AddCustomer(new CustomerInput
+            {
+                CustomerId = Guid.NewGuid(),
+                CustomerName = "New Customer",
+                Status = CustomerStatus.Active
+            })
+            .Select(e => e.CustomerId)
+            .ExecuteAsync();
+        """;
+
+    private const string Options = """
+        builder.Services
+            .AddStarWarsClient(options =>
+            {
+                options.UseSafeMode = true;
+                options.ConfigureRequest = (request, ct) =>
+                {
+                    request.Headers.Add("X-Api-Version", "2");
+                    return ValueTask.CompletedTask;
+                };
+            })
+            .WithHttpClient(httpClient =>
+            {
+                httpClient.BaseAddress = new Uri("https://swapi-graphql.netlify.app/graphql");
+            });
+        """;
+
+    private const string AccessToken = """
+        var userClient = starWarsClient.WithAccessToken(ct => tokens.GetAccessTokenForUserAsync(user, ct));
+        var films = await userClient.Query.AllFilms().Select(e => e.Films).ExecuteAsync();
+        """;
+}

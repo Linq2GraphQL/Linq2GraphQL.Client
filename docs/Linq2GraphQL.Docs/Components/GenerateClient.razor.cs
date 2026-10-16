@@ -1,6 +1,7 @@
 using System.IO.Compression;
 using Linq2GraphQL.Generator;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using TabBlazor;
 using TabBlazor.Services;
 
@@ -8,6 +9,9 @@ namespace Linq2GraphQL.Docs.Components;
 
 public partial class GenerateClient
 {
+    // Introspection results of large public schemas (GitHub) run to several MB.
+    private const long MaxSchemaFileSize = 50 * 1024 * 1024;
+
     private readonly List<GenerateOptions> demoOptions = new();
     private bool isLoading;
 
@@ -94,14 +98,46 @@ public partial class GenerateClient
         });
     }
 
-    private async Task GenerateClientJson()
+    private async Task LoadSchemaFileAsync(InputFileChangeEventArgs e)
     {
         try
         {
             isLoading = true;
+            await using var stream = e.File.OpenReadStream(MaxSchemaFileSize);
+            using var reader = new StreamReader(stream);
+            options.Schema = await reader.ReadToEndAsync();
+        }
+        catch (Exception ex)
+        {
+            var component = new RenderComponent<ExceptionModal>().Set(c => c.Exception, ex);
+            await modalService.ShowAsync("Error", component, new() { Size = ModalSize.Large });
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// An introspection result is a JSON object; SDL can never start with '{'.
+    /// </summary>
+    private static bool IsIntrospectionJson(string schema) => schema?.TrimStart().StartsWith('{') == true;
+
+    private async Task GenerateClientFromSchema()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(options.Schema))
+            {
+                throw new InvalidOperationException("Upload or paste a schema first.");
+            }
+
+            isLoading = true;
             var generator = new ClientGenerator(options.Namespace, options.ClientName, options.IncludeSubscriptions,
-                EnumGeneratorStrategy.FailIfMissing, options.Nullable, options.IncludeDeprecated);
-            var entries = generator.Generate(options.Schema);
+                options.EnumGeneratorStrategy, options.Nullable, options.IncludeDeprecated);
+            var entries = IsIntrospectionJson(options.Schema)
+                ? generator.Generate(options.Schema)
+                : generator.GenerateFromSdl(options.Schema);
             await SaveEntriesAsync(entries);
         }
         catch (Exception ex)

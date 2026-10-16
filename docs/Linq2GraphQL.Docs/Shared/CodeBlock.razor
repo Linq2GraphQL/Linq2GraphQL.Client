@@ -1,0 +1,29 @@
+@using ColorCode
+
+@* A code sample. C# is syntax highlighted with ColorCode, anything else is shown as plain text. *@
+<div class="code-block">
+    @if (!string.IsNullOrEmpty(Title))
+    {
+        <div class="code-block-title">@Title</div>
+    }
+    @if (Language == "csharp")
+    {
+        @((MarkupString)new HtmlClassFormatter().GetHtmlString(Text, Languages.CSharp))
+    }
+    else
+    {
+        <pre>@Text</pre>
+    }
+</div>
+
+@code {
+    private string Text => Code.Trim('\r', '\n').ReplaceLineEndings("\n");
+
+    /// <summary>"csharp" for highlighting; any other value renders plain text.</summary>
+    [Parameter] public string Language { get; set; } = "csharp";
+
+    [Parameter] public string Title { get; set; }
+
+    /// <summary>The code. Pass a raw string literal, Razor would otherwise parse the braces and at signs.</summary>
+    [Parameter, EditorRequired] public string Code { get; set; }
+}

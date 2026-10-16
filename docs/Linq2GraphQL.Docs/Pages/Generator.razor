@@ -1,0 +1,198 @@
+@page "/generator"
+
+<PageTitle>Generator reference - Linq2GraphQL</PageTitle>
+
+<h1 class="page-heading">Generator reference</h1>
+<p class="lead text-secondary">
+    <code>Linq2GraphQL.Generator</code> is a dotnet tool, run as <code>Linq2GraphQL</code>, that reads a schema
+    and writes a client for it. Install it as shown in <a href="getting-started#install-generator">getting started</a>,
+    or use the <a href="generate-client">online generator</a>, which takes the same settings.
+</p>
+
+<section class="doc-section">
+    <h2 id="usage">Usage</h2>
+    <CodeBlock Language="shell" Code="@Usage"/>
+    <div class="table-responsive">
+        <table class="table table-vcenter card-table border">
+            <thead>
+            <tr><th>Option</th><th>Default</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+            <tr><td class="text-nowrap"><code>&lt;endpoint&gt;</code></td><td></td><td>URL of the GraphQL service to introspect. Not needed when <code>--schema</code> or the configuration file supplies the schema.</td></tr>
+            <tr><td class="text-nowrap"><code>-sc</code>, <code>--schema</code></td><td></td><td>An SDL schema file to generate from instead of an endpoint, relative to the current directory. An endpoint and a schema file are mutually exclusive.</td></tr>
+            <tr><td class="text-nowrap"><code>-o</code>, <code>--output</code></td><td><code>Linq2GraphQL_Generated</code></td><td>Output folder, relative to the current directory.</td></tr>
+            <tr><td class="text-nowrap"><code>-n</code>, <code>--namespace</code></td><td><code>YourNamespace</code></td><td>Namespace of the generated classes.</td></tr>
+            <tr><td class="text-nowrap"><code>-c</code>, <code>--client</code></td><td><code>GraphQLClient</code></td><td>Name of the generated client class.</td></tr>
+            <tr><td class="text-nowrap"><code>-t</code>, <code>--token</code></td><td></td><td>Bearer token sent with the introspection query.</td></tr>
+            <tr><td class="text-nowrap"><code>-s</code>, <code>--subscriptions</code></td><td><code>false</code></td><td>Include subscriptions. The client then needs <code>Linq2GraphQL.Client.Subscriptions</code>. Without it the generator warns if the schema has subscriptions.</td></tr>
+            <tr><td class="text-nowrap"><code>-nu</code>, <code>--nullable</code></td><td><code>false</code></td><td>Generate a client annotated for nullable reference types.</td></tr>
+            <tr><td class="text-nowrap"><code>-es</code>, <code>--enum-strategy</code></td><td><code>FailIfMissing</code></td><td><code>AddUnknownOption</code> gives every enum an extra <code>Unknown</code> member, so values added to the schema later don't break deserialization.</td></tr>
+            <tr><td class="text-nowrap"><code>-d</code>, <code>--deprecated</code></td><td><code>false</code></td><td>Include deprecated fields and enum values, marked <code>[Obsolete]</code>. Without it they are left out.</td></tr>
+            <tr><td class="text-nowrap"><code>-ag</code>, <code>--agent</code></td><td><code>false</code></td><td>Agent mode, in preview: also emit the schema as SDL so <code>Linq2GraphQL.Client.AI</code> can expose it to AI agents.</td></tr>
+            <tr><td class="text-nowrap"><code>-cf</code>, <code>--config</code></td><td><code>linq2graphql.json</code></td><td>A json settings file, see <a href="generator#configuration-file">below</a>.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <p>For example, this generates <em>SpaceXClient</em> in the namespace <em>SpaceX</em> into the folder <em>Generated</em>:</p>
+    <CodeBlock Language="shell" Code="@Example"/>
+</section>
+
+<section class="doc-section">
+    <h2 id="schema-file">Generating from a schema file</h2>
+    <p>
+        Instead of an endpoint you can point the generator at a schema written in SDL, for example one exported
+        from HotChocolate (<code>dotnet run -- schema export</code>) or taken from a schema registry. No server
+        needs to be running, and the result is the same client the endpoint would give:
+    </p>
+    <CodeBlock Language="shell" Code="@FromSchema"/>
+    <p>
+        This is also a good fit for CI: check the schema file in next to the generated client, and a schema
+        change shows up as a diff in both.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="configuration-file">Configuration file</h2>
+    <p>
+        Every option can also be set in a json file, which keeps a long command line out of your build scripts
+        and gives you somewhere to check the settings in:
+    </p>
+    <CodeBlock Language="shell" Code="@WithConfig"/>
+    <p>
+        A file called <code>linq2graphql.json</code> in the current directory is picked up on its own, so in a
+        repository that has one, regenerating is just:
+    </p>
+    <CodeBlock Language="shell" Code="@Bare"/>
+    <p>
+        The generator prints the path of the file it read. An explicit <code>--config</code> always wins over the
+        discovered file, and pointing <code>--config</code> at a file that does not exist is an error; only the
+        default file is allowed to be absent.
+    </p>
+    <CodeBlock Title="linq2graphql.json" Language="json" Code="@ConfigJson"/>
+    <div class="table-responsive">
+        <table class="table table-vcenter card-table border">
+            <thead>
+            <tr><th>Setting</th><th>Type</th><th>Default</th><th>Command line</th></tr>
+            </thead>
+            <tbody>
+            <tr><td><code>endpoint</code></td><td>string</td><td>required</td><td><code>&lt;endpoint&gt;</code> argument</td></tr>
+            <tr><td><code>schema</code></td><td>string</td><td>none</td><td><code>-sc</code>, <code>--schema</code></td></tr>
+            <tr><td><code>output</code></td><td>string</td><td><code>Linq2GraphQL_Generated</code></td><td><code>-o</code>, <code>--output</code></td></tr>
+            <tr><td><code>namespace</code></td><td>string</td><td><code>YourNamespace</code></td><td><code>-n</code>, <code>--namespace</code></td></tr>
+            <tr><td><code>client</code></td><td>string</td><td><code>GraphQLClient</code></td><td><code>-c</code>, <code>--client</code></td></tr>
+            <tr><td><code>token</code></td><td>string</td><td>none</td><td><code>-t</code>, <code>--token</code></td></tr>
+            <tr><td><code>subscriptions</code></td><td>bool</td><td><code>false</code></td><td><code>-s</code>, <code>--subscriptions</code></td></tr>
+            <tr><td><code>enumStrategy</code></td><td>string</td><td><code>FailIfMissing</code></td><td><code>-es</code>, <code>--enum-strategy</code></td></tr>
+            <tr><td><code>nullable</code></td><td>bool</td><td><code>false</code></td><td><code>-nu</code>, <code>--nullable</code></td></tr>
+            <tr><td><code>deprecated</code></td><td>bool</td><td><code>false</code></td><td><code>-d</code>, <code>--deprecated</code></td></tr>
+            <tr><td><code>agent</code></td><td>bool</td><td><code>false</code></td><td><code>-ag</code>, <code>--agent</code></td></tr>
+            <tr><td><code>scalarMappings</code></td><td>object</td><td>none</td><td>no equivalent</td></tr>
+            <tr><td><code>descriptionAttributes</code></td><td>bool</td><td><code>true</code></td><td>no equivalent</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <ul>
+        <li>
+            <code>endpoint</code> is required only in the sense that it has to come from somewhere, the file or the
+            command line, unless <code>schema</code> names an SDL file to generate from instead.
+        </li>
+        <li>
+            <code>enumStrategy</code> takes <code>AddUnknownOption</code>; any other value means <code>FailIfMissing</code>.
+        </li>
+        <li>
+            <code>token</code> is settable here for completeness, but a bearer token is better passed as
+            <code>-t</code> than checked into a file.
+        </li>
+        <li>
+            <code>descriptionAttributes</code> controls whether schema descriptions are also emitted as
+            <code>[Description]</code> attributes next to the XML doc comments, so tools that read them at runtime
+            (JSON schema exporters, OpenAPI, AI function factories) see the schema's text.
+        </li>
+    </ul>
+    <p>
+        Setting names are matched case insensitively. A name that is not in the table fails the run, so a typo
+        like <code>scalarMapping</code> is reported rather than silently ignored. Everything in the file is
+        optional, and an option passed on the command line always wins, so you can keep the shared settings in
+        the file and override one for a single run:
+    </p>
+    <CodeBlock Language="shell" Code="@Override"/>
+</section>
+
+<section class="doc-section">
+    <h2 id="mapping-scalars">Mapping scalars to your own types</h2>
+    <p>
+        By default the generator maps the well known GraphQL scalars to .NET types (<code>Int</code> to
+        <code>int</code>, <code>DateTime</code> to <code>DateTimeOffset</code>, and so on) and generates a
+        <code>CustomScalar</code> class for every scalar it does not recognise. <code>scalarMappings</code>
+        overrides both halves of that:
+    </p>
+    <ul>
+        <li>
+            Map a scalar to a <strong>simple type</strong> and it is emitted as that type, with no
+            <code>CustomScalar</code> class. <code>"BigInt": "long"</code> gives you
+            <code>public long? Id { get; set; }</code>.
+        </li>
+        <li>
+            Change an existing mapping the same way. <code>"DateTime": "System.DateTime"</code> emits
+            <code>DateTime</code> instead of the default <code>DateTimeOffset</code>.
+        </li>
+        <li>
+            Map a scalar to <strong>null</strong> to opt it out of the built-in mapping, so a
+            <code>CustomScalar</code> class is generated for it and you control the conversion yourself.
+        </li>
+    </ul>
+    <p>
+        Scalar names are matched case insensitively. The target must be one of the supported simple types:
+        <code>bool</code>, <code>byte</code>, <code>sbyte</code>, <code>char</code>, <code>short</code>,
+        <code>ushort</code>, <code>int</code>, <code>uint</code>, <code>long</code>, <code>ulong</code>,
+        <code>float</code>, <code>double</code>, <code>decimal</code>, <code>string</code>, <code>Guid</code>,
+        <code>Uri</code>, <code>DateTime</code>, <code>DateTimeOffset</code>, <code>DateOnly</code>,
+        <code>TimeOnly</code> or <code>TimeSpan</code>. Write it as the C# keyword (<code>long</code>), the type
+        name (<code>Int64</code>) or the full name (<code>System.Int64</code>). Anything else fails the run,
+        rather than generating a client that does not compile.
+    </p>
+</section>
+
+@code {
+    private const string Usage = """
+        Linq2GraphQL [<endpoint>] [options]
+        """;
+
+    private const string Example = """
+        Linq2GraphQL https://spacex-production.up.railway.app/ -c=SpaceXClient -n=SpaceX -o=Generated
+        """;
+
+    private const string FromSchema = """
+        Linq2GraphQL --schema schema.graphql -c=SpaceXClient -n=SpaceX -o=Generated
+        """;
+
+    private const string WithConfig = """
+        Linq2GraphQL --config linq2graphql.json
+        """;
+
+    private const string Bare = """
+        Linq2GraphQL
+        """;
+
+    private const string Override = """
+        Linq2GraphQL --config linq2graphql.json -o=SomewhereElse
+        """;
+
+    private const string ConfigJson = """
+        {
+          "endpoint": "https://spacex-production.up.railway.app/",
+          "client": "SpaceXClient",
+          "namespace": "SpaceX",
+          "output": "Generated",
+          "nullable": false,
+          "subscriptions": false,
+          "deprecated": false,
+          "enumStrategy": "FailIfMissing",
+          "scalarMappings": {
+            "DateTime": "System.DateTime",
+            "BigInt": "long",
+            "Json": null
+          }
+        }
+        """;
+}

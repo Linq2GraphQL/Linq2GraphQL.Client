@@ -1,206 +1,312 @@
 ﻿@page "/"
 
+<PageTitle>Linq2GraphQL - typed GraphQL for .NET</PageTitle>
 
+<section class="hero text-center">
+    <img src="img/logo.svg" alt="" width="120" height="120"/>
+    <h1 class="display-6 fw-bold mt-3 mb-2">Linq2GraphQL</h1>
+    <p class="lead text-secondary mx-auto">
+        Query any GraphQL API from C# with LINQ. Generate a strongly-typed client from the schema, write
+        your queries as lambdas the compiler checks, and get typed objects back.
+    </p>
+    <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
+        <a class="btn btn-primary" href="getting-started">Get started</a>
+        <a class="btn" href="generate-client">Generate a client online</a>
+        <a class="btn" href="https://github.com/Linq2GraphQL/Linq2GraphQL.Client" target="_blank" rel="noopener">GitHub</a>
+    </div>
+    <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
+        <a href="https://www.nuget.org/packages/Linq2GraphQL.Client" target="_blank" rel="noopener">
+            <img src="https://img.shields.io/nuget/v/Linq2GraphQL.Client.svg?label=stable" alt="Latest stable version on NuGet"/>
+        </a>
+        <a href="https://www.nuget.org/packages/Linq2GraphQL.Client" target="_blank" rel="noopener">
+            <img src="https://img.shields.io/nuget/vpre/Linq2GraphQL.Client.svg?label=prerelease" alt="Latest prerelease version on NuGet"/>
+        </a>
+    </div>
+</section>
 
-@* <PageTitle>Index</PageTitle> *@
+<section class="doc-section">
+    <h2>What is Linq2GraphQL?</h2>
+    <p>
+        GraphQL lets a client ask for exactly the fields it needs. From C# that usually means writing query
+        strings by hand, keeping them in sync with the schema, and mapping the JSON that comes back onto
+        classes that slowly drift from what the server actually returns. Mistakes show up at runtime, as
+        errors from the server or as properties that are silently null.
+    </p>
+    <p>
+        Linq2GraphQL removes that gap. A generator reads the schema and writes a C# client for it: a class
+        for every type, input and enum, and a method for every query, mutation and subscription, with the
+        arguments as parameters. You describe what to fetch with ordinary lambdas, the library turns them
+        into GraphQL, sends the request, and deserializes the response into the same generated types. If a
+        field is renamed or removed, regenerate the client and the compiler tells you everywhere it was used.
+    </p>
+</section>
 
+<section class="doc-section">
+    <h2>A first look</h2>
+    <p>
+        This query asks the public <a href="https://swapi-graphql.netlify.app/graphql" target="_blank" rel="noopener">Star Wars API</a>
+        for its first three films and the characters in each. The C# on the left becomes the GraphQL on the
+        right; you never write the GraphQL yourself.
+    </p>
+    <div class="row g-3">
+        <div class="col-xl-7">
+            <CodeBlock Title="C#" Code="@FirstLookCSharp"/>
+        </div>
+        <div class="col-xl-5">
+            <CodeBlock Title="GraphQL sent to the server" Language="graphql" Code="@FirstLookGraphQL"/>
+        </div>
+    </div>
+    <p class="mt-3">
+        <code>films</code> is a <code>List&lt;Film&gt;</code>. The scalar fields of a type, like
+        <code>title</code> and <code>releaseDate</code>, are included automatically. Related objects, like the
+        characters here, and lists of scalars are fetched only when you <code>Include</code> them, so a query
+        never pulls in more of the graph than you ask for. <code>CharacterConnection()</code> is a method
+        because the field takes arguments of its own. Arguments are always sent as variables, never pasted
+        into the query text.
+    </p>
+</section>
 
+<section class="doc-section">
+    <h2>Only the fields you ask for</h2>
+    <p>
+        Returning whole objects, as above, is just the default. Project the result in <code>Select</code> and the
+        query asks for the fields your projection reads and nothing else, however deep they are:
+    </p>
+    <div class="row g-3">
+        <div class="col-xl-7">
+            <CodeBlock Title="C#" Code="@ProjectionCSharp"/>
+        </div>
+        <div class="col-xl-5">
+            <CodeBlock Title="GraphQL sent to the server" Language="graphql" Code="@ProjectionGraphQL"/>
+        </div>
+    </div>
+    <p class="mt-3">
+        Project into an anonymous type, a class of your own or a single value.
+        <a href="selecting-fields">Selecting fields</a> shows each of them with the GraphQL it sends.
+    </p>
+</section>
 
+<section class="doc-section">
+    <h2>How it works</h2>
+    <div class="row row-cards">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="step-number">1</div>
+                    <h3 class="card-title">Generate</h3>
+                    <p class="text-secondary mb-0">
+                        Point the <a href="generator">Linq2GraphQL generator</a> at a GraphQL endpoint or an SDL
+                        schema file, or use the <a href="generate-client">online generator</a>. You get plain C#
+                        source files to add to your project.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="step-number">2</div>
+                    <h3 class="card-title">Query</h3>
+                    <p class="text-secondary mb-0">
+                        Pick an operation on <code>Query</code>, <code>Mutation</code> or <code>Subscription</code>,
+                        then shape the result with <code>Include</code> and <code>Select</code>. Arguments are
+                        method parameters and are sent as GraphQL variables.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="step-number">3</div>
+                    <h3 class="card-title">Execute</h3>
+                    <p class="text-secondary mb-0">
+                        <code>ExecuteAsync</code> sends the request through an <code>HttpClient</code> you configure
+                        in dependency injection, and returns typed objects, or a result with the errors if you
+                        would rather not handle exceptions.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
+<section class="doc-section">
+    <h2>Features</h2>
+    <div class="row row-cards">
+        @foreach (var feature in features)
+        {
+            <div class="col-md-6 col-xl-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h3 class="card-title">@feature.Title</h3>
+                        <p class="text-secondary mb-0">@feature.Text</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
 
-<div align='center'>
+<section class="doc-section">
+    <h2>Packages</h2>
+    <p>
+        Linq2GraphQL is split into a generator you run at design time and runtime packages your generated
+        client depends on. All of them target .NET 10.
+    </p>
+    <div class="table-responsive">
+        <table class="table table-vcenter card-table border">
+            <thead>
+            <tr>
+                <th>Package</th>
+                <th>What it is for</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var package in packages)
+            {
+                <tr>
+                    <td class="text-nowrap">
+                        <a href="https://www.nuget.org/packages/@package.Id" target="_blank" rel="noopener">@package.Id</a>
+                    </td>
+                    <td>@package.Text</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>
 
-    <img src="img/logo.svg" alt="logo" width=300 height=300/>
+<section class="doc-section">
+    <h2>Where to next</h2>
+    <ul>
+        <li><a href="getting-started">Getting started</a> walks through generating a client, registering it and running a first query.</li>
+        <li><a href="selecting-fields">Selecting fields</a> shows how to fetch exactly the fields you need.</li>
+        <li><a href="generator">The generator reference</a> covers every command line option, the configuration file and scalar mappings.</li>
+        <li>
+            Found a bug or missing a feature? <a href="https://github.com/Linq2GraphQL/Linq2GraphQL.Client/issues" target="_blank" rel="noopener">Open an issue</a>.
+            Linq2GraphQL is open source under the MIT license and inspired by
+            <a href="https://github.com/Giorgi/GraphQLinq" target="_blank" rel="noopener">GraphQLinq</a>, thank you
+            <a href="https://github.com/Giorgi" target="_blank" rel="noopener">Giorgi</a>.
+        </li>
+    </ul>
+</section>
 
-    <h1>Linq2GraphQL.Client</h1>
-    <p>A straightforward Linq to GraphQL Client</p>
+@code {
+    private const string FirstLookCSharp = """
+        var films = await starWarsClient
+            .Query
+            .AllFilms(first: 3)
+            .Include(e => e.Films.Select(f => f.CharacterConnection().Characters))
+            .Select(e => e.Films)
+            .ExecuteAsync();
 
-    <h4><a href="https://linq2graphql.com"> Documentation </a> <span> · </span> <a
-            href="https://github.com/Linq2GraphQL/Linq2GraphQL.Client/issues"> Report Bug </a> <span> · </span> <a
-            href="https://github.com/Linq2GraphQL/Linq2GraphQL.Client/issues"> Request Feature </a></h4>
-</div>
+        foreach (var film in films)
+        {
+            var characters = film.CharacterConnection.Characters.Select(c => c.Name);
+            Console.WriteLine($"{film.Title}: {string.Join(", ", characters)}");
+        }
 
-<h1 id="introduction">Introduction</h1>
-<p>Linq2GraphQL generates C# classes from the GraphQL schema and and togheter with the nuget package Linq2GraphQL.Client
-    it makes it possible to query the server using Linq expressions. </p>
-<p>A simple query that will get the first 10 orders with the primitive properties of orders and the connected
-    customer</p>
-<pre><code> var orders = await sampleClient
-    .Query
-    .Orders(first: 10)
-    .Include(e =&gt; e.Orders.Select(e =&gt; e.Customer))
-    .Select(e =&gt; e.Orders)
-    .ExecuteAsync();
-</code></pre>
-<h1 id="getting-started">Getting Started</h1>
-<h2 id="generate-client-code">Generate Client code</h2>
-<p>
-    There are two options to generate the client code from the GraphQL schema.
-    Use the online tool to <a href="https://linq2graphql.com/generate-client"> generate</a> or install
-    Linq2GraphQL.Generator as a .Net tool.
-</p>
-<p>Install/Update Tool: </p>
-<pre><code>dotnet tool update Linq2GraphQL.Generator -g --prerelease
-</code></pre>
-<p> Usage:</p>
-<pre><code>  Linq2GraphQL.Generator &lt;endpoint&gt; [options]
+        // A New Hope: Luke Skywalker, C-3PO, R2-D2, ...
+        """;
 
-Arguments:
-  &lt;endpoint&gt;  Endpoint of the GraphQL service
+    private const string FirstLookGraphQL = """
+        query($first_1_1: Int) {
+          allFilms(first: $first_1_1) {
+            films {
+              characterConnection {
+                characters {
+                  name
+                  birthYear
+                  eyeColor
+                  gender
+                  hairColor
+                  height
+                  mass
+                  skinColor
+                  created
+                  edited
+                  id
+                  __typename
+                }
+              }
+              title
+              episodeID
+              openingCrawl
+              director
+              releaseDate
+              created
+              edited
+              id
+              __typename
+            }
+          }
+        }
 
-Options:
-  -o, --output &lt;output&gt;        Output folder, relative to current location [default: Linq2GraphQL_Generated]
-  -n, --namespace &lt;namespace&gt;  Namespace of generated classes [default: YourNamespace]
-  -c, --client &lt;client&gt;        Name of the generated client [default: GraphQLClient]
-  -t, --token &lt;token&gt;          Bearertoken for authentication
-  -nu --nullabel                     Nullable client [default: false]
-  -es --enum-strategy                If AddUnknownOption all enums will have an additional Unknown option
-  -s, --subscriptions                Include subscriptions (Exprimental)
-  -d, --deprecated                   Include Deprecated as Obsolete
-  -cf --config                       Json settings file, defaults to linq2graphql.json in the current directory
-</code></pre>
-<p>As an example:</p>
-<pre><code>Linq2GraphQL https://spacex-production.up.railway.app/ -c=&quot;SpaceXClient&quot; -n=&quot;SpaceX&quot; -o=&quot;Generated&quot;
-</code></pre>
-<p>Would generate a client from url <em><a href="https://spacex-production.up.railway.app/">https://spacex-production.up.railway.app/</a></em>
-    with the name <em>SpaceXClient</em> in the namespace <em>SpaceX</em> to folder <em>Generated</em></p>
-<h2 id="configuration-file">Configuration file</h2>
-<p>
-    Every option above can also be set in a json file, which keeps a long command line out of your
-    build scripts and gives you somewhere to check the settings in:
-</p>
-<pre><code>Linq2GraphQL --config linq2graphql.json
-</code></pre>
-<p>
-    If the file is called <em>linq2graphql.json</em> and sits in the current directory it is picked
-    up on its own, so a repository with one in it just needs:
-</p>
-<pre><code>Linq2GraphQL
-</code></pre>
-<p>
-    The generator prints the path of the file it read. An explicit <em>--config</em> always wins over
-    the discovered one, and pointing <em>--config</em> at a file that does not exist is an error -
-    only the default file is allowed to be absent.
-</p>
-<pre><code>{
-  &quot;endpoint&quot;: &quot;https://spacex-production.up.railway.app/&quot;,
-  &quot;client&quot;: &quot;SpaceXClient&quot;,
-  &quot;namespace&quot;: &quot;SpaceX&quot;,
-  &quot;output&quot;: &quot;Generated&quot;,
-  &quot;nullable&quot;: false,
-  &quot;subscriptions&quot;: false,
-  &quot;deprecated&quot;: false,
-  &quot;enumStrategy&quot;: &quot;FailIfMissing&quot;,
-  &quot;scalarMappings&quot;: {
-    &quot;DateTime&quot;: &quot;System.DateTime&quot;,
-    &quot;BigInt&quot;: &quot;long&quot;,
-    &quot;Json&quot;: null
-  }
+        # variables: { "first_1_1": 3 }
+        """;
+
+    private const string ProjectionCSharp = """
+        var films = await starWarsClient
+            .Query
+            .AllFilms(first: 2)
+            .Select(e => e.Films.Select(f => new
+            {
+                f.Title,
+                f.Director,
+                Characters = f.CharacterConnection(null, 3).Characters.Select(c => c.Name)
+            }))
+            .ExecuteAsync();
+        """;
+
+    private const string ProjectionGraphQL = """
+        query($first_1_1: Int, $first_3_3: Int) {
+          allFilms(first: $first_1_1) {
+            films {
+              title
+              director
+              characterConnection_edb5f40290dee381:
+                characterConnection(first: $first_3_3) {
+                characters {
+                  name
+                }
+              }
+            }
+          }
+        }
+        """;
+
+    private record Feature(string Title, string Text);
+
+    private readonly Feature[] features =
+    [
+        new("Generated from your schema",
+            "Generate from a live endpoint (with a bearer token if it needs one), an SDL file such as one exported from HotChocolate, or an introspection result. Types, inputs, enums, interfaces and the client itself are generated, and the client and its operations come with interfaces you can mock in tests."),
+        new("Include and Select",
+            "Fetch whole objects, with scalar fields included automatically and related objects added with Include, or project into an anonymous type or a class of your own and fetch only the fields the projection reads."),
+        new("Queries, mutations and subscriptions",
+            "Mutations take generated input classes. Subscriptions are IObservable streams over graphql-ws WebSockets or server-sent events."),
+        new("Cursor paging",
+            "AsPager turns a Relay style connection into next and previous page calls, and GetAllPagesAsync streams every page as an IAsyncEnumerable."),
+        new("Errors your way",
+            "ExecuteAsync throws a GraphQueryExecutionException with the server's errors, classified into codes like Authentication or Validation. ExecuteWithResultAsync returns the data and the errors side by side instead."),
+        new("Headers and access tokens",
+            "Set headers for every request in the options, or derive a client per user with WithAccessToken for on-behalf-of tokens. Derived clients share the connection and are cheap to create."),
+        new("Interfaces and unions",
+            "Results are deserialized into the concrete generated type, and the fields of a specific implementation can be included on demand."),
+        new("Nullable clients",
+            "Generate a client annotated for nullable reference types, so the compiler knows which fields the schema allows to be null, or a classic one without annotations."),
+        new("Agent mode (preview)",
+            "Linq2GraphQL.Client.AI turns a client into tools for Microsoft.Extensions.AI, so an AI agent can query your API in GraphQL, limited to the operations you allow and validated before anything is sent.")
+    ];
+
+    private record Package(string Id, string Text);
+
+    private readonly Package[] packages =
+    [
+        new("Linq2GraphQL.Generator", "A dotnet tool, installed as Linq2GraphQL, that generates the client source code from a schema."),
+        new("Linq2GraphQL.Client", "The runtime every generated client needs: turns expressions into GraphQL, executes and deserializes."),
+        new("Linq2GraphQL.Client.Subscriptions", "Subscription support over WebSockets and server-sent events. Needed when the client is generated with subscriptions."),
+        new("Linq2GraphQL.Client.AI", "Agent mode, in preview: exposes a scoped and validated part of the schema to AI agents.")
+    ];
 }
-</code></pre>
-<table class="table">
-    <thead>
-    <tr>
-        <th>Setting</th>
-        <th>Type</th>
-        <th>Default</th>
-        <th>Command line</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr><td><em>endpoint</em></td><td>string</td><td>required</td><td>&lt;endpoint&gt; argument</td></tr>
-    <tr><td><em>schema</em></td><td>string</td><td>none</td><td>-sc, --schema</td></tr>
-    <tr><td><em>output</em></td><td>string</td><td>Linq2GraphQL_Generated</td><td>-o, --output</td></tr>
-    <tr><td><em>namespace</em></td><td>string</td><td>YourNamespace</td><td>-n, --namespace</td></tr>
-    <tr><td><em>client</em></td><td>string</td><td>GraphQLClient</td><td>-c, --client</td></tr>
-    <tr><td><em>token</em></td><td>string</td><td>none</td><td>-t, --token</td></tr>
-    <tr><td><em>subscriptions</em></td><td>bool</td><td>false</td><td>-s, --subscriptions</td></tr>
-    <tr><td><em>enumStrategy</em></td><td>string</td><td>FailIfMissing</td><td>-es, --enum-strategy</td></tr>
-    <tr><td><em>nullable</em></td><td>bool</td><td>false</td><td>-nu, --nullable</td></tr>
-    <tr><td><em>deprecated</em></td><td>bool</td><td>false</td><td>-d, --deprecated</td></tr>
-    <tr><td><em>agent</em></td><td>bool</td><td>false</td><td>-ag, --agent</td></tr>
-    <tr><td><em>scalarMappings</em></td><td>object</td><td>none</td><td>no equivalent</td></tr>
-    <tr><td><em>descriptionAttributes</em></td><td>bool</td><td>true</td><td>no equivalent</td></tr>
-    </tbody>
-</table>
-<p>
-    <em>endpoint</em> is required only in the sense that it has to come from somewhere - the file or
-    the command line argument - unless <em>schema</em> names an SDL file to generate from instead. <em>enumStrategy</em> takes <em>AddUnknownOption</em> to give every
-    generated enum an extra <em>Unknown</em> member; any other value means <em>FailIfMissing</em>.
-    <em>token</em> is settable here for completeness, but a bearer token is usually better passed as
-    <em>-t</em> than checked into a file. <em>descriptionAttributes</em> controls whether schema
-    descriptions are also emitted as <em>[Description]</em> attributes, next to the XML doc comments,
-    so tools that read them at runtime (JSON schema exporters, OpenAPI, AI function factories) see the
-    schema's text; set it to <em>false</em> to leave them out.
-</p>
-<p>
-    Setting names are matched case insensitively. A name that is not in the table above fails the
-    run, so a typo like <em>scalarMapping</em> is reported rather than silently ignored.
-    <em>scalarMappings</em> and <em>descriptionAttributes</em> have no command line equivalent, so
-    they are the settings a discovered file supplies that you cannot override back off from the
-    command line.
-</p>
-<p>
-    Everything in the file is optional, and an option you pass explicitly on the command line always
-    wins over the file - so you can keep the shared settings in the file and override one of them for
-    a single run:
-</p>
-<pre><code>Linq2GraphQL --config linq2graphql.json -o=&quot;SomewhereElse&quot;
-</code></pre>
-<h3 id="mapping-scalars">Mapping scalars to your own types</h3>
-<p>
-    By default the generator maps the well known GraphQL scalars to CLR types (<em>Int</em> to
-    <em>int</em>, <em>DateTime</em> to <em>DateTimeOffset</em>, and so on) and generates a
-    <em>CustomScalar</em> class for every scalar it does not recognise. <em>scalarMappings</em> lets
-    you override both halves of that:
-</p>
-<ul>
-    <li>
-        Map a scalar to a <strong>simple type</strong> and it is emitted as that type - no
-        <em>CustomScalar</em> class is generated for it. <em>&quot;BigInt&quot;: &quot;long&quot;</em>
-        gives you <em>public long? Id { get; set; }</em>.
-    </li>
-    <li>
-        Change an existing mapping the same way. <em>&quot;DateTime&quot;:
-        &quot;System.DateTime&quot;</em> emits <em>DateTime</em> instead of the default
-        <em>DateTimeOffset</em>.
-    </li>
-    <li>
-        Map a scalar to <strong>null</strong> to opt it out of the built-in mapping, so a
-        <em>CustomScalar</em> class is generated for it instead and you control the conversion
-        yourself.
-    </li>
-</ul>
-<p>
-    Scalar names are matched case insensitively. The target must be one of the supported simple types
-    - <em>bool</em>, <em>byte</em>, <em>sbyte</em>, <em>char</em>, <em>short</em>, <em>ushort</em>,
-    <em>int</em>, <em>uint</em>, <em>long</em>, <em>ulong</em>, <em>float</em>, <em>double</em>,
-    <em>decimal</em>, <em>string</em>, <em>Guid</em>, <em>Uri</em>, <em>DateTime</em>,
-    <em>DateTimeOffset</em>, <em>DateOnly</em>, <em>TimeOnly</em>, <em>TimeSpan</em> - written either
-    as the C# keyword (<em>long</em>), the type name (<em>Int64</em>) or its full name
-    (<em>System.Int64</em>). Anything else fails the run with an error rather than generating a
-    client that does not compile.
-</p>
-<h2 id="add-nuget">Add Nuget</h2>
-<p>Add the Nuget Package <a href="https://www.nuget.org/packages/Linq2GraphQL.Client">Linq2GraphQL.Client</a></p>
-<pre><code>dotnet add package Linq2GraphQL.Client --prerelease
-</code></pre>
-<h2 id="dependency-injection">Dependency Injection</h2>
-<p>
-    The client adds a set of extensions to make it easier to add the client to dependency injection.
-    As an example this would add SpaceXClient to the container:
-</p>
-<pre><code>services.SpaceXClient(x =&gt;
- {
-     x.UseSafeMode = false;
- })
-   .WithHttpClient(
-       httpClient =&gt; { httpClient.BaseAddress = new Uri(&quot;https://spacex-production.up.railway.app/&quot;); });
-</code></pre>
-<h2 id="safe-mode">Safe Mode</h2>
-<p>Turning on <em>SafeMode</em> will make the client before the first request to do an introspection query to the
-    endpoint. The schema will be used to make sure that any auto included properties are available. This is an advanced
-    feature that require the endpoint to support introspection. By default safe mode is turned of. </p>
-<h1 id="acknowledgments">Acknowledgments</h1>
-<p>Linq2GraphQL is inspired by <a href="https://github.com/Giorgi/GraphQLinq">GraphQLinq</a> , thank you <a
-        href="https://github.com/Giorgi">Giorgi</a></p>

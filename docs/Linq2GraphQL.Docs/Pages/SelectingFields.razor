@@ -1,0 +1,249 @@
+@page "/selecting-fields"
+
+<PageTitle>Selecting fields - Linq2GraphQL</PageTitle>
+
+<h1 class="page-heading">Selecting fields</h1>
+<p class="lead text-secondary">
+    Linq2GraphQL fetches exactly the fields you ask for. Project the result in <code>Select</code> and the
+    query contains those fields and nothing else, at any depth.
+</p>
+
+<section class="doc-section">
+    <h2 id="two-ways">Two ways to shape a result</h2>
+    <p>
+        How much is fetched depends on what you pass to <code>Select</code>:
+    </p>
+    <div class="table-responsive">
+        <table class="table table-vcenter card-table border">
+            <thead>
+            <tr><th>You write</th><th>The query asks for</th><th>You get back</th></tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><code>.Select(e => e.Films)</code>, optionally with <code>Include</code></td>
+                <td>Every scalar field of the type, plus whatever you <code>Include</code>.</td>
+                <td>The generated types, such as <code>List&lt;Film&gt;</code>.</td>
+            </tr>
+            <tr>
+                <td><code>.Select(e => e.Films.Select(f => new { f.Title }))</code></td>
+                <td>Only the fields the projection reads.</td>
+                <td>Your own shape: an anonymous type, a class of yours, or a single value.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <p>
+        Returning the generated types is convenient when you want whole objects. When you only need a few
+        fields, or the type has many, project instead: the request and the response shrink to what you use.
+        The examples below run against the public
+        <a href="https://swapi-graphql.netlify.app/graphql" target="_blank" rel="noopener">Star Wars API</a>, and
+        the GraphQL and results shown are what they actually send and return.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="anonymous">Pick a few fields</h2>
+    <p>Project into an anonymous type with the fields you want:</p>
+    <div class="row g-3">
+        <div class="col-xl-7"><CodeBlock Title="C#" Code="@AnonymousCSharp"/></div>
+        <div class="col-xl-5"><CodeBlock Title="GraphQL" Language="graphql" Code="@AnonymousGraphQL"/></div>
+    </div>
+    <CodeBlock Title="Result" Language="json" Code="@AnonymousResult"/>
+    <p>
+        <code>Film</code> has more than a dozen scalar fields; only <code>title</code> and
+        <code>releaseDate</code> are requested.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="own-class">Project into your own class, across related objects</h2>
+    <p>
+        A projection can read related objects too, and it doesn't need an <code>Include</code> to do so: reading
+        a field in the projection is enough to request it. Fields that take arguments are methods, so here
+        <code>CharacterConnection(null, 3)</code> asks for the first three characters of each film.
+    </p>
+    <div class="row g-3">
+        <div class="col-xl-7"><CodeBlock Title="C#" Code="@ClassCSharp"/></div>
+        <div class="col-xl-5"><CodeBlock Title="GraphQL" Language="graphql" Code="@ClassGraphQL"/></div>
+    </div>
+    <CodeBlock Title="Result" Language="json" Code="@ClassResult"/>
+    <p>
+        Of each character only <code>name</code> is fetched. The alias on <code>characterConnection</code> is
+        generated from its arguments, so the same field can be requested more than once with different
+        arguments in one query; the client maps it back for you.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="single-value">Select a single value</h2>
+    <p>A projection doesn't have to be an object. Select one field and you get a sequence of its values:</p>
+    <div class="row g-3">
+        <div class="col-xl-7"><CodeBlock Title="C#" Code="@ScalarCSharp"/></div>
+        <div class="col-xl-5"><CodeBlock Title="GraphQL" Language="graphql" Code="@ScalarGraphQL"/></div>
+    </div>
+    <CodeBlock Title="Result" Language="json" Code="@ScalarResult"/>
+</section>
+
+<section class="doc-section">
+    <h2 id="combine-levels">Combine fields from several levels</h2>
+    <p>
+        The projection can start higher up the graph, and mix fields of the connection with fields of the
+        items in it:
+    </p>
+    <div class="row g-3">
+        <div class="col-xl-7"><CodeBlock Title="C#" Code="@RootCSharp"/></div>
+        <div class="col-xl-5"><CodeBlock Title="GraphQL" Language="graphql" Code="@RootGraphQL"/></div>
+    </div>
+    <CodeBlock Title="Result" Language="json" Code="@RootResult"/>
+</section>
+
+<section class="doc-section">
+    <h2 id="good-to-know">Good to know</h2>
+    <ul>
+        <li>
+            Only the fields you read from the generated types are requested. Anything else in the projection,
+            such as constants, local variables or method calls like <code>f.Title.ToUpper()</code>, runs on the
+            client after the response arrives, so <code>new { Label = prefix + f.Title.ToUpper() }</code> still
+            asks for just <code>title</code>.
+        </li>
+        <li>
+            <code>GetRequestAsync()</code> on a query returns the GraphQL and variables without sending
+            anything, which is handy for checking what a projection asks for, in a test for example.
+        </li>
+        <li>
+            The response is first read into the generated types and then projected, so the raw result is still
+            available as <code>BaseResult</code> on the query after it has run.
+        </li>
+    </ul>
+</section>
+
+@code {
+    private const string AnonymousCSharp = """
+        var films = await starWarsClient
+            .Query
+            .AllFilms(first: 2)
+            .Select(e => e.Films.Select(f => new { f.Title, f.ReleaseDate }))
+            .ExecuteAsync();
+        """;
+
+    private const string AnonymousGraphQL = """
+        query($first_1_1: Int) {
+          allFilms(first: $first_1_1) {
+            films {
+              title
+              releaseDate
+            }
+          }
+        }
+        """;
+
+    private const string AnonymousResult = """
+        [
+          { "Title": "A New Hope", "ReleaseDate": "1977-05-25" },
+          { "Title": "The Empire Strikes Back", "ReleaseDate": "1980-05-17" }
+        ]
+        """;
+
+    private const string ClassCSharp = """
+        public class FilmSummary
+        {
+            public string Title { get; set; }
+            public string Director { get; set; }
+            public List<string> Characters { get; set; }
+        }
+
+        var films = await starWarsClient
+            .Query
+            .AllFilms(first: 2)
+            .Select(e => e.Films.Select(f => new FilmSummary
+            {
+                Title = f.Title,
+                Director = f.Director,
+                Characters = f.CharacterConnection(null, 3).Characters
+                    .Select(c => c.Name)
+                    .ToList()
+            }))
+            .ExecuteAsync();
+        """;
+
+    private const string ClassGraphQL = """
+        query($first_1_1: Int, $first_3_3: Int) {
+          allFilms(first: $first_1_1) {
+            films {
+              title
+              director
+              characterConnection_edb5f40290dee381:
+                characterConnection(first: $first_3_3) {
+                characters {
+                  name
+                }
+              }
+            }
+          }
+        }
+        """;
+
+    private const string ClassResult = """
+        [
+          {
+            "Title": "A New Hope",
+            "Director": "George Lucas",
+            "Characters": [ "Luke Skywalker", "C-3PO", "R2-D2" ]
+          },
+          {
+            "Title": "The Empire Strikes Back",
+            "Director": "Irvin Kershner",
+            "Characters": [ "Luke Skywalker", "C-3PO", "R2-D2" ]
+          }
+        ]
+        """;
+
+    private const string ScalarCSharp = """
+        IEnumerable<string> titles = await starWarsClient
+            .Query
+            .AllFilms(first: 2)
+            .Select(e => e.Films.Select(f => f.Title))
+            .ExecuteAsync();
+        """;
+
+    private const string ScalarGraphQL = """
+        query($first_1_1: Int) {
+          allFilms(first: $first_1_1) {
+            films {
+              title
+            }
+          }
+        }
+        """;
+
+    private const string ScalarResult = """
+        [ "A New Hope", "The Empire Strikes Back" ]
+        """;
+
+    private const string RootCSharp = """
+        var page = await starWarsClient
+            .Query
+            .AllFilms(first: 2)
+            .Select(e => new
+            {
+                e.TotalCount,
+                Titles = e.Films.Select(f => f.Title)
+            })
+            .ExecuteAsync();
+        """;
+
+    private const string RootGraphQL = """
+        query($first_1_1: Int) {
+          allFilms(first: $first_1_1) {
+            totalCount
+            films {
+              title
+            }
+          }
+        }
+        """;
+
+    private const string RootResult = """
+        { "TotalCount": 6, "Titles": [ "A New Hope", "The Empire Strikes Back" ] }
+        """;
+}
