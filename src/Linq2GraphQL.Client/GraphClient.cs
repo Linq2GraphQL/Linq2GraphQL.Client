@@ -99,6 +99,11 @@ public class GraphClient
     internal GraphClientOptions ClientOptions => options.Value;
 
 
+    /// <summary>
+    ///     The <c>connection_init</c> payload delegate from <see cref="GraphClientOptions.ConnectionInitPayload"/>,
+    ///     exposed for callers that build transports by hand. The obsolete
+    ///     <see cref="WSConnectionInitPayload"/> is the fallback when this is null.
+    /// </summary>
     public Func<GraphClient, CancellationToken, ValueTask<object>> ConnectionInitPayload =>
         options.Value.ConnectionInitPayload;
 

@@ -24,16 +24,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   is picked up on reconnect. Handshake-owned headers (`Host`, `Sec-WebSocket-*`, ...) are
   skipped; on browsers, where custom WebSocket headers are impossible, the hooks still run
   and the `Authorization` value is available for
-  `SendAuthorizationInConnectionInit` (#117).
-- `GraphClientOptions.ConnectionInitPayload` sets the WebSocket `connection_init` payload.
-  Unlike the old option it accepts any JSON object, e.g.
-  `["Authorization"] = $"Bearer {token}"` (the graphql-ws/Apollo connection-parameter
-  convention) or a server-specific `authToken`. Called before every (re)connect.
+  `SendAuthorizationInConnectionInit` (#117). The hooks count against the connect
+  timeout, which is now 30 s (Websocket.Client's 5 s default covered only the socket
+  connect).
+- `GraphClientOptions.ConnectionInitPayload` (and the matching `GraphClient` property)
+  set the WebSocket `connection_init` payload. Unlike the old option it accepts any JSON
+  object, e.g. `new Dictionary<string, object> { ["Authorization"] = $"Bearer {token}" }`
+  (the graphql-ws/Apollo connection-parameter convention) or a server-specific
+  `authToken`. Called before every (re)connect.
 - `GraphClientOptions.SendAuthorizationInConnectionInit` (default off) merges the
   `Authorization` header produced by the request hooks into the `connection_init`
   payload — how a per-user token reaches the server on Blazor WebAssembly, where the
   browser does not allow headers on WebSocket requests. Wins on key conflicts with a
-  `ConnectionInitPayload` dictionary.
+  `ConnectionInitPayload` dictionary (both `IDictionary` and `IReadOnlyDictionary` string-keyed
+  shapes merge; anything else throws).
 
 ### Deprecated
 
@@ -79,6 +83,10 @@ Behaviour changes that callers may notice. None of them changes a public signatu
 - **WebSocket: unknown message types are ignored** instead of terminating the
   subscription with `InvalidDataException`. This matches the SSE transport's tolerance for
   unknown event types and keeps forward compatibility with proxies/servers.
+- **A failed initial WebSocket connect no longer retries in the background.** The
+  exception surfaces from `StartAsync`; previously the transport's `Error` disconnect
+  also started the bounded reconnect loop, re-running request hooks up to five times and
+  reporting a second, delayed error for a failure the caller had already handled.
 - **WebSocket close codes follow the graphql-ws reference client.** Fatal: `4004`, `4005`,
   `4400`, `4401`, `4406`, `4409`, `4429`, `4500` and fatal internal `1xxx` codes.
   Retryable: `4403`, `4408`, `4499` and `4504`. Previously `4408` was treated as fatal.

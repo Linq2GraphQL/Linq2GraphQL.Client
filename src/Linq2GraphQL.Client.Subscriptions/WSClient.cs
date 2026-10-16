@@ -83,6 +83,9 @@ public class WSClient : IAsyncDisposable
             // library's own loop retries forever and goes silent after an Error.
             ReconnectTimeout = null,
             IsReconnectionEnabled = false,
+            // The default 5 s budget covers only the socket connect; the request hooks (token
+            // fetch, e.g. an IdP round-trip) run inside the same window, so give them room.
+            ConnectTimeout = TimeSpan.FromSeconds(30),
         };
 
         messageSubscription = client.MessageReceived.Subscribe(HandleMessage, ReportFailure);
@@ -192,7 +195,19 @@ public class WSClient : IAsyncDisposable
         // Created before StartOrFail so an eager ack arriving during the handshake
         // completes this generation's source instead of racing a null field (L2).
         ackSource = CreateAckSource();
-        await client.StartOrFail().ConfigureAwait(false);
+        try
+        {
+            await client.StartOrFail().ConfigureAwait(false);
+        }
+        catch
+        {
+            // The caller sees this exception from Start(). The transport also raises a
+            // DisconnectionHappened(Error) for the same failure; without marking it terminal the
+            // retry loop would run the full bounded budget in the background and surface a
+            // second, delayed error for a failure the caller already handled.
+            Interlocked.Exchange(ref terminalFailure, 1);
+            throw;
+        }
 
         // Initial connect: a missing subprotocol is a protocol violation and stays terminal.
         var negotiated = client.NativeClient?.SubProtocol;
@@ -301,24 +316,29 @@ public class WSClient : IAsyncDisposable
 
         // Blazor WebAssembly path: the browser drops headers on WebSocket requests, so the token
         // produced by the request hooks travels inside connection_init (graphql-ws/Apollo style
-        // "Authorization" connection parameter). The hook value wins on key conflicts.
+        // "Authorization" connection parameter). The hook value wins on key conflicts. Merging
+        // needs string-keyed entries, so both dictionary interfaces are accepted here.
         if (payload is null)
         {
             return new Dictionary<string, object> { ["Authorization"] = authorization };
         }
 
-        if (payload is IDictionary<string, object> mergeable)
+        if (payload is IEnumerable<KeyValuePair<string, object>> entries)
         {
-            var merged = new Dictionary<string, object>(mergeable, StringComparer.Ordinal)
+            var merged = new Dictionary<string, object>(StringComparer.Ordinal);
+            foreach (var (key, value) in entries)
             {
-                ["Authorization"] = authorization
-            };
+                merged[key] = value;
+            }
+
+            merged["Authorization"] = authorization;
             return merged;
         }
 
         throw new InvalidOperationException(
             "SendAuthorizationInConnectionInit requires the ConnectionInitPayload to be a dictionary "
-            + $"(or null) so the Authorization connection parameter can be merged; it was {payload.GetType()}.");
+            + "with string keys (or null) so the Authorization connection parameter can be merged; "
+            + $"it was {payload.GetType()}.");
     }
 
     private string ValidateNegotiatedSubprotocol(string negotiatedProtocol)
@@ -552,6 +572,14 @@ public class WSClient : IAsyncDisposable
 
                 var delay = BackoffDelay(attempt);
                 await Task.Delay(delay, cancellationSource.Token).ConfigureAwait(false);
+
+                // Re-check after the backoff: a terminal failure (e.g. the initial connect's
+                // Start() already threw) can be flagged while this loop is sleeping, and the
+                // attempt below must not run hooks for a client that already reported failure.
+                if (Volatile.Read(ref terminalFailure) != 0)
+                {
+                    return;
+                }
 
                 try
                 {

@@ -26,8 +26,10 @@ public class GraphClientOptions
     /// JSON object the server expects as connection parameters, for example
     /// <c>new Dictionary&lt;string, object&gt; { ["Authorization"] = $"Bearer {token}" }</c> (the
     /// graphql-ws and Apollo convention) or <c>{ { "token", token } }</c>. Called before every
-    /// (re)connect, so a refreshed token is picked up. Overrides the obsolete
-    /// <see cref="WSConnectionInitPayload"/> when set.
+    /// (re)connect, so a refreshed token is picked up, and counted within the connect timeout
+    /// (30 s). Overrides the obsolete <see cref="WSConnectionInitPayload"/> when set. When
+    /// <see cref="SendAuthorizationInConnectionInit"/> is enabled the payload must be a dictionary
+    /// with string keys (or null) so the <c>Authorization</c> parameter can be merged.
     /// </summary>
     public Func<GraphClient, CancellationToken, ValueTask<object>> ConnectionInitPayload { get; set; }
 
@@ -38,10 +40,12 @@ public class GraphClientOptions
 
     /// <summary>
     /// Copies the <c>Authorization</c> header produced by <see cref="ConfigureRequest"/> and
-    /// derived clients (<see cref="GraphClient.WithAccessToken"/>) into the <c>connection_init</c>
+    /// derived clients (<c>WithAccessToken</c> on a generated client) into the <c>connection_init</c>
     /// payload. This is how a per-user token reaches the server on Blazor WebAssembly, where the
     /// browser does not allow headers on the WebSocket upgrade request. The header is merged over a
-    /// dictionary payload from <see cref="ConnectionInitPayload"/> and wins on key conflicts.
+    /// dictionary payload from <see cref="ConnectionInitPayload"/> and wins on key conflicts. Like
+    /// any <c>connection_init</c> payload, the token is only as protected as the transport: prefer
+    /// <c>wss://</c> so it is not sent in clear text.
     /// </summary>
     public bool SendAuthorizationInConnectionInit { get; set; }
 

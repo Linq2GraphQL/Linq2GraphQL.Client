@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Text.Json;
 using Linq2GraphQL.Client;
@@ -850,5 +851,54 @@ public class WsClientTests
             client.Start().WaitAsync(TimeSpan.FromSeconds(10)));
 
         Assert.Contains("token-service-down", exception.Message);
+    }
+
+    [Fact]
+    public async Task HookThrowingOnInitialConnect_DoesNotRetryInBackground()
+    {
+        await using var server = await GraphQLWsTestServer.StartAsync();
+        var calls = 0;
+        var graphClient = WsTestGraphClientFactory.Create(server)
+            .WithRequestConfiguration((_, _) =>
+            {
+                Interlocked.Increment(ref calls);
+                throw new InvalidOperationException("token-service-down");
+            });
+        var (client, _, _, failures) = CreateClient(graphClient);
+
+        await using var _ = client;
+        await Assert.ThrowsAnyAsync<Exception>(() => client.Start().WaitAsync(TimeSpan.FromSeconds(10)));
+
+        // No background retry loop: the hook ran once (the initial connect), not again after
+        // the retry backoff, and no second failure is reported beyond Start's own exception.
+        // The hook throws before the socket connects, so no upgrade request ever left the client.
+        await Task.Delay(TimeSpan.FromSeconds(3));
+        Assert.Equal(1, Volatile.Read(ref calls));
+        Assert.Empty(failures);
+        Assert.Empty(server.UpgradeHeaders);
+    }
+
+    [Fact]
+    public async Task SendAuthorizationInConnectionInit_MergesIntoReadOnlyDictionaryPayload()
+    {
+        await using var server = await GraphQLWsTestServer.StartAsync();
+        var graphClient = WsTestGraphClientFactory.Create(server, configureOptions: options =>
+        {
+            options.SendAuthorizationInConnectionInit = true;
+            options.ConnectionInitPayload = (_, _) => ValueTask.FromResult<object>(
+                new ReadOnlyDictionary<string, object>(
+                    new Dictionary<string, object> { ["authToken"] = "s3cret" }));
+        })
+            .WithRequestConfiguration(RequestConfigurations.BearerToken(_ => ValueTask.FromResult("wasm-token")));
+        var (client, _, _, failures) = CreateClient(graphClient);
+
+        await using var _ = client;
+        await client.Start().WaitAsync(TimeSpan.FromSeconds(10));
+        var init = await server.InitReceived.Task.WaitAsync(TimeSpan.FromSeconds(10));
+
+        var payload = GetInitPayload(init);
+        Assert.Equal("s3cret", payload.GetProperty("authToken").GetString());
+        Assert.Equal("Bearer wasm-token", payload.GetProperty("Authorization").GetString());
+        Assert.Empty(failures);
     }
 }
