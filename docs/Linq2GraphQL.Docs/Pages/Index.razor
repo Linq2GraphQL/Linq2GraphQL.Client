@@ -67,6 +67,26 @@
 </section>
 
 <section class="doc-section">
+    <h2>Only the fields you ask for</h2>
+    <p>
+        Returning whole objects, as above, is just the default. Project the result in <code>Select</code> and the
+        query asks for the fields your projection reads and nothing else, however deep they are:
+    </p>
+    <div class="row g-3">
+        <div class="col-xl-7">
+            <CodeBlock Title="C#" Code="@ProjectionCSharp"/>
+        </div>
+        <div class="col-xl-5">
+            <CodeBlock Title="GraphQL sent to the server" Language="graphql" Code="@ProjectionGraphQL"/>
+        </div>
+    </div>
+    <p class="mt-3">
+        Project into an anonymous type, a class of your own or a single value.
+        <a href="selecting-fields">Selecting fields</a> shows each of them with the GraphQL it sends.
+    </p>
+</section>
+
+<section class="doc-section">
     <h2>How it works</h2>
     <div class="row row-cards">
         <div class="col-md-4">
@@ -161,6 +181,7 @@
     <h2>Where to next</h2>
     <ul>
         <li><a href="getting-started">Getting started</a> walks through generating a client, registering it and running a first query.</li>
+        <li><a href="selecting-fields">Selecting fields</a> shows how to fetch exactly the fields you need.</li>
         <li><a href="generator">The generator reference</a> covers every command line option, the configuration file and scalar mappings.</li>
         <li>
             Found a bug or missing a feature? <a href="https://github.com/Linq2GraphQL/Linq2GraphQL.Client/issues" target="_blank" rel="noopener">Open an issue</a>.
@@ -225,6 +246,36 @@
         # variables: { "first_1_1": 3 }
         """;
 
+    private const string ProjectionCSharp = """
+        var films = await starWarsClient
+            .Query
+            .AllFilms(first: 2)
+            .Select(e => e.Films.Select(f => new
+            {
+                f.Title,
+                f.Director,
+                Characters = f.CharacterConnection(null, 3).Characters.Select(c => c.Name)
+            }))
+            .ExecuteAsync();
+        """;
+
+    private const string ProjectionGraphQL = """
+        query($first_1_1: Int, $first_3_3: Int) {
+          allFilms(first: $first_1_1) {
+            films {
+              title
+              director
+              characterConnection_edb5f40290dee381:
+                characterConnection(first: $first_3_3) {
+                characters {
+                  name
+                }
+              }
+            }
+          }
+        }
+        """;
+
     private record Feature(string Title, string Text);
 
     private readonly Feature[] features =
@@ -232,7 +283,7 @@
         new("Generated from your schema",
             "Generate from a live endpoint (with a bearer token if it needs one), an SDL file such as one exported from HotChocolate, or an introspection result. Types, inputs, enums, interfaces and the client itself are generated, and the client and its operations come with interfaces you can mock in tests."),
         new("Include and Select",
-            "Scalar fields come along automatically. Include pulls in related objects at any depth, and Select projects the result into a part of the graph, an anonymous object or a class of your own."),
+            "Fetch whole objects, with scalar fields included automatically and related objects added with Include, or project into an anonymous type or a class of your own and fetch only the fields the projection reads."),
         new("Queries, mutations and subscriptions",
             "Mutations take generated input classes. Subscriptions are IObservable streams over graphql-ws WebSockets or server-sent events."),
         new("Cursor paging",
