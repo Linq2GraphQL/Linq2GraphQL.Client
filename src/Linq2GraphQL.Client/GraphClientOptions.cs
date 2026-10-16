@@ -20,13 +20,39 @@ public class GraphClientOptions
 {
     public bool UseSafeMode { get; set; } = false;
     public SubscriptionProtocol SubscriptionProtocol { get; set; } = default;
+
+    /// <summary>
+    /// Sets the <c>connection_init</c> payload of the WebSocket subscription transports. Return any
+    /// JSON object the server expects as connection parameters, for example
+    /// <c>new Dictionary&lt;string, object&gt; { ["Authorization"] = $"Bearer {token}" }</c> (the
+    /// graphql-ws and Apollo convention) or <c>{ { "token", token } }</c>. Called before every
+    /// (re)connect, so a refreshed token is picked up. Overrides the obsolete
+    /// <see cref="WSConnectionInitPayload"/> when set.
+    /// </summary>
+    public Func<GraphClient, CancellationToken, ValueTask<object>> ConnectionInitPayload { get; set; }
+
+    [Obsolete("Use ConnectionInitPayload instead: it can return any JSON object (an authorization payload, "
+              + "for example), not just a GraphQLRequest. Superseded when ConnectionInitPayload is set.")]
     public Func<GraphClient, Task<GraphQLRequest>> WSConnectionInitPayload { get; set; } =
         _ => Task.FromResult<GraphQLRequest>(null!);
 
     /// <summary>
-    /// Called for every HTTP request the client sends (queries, mutations, the safe-mode schema query and
-    /// server-sent-event subscriptions) just before it is sent. Use it to set per-request headers, such as an
-    /// access token, without a <see cref="DelegatingHandler"/>.
+    /// Copies the <c>Authorization</c> header produced by <see cref="ConfigureRequest"/> and
+    /// derived clients (<see cref="GraphClient.WithAccessToken"/>) into the <c>connection_init</c>
+    /// payload. This is how a per-user token reaches the server on Blazor WebAssembly, where the
+    /// browser does not allow headers on the WebSocket upgrade request. The header is merged over a
+    /// dictionary payload from <see cref="ConnectionInitPayload"/> and wins on key conflicts.
+    /// </summary>
+    public bool SendAuthorizationInConnectionInit { get; set; }
+
+    /// <summary>
+    /// Called for every request the client sends (queries, mutations, the safe-mode schema query,
+    /// server-sent-event subscriptions and the WebSocket subscription upgrade) just before it is
+    /// sent. On the WebSocket upgrade the hook's headers are copied to the upgrade request. Use it
+    /// to set per-request headers, such as an access token, without a
+    /// <see cref="DelegatingHandler"/>. On Blazor WebAssembly the browser ignores headers on
+    /// WebSocket requests; set <see cref="SendAuthorizationInConnectionInit"/> to send the token
+    /// in the <c>connection_init</c> payload instead.
     /// </summary>
     public Func<HttpRequestMessage, CancellationToken, ValueTask> ConfigureRequest { get; set; }
 

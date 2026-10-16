@@ -18,6 +18,29 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `GraphClientOptions.SubscriptionRetryAttempts` (WebSocket, default 5) bounds reconnects.
 - `QueryExecutor.ProcessResponse(JsonElement, ...)` and `ProcessResponse(byte[], ...)`
   overloads for streaming callers.
+- **WebSocket upgrades now run the request hooks** (`ConfigureRequest`,
+  `WithRequestConfiguration`, `WithAccessToken`): the headers they produce are copied onto
+  the upgrade request of the initial connect and of every reconnect, so a refreshed token
+  is picked up on reconnect. Handshake-owned headers (`Host`, `Sec-WebSocket-*`, ...) are
+  skipped; on browsers, where custom WebSocket headers are impossible, the hooks still run
+  and the `Authorization` value is available for
+  `SendAuthorizationInConnectionInit` (#117).
+- `GraphClientOptions.ConnectionInitPayload` sets the WebSocket `connection_init` payload.
+  Unlike the old option it accepts any JSON object, e.g.
+  `["Authorization"] = $"Bearer {token}"` (the graphql-ws/Apollo connection-parameter
+  convention) or a server-specific `authToken`. Called before every (re)connect.
+- `GraphClientOptions.SendAuthorizationInConnectionInit` (default off) merges the
+  `Authorization` header produced by the request hooks into the `connection_init`
+  payload — how a per-user token reaches the server on Blazor WebAssembly, where the
+  browser does not allow headers on WebSocket requests. Wins on key conflicts with a
+  `ConnectionInitPayload` dictionary.
+
+### Deprecated
+
+- `GraphClientOptions.WSConnectionInitPayload` / `GraphClient.WSConnectionInitPayload`: use
+  `ConnectionInitPayload`, which can return any JSON object, not just a `GraphQLRequest`.
+  The old option keeps working (and falls back) until removed; `ConnectionInitPayload`
+  wins when both are set.
 
 ### Changed
 

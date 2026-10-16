@@ -42,6 +42,22 @@ public class WSClient : IAsyncDisposable
     // reconnection is enabled, which this class disables (verified: no NoMessageReceived event).
     private Timer watchdog;
     private long lastMessageTicks;
+    // Authorization header produced by the request hooks of the CURRENT connection; read when
+    // building the connection_init payload (SendAuthorizationInConnectionInit). Written in the
+    // connection factory before SendConnectionInitAsync runs for the same generation.
+    private volatile string connectionAuthorization;
+
+    // Headers the WebSocket handshake owns; a hook setting them must not break the upgrade.
+    private static readonly HashSet<string> HandshakeOwnedHeaders = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Host",
+        "Connection",
+        "Upgrade",
+        "Sec-WebSocket-Key",
+        "Sec-WebSocket-Version",
+        "Sec-WebSocket-Protocol",
+        "Sec-WebSocket-Extensions",
+    };
 
     public WSClient(GraphClient graphClient, GraphQLRequest payload)
     {
@@ -49,14 +65,19 @@ public class WSClient : IAsyncDisposable
         this.payload = payload;
         maxRetryAttempts = Math.Max(0, graphClient.ClientOptions.SubscriptionRetryAttempts);
 
-        var factory = new Func<ClientWebSocket>(() =>
+        // The async connection factory runs for EVERY connect, including each reconnect attempt
+        // inside the retry loop — so request hooks (WithAccessToken etc.) run per connection and
+        // a refreshed token is picked up on reconnect. It must return an already-connected socket.
+        var factory = new Func<Uri, CancellationToken, Task<WebSocket>>(async (uri, cancellationToken) =>
         {
             var socket = new ClientWebSocket();
             socket.Options.AddSubProtocol(subprotocol ?? GetSubprotocolString());
+            await ApplyRequestHooksAsync(socket.Options, cancellationToken).ConfigureAwait(false);
+            await socket.ConnectAsync(uri, cancellationToken).ConfigureAwait(false);
             return socket;
         });
 
-        client = new WebsocketClient(new Uri(graphClient.SubscriptionUrl), factory)
+        client = new WebsocketClient(new Uri(graphClient.SubscriptionUrl), null, factory)
         {
             // This class owns reconnection (bounded, with backoff) and silence detection. The
             // library's own loop retries forever and goes silent after an Error.
@@ -66,6 +87,37 @@ public class WSClient : IAsyncDisposable
 
         messageSubscription = client.MessageReceived.Subscribe(HandleMessage, ReportFailure);
         disconnectionSubscription = client.DisconnectionHappened.Subscribe(HandleDisconnection, ReportFailure);
+    }
+
+    private async Task ApplyRequestHooksAsync(ClientWebSocketOptions socketOptions, CancellationToken cancellationToken)
+    {
+        // The hooks are HttpRequestMessage-based (same shape as queries and SSE); run them on a
+        // dummy request for the subscription URL, then copy the resulting headers onto the socket.
+        using var request = new HttpRequestMessage(HttpMethod.Get, new Uri(graphClient.SubscriptionUrl));
+        await graphClient.ConfigureRequestAsync(request, cancellationToken).ConfigureAwait(false);
+
+        connectionAuthorization = request.Headers.Authorization?.ToString();
+
+        // Browsers do not allow custom headers on WebSocket requests: the Authorization value
+        // captured above travels in the connection_init payload instead (Blazor WebAssembly).
+        if (OperatingSystem.IsBrowser())
+        {
+            return;
+        }
+
+        foreach (var (key, values) in request.Headers)
+        {
+            if (HandshakeOwnedHeaders.Contains(key))
+            {
+                continue;
+            }
+
+            var joined = string.Join(", ", values);
+            if (!string.IsNullOrEmpty(joined))
+            {
+                socketOptions.SetRequestHeader(key, joined);
+            }
+        }
     }
 
     public IObservable<string> Subscription => subscriptionSubject.AsObservable();
@@ -214,11 +266,10 @@ public class WSClient : IAsyncDisposable
 
     private async Task SendConnectionInitAsync()
     {
-        var initRequest = new WebsocketRequest(WebsocketRequestTypes.CONNECTION_INIT);
-        if (graphClient.WSConnectionInitPayload is not null)
+        var initRequest = new WebsocketRequest(WebsocketRequestTypes.CONNECTION_INIT)
         {
-            initRequest.Payload = await graphClient.WSConnectionInitPayload(graphClient).ConfigureAwait(false);
-        }
+            Payload = await BuildConnectionInitPayloadAsync(cancellationSource.Token).ConfigureAwait(false)
+        };
 
         SendRequest(initRequest);
         lock (stateLock)
@@ -229,6 +280,45 @@ public class WSClient : IAsyncDisposable
         // An eager server may ack before init was queued; if so, subscribe now.
         // SendSubscription is idempotent (subscriptionSent) and no-ops otherwise.
         SendSubscription();
+    }
+
+    private async ValueTask<object> BuildConnectionInitPayloadAsync(CancellationToken cancellationToken)
+    {
+        // New option wins; the obsolete WSConnectionInitPayload is the fallback (resolved inside
+        // GraphClient so the deprecation pragma lives in exactly one place).
+        var payload = await graphClient.GetConnectionInitPayloadAsync(cancellationToken).ConfigureAwait(false);
+
+        if (!graphClient.ClientOptions.SendAuthorizationInConnectionInit)
+        {
+            return payload;
+        }
+
+        var authorization = connectionAuthorization;
+        if (string.IsNullOrEmpty(authorization))
+        {
+            return payload;
+        }
+
+        // Blazor WebAssembly path: the browser drops headers on WebSocket requests, so the token
+        // produced by the request hooks travels inside connection_init (graphql-ws/Apollo style
+        // "Authorization" connection parameter). The hook value wins on key conflicts.
+        if (payload is null)
+        {
+            return new Dictionary<string, object> { ["Authorization"] = authorization };
+        }
+
+        if (payload is IDictionary<string, object> mergeable)
+        {
+            var merged = new Dictionary<string, object>(mergeable, StringComparer.Ordinal)
+            {
+                ["Authorization"] = authorization
+            };
+            return merged;
+        }
+
+        throw new InvalidOperationException(
+            "SendAuthorizationInConnectionInit requires the ConnectionInitPayload to be a dictionary "
+            + $"(or null) so the Authorization connection parameter can be merged; it was {payload.GetType()}.");
     }
 
     private string ValidateNegotiatedSubprotocol(string negotiatedProtocol)
