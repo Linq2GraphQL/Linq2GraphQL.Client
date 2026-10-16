@@ -2,78 +2,87 @@
 
 <h3>Generate Client</h3>
 
-<Dimmer Active=isLoading>
+<div class="dimmer @(isLoading ? "active" : "")">
+    <div class="loader"></div>
+    <div class="dimmer-content">
 
-    <ItemSelect Items="demoOptions" @bind-SelectedValue="options" SelectedTextExpression="e=>e.ClientName">
-        <ListTemplate>
-            @context.ClientName
-        </ListTemplate>
-    </ItemSelect>
+        <ItemSelect Items="demoOptions" @bind-SelectedValue="options" SelectedTextExpression="e=>e.ClientName">
+            <ListTemplate>
+                @context.ClientName
+            </ListTemplate>
+        </ItemSelect>
 
-    <Card class="mt-3">
-        <CardBody>
-            <DataGrid>
-                <DataGridItem Title="Name">
-                    <InputText class="form-control" @bind-Value="options.ClientName"/>
-                </DataGridItem>
-                <DataGridItem Title="Namespace">
-                    <InputText class="form-control" @bind-Value="options.Namespace"/>
-                </DataGridItem>
+        <Card class="mt-3">
+            <CardBody>
+                <DataGrid>
+                    <DataGridItem Title="Name">
+                        <InputText class="form-control" @bind-Value="options.ClientName"/>
+                    </DataGridItem>
+                    <DataGridItem Title="Namespace">
+                        <InputText class="form-control" @bind-Value="options.Namespace"/>
+                    </DataGridItem>
 
-                <DataGridItem Title="Enum Strategy">
-                    <ItemSelect Items="EnumHelper.GetList<EnumGeneratorStrategy>()"
-                                @bind-SelectedValue="options.EnumGeneratorStrategy"/>
-                </DataGridItem>
+                    <DataGridItem Title="Enum Strategy">
+                        <ItemSelect Items="EnumHelper.GetList<EnumGeneratorStrategy>()"
+                                    @bind-SelectedValue="options.EnumGeneratorStrategy"/>
+                    </DataGridItem>
 
-                <DataGridItem Title="Include subscriptions">
-                    <Checkbox Switch @bind-Value="options.IncludeSubscriptions"/>
-                </DataGridItem>
+                    <DataGridItem Title="Include subscriptions">
+                        <Checkbox Switch @bind-Value="options.IncludeSubscriptions"/>
+                    </DataGridItem>
 
-                <DataGridItem Title="Nullable client">
-                    <Checkbox Switch @bind-Value="options.Nullable"/>
-                </DataGridItem>
+                    <DataGridItem Title="Nullable client">
+                        <Checkbox Switch @bind-Value="options.Nullable"/>
+                    </DataGridItem>
 
-                <DataGridItem Title="Include Deprecated">
-                    <Checkbox Switch @bind-Value="options.IncludeDeprecated"/>
-                </DataGridItem>
+                    <DataGridItem Title="Include Deprecated">
+                        <Checkbox Switch @bind-Value="options.IncludeDeprecated"/>
+                    </DataGridItem>
 
-            </DataGrid>
+                </DataGrid>
 
-            <div class="mt-3"/>
-            <Tabs>
-                <Tab Title="Url">
-                    <DataGrid>
-                        <DataGridItem Title="Url">
-                            <InputText class="form-control" @bind-Value="options.Url"/>
-                        </DataGridItem>
-                        <DataGridItem Title="Token">
-                            <InputText class="form-control" @bind-Value="options.Token"/>
-                        </DataGridItem>
-                    </DataGrid>
-
-
-                    <Button class="mt-3" BackgroundColor="TablerColor.Primary" OnClick="GenerateClientAsync">Generate
-                    </Button>
-
-                </Tab>
-
-                <Tab Title="Schema">
-
-                    <div class="mb-2">Run this
-                        <Icon class="icon" IconType="Icons.Copy" OnClick="CopyIntrospection"/>
-                        query and paste the result below.
-                    </div>
-
-                    <InputTextArea class="form-control" @bind-Value="options.Schema" rows="20"/>
-
-                    <Button class="mt-3" BackgroundColor="TablerColor.Primary" OnClick="GenerateClientJson">Generate
-                    </Button>
-                </Tab>
-
-            </Tabs>
+                <div class="mt-3"/>
+                <Tabs>
+                    <Tab Title="Url">
+                        <DataGrid>
+                            <DataGridItem Title="Url">
+                                <InputText class="form-control" @bind-Value="options.Url"/>
+                            </DataGridItem>
+                            <DataGridItem Title="Token">
+                                <InputText class="form-control" @bind-Value="options.Token"/>
+                            </DataGridItem>
+                        </DataGrid>
 
 
-        </CardBody>
-    </Card>
+                        <Button class="mt-3" BackgroundColor="TablerColor.Primary" OnClick="GenerateClientAsync">Generate
+                        </Button>
 
-</Dimmer>
+                    </Tab>
+
+                    <Tab Title="Schema (SDL / JSON)">
+
+                        <div class="mb-2">
+                            Upload or paste the schema as SDL (<code>schema.graphql</code>), or as the result of this
+                            <Icon class="icon" IconType="Icons.Copy" OnClick="CopyIntrospection"/>
+                            introspection query. The format is detected from the content.
+                        </div>
+
+                        <InputFile class="form-control mb-2" OnChange="LoadSchemaFileAsync"
+                                   accept=".graphql,.graphqls,.gql,.sdl,.json,.txt"/>
+
+                        <InputTextArea class="form-control font-monospace" @bind-Value="options.Schema" rows="20"
+                                       placeholder="type Query { ... }"/>
+
+                        <Button class="mt-3" BackgroundColor="TablerColor.Primary" OnClick="GenerateClientFromSchema">
+                            Generate @(IsIntrospectionJson(options.Schema) ? "from introspection JSON" : "from SDL")
+                        </Button>
+                    </Tab>
+
+                </Tabs>
+
+
+            </CardBody>
+        </Card>
+
+    </div>
+</div>
