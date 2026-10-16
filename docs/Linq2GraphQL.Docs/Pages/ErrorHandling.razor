@@ -1,0 +1,238 @@
+@page "/error-handling"
+
+<PageTitle>Error handling - Linq2GraphQL</PageTitle>
+
+<h1 class="page-heading">Error handling</h1>
+<p class="lead text-secondary">
+    A request can fail in three places: the server can answer with GraphQL errors, the HTTP request itself can
+    fail, or an expression can't be turned into GraphQL at all. Each has its own exception, and GraphQL errors can
+    also be returned as a result instead of thrown.
+</p>
+
+<section class="doc-section">
+    <h2 id="overview">What can go wrong</h2>
+    <div class="table-responsive">
+        <table class="table table-vcenter card-table border">
+            <thead>
+            <tr><th>Failure</th><th>Exception</th><th>When</th></tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>The server answers with <code>errors</code></td>
+                <td><code>GraphQueryExecutionException</code></td>
+                <td>From <code>ExecuteAsync</code>. <code>ExecuteWithResultAsync</code> returns them instead.</td>
+            </tr>
+            <tr>
+                <td>The HTTP request fails</td>
+                <td><code>GraphQueryRequestException</code></td>
+                <td>A non-success status code, from both <code>ExecuteAsync</code> and <code>ExecuteWithResultAsync</code>.</td>
+            </tr>
+            <tr>
+                <td>The request times out</td>
+                <td><code>TaskCanceledException</code></td>
+                <td>After <code>HttpClient.Timeout</code>, with a <code>TimeoutException</code> as the inner exception, the way <code>HttpClient</code> reports it.</td>
+            </tr>
+            <tr>
+                <td>An expression can't become GraphQL</td>
+                <td><code>GraphQueryTranslationException</code></td>
+                <td>While the query is built, before anything is sent.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="doc-section">
+    <h2 id="exceptions">GraphQL errors as exceptions</h2>
+    <p>
+        By default <code>ExecuteAsync</code> throws when the response contains errors. This asks the
+        <a href="https://swapi-graphql.netlify.app/graphql" target="_blank" rel="noopener">Star Wars API</a> for a
+        film that doesn't exist:
+    </p>
+    <CodeBlock Code="@ThrowCSharp"/>
+    <CodeBlock Title="Output" Language="text" Code="@ThrowOutput"/>
+    <p><code>GraphQueryExecutionException</code> carries:</p>
+    <ul>
+        <li><code>Errors</code>: every error the server returned, each with <code>Message</code>, <code>Locations</code>, <code>Path</code>, <code>Extensions</code> and a classified <code>ErrorCode</code>.</li>
+        <li><code>GraphQLQuery</code> and <code>GraphQLVariables</code>: the request that caused the errors, for logging.</li>
+    </ul>
+    <p>The exception message is the first error's message, so a log line is useful without unpacking <code>Errors</code>.</p>
+</section>
+
+<section class="doc-section">
+    <h2 id="result">GraphQL errors as a result</h2>
+    <p>
+        GraphQL can return data and errors together, for example when one field of many fails. To get both
+        without exceptions, use <code>ExecuteWithResultAsync</code>:
+    </p>
+    <CodeBlock Code="@ResultCSharp"/>
+    <p><code>GraphResult&lt;T&gt;</code> has:</p>
+    <ul>
+        <li><code>Data</code>: the result, which can be present even when there are errors.</li>
+        <li><code>Errors</code> and <code>Extensions</code>: the errors and the response-level extensions from the server.</li>
+        <li><code>HasErrors</code> and <code>HasData</code>.</li>
+        <li><code>EnsureNoErrors()</code>, which throws <code>GraphQueryExecutionException</code> if there are errors, for when you decide to throw after all.</li>
+    </ul>
+    <p>
+        Only GraphQL errors end up in the result. A failed HTTP request still throws
+        <code>GraphQueryRequestException</code>, because there is no GraphQL response to return.
+    </p>
+    <p>
+        The same choice exists for <a href="paging">paging</a> (<code>NextPageWithResultAsync</code>,
+        <code>GetAllPagesWithResultAsync</code>) and <a href="subscriptions">subscriptions</a>
+        (<code>StartWithErrorsAsync</code>).
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="error-codes">Error codes</h2>
+    <p>
+        Servers put a machine-readable code in each error's <code>extensions.code</code>, but they don't agree on
+        the values. <code>GraphQueryError.ErrorCode</code> maps the codes of Apollo, the GraphQL over HTTP
+        conventions and HotChocolate onto one <code>GraphErrorCode</code> enum, so you can branch on it without
+        knowing which server you talk to:
+    </p>
+    <CodeBlock Code="@CodesCSharp"/>
+    <div class="table-responsive">
+        <table class="table table-vcenter card-table border">
+            <thead>
+            <tr><th><code>GraphErrorCode</code></th><th>Server codes</th></tr>
+            </thead>
+            <tbody>
+            <tr><td><code>Authentication</code></td><td><code>UNAUTHENTICATED</code>, <code>AUTH_NOT_AUTHENTICATED</code></td></tr>
+            <tr><td><code>Authorization</code></td><td><code>AUTH_NOT_AUTHORIZED</code></td></tr>
+            <tr><td><code>Forbidden</code></td><td><code>FORBIDDEN</code></td></tr>
+            <tr><td><code>Validation</code></td><td><code>VALIDATION_FAILED</code>, <code>GRAPHQL_VALIDATION_FAILED</code>, <code>HC0018</code></td></tr>
+            <tr><td><code>BadRequest</code></td><td><code>BAD_USER_INPUT</code>, <code>HC0008</code></td></tr>
+            <tr><td><code>NotFound</code></td><td><code>NOT_FOUND</code>, <code>HC0012</code></td></tr>
+            <tr><td><code>RateLimited</code></td><td><code>RATE_LIMITED</code>, <code>RATE_LIMIT_EXCEEDED</code>, <code>THROTTLED</code></td></tr>
+            <tr><td><code>Timeout</code></td><td><code>TIMEOUT</code>, <code>REQUEST_TIMEOUT</code></td></tr>
+            <tr><td><code>Conflict</code></td><td><code>CONFLICT</code></td></tr>
+            <tr><td><code>InternalServerError</code></td><td><code>INTERNAL_SERVER_ERROR</code>, <code>HC0001</code></td></tr>
+            <tr><td><code>PersistedQueryNotFound</code></td><td><code>PERSISTED_QUERY_NOT_FOUND</code></td></tr>
+            <tr><td><code>PersistedQueryMismatch</code></td><td><code>PERSISTED_QUERY_NOT_SUPPORTED</code></td></tr>
+            <tr><td><code>Unknown</code></td><td>Anything else, or no code at all</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <p>
+        Codes are matched case insensitively. The original value is still in <code>Extensions["code"]</code>, so a
+        server-specific code that maps to <code>Unknown</code> can be read from there. The Star Wars API sends no
+        codes, which is why the example above shows <code>Unknown</code>.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="request-failures">Request failures</h2>
+    <p>
+        When the server answers with a non-success status code, the client throws
+        <code>GraphQueryRequestException</code>. Its message holds the status code and the start of the response
+        body (up to 4096 characters), and like the execution exception it carries <code>GraphQLQuery</code> and
+        <code>GraphQLVariables</code>:
+    </p>
+    <CodeBlock Code="@RequestCSharp"/>
+    <p>
+        Retries and circuit breaking belong in the <code>HttpClient</code> pipeline, for example with
+        <code>AddStandardResilienceHandler()</code> on the builder <code>WithHttpClient</code> returns. Be careful
+        with retrying mutations: a request that timed out may still have been carried out.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="translation">Expressions that can't become GraphQL</h2>
+    <p>
+        <code>Include</code> and <code>Select</code> take lambdas, and not everything a lambda can say has a GraphQL
+        equivalent. When the parser meets such an expression it throws <code>GraphQueryTranslationException</code>
+        before the request is sent. <code>Expression</code> holds the part that failed and <code>MemberName</code>
+        the operator or member it is about. It derives from <code>NotSupportedException</code>, so existing
+        <code>catch</code> blocks for that keep working.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="raw">Queries written as text</h2>
+    <p>
+        <code>GraphClient.ExecuteAsync</code> runs a query written as GraphQL text and returns the whole
+        <code>data</code> object as JSON. It never throws for GraphQL errors, including a server rejecting the
+        query; they come back in the result. Only transport failures throw <code>GraphQueryRequestException</code>:
+    </p>
+    <CodeBlock Code="@RawCSharp"/>
+</section>
+
+@code {
+    private const string ThrowCSharp = """
+        try
+        {
+            var title = await starWarsClient
+                .Query
+                .Film(filmID: new ID { Value = "99" })
+                .Select(f => f.Title)
+                .ExecuteAsync();
+        }
+        catch (GraphQueryExecutionException ex)
+        {
+            Console.WriteLine(ex.Message);
+            foreach (var error in ex.Errors)
+            {
+                Console.WriteLine($"{error.Message} (path: {string.Join("/", error.Path)}, code: {error.ErrorCode})");
+            }
+        }
+        """;
+
+    private const string ThrowOutput = """
+        No entry in local cache for https://www.swapi.tech/api/films/99 - Check Errors property for details
+        No entry in local cache for https://www.swapi.tech/api/films/99 (path: film, code: Unknown)
+        """;
+
+    private const string ResultCSharp = """
+        var result = await starWarsClient
+            .Query
+            .Film(filmID: new ID { Value = "99" })
+            .Select(f => f.Title)
+            .ExecuteWithResultAsync();
+
+        if (result.HasErrors)
+        {
+            foreach (var error in result.Errors)
+            {
+                logger.LogWarning("GraphQL error: {Message}", error.Message);
+            }
+        }
+
+        if (result.HasData)
+        {
+            Console.WriteLine(result.Data);
+        }
+        """;
+
+    private const string CodesCSharp = """
+        catch (GraphQueryExecutionException ex)
+            when (ex.Errors.Any(e => e.ErrorCode == GraphErrorCode.Authentication))
+        {
+            // Sign in again
+        }
+        """;
+
+    private const string RequestCSharp = """
+        try
+        {
+            var count = await starWarsClient.Query.AllFilms().Select(e => e.TotalCount).ExecuteAsync();
+        }
+        catch (GraphQueryRequestException ex)
+        {
+            // Http error! Status code NotFound Error: <!DOCTYPE html>...
+            logger.LogError(ex, "Request failed: {Query}", ex.GraphQLQuery);
+        }
+        """;
+
+    private const string RawCSharp = """
+        var result = await starWarsClient.GraphClient.ExecuteAsync(
+            "query { allFilms(first: 1) { films { title } } }");
+
+        if (!result.HasErrors)
+        {
+            Console.WriteLine(result.Data.GetRawText());
+            // {"allFilms":{"films":[{"title":"A New Hope"}]}}
+        }
+        """;
+}

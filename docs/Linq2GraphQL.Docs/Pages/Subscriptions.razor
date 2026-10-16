@@ -1,0 +1,202 @@
+@page "/subscriptions"
+
+<PageTitle>Subscriptions - Linq2GraphQL</PageTitle>
+
+<h1 class="page-heading">Subscriptions</h1>
+<p class="lead text-secondary">
+    A subscription keeps a connection open and delivers an event each time something happens on the server.
+    Linq2GraphQL exposes it as an <code>IObservable</code>, shaped with <code>Select</code> like any query, over
+    WebSockets or server-sent events.
+</p>
+
+<section class="doc-section">
+    <h2 id="setup">Setup</h2>
+    <p>Subscriptions are opt-in in the generator and live in their own package:</p>
+    <CodeBlock Language="shell" Code="@Setup"/>
+    <p>
+        Without <code>-s</code> the generated client has no <code>Subscription</code> property, and the generator warns
+        if the schema has subscriptions.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="subscribe">Subscribe</h2>
+    <p>
+        The examples on this page use the repository's test server, which publishes <code>customerAdded</code> each
+        time the <code>addCustomer</code> mutation runs. <code>StartAsync</code> returns the observable, and you
+        subscribe to it:
+    </p>
+    <CodeBlock Code="@Subscribe"/>
+    <ul>
+        <li>
+            Every subscriber gets its own connection, opened when it subscribes and closed when the subscription
+            returned by <code>Subscribe</code> is disposed.
+        </li>
+        <li>
+            <code>Select</code> works as for queries: <code>Select()</code> takes every scalar field, a projection
+            requests only the fields it reads. See <a href="selecting-fields">selecting fields</a>.
+        </li>
+        <li>
+            When the server completes the stream, the observable completes. A transport failure or an error event
+            ends it with <code>OnError</code>.
+        </li>
+    </ul>
+</section>
+
+<section class="doc-section">
+    <h2 id="protocols">Transports</h2>
+    <p>Pick the transport with <code>SubscriptionProtocol</code> in the client options:</p>
+    <div class="table-responsive">
+        <table class="table table-vcenter card-table border">
+            <thead>
+            <tr><th><code>SubscriptionProtocol</code></th><th>Transport</th><th>Address</th></tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><code>GraphQLWebSocket</code> (default)</td>
+                <td>WebSockets with the <a href="https://github.com/enisdenjo/graphql-ws" target="_blank" rel="noopener">graphql-ws</a> protocol (subprotocol <code>graphql-transport-ws</code>).</td>
+                <td rowspan="2">The client's base address with <code>ws://</code> or <code>wss://</code>.</td>
+            </tr>
+            <tr>
+                <td><code>ApolloWebSocket</code></td>
+                <td>The older Apollo protocol (subprotocol <code>graphql-ws</code>), for servers that don't speak graphql-ws yet.</td>
+            </tr>
+            <tr>
+                <td><code>ServerSentEvents</code></td>
+                <td>Server-sent events over a plain HTTP request.</td>
+                <td>The client's base address.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <CodeBlock Code="@Protocol"/>
+    <p>
+        Server-sent events go through the same HTTP pipeline as queries, so <code>ConfigureRequest</code>,
+        <code>WithAccessToken</code> and your <code>HttpClient</code> handlers apply to them. WebSocket connections
+        don't send those headers; when a subscription needs a per-user token, server-sent events are the simpler
+        choice.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="errors">Errors in events</h2>
+    <p>
+        With <code>StartAsync</code>, an event that carries GraphQL errors ends the subscription with
+        <code>OnError</code> and a <code>GraphQueryExecutionException</code>. When the server can send partial data,
+        use <code>StartWithErrorsAsync</code> instead. Each event then arrives as a <code>GraphResult</code> with its
+        data and errors, and an event with errors doesn't end the stream:
+    </p>
+    <CodeBlock Code="@WithErrors"/>
+    <p>Transport and protocol failures end the stream in both cases.</p>
+</section>
+
+<section class="doc-section">
+    <h2 id="reliability">Connections that drop, stall or fall behind</h2>
+    <div class="table-responsive">
+        <table class="table table-vcenter card-table border">
+            <thead>
+            <tr><th>Option</th><th>Default</th><th>What it does</th></tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><code>SubscriptionRetryAttempts</code></td>
+                <td><code>5</code></td>
+                <td>
+                    WebSockets: how often a dropped connection is reopened before the subscription fails with an
+                    <code>IOException</code>. Attempts back off exponentially with jitter, like the graphql-ws
+                    reference client, and a successful reconnect resets the count. Close codes that mean the server
+                    won't accept the connection are never retried. <code>0</code> fails on the first drop.
+                </td>
+            </tr>
+            <tr>
+                <td><code>SubscriptionIdleTimeout</code></td>
+                <td>none</td>
+                <td>
+                    Server-sent events: fail the subscription when nothing, not even a keep-alive comment, arrives within
+                    this time. A WebSocket connection that receives nothing for 30 seconds is always treated as lost
+                    and reconnected.
+                </td>
+            </tr>
+            <tr>
+                <td><code>SubscriptionMaxBufferedEvents</code></td>
+                <td><code>128</code></td>
+                <td>How many events are held for a subscriber that is slower than the server.</td>
+            </tr>
+            <tr>
+                <td><code>SubscriptionOverflowPolicy</code></td>
+                <td><code>Fault</code></td>
+                <td>
+                    What happens when that buffer is full. <code>Fault</code> fails the subscription, so events are
+                    never lost silently. <code>DropOldest</code> drops the oldest queued events, and
+                    <code>KeepLatest</code> keeps only the newest, for subscribers that only care about the current
+                    value.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <CodeBlock Code="@Reliability"/>
+</section>
+
+@code {
+    private const string Setup = """
+        Linq2GraphQL https://example.com/graphql -s -c=SampleClient -n=Sample -o=Generated
+        dotnet add package Linq2GraphQL.Client.Subscriptions --prerelease
+        """;
+
+    private const string Subscribe = """
+        var customers = await sampleClient
+            .Subscription
+            .CustomerAdded()
+            .Select(c => new { c.CustomerId, c.CustomerName })
+            .StartAsync();
+
+        using var subscription = customers.Subscribe(
+            customer => Console.WriteLine($"Added: {customer.CustomerName}"),
+            error => Console.WriteLine($"Subscription failed: {error.Message}"),
+            () => Console.WriteLine("The server ended the subscription"));
+
+        // ... events arrive until the subscription is disposed
+        """;
+
+    private const string Protocol = """
+        builder.Services
+            .AddSampleClient(options =>
+            {
+                options.SubscriptionProtocol = SubscriptionProtocol.ServerSentEvents;
+            })
+            .WithHttpClient(httpClient => httpClient.BaseAddress = new Uri("https://example.com/graphql"));
+        """;
+
+    private const string WithErrors = """
+        var events = await sampleClient
+            .Subscription
+            .CustomerAdded()
+            .Select()
+            .StartWithErrorsAsync();
+
+        using var subscription = events.Subscribe(result =>
+        {
+            if (result.HasErrors)
+            {
+                logger.LogWarning("Event with errors: {Message}", result.Errors[0].Message);
+            }
+
+            if (result.HasData)
+            {
+                Handle(result.Data);
+            }
+        });
+        """;
+
+    private const string Reliability = """
+        builder.Services
+            .AddSampleClient(options =>
+            {
+                options.SubscriptionRetryAttempts = 10;
+                options.SubscriptionMaxBufferedEvents = 1000;
+                options.SubscriptionOverflowPolicy = SubscriptionOverflowPolicy.DropOldest;
+            })
+            .WithHttpClient(httpClient => httpClient.BaseAddress = new Uri("https://example.com/graphql"));
+        """;
+}

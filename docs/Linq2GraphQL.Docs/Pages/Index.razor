@@ -141,6 +141,10 @@
                     <div class="card-body">
                         <h3 class="card-title">@feature.Title</h3>
                         <p class="text-secondary mb-0">@feature.Text</p>
+                        @if (feature.Href != null)
+                        {
+                            <a class="d-inline-block mt-2" href="@feature.Href">Read more</a>
+                        }
                     </div>
                 </div>
             </div>
@@ -181,7 +185,10 @@
     <h2>Where to next</h2>
     <ul>
         <li><a href="getting-started">Getting started</a> walks through generating a client, registering it and running a first query.</li>
-        <li><a href="selecting-fields">Selecting fields</a> shows how to fetch exactly the fields you need.</li>
+        <li>
+            The guides go deeper: <a href="selecting-fields">selecting fields</a>, <a href="error-handling">error handling</a>,
+            <a href="paging">paging</a>, <a href="subscriptions">subscriptions</a> and <a href="agent-mode">agent mode</a>.
+        </li>
         <li><a href="generator">The generator reference</a> covers every command line option, the configuration file and scalar mappings.</li>
         <li>
             Found a bug or missing a feature? <a href="https://github.com/Linq2GraphQL/Linq2GraphQL.Client/issues" target="_blank" rel="noopener">Open an issue</a>.
@@ -276,20 +283,24 @@
         }
         """;
 
-    private record Feature(string Title, string Text);
+    private record Feature(string Title, string Text, string Href = null);
 
     private readonly Feature[] features =
     [
         new("Generated from your schema",
             "Generate from a live endpoint (with a bearer token if it needs one), an SDL file such as one exported from HotChocolate, or an introspection result. Types, inputs, enums, interfaces and the client itself are generated, and the client and its operations come with interfaces you can mock in tests."),
         new("Include and Select",
-            "Fetch whole objects, with scalar fields included automatically and related objects added with Include, or project into an anonymous type or a class of your own and fetch only the fields the projection reads."),
+            "Fetch whole objects, with scalar fields included automatically and related objects added with Include, or project into an anonymous type or a class of your own and fetch only the fields the projection reads.",
+            "selecting-fields"),
         new("Queries, mutations and subscriptions",
-            "Mutations take generated input classes. Subscriptions are IObservable streams over graphql-ws WebSockets or server-sent events."),
+            "Mutations take generated input classes. Subscriptions are IObservable streams over graphql-ws WebSockets or server-sent events.",
+            "subscriptions"),
         new("Cursor paging",
-            "AsPager turns a Relay style connection into next and previous page calls, and GetAllPagesAsync streams every page as an IAsyncEnumerable."),
+            "AsPager turns a Relay style connection into next and previous page calls, and GetAllPagesAsync streams every page as an IAsyncEnumerable.",
+            "paging"),
         new("Errors your way",
-            "ExecuteAsync throws a GraphQueryExecutionException with the server's errors, classified into codes like Authentication or Validation. ExecuteWithResultAsync returns the data and the errors side by side instead."),
+            "ExecuteAsync throws a GraphQueryExecutionException with the server's errors, classified into codes like Authentication or Validation. ExecuteWithResultAsync returns the data and the errors side by side instead.",
+            "error-handling"),
         new("Headers and access tokens",
             "Set headers for every request in the options, or derive a client per user with WithAccessToken for on-behalf-of tokens. Derived clients share the connection and are cheap to create."),
         new("Interfaces and unions",
@@ -297,7 +308,8 @@
         new("Nullable clients",
             "Generate a client annotated for nullable reference types, so the compiler knows which fields the schema allows to be null, or a classic one without annotations."),
         new("Agent mode (preview)",
-            "Linq2GraphQL.Client.AI turns a client into tools for Microsoft.Extensions.AI, so an AI agent can query your API in GraphQL, limited to the operations you allow and validated before anything is sent.")
+            "Linq2GraphQL.Client.AI turns a client into tools for Microsoft.Extensions.AI, so an AI agent can query your API in GraphQL, limited to the operations you allow and validated before anything is sent.",
+            "agent-mode")
     ];
 
     private record Package(string Id, string Text);

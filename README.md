@@ -198,7 +198,7 @@ As an example this would add SpaceXClient to the container:
 
 ```cs
 services
-    .SpaceXClient(x =>
+    .AddSpaceXClient(x =>
      {
          x.UseSafeMode = false;
      })
@@ -215,7 +215,7 @@ services
 same for everyone:
 
 ```cs
-services.SpaceXClient(x =>
+services.AddSpaceXClient(x =>
 {
     x.ConfigureRequest = (request, ct) =>
     {
