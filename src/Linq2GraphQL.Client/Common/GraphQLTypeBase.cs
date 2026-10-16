@@ -16,24 +16,32 @@ namespace Linq2GraphQL.Client.Common
         {
             var id = Utilities.GetArgumentsId(arguments);
 
-            __AdditionalProperties.TryGetValue(methodName + id, out var value);
-            return value.Deserialize<T>();
-        }
-
-        public T GetFirstMethodValue<T>(string methodName)
-        {
-            var keyValue = __AdditionalProperties.FirstOrDefault(e => e.Key.StartsWith(methodName));
-            if (keyValue.Key == null)
+            if (__AdditionalProperties?.TryGetValue(methodName + id, out var value) != true)
             {
                 return default;
             }
 
-            return keyValue.Value.Deserialize<T>();
+            return value.Deserialize<T>(ClientJson.Default);
+        }
+
+        public T GetFirstMethodValue<T>(string methodName)
+        {
+            var keyValue = __AdditionalProperties?.FirstOrDefault(e => e.Key.StartsWith(methodName));
+            if (keyValue == null || keyValue.Value.Key == null)
+            {
+                return default;
+            }
+
+            return keyValue.Value.Value.Deserialize<T>(ClientJson.Default);
         }
 
 
 
+        /// <summary>
+        ///     Unknown properties captured during deserialization. Null until the serializer
+        ///     actually meets an unknown property — no dictionary is allocated per object.
+        /// </summary>
         [JsonExtensionData]
-        public Dictionary<string, JsonElement> __AdditionalProperties { get; set; } = new();
+        public Dictionary<string, JsonElement> __AdditionalProperties { get; set; }
     }
 }

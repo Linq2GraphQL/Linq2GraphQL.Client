@@ -389,6 +389,56 @@ await foreach (var orders in pager.GetAllPagesAsync(maxPages: 50))
 
 `GetAllPagesWithResultAsync` yields each page's `GraphResult<T>` and stops after the first page with errors.
 
+# Subscriptions
+
+`StartAsync` returns a cold `IObservable<TResult>`. Three transports are supported via `GraphClientOptions.SubscriptionProtocol`:
+
+- `GraphQLWebSocket` (default) — `graphql-transport-ws` protocol: sends `connection_init` (with `WSConnectionInitPayload` if configured), waits up to 10 s for `connection_ack`, then subscribes. Transient disconnects (connection lost, server-initiated close, or no frame at all for 30 s) reconnect and **resubscribe** on each new session; events during the gap are not replayed. Reconnection is bounded: up to `SubscriptionRetryAttempts` attempts with exponential backoff (1 s, 2 s, 4 s ... capped at 30 s) plus 300-3000 ms jitter; a successful `connection_ack` resets the budget. When the budget is spent the stream fails once with an `IOException` whose inner exception is the last failure. Protocol-level close codes `4004`, `4005`, `4400`, `4401`, `4406`, `4409`, `4429`, `4500` (and fatal internal `1xxx` codes) are fatal and never retried, per the graphql-ws reference client. `4403`, `4408`, `4499` and `4504` are retried.
+- `ApolloWebSocket` — the legacy `graphql-ws` (Apollo) subprotocol: `connection_init` / `start` / `stop`, with `data` messages instead of `next`.
+- `ServerSentEvents` — POSTs the subscription and reads the `text/event-stream` response (GraphQL-over-SSE, distinct-connections mode). Per-event `error` frames throw; a `complete` frame completes the stream. Unknown event types (e.g. `ka` keep-alives) are ignored per the WHATWG SSE spec.
+
+Options:
+
+- `SubscriptionMaxBufferedEvents` (default 128) and `SubscriptionOverflowPolicy` (`Fault` default, `DropOldest`, `KeepLatest`) control the buffer between transport and observer.
+- `SubscriptionRetryAttempts` (WebSocket, default 5) bounds reconnect attempts after a dropped connection; `0` fails on the first drop.
+- `SubscriptionIdleTimeout` (SSE only, default off) fails the subscription when no bytes arrive — including keep-alive comments — within the window.
+- `WSConnectionInitPayload` sets the `connection_init` payload for the WebSocket transports.
+
+Register them through DI like any other options:
+
+```cs
+services.AddSampleClient(options =>
+{
+    options.SubscriptionProtocol = SubscriptionProtocol.ServerSentEvents;
+    options.SubscriptionMaxBufferedEvents = 256;
+    options.SubscriptionOverflowPolicy = SubscriptionOverflowPolicy.DropOldest;
+    options.SubscriptionIdleTimeout = TimeSpan.FromSeconds(30);
+});
+```
+
+Guarantees:
+
+- Events are delivered in order, at most one message at a time (no concurrent observer callbacks).
+- Each subscriber gets its own buffer, so one slow or overflowing observer does not affect another.
+- A bounded buffer decouples transport from the observer; with the default `Fault` policy an overflow faults the subscription with `InvalidOperationException` instead of dropping events silently.
+- The first terminal transport error (initial connection failure, server `connection_error`, fatal close code, or an exhausted reconnect budget) terminates the stream via `OnError`.
+- A malformed GraphQL response for a single event also terminates the stream.
+
+Not supported: replay of missed events, incremental delivery (`@defer`/`@stream` partial payloads).
+
+```cs
+var subscription = await sampleClient
+    .Subscription
+    .CustomerAdded()
+    .Select()
+    .StartAsync();
+
+subscription.Subscribe(
+    customer => Console.WriteLine(customer.CustomerName),
+    error => Console.WriteLine(error.Message),
+    () => Console.WriteLine("completed"));
+```
+
 # Acknowledgments
 
 Linq2GraphQL is inspired by [GraphQLinq](https://github.com/Giorgi/GraphQLinq) , thank

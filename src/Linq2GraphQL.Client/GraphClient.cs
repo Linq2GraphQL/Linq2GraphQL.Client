@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using System.Text.Json.Serialization;
 using Linq2GraphQL.Client.Converters;
 using Linq2GraphQL.Client.Schema;
 using Microsoft.Extensions.Caching.Memory;
@@ -38,7 +37,8 @@ public class GraphClient
 
         HttpClient = httpClient;
 
-        SerializerOptions = new() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, Converters = { }, };
+        // Shared frozen options: one metadata cache for all clients instead of one per request.
+        SerializerOptions = Common.ClientJson.Default;
 
         SubscriptionUrl = GetSubscriptionUrl();
     }
@@ -95,6 +95,8 @@ public class GraphClient
     public SubscriptionProtocol SubscriptionProtocol => options.Value.SubscriptionProtocol;
     public HttpClient HttpClient { get; }
     public JsonSerializerOptions SerializerOptions { get; }
+
+    internal GraphClientOptions ClientOptions => options.Value;
 
 
     public Func<GraphClient, Task<GraphQLRequest>> WSConnectionInitPayload => options.Value.WSConnectionInitPayload;

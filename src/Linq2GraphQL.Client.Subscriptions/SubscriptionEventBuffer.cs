@@ -1,0 +1,81 @@
+using Linq2GraphQL.Client;
+
+namespace Linq2GraphQL.Client.Subscriptions;
+
+/// <summary>
+///     Bounded event buffer between a subscription transport and its observer. The
+///     overflow behavior is controlled by <see cref="SubscriptionOverflowPolicy"/>.
+///     Callers own synchronization.
+/// </summary>
+internal sealed class SubscriptionEventBuffer<T>
+{
+    private readonly int maximumBufferedEvents;
+    private readonly SubscriptionOverflowPolicy policy;
+    private readonly Queue<T> queue;
+
+    public SubscriptionEventBuffer(int maximumBufferedEvents, SubscriptionOverflowPolicy policy)
+    {
+        if (maximumBufferedEvents <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(maximumBufferedEvents),
+                "SubscriptionMaxBufferedEvents must be greater than zero.");
+        }
+
+        this.maximumBufferedEvents = maximumBufferedEvents;
+        this.policy = policy;
+        queue = new Queue<T>(Math.Min(maximumBufferedEvents, 16));
+    }
+
+    public int Count => queue.Count;
+
+    /// <summary>
+    ///     Adds an event, applying the overflow policy when full. Returns false when
+    ///     the buffer is in the faulted state (Fault policy with a full buffer); the
+    ///     fault is returned via <paramref name="overflowFault"/> and the buffer then
+    ///     refuses all further enqueues.
+    /// </summary>
+    public bool TryEnqueue(T payload, out Exception overflowFault)
+    {
+        overflowFault = null;
+
+        if (faulted)
+        {
+            return false;
+        }
+
+        if (queue.Count >= maximumBufferedEvents)
+        {
+            switch (policy)
+            {
+                case SubscriptionOverflowPolicy.DropOldest:
+                    queue.Dequeue();
+                    break;
+                case SubscriptionOverflowPolicy.KeepLatest:
+                    queue.Clear();
+                    break;
+                default:
+                    overflowFault = new InvalidOperationException(
+                        $"Subscription event buffer exceeded {maximumBufferedEvents} messages.");
+                    faulted = true;
+                    return false;
+            }
+        }
+
+        queue.Enqueue(payload);
+        return true;
+    }
+
+    public bool TryDequeue(out T payload)
+    {
+        if (queue.Count == 0)
+        {
+            payload = default;
+            return false;
+        }
+
+        payload = queue.Dequeue();
+        return true;
+    }
+
+    private bool faulted;
+}

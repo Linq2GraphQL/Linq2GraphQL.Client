@@ -1,0 +1,139 @@
+using System.Buffers;
+using System.Text.Json;
+
+namespace Linq2GraphQL.Client.Common;
+
+/// <summary>
+///     The single parser for the GraphQL response envelope (<c>data</c> / <c>errors</c> /
+///     <c>extensions</c>). Reads directly from UTF-8 bytes: only the requested field under
+///     "data" is deserialized; sibling root fields are skipped without materializing a typed
+///     value. No JsonDocument and no UTF-16 round trip. Every response path (typed queries,
+///     raw GraphClient.ExecuteAsync, the public ProcessResponse overloads and subscription
+///     payloads) goes through here, so they cannot drift apart.
+/// </summary>
+internal static class GraphEnvelopeReader
+{
+    /// <summary>
+    ///     Reads the envelope and deserializes only <c>data.{name}</c> as <typeparamref name="T"/>.
+    ///     An empty body yields a result with no data and no errors.
+    /// </summary>
+    internal static GraphResult<T> Read<T>(ReadOnlySpan<byte> utf8, string name, JsonSerializerOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        return ReadCore<T>(utf8, name, options, out _);
+    }
+
+    /// <summary>
+    ///     Reads the envelope and returns the whole <c>data</c> value as a standalone
+    ///     <see cref="JsonElement"/> (for queries written as GraphQL text). A JSON <c>null</c>
+    ///     data is returned as a <see cref="JsonValueKind.Null"/> element and a missing one as
+    ///     <c>default</c>. <paramref name="isEnvelope"/> reports whether the body carried a
+    ///     <c>data</c> or <c>errors</c> member, i.e. whether it is a GraphQL response at all.
+    /// </summary>
+    internal static GraphResult<JsonElement> ReadDocument(ReadOnlySpan<byte> utf8, JsonSerializerOptions options,
+        out bool isEnvelope)
+    {
+        return ReadCore<JsonElement>(utf8, null, options, out isEnvelope);
+    }
+
+    /// <param name="name">Root field to read, or <c>null</c> to read the whole <c>data</c> value.</param>
+    private static GraphResult<T> ReadCore<T>(ReadOnlySpan<byte> utf8, string name, JsonSerializerOptions options,
+        out bool isEnvelope)
+    {
+        isEnvelope = false;
+
+        if (utf8.Length == 0)
+        {
+            return new GraphResult<T> { Data = default };
+        }
+
+        var reader = new Utf8JsonReader(utf8, isFinalBlock: true, state: default);
+
+        if (reader.Read() && reader.TokenType == JsonTokenType.StartObject)
+        {
+            List<GraphQueryError> errors = null;
+            Dictionary<string, object> extensions = null;
+            T data = default;
+
+            while (reader.Read())
+            {
+                if (reader.TokenType == JsonTokenType.EndObject)
+                {
+                    break;
+                }
+
+                var propertyName = reader.GetString();
+                reader.Read();
+
+                switch (propertyName)
+                {
+                    case "data":
+                        isEnvelope = true;
+                        data = name == null
+                            ? JsonSerializer.Deserialize<T>(ref reader, options)
+                            : ReadData<T>(ref reader, name, options);
+                        break;
+                    case "errors":
+                        isEnvelope = true;
+                        errors = JsonSerializer.Deserialize<List<GraphQueryError>>(ref reader, options);
+                        break;
+                    case "extensions":
+                        extensions =
+                            JsonSerializer.Deserialize<Dictionary<string, object>>(ref reader, options);
+                        break;
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            return new GraphResult<T> { Data = data, Errors = errors, Extensions = extensions };
+        }
+
+        throw new JsonException("GraphQL response envelope must be a JSON object.");
+    }
+
+    private static TData ReadData<TData>(ref Utf8JsonReader reader, string name, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
+        {
+            return default;
+        }
+
+        if (reader.TokenType != JsonTokenType.StartObject)
+        {
+            throw new JsonException("The 'data' property must be a JSON object or null.");
+        }
+
+        TData result = default;
+        while (reader.Read())
+        {
+            if (reader.TokenType == JsonTokenType.EndObject)
+            {
+                break;
+            }
+
+            var fieldName = reader.GetString();
+            reader.Read();
+
+            if (fieldName == name)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                {
+                    result = default;
+                }
+                else
+                {
+                    result = JsonSerializer.Deserialize<TData>(ref reader, options);
+                }
+            }
+            else
+            {
+                // Multi-root query: never materialize fields we were not asked for.
+                reader.Skip();
+            }
+        }
+
+        return result;
+    }
+}

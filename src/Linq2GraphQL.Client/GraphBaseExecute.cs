@@ -1,5 +1,7 @@
 using Linq2GraphQL.Client.Schema;
+using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Text;
 using System.Text.Json;
 
 namespace Linq2GraphQL.Client;
@@ -14,7 +16,7 @@ public abstract class GraphBaseExecute<T, TResult>
     protected readonly Expression<Func<T, TResult>> selector;
 
     private readonly SemaphoreSlim _lock = new(1, 1);
-    private bool intialized;
+    private volatile bool intialized;
     private GraphQLSchema schema;
 
     public GraphBaseExecute(GraphClient client, OperationType operationType, QueryNode queryNode,
@@ -23,13 +25,21 @@ public abstract class GraphBaseExecute<T, TResult>
         this.client = client;
         this.operationType = operationType;
         this.QueryNode = queryNode;
-        this.mapper = selector?.Compile();
+        // Identity selector (r => r) is the common case — skip the expression compilation;
+        // ConvertResult already handles a null mapper as identity.
+        this.mapper = selector == null || selector.Body == selector.Parameters[0] ? null : selector.Compile();
         this.selector = selector;
         queryExecutor = new QueryExecutor<T>(client);
     }
 
     private async Task InitQueryAsync()
     {
+        // Fast path: initialization is one-shot; skip the semaphore once done.
+        if (intialized)
+        {
+            return;
+        }
+
         await _lock.WaitAsync();
         try
         {
@@ -50,19 +60,17 @@ public abstract class GraphBaseExecute<T, TResult>
 
     public GraphQLSchema Schema => schema;
 
-    private string GetQueryVariablesString()
+    private string GetQueryVariablesString(IReadOnlyList<ArgumentValue> args)
     {
-        var args = QueryNode.GetAllActiveArguments();
-
-        if (!args.Any())
+        if (args.Count == 0)
         {
             return "";
         }
 
-        var text = "";
+        var text = new StringBuilder(args.Count * 32);
         foreach (var argument in args)
         {
-            text += $"${argument.VariableName}: {argument.GraphType} ";
+            text.Append('$').Append(argument.VariableName).Append(": ").Append(argument.GraphType).Append(' ');
         }
 
         return $"({text})";
@@ -107,10 +115,12 @@ public abstract class GraphBaseExecute<T, TResult>
             _lock.Release();
         }
 
+        var args = QueryNode.GetAllActiveArguments();
+
         return new GraphQLRequest
         {
-            Query = GetGraphQLQuery(),
-            Variables = QueryNode.GetAllActiveArguments().ToDictionary(x => x.VariableName, e => e.Value)
+            Query = GetGraphQLQuery(args),
+            Variables = args.ToDictionary(x => x.VariableName, e => e.Value)
         };
     }
 
@@ -118,16 +128,19 @@ public abstract class GraphBaseExecute<T, TResult>
     {
         await InitQueryAsync();
 
+        // Compute active arguments once for both the query string and the variables.
+        var args = QueryNode.GetAllActiveArguments();
+
         return new GraphQLRequest
         {
-            Query = GetGraphQLQuery(),
-            Variables = QueryNode.GetAllActiveArguments().ToDictionary(x => x.VariableName, e => e.Value)
+            Query = GetGraphQLQuery(args),
+            Variables = args.ToDictionary(x => x.VariableName, e => e.Value)
         };
     }
 
-    private string GetGraphQLQuery()
+    private string GetGraphQLQuery(IReadOnlyList<ArgumentValue> args)
     {
-        return GetOperationType() + GetQueryVariablesString() + "{ " + Environment.NewLine +
+        return GetOperationType() + GetQueryVariablesString(args) + "{ " + Environment.NewLine +
                QueryNode.GetQueryString() + Environment.NewLine + "}";
     }
 

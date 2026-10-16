@@ -1,15 +1,42 @@
-using System.Diagnostics;
 using System.Linq.Expressions;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Text.Json;
 
 namespace Linq2GraphQL.Client.Subscriptions;
 
 public class GraphSubscriptionExecute<T, TResult> : GraphBaseExecute<T, TResult>
 {
+    private TaskCompletionSource<object> connectedTcs;
+
     public GraphSubscriptionExecute(GraphClient client, OperationType operationType, QueryNode queryNode,
         Expression<Func<T, TResult>> selector) : base(client, operationType, queryNode, selector) { }
 
+    /// <summary>
+    ///     Completes when the underlying transport is connected (SSE response accepted,
+    ///     WebSocket init/ack received) — lets callers trigger server events deterministically.
+    /// </summary>
+    internal Task WhenConnected => connectedTcs?.Task ?? Task.CompletedTask;
+
     public async Task<IObservable<TResult>> StartAsync()
+    {
+        var results = await StartCoreAsync(continueOnFieldErrors: false);
+        return results.Select(result => result.Data);
+    }
+
+    /// <summary>
+    ///     Like <see cref="StartAsync"/>, but each event is delivered as a
+    ///     <see cref="GraphResult{T}"/> carrying its data AND its GraphQL <c>errors</c>.
+    ///     A <c>next</c> event with field errors does NOT end the subscription: the
+    ///     partial data and all later events keep flowing. Only transport and protocol
+    ///     failures terminate the stream.
+    /// </summary>
+    public async Task<IObservable<GraphResult<TResult>>> StartWithErrorsAsync()
+    {
+        return await StartCoreAsync(continueOnFieldErrors: true);
+    }
+
+    private async Task<IObservable<GraphResult<TResult>>> StartCoreAsync(bool continueOnFieldErrors)
     {
         var request = await GetRequestAsync();
 
@@ -18,36 +45,253 @@ public class GraphSubscriptionExecute<T, TResult> : GraphBaseExecute<T, TResult>
             throw new Exception("Subscription url is not set");
         }
 
-        if (client.SubscriptionProtocol == SubscriptionProtocol.ServerSentEvents)
-        {
-            var sseClient = new SSEClient(client, request);
-#pragma warning disable CS4014
-            Task.Run(sseClient.Start);
-#pragma warning restore CS4014
-            return sseClient.Subscription.SelectMany(json => SafeProcessMessage(json, request));
-        }
+        var options = client.ClientOptions;
 
-        var wsClient = new WSClient(client, request);
-        await wsClient.Start();
-        return wsClient.Subscription.SelectMany(json => SafeProcessMessage(json, request));
+        return Observable.Create<GraphResult<TResult>>(observer =>
+        {
+            // Per-subscriber state: each Subscribe() gets its own buffer, transport and
+            // connection signal. Sharing these across subscribers let one overflow poison
+            // the others.
+            var buffer = new SubscriptionEventBuffer<PendingPayload>(
+                options.SubscriptionMaxBufferedEvents, options.SubscriptionOverflowPolicy);
+            var connectedSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
+            connectedTcs = connectedSource;
+            var cancellation = new CancellationTokenSource();
+            var queueLock = new object();
+            var signal = new SemaphoreSlim(0);
+            var completed = false;
+            var processorExited = false;
+            Exception failure = null;
+            IDisposable transportSubscription = Disposable.Empty;
+            IDisposable transportFailureSubscription = Disposable.Empty;
+            SSEClient sseClient = null;
+            WSClient wsClient = null;
+
+            void OnNext(PendingPayload payload)
+            {
+                lock (queueLock)
+                {
+                    if (completed || processorExited || cancellation.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
+                    if (!buffer.TryEnqueue(payload, out var overflowFault))
+                    {
+                        if (overflowFault is not null)
+                        {
+                            failure = overflowFault;
+                            completed = true;
+                            signal.Release();
+                        }
+
+                        return;
+                    }
+
+                    signal.Release();
+                }
+            }
+
+            void OnFailure(Exception exception)
+            {
+                lock (queueLock)
+                {
+                    // Terminal transitions are idempotent: a late transport failure must
+                    // not override normal completion, and no callback may signal the
+                    // semaphore once the processor has exited and disposed it.
+                    if (completed || processorExited)
+                    {
+                        return;
+                    }
+
+                    failure = exception;
+                    completed = true;
+                    signal.Release();
+                }
+            }
+
+            void OnCompleted()
+            {
+                lock (queueLock)
+                {
+                    if (completed || processorExited)
+                    {
+                        return;
+                    }
+
+                    completed = true;
+                    signal.Release();
+                }
+            }
+
+            if (client.SubscriptionProtocol == SubscriptionProtocol.ServerSentEvents)
+            {
+                sseClient = new SSEClient(client, request);
+                transportSubscription = sseClient.Payloads.Subscribe(
+                    bytes => OnNext(new PendingPayload(bytes, default)), OnFailure, OnCompleted);
+                transportFailureSubscription = sseClient.Failures.Subscribe(OnFailure);
+                _ = ForwardConnectedAsync(sseClient.Connected, connectedSource);
+                _ = sseClient.Start(cancellation.Token);
+            }
+            else
+            {
+                wsClient = new WSClient(client, request);
+                transportSubscription = wsClient.Payloads.Subscribe(
+                    element => OnNext(new PendingPayload(null, element)), OnFailure, OnCompleted);
+                transportFailureSubscription = wsClient.Failures.Subscribe(OnFailure);
+                _ = StartWebSocketAsync(wsClient, OnFailure, connectedSource);
+            }
+
+            _ = ProcessEventsAsync();
+
+            return Disposable.Create(() =>
+            {
+                try
+                {
+                    cancellation.Cancel();
+                }
+                catch (ObjectDisposedException)
+                {
+                    // Processor may already have exited and disposed the source.
+                }
+
+                transportSubscription.Dispose();
+                transportFailureSubscription.Dispose();
+                sseClient?.Dispose();
+                if (wsClient is not null)
+                {
+                    _ = wsClient.DisposeAsync();
+                }
+
+                // The processor owns signal/cancellation cleanup; never block the disposing observer.
+            });
+
+            async Task ProcessEventsAsync()
+            {
+                try
+                {
+                    while (true)
+                    {
+                        await signal.WaitAsync(cancellation.Token).ConfigureAwait(false);
+
+                        // Drain everything currently queued before waiting again.
+                        while (true)
+                        {
+                            byte[] jsonBytes = null;
+                            JsonElement element = default;
+                            var hasPayload = false;
+                            var shouldComplete = false;
+                            Exception terminalFailure = null;
+
+                            lock (queueLock)
+                            {
+                                if (buffer.TryDequeue(out var payload))
+                                {
+                                    jsonBytes = payload.JsonBytes;
+                                    element = payload.Element;
+                                    hasPayload = true;
+                                }
+                                else if (completed)
+                                {
+                                    shouldComplete = true;
+                                    terminalFailure = failure;
+                                }
+                            }
+
+                            if (!hasPayload)
+                            {
+                                if (shouldComplete)
+                                {
+                                    if (terminalFailure is not null)
+                                    {
+                                        observer.OnError(terminalFailure);
+                                    }
+                                    else
+                                    {
+                                        observer.OnCompleted();
+                                    }
+
+                                    return;
+                                }
+
+                                break;
+                            }
+
+                            try
+                            {
+                                var full = jsonBytes is not null
+                                    ? queryExecutor.ProcessResponseFull(jsonBytes, QueryNode.Name)
+                                    : queryExecutor.ProcessResponseFull(element, QueryNode.Name);
+
+                                if (full.HasErrors && !continueOnFieldErrors)
+                                {
+                                    throw new GraphQueryExecutionException(full.Errors, request.Query, request.Variables);
+                                }
+
+                                observer.OnNext(new GraphResult<TResult>
+                                {
+                                    Data = ConvertResult(full.Data),
+                                    Errors = full.Errors,
+                                    Extensions = full.Extensions
+                                });
+                            }
+                            catch (Exception exception)
+                            {
+                                observer.OnError(exception);
+                                return;
+                            }
+                        }
+                    }
+                }
+                catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
+                {
+                    // Unsubscription ends the processor without notifying the observer.
+                }
+                finally
+                {
+                    lock (queueLock)
+                    {
+                        processorExited = true;
+                    }
+
+                    signal.Dispose();
+                    cancellation.Dispose();
+                }
+            }
+        });
     }
 
-    private IEnumerable<TResult> SafeProcessMessage(string json, GraphQLRequest request)
-    {
-        if (string.IsNullOrWhiteSpace(json))
-        {
-            return Array.Empty<TResult>();
-        }
+    private readonly record struct PendingPayload(byte[] JsonBytes, JsonElement Element);
 
+    private static async Task StartWebSocketAsync(WSClient wsClient, Action<Exception> onFailure,
+        TaskCompletionSource<object> connectedTcs)
+    {
         try
         {
-            var result = queryExecutor.ProcessResponse(json, QueryNode.Name, request);
-            return new[] { ConvertResult(result) };
+            await wsClient.Start().ConfigureAwait(false);
+            connectedTcs.TrySetResult(null);
         }
-        catch (Exception ex)
+        catch (Exception exception)
         {
-            Debug.WriteLine($"Subscription message error: {ex.Message}");
-            return Array.Empty<TResult>();
+            connectedTcs.TrySetException(exception);
+            onFailure(exception);
+        }
+    }
+
+    private static async Task ForwardConnectedAsync(Task connected, TaskCompletionSource<object> connectedTcs)
+    {
+        try
+        {
+            await connected.ConfigureAwait(false);
+            connectedTcs.TrySetResult(null);
+        }
+        catch (OperationCanceledException)
+        {
+            connectedTcs.TrySetCanceled();
+        }
+        catch (Exception exception)
+        {
+            connectedTcs.TrySetException(exception);
         }
     }
 }
