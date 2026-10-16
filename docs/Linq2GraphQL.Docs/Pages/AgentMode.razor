@@ -1,0 +1,190 @@
+@page "/agent-mode"
+
+<PageTitle>Agent mode - Linq2GraphQL</PageTitle>
+
+<h1 class="page-heading">Agent mode <span class="badge bg-orange-lt align-middle">Preview</span></h1>
+<p class="lead text-secondary">
+    Agent mode lets an AI agent query your API by writing GraphQL, limited to the operations you allow. You
+    decide in typed C# what the agent may use and what it is told; every query it writes is checked against that
+    scope before it is sent.
+</p>
+
+<section class="doc-section">
+    <h2 id="why">Why</h2>
+    <p>
+        There are two common ways to give an agent access to an API, and both have problems. Handing it the whole
+        schema spends tokens on everything, exposes operations nobody chose, and leaves the agent with descriptions
+        written for developers. Writing one tool per question is precise, but slow to build and rigid.
+    </p>
+    <p>
+        Agent mode sits in between. The agent writes its own queries, so it can answer questions you didn't
+        anticipate, but it only sees a curated part of the schema, with your descriptions and examples, and it can't
+        step outside it. When a question turns out to be frequent or sensitive, you can still give it a dedicated tool.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="setup">Setup</h2>
+    <p>
+        Generate the client with <code>--agent</code>. The client then carries the schema it was generated from, so
+        the agent tools need no introspection at runtime:
+    </p>
+    <CodeBlock Language="shell" Code="@Setup"/>
+    <p>
+        The tools are <code>AIFunction</code>s from
+        <a href="https://learn.microsoft.com/dotnet/ai/microsoft-extensions-ai" target="_blank" rel="noopener">Microsoft.Extensions.AI</a>,
+        so they work with any chat client built on it, such as Azure OpenAI, OpenAI or Ollama:
+    </p>
+    <CodeBlock Code="@Basic"/>
+    <p>
+        The chat client needs function invocation turned on (<code>.AsBuilder().UseFunctionInvocation().Build()</code>)
+        so the model's tool calls are actually run.
+    </p>
+    <p>
+        Calling <code>AsAgentTools</code> on a client generated without <code>--agent</code> doesn't compile, because
+        the client doesn't carry its schema. Either regenerate with <code>--agent</code>, or pass the schema as SDL,
+        for example a file exported from the server: <code>client.AsAgentTools(sdl, o =&gt; ...)</code>.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="tools">The tools</h2>
+    <div class="table-responsive">
+        <table class="table table-vcenter card-table border">
+            <thead>
+            <tr><th>Tool</th><th>What the agent gets</th></tr>
+            </thead>
+            <tbody>
+            <tr><td><code>graphql_query</code></td><td>Runs a query and returns the data, or the errors in a form the agent can act on. Its description lists the allowed operations, types and examples.</td></tr>
+            <tr><td><code>describe_operation</code></td><td>Everything needed to call an operation: arguments, the return type, a ready-made starter query and the examples that use it.</td></tr>
+            <tr><td><code>describe_type</code></td><td>Full detail for a type, plus a summary of the types its fields return.</td></tr>
+            <tr><td><code>search_schema</code></td><td>Matching operations, types, fields and examples, for when the agent doesn't know a name.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <p>
+        The three schema tools answer locally, without calling the server. The agent sees a simplified schema:
+        connections are collapsed to a paged list with the paging pattern spelled out, and HotChocolate filter
+        inputs are summarised, which on large schemas is most of the size.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="scope">Choosing what the agent may use</h2>
+    <p>Everything is referenced through the generated client, so a schema rename breaks the build instead of the agent:</p>
+    <CodeBlock Code="@Scope"/>
+    <div class="table-responsive">
+        <table class="table table-vcenter card-table border">
+            <thead>
+            <tr><th>Option</th><th>What it does</th></tr>
+            </thead>
+            <tbody>
+            <tr><td><code>AllowQuery</code></td><td>Allows one query. <code>.Describe</code> and <code>.Argument</code> tell the agent what it is for and how to use its arguments.</td></tr>
+            <tr><td><code>AllowAllQueries().Except(...)</code></td><td>Allows every query except the ones listed, for the fastest start. Never the default; everything below still applies.</td></tr>
+            <tr><td><code>Omit</code></td><td>Removes a field from the scope. It isn't described, can't be queried, and can't be used in filters or sorting either, so its values can't be inferred.</td></tr>
+            <tr><td><code>Describe</code></td><td>Replaces the schema's description of a type, field or enum value with one written for the agent. Pass <code>append: true</code> to add to it instead.</td></tr>
+            <tr><td><code>Instructions</code></td><td>General context, such as time zones or units.</td></tr>
+            <tr><td><code>Example</code></td><td>A common task written as a typed query. It is checked by the compiler and against the scope, and shown to the agent as GraphQL. Examples are the strongest way to improve the agent's queries.</td></tr>
+            <tr><td><code>AccessToken</code></td><td>The token for the user the agent acts for, asked for on every request.</td></tr>
+            <tr><td><code>OnQuery</code></td><td>Called for every query the agent runs or tries to run: the GraphQL, variables, validation errors, server errors and duration.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <p>
+        A configuration that doesn't match the schema, such as an unknown name or a description of an omitted
+        field, throws <code>AgentConfigurationException</code> when <code>AsAgentTools</code> runs, not halfway through
+        a conversation.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="validation">What is checked before a query is sent</h2>
+    <ul>
+        <li>Only allowed operations, and only queries: <code>graphql_query</code> never sends a mutation or subscription.</li>
+        <li>Every selected field must exist and not be omitted, including inside fragments.</li>
+        <li>Arguments, input objects, filters, enum values and variable values are validated too, so an omitted field can't be reached through a variable.</li>
+        <li>Introspection (<code>__schema</code>, <code>__type</code>) is blocked.</li>
+    </ul>
+    <p>
+        A rejected query gets every error at once, each saying what is wrong and what is available instead, with
+        "did you mean" suggestions for near-miss names. The agent can usually fix the query on the next try without
+        a round trip to the server.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="security">Security</h2>
+    <p>
+        The client keeps the agent inside the scope you configured, whatever it is prompted to do: a disallowed
+        operation or an omitted field never leaves the process. It doesn't replace authorization on the server.
+    </p>
+    <ul>
+        <li>
+            <strong>The server is the boundary.</strong> Protect sensitive fields with authorization on the server, so
+            they stay protected for every client, not just this one.
+        </li>
+        <li>
+            <strong>Give the agent a narrow token.</strong> Set <code>AccessToken</code> to an on-behalf-of token for the
+            current user, ideally with a scope meant for agents, and create the tools per user or conversation. The
+            agent then never sees more than both the user and the scope allow.
+        </li>
+        <li>
+            <strong>Prompt injection can still read what the scope allows.</strong> Text the agent reads can make it
+            query and repeat anything within its scope. The narrow token and the allow-list limit what that can be.
+        </li>
+    </ul>
+    <p>
+        The first version is query-only. Mutations are planned, with approval and their own safety design.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="sample">Try it</h2>
+    <p>
+        <a href="https://github.com/Linq2GraphQL/Linq2GraphQL.Client/tree/main/test/Linq2GraphQL.Agent.Sample" target="_blank" rel="noopener"><code>test/Linq2GraphQL.Agent.Sample</code></a>
+        in the repository runs an agent against the test server, as a chat or as an evaluation over a set of
+        questions. It works with Azure AI Foundry through your Azure sign-in, or any OpenAI-compatible endpoint such
+        as Ollama. The <a href="https://github.com/Linq2GraphQL/Linq2GraphQL.Client/blob/main/docs/design/agent-mode.md" target="_blank" rel="noopener">design document</a>
+        explains the reasoning behind agent mode and what is planned next.
+    </p>
+</section>
+
+@code {
+    private const string Setup = """
+        Linq2GraphQL https://example.com/graphql --agent -c=SampleClient -n=Sample -o=Generated
+        dotnet add package Linq2GraphQL.Client.AI --prerelease
+        """;
+
+    private const string Basic = """
+        var tools = sampleClient.AsAgentTools(o =>
+        {
+            o.AllowQuery(c => c.Query.Customers).Describe("All customers with their orders.");
+            o.AllowQuery(c => c.Query.Orders).Describe("Orders, paged and filterable.");
+        });
+
+        var options = new ChatOptions { Tools = [..tools] };
+        var response = await chatClient.GetResponseAsync("Which customers have no orders?", options);
+        """;
+
+    private const string Scope = """
+        var tools = sampleClient.AsAgentTools(o =>
+        {
+            o.AllowQuery(c => c.Query.Customers).Describe("All customers with their orders.");
+            o.AllowQuery(c => c.Query.Orders)
+                .Describe("Orders, paged and filterable.")
+                .Argument("first", "At most 50.");
+
+            o.Describe<Customer>("A customer account.");
+            o.Describe<Customer>(c => c.Status, "ACTIVE customers are currently invoiced.");
+            o.Omit<Customer>(c => c.Address);
+            o.Instructions("All dates are UTC.");
+
+            o.Example("Customer statuses", "Every customer's name and status",
+                c => c.Query.Customers().Select(e => e.Select(x => new { x.CustomerName, x.Status })));
+
+            o.AccessToken = ct => tokens.GetAgentTokenForUserAsync(user, ct);
+            o.OnQuery(log => logger.LogInformation("{Query} sent: {Sent} {Errors}",
+                log.Query, log.WasSent, log.ValidationErrors));
+        });
+        """;
+}

@@ -1,0 +1,140 @@
+@page "/paging"
+
+<PageTitle>Paging - Linq2GraphQL</PageTitle>
+
+<h1 class="page-heading">Paging</h1>
+<p class="lead text-secondary">
+    Most GraphQL APIs page large lists with cursor-based connections. Linq2GraphQL recognises them and gives you a
+    pager that moves forward and back, or streams every page, while you keep shaping each page with
+    <code>Select</code>.
+</p>
+
+<section class="doc-section">
+    <h2 id="connections">Which fields can be paged</h2>
+    <p>
+        A field can be paged when it follows the
+        <a href="https://relay.dev/graphql/connections.htm" target="_blank" rel="noopener">connection convention</a>:
+        it takes <code>after</code> and <code>before</code> cursors (and usually <code>first</code> and
+        <code>last</code>) and returns a type with a <code>pageInfo</code> field of type <code>PageInfo</code>. The
+        generator spots these on the root query type and returns a <code>GraphCursorQuery</code> for them, whose
+        <code>Select</code> result has an <code>AsPager()</code> method. HotChocolate's paging and the Star Wars API
+        used below both work this way.
+    </p>
+    <p>
+        Connections nested deeper in the graph, such as a film's <code>characterConnection</code>, have no pager.
+        Pass their arguments directly, for example <code>f.CharacterConnection(null, 10)</code> for the first ten,
+        and read <code>PageInfo</code> yourself if you need the cursors.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="pager">Page forward and back</h2>
+    <p>
+        Build the query as usual, with the page size as <code>first</code>, and call <code>AsPager()</code>. Each
+        call fetches one page:
+    </p>
+    <CodeBlock Code="@PagerCSharp"/>
+    <CodeBlock Title="Output" Language="text" Code="@PagerOutput"/>
+    <ul>
+        <li>
+            The page size is taken from the query's <code>first</code> (or <code>last</code>). Moving forward the pager
+            sends <code>first</code> and <code>after</code>, moving back it sends <code>last</code> and
+            <code>before</code>, with the cursors from the page it last read.
+        </li>
+        <li>
+            The pager adds <code>pageInfo</code> to the query itself, so your projection doesn't need it. It is
+            available as <code>PagerResult.PageInfo</code>, with <code>HasNextPage</code>,
+            <code>HasPreviousPage</code>, <code>StartCursor</code> and <code>EndCursor</code>.
+        </li>
+        <li>
+            The first <code>NextPageAsync()</code> reads the first page. The pager keeps its position, so one pager
+            belongs to one reader; create a new one for an independent walk.
+        </li>
+    </ul>
+</section>
+
+<section class="doc-section">
+    <h2 id="all-pages">Every page</h2>
+    <p>
+        <code>GetAllPagesAsync</code> pages forward from the first page until the server reports no next page. It
+        returns an <code>IAsyncEnumerable</code>, and pages are fetched one at a time as you enumerate, so you can
+        stop early by breaking out of the loop:
+    </p>
+    <CodeBlock Code="@AllPagesCSharp"/>
+    <CodeBlock Title="Output" Language="text" Code="@AllPagesOutput"/>
+    <p>
+        Pass <code>maxPages</code> to cap the number of requests. Paging also stops when the end cursor doesn't
+        move, so a server that keeps reporting a next page without advancing can't keep the loop going forever.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="errors">Errors while paging</h2>
+    <p>
+        <code>NextPageAsync</code>, <code>PreviousPageAsync</code> and <code>GetAllPagesAsync</code> throw on GraphQL
+        errors, like <code>ExecuteAsync</code>. Each has a variant that returns a <code>GraphResult</code> instead:
+        <code>NextPageWithResultAsync</code>, <code>PreviousPageWithResultAsync</code> and
+        <code>GetAllPagesWithResultAsync</code>. The last one stops after the first page that has errors or no data:
+    </p>
+    <CodeBlock Code="@ResultCSharp"/>
+    <p>See <a href="error-handling">error handling</a> for what a <code>GraphResult</code> contains.</p>
+</section>
+
+@code {
+    private const string PagerCSharp = """
+        var pager = starWarsClient
+            .Query
+            .AllFilms(first: 2)
+            .Select(e => e.Films.Select(f => f.Title))
+            .AsPager();
+
+        var page1 = await pager.NextPageAsync();
+        Console.WriteLine(string.Join(", ", page1));
+        Console.WriteLine($"More: {pager.PagerResult.PageInfo.HasNextPage}");
+
+        var page2 = await pager.NextPageAsync();
+        Console.WriteLine(string.Join(", ", page2));
+
+        var back = await pager.PreviousPageAsync();
+        Console.WriteLine(string.Join(", ", back));
+        """;
+
+    private const string PagerOutput = """
+        A New Hope, The Empire Strikes Back
+        More: True
+        Return of the Jedi, The Phantom Menace
+        A New Hope, The Empire Strikes Back
+        """;
+
+    private const string AllPagesCSharp = """
+        var pager = starWarsClient
+            .Query
+            .AllFilms(first: 2)
+            .Select(e => e.Films.Select(f => f.Title))
+            .AsPager();
+
+        await foreach (var titles in pager.GetAllPagesAsync(maxPages: 50))
+        {
+            Console.WriteLine(string.Join(", ", titles));
+        }
+        """;
+
+    private const string AllPagesOutput = """
+        A New Hope, The Empire Strikes Back
+        Return of the Jedi, The Phantom Menace
+        Attack of the Clones, Revenge of the Sith
+        """;
+
+    private const string ResultCSharp = """
+        await foreach (var page in pager.GetAllPagesWithResultAsync())
+        {
+            if (page.HasErrors)
+            {
+                logger.LogWarning("Paging stopped: {Message}", page.Errors[0].Message);
+                break;
+            }
+
+            Process(page.Data);
+        }
+        """;
+}
