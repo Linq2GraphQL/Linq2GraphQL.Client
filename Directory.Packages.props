@@ -6,7 +6,6 @@
     <GlobalPackageReference Include="Nerdbank.GitVersioning" Version="3.8.118" />
   </ItemGroup>
   <ItemGroup>
-    <PackageVersion Include="BlazorMonaco" Version="3.3.0" />
     <PackageVersion Include="ColorCode.HTML" Version="2.0.15" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4">
       <PrivateAssets>all</PrivateAssets>
@@ -41,7 +40,7 @@
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="System.CodeDom" Version="10.0.11" />
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
-    <PackageVersion Include="TabBlazor" Version="0.8.1.1-alpha" />
+    <PackageVersion Include="TabBlazor" Version="1.6.7-beta" />
     <PackageVersion Include="Websocket.Client" Version="5.3.0" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5">
