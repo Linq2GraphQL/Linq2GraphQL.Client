@@ -26,11 +26,13 @@ public class GraphClientOptions
     /// JSON object the server expects as connection parameters, for example
     /// <c>new Dictionary&lt;string, object&gt; { ["Authorization"] = $"Bearer {token}" }</c> (the
     /// graphql-ws and Apollo convention) or <c>{ { "token", token } }</c>. Called before every
-    /// (re)connect, so a refreshed token is picked up, and counted within the connect timeout
-    /// (30 s). Overrides the obsolete <see cref="WSConnectionInitPayload"/> when set. When
-    /// <see cref="SendAuthorizationInConnectionInit"/> is enabled the payload must be a dictionary
-    /// with string keys and object values (<see cref="Dictionary{TKey, TValue}"/> of string to
-    /// object, or the read-only equivalent) so the <c>Authorization</c> parameter can be merged.
+    /// (re)connect, before the socket opens, so a refreshed token is picked up and a slow token
+    /// fetch cannot run into the server's <c>connection_init</c> wait; it counts within the connect
+    /// timeout (30 s) together with the request hooks. Overrides the obsolete
+    /// <see cref="WSConnectionInitPayload"/> when set. When
+    /// <see cref="SendAuthorizationInConnectionInit"/> is enabled the payload must serialize to a
+    /// JSON object (a dictionary, an anonymous object, a POCO, a <c>JsonObject</c>...) so the
+    /// <c>Authorization</c> parameter can be merged.
     /// </summary>
     public Func<GraphClient, CancellationToken, ValueTask<object>> ConnectionInitPayload { get; set; }
 
@@ -43,8 +45,9 @@ public class GraphClientOptions
     /// Copies the <c>Authorization</c> header produced by <see cref="ConfigureRequest"/> and
     /// derived clients (<c>WithAccessToken</c> on a generated client) into the <c>connection_init</c>
     /// payload. This is how a per-user token reaches the server on Blazor WebAssembly, where the
-    /// browser does not allow headers on the WebSocket upgrade request. The header is merged over a
-    /// dictionary payload from <see cref="ConnectionInitPayload"/> and wins on key conflicts. Like
+    /// browser does not allow headers on the WebSocket upgrade request. An <c>Authorization</c> in
+    /// <see cref="HttpClient.DefaultRequestHeaders"/> is used when no hook sets one. The header is
+    /// merged into the JSON object from <see cref="ConnectionInitPayload"/> and wins on key conflicts. Like
     /// any <c>connection_init</c> payload, the token is only as protected as the transport: prefer
     /// <c>wss://</c> so it is not sent in clear text.
     /// </summary>
@@ -53,7 +56,9 @@ public class GraphClientOptions
     /// <summary>
     /// Called for every request the client sends (queries, mutations, the safe-mode schema query,
     /// server-sent-event subscriptions and the WebSocket subscription upgrade) just before it is
-    /// sent. On the WebSocket upgrade the hook's headers are copied to the upgrade request. Use it
+    /// sent. On the WebSocket upgrade the hook's headers, together with the
+    /// <see cref="HttpClient.DefaultRequestHeaders"/> (a hook header wins on a name conflict), are
+    /// copied to the upgrade request. Use it
     /// to set per-request headers, such as an access token, without a
     /// <see cref="DelegatingHandler"/>. On Blazor WebAssembly the browser ignores headers on
     /// WebSocket requests; set <see cref="SendAuthorizationInConnectionInit"/> to send the token

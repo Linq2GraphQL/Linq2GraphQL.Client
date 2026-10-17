@@ -406,9 +406,9 @@ Options:
 - `SubscriptionMaxBufferedEvents` (default 128) and `SubscriptionOverflowPolicy` (`Fault` default, `DropOldest`, `KeepLatest`) control the buffer between transport and observer.
 - `SubscriptionRetryAttempts` (WebSocket, default 5) bounds reconnect attempts after a dropped connection; `0` fails on the first drop.
 - `SubscriptionIdleTimeout` (SSE only, default off) fails the subscription when no bytes arrive — including keep-alive comments — within the window.
-- `ConnectionInitPayload` sets the `connection_init` payload for the WebSocket transports. Return any JSON object the server expects as connection parameters, e.g. `new Dictionary<string, object> { ["Authorization"] = $"Bearer {token}" }` (the graphql-ws/Apollo convention). Called before every (re)connect. Supersedes the obsolete `WSConnectionInitPayload`, which is limited to a `GraphQLRequest` payload.
-- `SendAuthorizationInConnectionInit` (default off) copies the `Authorization` header produced by `ConfigureRequest`/`WithAccessToken` into the `connection_init` payload — how a per-user token reaches the server on Blazor WebAssembly, where the browser does not allow headers on WebSocket requests. It merges over (and wins on key conflicts with) a `ConnectionInitPayload` dictionary.
-- WebSocket upgrade requests carry the headers produced by `ConfigureRequest`/`WithAccessToken` (except on browsers, where custom headers are impossible).
+- `ConnectionInitPayload` sets the `connection_init` payload for the WebSocket transports. Return any JSON object the server expects as connection parameters, e.g. `new Dictionary<string, object> { ["Authorization"] = $"Bearer {token}" }` (the graphql-ws/Apollo convention). Called before every (re)connect, before the socket opens. Supersedes the obsolete `WSConnectionInitPayload`, which is limited to a `GraphQLRequest` payload.
+- `SendAuthorizationInConnectionInit` (default off) copies the `Authorization` header produced by `ConfigureRequest`/`WithAccessToken` into the `connection_init` payload — how a per-user token reaches the server on Blazor WebAssembly, where the browser does not allow headers on WebSocket requests. It merges into (and wins on key conflicts with) a `ConnectionInitPayload` that serializes to a JSON object.
+- WebSocket upgrade requests carry the headers produced by `ConfigureRequest`/`WithAccessToken` plus `HttpClient.DefaultRequestHeaders` (a hook header wins on a name clash), except on browsers, where custom headers are impossible.
 
 Register them through DI like any other options:
 

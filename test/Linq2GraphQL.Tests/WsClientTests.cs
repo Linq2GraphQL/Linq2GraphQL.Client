@@ -865,6 +865,9 @@ public class WsClientTests
                 throw new InvalidOperationException("token-service-down");
             });
         var (client, _, _, failures) = CreateClient(graphClient);
+        // A short, fixed backoff: if the background retry loop ran at all, it would re-run the hook
+        // well inside the wait below (the real 1.3-4 s first backoff could outlast a fixed wait).
+        client.RetryDelay = _ => TimeSpan.FromMilliseconds(200);
 
         await using var _ = client;
         await Assert.ThrowsAnyAsync<Exception>(() => client.Start().WaitAsync(TimeSpan.FromSeconds(10)));
@@ -872,7 +875,7 @@ public class WsClientTests
         // No background retry loop: the hook ran once (the initial connect), not again after
         // the retry backoff, and no second failure is reported beyond Start's own exception.
         // The hook throws before the socket connects, so no upgrade request ever left the client.
-        await Task.Delay(TimeSpan.FromSeconds(3));
+        await Task.Delay(TimeSpan.FromSeconds(2));
         Assert.Equal(1, Volatile.Read(ref calls));
         Assert.Empty(failures);
         Assert.Empty(server.UpgradeHeaders);
@@ -902,14 +905,51 @@ public class WsClientTests
         Assert.Empty(failures);
     }
 
-    [Fact]
-    public async Task SendAuthorizationInConnectionInit_NonDictionaryPayload_Throws()
+    public static TheoryData<string> ObjectPayloadShapes => new()
+    {
+        "anonymous", "string-dictionary", "json-object", "json-element",
+    };
+
+    private static object CreatePayload(string shape) => shape switch
+    {
+        "anonymous" => new { authToken = "s3cret" },
+        "string-dictionary" => new Dictionary<string, string> { ["authToken"] = "s3cret" },
+        "json-object" => new System.Text.Json.Nodes.JsonObject { ["authToken"] = "s3cret" },
+        "json-element" => JsonDocument.Parse("""{"authToken":"s3cret"}""").RootElement.Clone(),
+        _ => throw new ArgumentOutOfRangeException(nameof(shape)),
+    };
+
+    [Theory]
+    [MemberData(nameof(ObjectPayloadShapes))]
+    public async Task SendAuthorizationInConnectionInit_MergesIntoAnyJsonObjectPayload(string shape)
     {
         await using var server = await GraphQLWsTestServer.StartAsync();
         var graphClient = WsTestGraphClientFactory.Create(server, configureOptions: options =>
         {
             options.SendAuthorizationInConnectionInit = true;
-            options.ConnectionInitPayload = (_, _) => ValueTask.FromResult<object>(new { token = "s3cret" });
+            options.ConnectionInitPayload = (_, _) => ValueTask.FromResult(CreatePayload(shape));
+        })
+            .WithRequestConfiguration(RequestConfigurations.BearerToken(_ => ValueTask.FromResult("wasm-token")));
+        var (client, _, _, failures) = CreateClient(graphClient);
+
+        await using var _ = client;
+        await client.Start().WaitAsync(TimeSpan.FromSeconds(10));
+        var init = await server.InitReceived.Task.WaitAsync(TimeSpan.FromSeconds(10));
+
+        var payload = GetInitPayload(init);
+        Assert.Equal("s3cret", payload.GetProperty("authToken").GetString());
+        Assert.Equal("Bearer wasm-token", payload.GetProperty("Authorization").GetString());
+        Assert.Empty(failures);
+    }
+
+    [Fact]
+    public async Task SendAuthorizationInConnectionInit_NonObjectPayload_Throws()
+    {
+        await using var server = await GraphQLWsTestServer.StartAsync();
+        var graphClient = WsTestGraphClientFactory.Create(server, configureOptions: options =>
+        {
+            options.SendAuthorizationInConnectionInit = true;
+            options.ConnectionInitPayload = (_, _) => ValueTask.FromResult<object>(new[] { "s3cret" });
         })
             .WithRequestConfiguration(RequestConfigurations.BearerToken(_ => ValueTask.FromResult("wasm-token")));
         var (client, _, _, _) = CreateClient(graphClient);
@@ -918,8 +958,169 @@ public class WsClientTests
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
             client.Start().WaitAsync(TimeSpan.FromSeconds(10)));
 
-        Assert.Contains("dictionary", exception.Message);
+        Assert.Contains("JSON object", exception.Message);
         Assert.Contains("Authorization", exception.Message);
+        // Rejected before connecting: no socket was opened for a payload that cannot be sent.
+        Assert.Empty(server.UpgradeHeaders);
+    }
+
+    [Fact]
+    public async Task ConnectionInitPayload_ResolvedBeforeSocketOpens_OnConnectAndReconnect()
+    {
+        // The payload delegate (e.g. a token fetch) must run before the upgrade, not while an open
+        // socket waits for connection_init (the server's init timeout would close it, 4408).
+        await using var server = await GraphQLWsTestServer.StartAsync();
+        var upgradesSeenByDelegate = new List<int>();
+        var graphClient = WsTestGraphClientFactory.Create(server, configureOptions: options =>
+            options.ConnectionInitPayload = (_, _) =>
+            {
+                lock (upgradesSeenByDelegate)
+                {
+                    upgradesSeenByDelegate.Add(server.UpgradeHeaders.Count);
+                }
+
+                return ValueTask.FromResult<object>(new Dictionary<string, object> { ["authToken"] = "s3cret" });
+            });
+        var (client, payloads, _, failures) = CreateClient(graphClient);
+        var subscribeCount = 0;
+
+        server.OnMessage = async (session, text) =>
+        {
+            if (!text.Contains("subscribe"))
+            {
+                return;
+            }
+
+            var id = GetSubscriptionId(text);
+            if (Interlocked.Increment(ref subscribeCount) == 1)
+            {
+                await Task.Delay(100);
+                session.Abort();
+                return;
+            }
+
+            await session.SendNext(id, """{"customerId":"77777777-7777-7777-7777-777777777777"}""");
+        };
+
+        await using var _ = client;
+        await client.Start().WaitAsync(TimeSpan.FromSeconds(10));
+        await WaitUntilAsync(() => payloads.Count == 1 || failures.Count > 0, 30);
+
+        Assert.Empty(failures);
+        lock (upgradesSeenByDelegate)
+        {
+            // Connect n's delegate ran when only the n-1 earlier upgrades had reached the server.
+            Assert.Equal(new[] { 0, 1 }, upgradesSeenByDelegate.Take(2));
+        }
+    }
+
+    [Fact]
+    public async Task HttpClientDefaultRequestHeaders_SentOnUpgrade_HookWinsOnConflict()
+    {
+        await using var server = await GraphQLWsTestServer.StartAsync();
+        var graphClient = WsTestGraphClientFactory.Create(server, configureOptions: options =>
+            options.ConfigureRequest = (request, _) =>
+            {
+                request.Headers.Remove("X-Tenant");
+                request.Headers.Add("X-Tenant", "from-hook");
+                return ValueTask.CompletedTask;
+            });
+        graphClient.HttpClient.DefaultRequestHeaders.Authorization = new("Bearer", "default-token");
+        graphClient.HttpClient.DefaultRequestHeaders.Add("X-Tenant", "from-default");
+        var (client, _, _, failures) = CreateClient(graphClient);
+
+        await using var _ = client;
+        await client.Start().WaitAsync(TimeSpan.FromSeconds(10));
+
+        var headers = Assert.Single(server.UpgradeHeaders);
+        Assert.Equal("Bearer default-token", headers["Authorization"]);
+        Assert.Equal("from-hook", headers["X-Tenant"]);
+        Assert.Empty(failures);
+    }
+
+    [Fact]
+    public async Task SendAuthorizationInConnectionInit_FallsBackToDefaultRequestHeaders()
+    {
+        await using var server = await GraphQLWsTestServer.StartAsync();
+        var graphClient = WsTestGraphClientFactory.Create(server, configureOptions: options =>
+            options.SendAuthorizationInConnectionInit = true);
+        graphClient.HttpClient.DefaultRequestHeaders.Authorization = new("Bearer", "default-token");
+        var (client, _, _, failures) = CreateClient(graphClient);
+
+        await using var _ = client;
+        await client.Start().WaitAsync(TimeSpan.FromSeconds(10));
+        var init = await server.InitReceived.Task.WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal("Bearer default-token", GetInitPayload(init).GetProperty("Authorization").GetString());
+        Assert.Empty(failures);
+    }
+
+    private sealed class TokenServiceException(string message) : Exception(message);
+
+    [Fact]
+    public async Task HookThrowingOnInitialConnect_SurfacesOriginalExceptionType()
+    {
+        await using var server = await GraphQLWsTestServer.StartAsync();
+        var graphClient = WsTestGraphClientFactory.Create(server)
+            .WithRequestConfiguration((_, _) => throw new TokenServiceException("token-service-down"));
+        var (client, _, _, _) = CreateClient(graphClient);
+
+        await using var _ = client;
+        // Exact type: not Websocket.Client's WebsocketException wrapper.
+        var exception = await Assert.ThrowsAsync<TokenServiceException>(() =>
+            client.Start().WaitAsync(TimeSpan.FromSeconds(10)));
+        Assert.Equal("token-service-down", exception.Message);
+    }
+
+    [Fact]
+    public async Task HookThrowingOnReconnect_OriginalExceptionIsInnerOfTerminalFailure()
+    {
+        await using var server = await GraphQLWsTestServer.StartAsync();
+        var calls = 0;
+        var graphClient = WsTestGraphClientFactory.Create(server, configureOptions: options =>
+                options.SubscriptionRetryAttempts = 1)
+            .WithRequestConfiguration((request, _) =>
+            {
+                // First connect succeeds; the reconnect's token fetch fails.
+                if (Interlocked.Increment(ref calls) > 1)
+                {
+                    throw new TokenServiceException("refresh-failed");
+                }
+
+                return ValueTask.CompletedTask;
+            });
+        var (client, _, _, failures) = CreateClient(graphClient);
+        client.RetryDelay = _ => TimeSpan.FromMilliseconds(50);
+
+        server.OnMessage = async (session, text) =>
+        {
+            if (text.Contains("subscribe"))
+            {
+                await Task.Delay(100);
+                session.Abort();
+            }
+        };
+
+        await using var _ = client;
+        await client.Start().WaitAsync(TimeSpan.FromSeconds(10));
+        await WaitUntilAsync(() => failures.Count > 0, 15);
+
+        var failure = Assert.IsType<IOException>(Assert.Single(failures));
+        var inner = Assert.IsType<TokenServiceException>(failure.InnerException);
+        Assert.Equal("refresh-failed", inner.Message);
+    }
+
+    [Fact]
+    public async Task ConnectionInitPayloadThrowing_SurfacesOriginalExceptionType()
+    {
+        await using var server = await GraphQLWsTestServer.StartAsync();
+        var graphClient = WsTestGraphClientFactory.Create(server, configureOptions: options =>
+            options.ConnectionInitPayload = (_, _) => throw new TokenServiceException("payload-down"));
+        var (client, _, _, _) = CreateClient(graphClient);
+
+        await using var _ = client;
+        await Assert.ThrowsAsync<TokenServiceException>(() => client.Start().WaitAsync(TimeSpan.FromSeconds(10)));
+        Assert.Empty(server.UpgradeHeaders);
     }
 
     [Fact]

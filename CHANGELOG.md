@@ -21,23 +21,28 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **WebSocket upgrades now run the request hooks** (`ConfigureRequest`,
   `WithRequestConfiguration`, `WithAccessToken`): the headers they produce are copied onto
   the upgrade request of the initial connect and of every reconnect, so a refreshed token
-  is picked up on reconnect. Handshake-owned headers (`Host`, `Sec-WebSocket-*`, ...) are
-  skipped; on browsers, where custom WebSocket headers are impossible, the hooks still run
-  and the `Authorization` value is available for
+  is picked up on reconnect. `HttpClient.DefaultRequestHeaders` are sent too (a hook header
+  of the same name wins), as they are for queries. Handshake-owned headers (`Host`,
+  `Sec-WebSocket-*`, ...) are skipped; on browsers, where custom WebSocket headers are
+  impossible, the hooks still run and the `Authorization` value is available for
   `SendAuthorizationInConnectionInit` (#117). The hooks count against the connect
   timeout, which is now 30 s (Websocket.Client's 5 s default covered only the socket
-  connect).
+  connect). An exception thrown by a hook (or by `ConnectionInitPayload`) reaches the
+  subscription's error path (`OnError`, `WhenConnected`) as itself, not wrapped in
+  Websocket.Client's `WebsocketException`; on a reconnect it is the inner exception of the
+  terminal `IOException`.
 - `GraphClientOptions.ConnectionInitPayload` (and the matching `GraphClient` property)
   set the WebSocket `connection_init` payload. Unlike the old option it accepts any JSON
   object, e.g. `new Dictionary<string, object> { ["Authorization"] = $"Bearer {token}" }`
   (the graphql-ws/Apollo connection-parameter convention) or a server-specific
-  `authToken`. Called before every (re)connect.
+  `authToken`. Called before every (re)connect, before the socket opens (within the connect
+  timeout), so a slow token fetch cannot hit the server's `connection_init` wait.
 - `GraphClientOptions.SendAuthorizationInConnectionInit` (default off) merges the
   `Authorization` header produced by the request hooks into the `connection_init`
   payload — how a per-user token reaches the server on Blazor WebAssembly, where the
-  browser does not allow headers on WebSocket requests. Wins on key conflicts with a
-  `ConnectionInitPayload` dictionary (both `IDictionary` and `IReadOnlyDictionary` string-keyed
-  shapes merge; anything else throws).
+  browser does not allow headers on WebSocket requests. Wins on key conflicts with the
+  `ConnectionInitPayload`, which must serialize to a JSON object (dictionary, anonymous
+  object, POCO, `JsonObject`); any other shape throws.
 
 ### Deprecated
 
