@@ -10,10 +10,12 @@ internal sealed class IdleTimeoutStream : Stream
 {
     private readonly Stream inner;
     private readonly TimeSpan idleTimeout;
-    private readonly CancellationTokenSource idleCts = new();
+    private readonly CancellationTokenSource idleCts;
     private bool disposed;
 
-    internal IdleTimeoutStream(Stream inner, TimeSpan idleTimeout)
+    /// <param name="timeProvider">Clock driving the idle timer; <see cref="TimeProvider.System" /> when null.
+    /// Tests pass a fake provider so the timer only advances when they say so.</param>
+    internal IdleTimeoutStream(Stream inner, TimeSpan idleTimeout, TimeProvider? timeProvider = null)
     {
         if (idleTimeout <= TimeSpan.Zero)
         {
@@ -22,7 +24,8 @@ internal sealed class IdleTimeoutStream : Stream
 
         this.inner = inner ?? throw new ArgumentNullException(nameof(inner));
         this.idleTimeout = idleTimeout;
-        idleCts.CancelAfter(idleTimeout);
+        // A CTS bound to a TimeProvider uses that provider's timers for CancelAfter as well.
+        idleCts = new CancellationTokenSource(idleTimeout, timeProvider ?? TimeProvider.System);
     }
 
     public override bool CanRead => inner.CanRead;
