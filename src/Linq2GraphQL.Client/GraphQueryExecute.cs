@@ -24,13 +24,15 @@ public class GraphQueryExecute<T, TResult> : GraphBaseExecute<T, TResult>
     public async Task<T> ExecuteBaseAsync(CancellationToken cancellationToken = default)
     {
         BaseResult =
-            await queryExecutor.ExecuteRequestAsync(QueryNode.Name, await GetRequestAsync(), cancellationToken);
+            await queryExecutor.ExecuteRequestAsync(QueryNode.Name, await GetRequestAsync(cancellationToken),
+                cancellationToken);
         return BaseResult;
     }
 
     public async Task<GraphResult<T>> ExecuteBaseWithResultAsync(CancellationToken cancellationToken = default)
     {
-        var result = await queryExecutor.ExecuteRawAsync(QueryNode.Name, await GetRequestAsync(), cancellationToken);
+        var result = await queryExecutor.ExecuteRawAsync(QueryNode.Name, await GetRequestAsync(cancellationToken),
+            cancellationToken);
         BaseResult = result.Data;
         return result;
     }

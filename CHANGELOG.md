@@ -81,6 +81,13 @@ Behaviour changes that callers may notice. None of them changes a public signatu
 - `SSEClient` dispose race: the response handed off under the lock is now used via the
   local, so `Dispose()` during connect can no longer cause an NRE or a spurious
   failure report.
+- Safe mode's one-time setup now honours the `CancellationToken` passed to `ExecuteAsync`,
+  `ExecuteWithResultAsync` and the pager (#123). Before, a cancelled first query still
+  waited for the setup lock and the schema query. A cancelled schema query is not cached:
+  the next query runs it again. New overloads `GetRequestAsync(CancellationToken)`,
+  `GetRequestAsJsonAsync(CancellationToken)` and
+  `GraphClient.GetSchemaForSafeModeAsync(CancellationToken)` take the token; the existing
+  parameterless methods are unchanged.
 
 ### Performance
 
