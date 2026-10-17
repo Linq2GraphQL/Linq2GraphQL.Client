@@ -235,7 +235,11 @@ var launches = await userClient.Query.Launches().Select().ExecuteAsync();
 ```
 
 `WithAccessToken` sets `Authorization: Bearer <token>` and asks the delegate for the token on every request;
-`WithRequestConfiguration` takes any hook.
+`WithRequestConfiguration` takes any hook. The hooks also apply to subscriptions: server-sent events through
+the HTTP pipeline, WebSocket upgrades by copying the headers onto the upgrade request (initial connect and
+each reconnect — a refreshed token is picked up automatically). On Blazor WebAssembly, where the browser
+forbids headers on WebSocket requests, set `GraphClientOptions.SendAuthorizationInConnectionInit` to send
+the token in the `connection_init` payload instead.
 
 ## Agent mode (preview)
 
@@ -393,7 +397,7 @@ await foreach (var orders in pager.GetAllPagesAsync(maxPages: 50))
 
 `StartAsync` returns a cold `IObservable<TResult>`. Three transports are supported via `GraphClientOptions.SubscriptionProtocol`:
 
-- `GraphQLWebSocket` (default) — `graphql-transport-ws` protocol: sends `connection_init` (with `WSConnectionInitPayload` if configured), waits up to 10 s for `connection_ack`, then subscribes. Transient disconnects (connection lost, server-initiated close, or no frame at all for 30 s) reconnect and **resubscribe** on each new session; events during the gap are not replayed. Reconnection is bounded: up to `SubscriptionRetryAttempts` attempts with exponential backoff (1 s, 2 s, 4 s ... capped at 30 s) plus 300-3000 ms jitter; a successful `connection_ack` resets the budget. When the budget is spent the stream fails once with an `IOException` whose inner exception is the last failure. Protocol-level close codes `4004`, `4005`, `4400`, `4401`, `4406`, `4409`, `4429`, `4500` (and fatal internal `1xxx` codes) are fatal and never retried, per the graphql-ws reference client. `4403`, `4408`, `4499` and `4504` are retried.
+- `GraphQLWebSocket` (default) — `graphql-transport-ws` protocol: sends `connection_init` (with `ConnectionInitPayload` if configured), waits up to 10 s for `connection_ack`, then subscribes. Transient disconnects (connection lost, server-initiated close, or no frame at all for 30 s) reconnect and **resubscribe** on each new session; events during the gap are not replayed. Reconnection is bounded: up to `SubscriptionRetryAttempts` attempts with exponential backoff (1 s, 2 s, 4 s ... capped at 30 s) plus 300-3000 ms jitter; a successful `connection_ack` resets the budget. When the budget is spent the stream fails once with an `IOException` whose inner exception is the last failure. Protocol-level close codes `4004`, `4005`, `4400`, `4401`, `4406`, `4409`, `4429`, `4500` (and fatal internal `1xxx` codes) are fatal and never retried, per the graphql-ws reference client. `4403`, `4408`, `4499` and `4504` are retried.
 - `ApolloWebSocket` — the legacy `graphql-ws` (Apollo) subprotocol: `connection_init` / `start` / `stop`, with `data` messages instead of `next`.
 - `ServerSentEvents` — POSTs the subscription and reads the `text/event-stream` response (GraphQL-over-SSE, distinct-connections mode). Per-event `error` frames throw; a `complete` frame completes the stream. Unknown event types (e.g. `ka` keep-alives) are ignored per the WHATWG SSE spec.
 
@@ -402,7 +406,9 @@ Options:
 - `SubscriptionMaxBufferedEvents` (default 128) and `SubscriptionOverflowPolicy` (`Fault` default, `DropOldest`, `KeepLatest`) control the buffer between transport and observer.
 - `SubscriptionRetryAttempts` (WebSocket, default 5) bounds reconnect attempts after a dropped connection; `0` fails on the first drop.
 - `SubscriptionIdleTimeout` (SSE only, default off) fails the subscription when no bytes arrive — including keep-alive comments — within the window.
-- `WSConnectionInitPayload` sets the `connection_init` payload for the WebSocket transports.
+- `ConnectionInitPayload` sets the `connection_init` payload for the WebSocket transports. Return any JSON object the server expects as connection parameters, e.g. `new Dictionary<string, object> { ["Authorization"] = $"Bearer {token}" }` (the graphql-ws/Apollo convention). Called before every (re)connect, before the socket opens. Supersedes the obsolete `WSConnectionInitPayload`, which is limited to a `GraphQLRequest` payload.
+- `SendAuthorizationInConnectionInit` (default off) copies the `Authorization` header produced by `ConfigureRequest`/`WithAccessToken` into the `connection_init` payload — how a per-user token reaches the server on Blazor WebAssembly, where the browser does not allow headers on WebSocket requests. It merges into (and wins on key conflicts with) a `ConnectionInitPayload` that serializes to a JSON object.
+- WebSocket upgrade requests carry the headers produced by `ConfigureRequest`/`WithAccessToken` plus `HttpClient.DefaultRequestHeaders` (a hook header wins on a name clash), except on browsers, where custom headers are impossible.
 
 Register them through DI like any other options:
 

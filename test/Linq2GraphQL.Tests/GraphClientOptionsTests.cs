@@ -158,6 +158,10 @@ public class GraphClientDefaultsTests
         Assert.Equal(128, options.SubscriptionMaxBufferedEvents);
         Assert.Equal(SubscriptionOverflowPolicy.Fault, options.SubscriptionOverflowPolicy);
         Assert.Null(options.SubscriptionIdleTimeout);
+        Assert.Null(options.ConnectionInitPayload);
+        Assert.False(options.SendAuthorizationInConnectionInit);
+#pragma warning disable CS0618 // The legacy default is pinned deliberately: non-null delegate returning null.
         Assert.NotNull(options.WSConnectionInitPayload);
+#pragma warning restore CS0618
     }
 }
