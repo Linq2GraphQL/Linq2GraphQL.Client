@@ -13,7 +13,12 @@
         <Description>Linq2GraphQL Subscription support</Description>
         <Copyright>Copyright 2023 (c) Joakim Dangården. All rights reserved.</Copyright>
         <PackageTags>Linq GraphQL Client Subscriptions</PackageTags>
+        <PackageIcon>icon.png</PackageIcon>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\..\icon.png" Pack="true" PackagePath="\" Visible="false"/>
+    </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Linq2GraphQL.Client\Linq2GraphQL.Client.csproj"/>
