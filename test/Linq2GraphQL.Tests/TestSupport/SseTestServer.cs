@@ -19,6 +19,14 @@ internal sealed class ScriptableSseStream : Stream
     private byte[]? current;
     private int currentOffset;
     private bool ended;
+    private int parkedReads;
+
+    /// <summary>
+    ///     How many times a read has parked on an empty queue. Once it moves past a value
+    ///     sampled before a push, the reader has consumed that push and issued its next read
+    ///     (so a wrapping IdleTimeoutStream has re-armed its timer).
+    /// </summary>
+    public int ParkedReads => Volatile.Read(ref parkedReads);
 
     private static TaskCompletionSource<bool> NewSignal()
     {
@@ -91,6 +99,7 @@ internal sealed class ScriptableSseStream : Stream
                 }
 
                 wait = available;
+                Interlocked.Increment(ref parkedReads);
             }
 
             await wait.Task.WaitAsync(cancellationToken).ConfigureAwait(false);

@@ -32,6 +32,9 @@ public class SSEClient : IDisposable
         this.payload = payload;
     }
 
+    /// <summary>Clock for the idle timeout; tests substitute a fake provider.</summary>
+    internal TimeProvider TimeProvider { get; init; } = TimeProvider.System;
+
     /// <summary>
     ///     UTF-8 payloads of "next" events decoded to strings — deferred per subscriber:
     ///     the decode only happens for listeners actually attached here.
@@ -154,7 +157,7 @@ public class SSEClient : IDisposable
             var idleTimeout = graphClient.ClientOptions?.SubscriptionIdleTimeout;
             if (idleTimeout is { } timeout)
             {
-                source = new IdleTimeoutStream(rawStream, timeout);
+                source = new IdleTimeoutStream(rawStream, timeout, TimeProvider);
             }
 
             lock (resourceLock)

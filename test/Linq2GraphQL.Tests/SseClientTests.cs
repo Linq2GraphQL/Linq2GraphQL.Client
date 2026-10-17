@@ -3,6 +3,7 @@ using System.Text;
 using Linq2GraphQL.Client;
 using System.Reactive.Linq;
 using Linq2GraphQL.Client.Subscriptions;
+using Microsoft.Extensions.Time.Testing;
 
 namespace Linq2GraphQL.Tests;
 
@@ -13,11 +14,20 @@ namespace Linq2GraphQL.Tests;
 /// </summary>
 public class SseClientTests
 {
-    private static SSEClient CreateClient(FakeSseHandler handler, GraphClientOptions? options = null)
+    private static SSEClient CreateClient(FakeSseHandler handler, GraphClientOptions? options = null,
+        TimeProvider? timeProvider = null)
     {
         var graphClient = TestGraphClientFactory.Create(handler, options);
         var request = new GraphQLRequest { Query = "subscription { customerAdded { customerId } }" };
-        return new SSEClient(graphClient, request);
+        return new SSEClient(graphClient, request) { TimeProvider = timeProvider ?? TimeProvider.System };
+    }
+
+    /// <summary>Pushes a chunk and waits until the reader has consumed it and parked on its next read.</summary>
+    private static async Task PushAndAwaitNextReadAsync(ScriptableSseStream stream, string text)
+    {
+        var parked = stream.ParkedReads;
+        stream.Push(text);
+        await WaitUntilAsync(() => stream.ParkedReads > parked);
     }
 
     private static (List<byte[]> payloads, List<GraphQueryExecutionException> errors, List<Exception> failures)
@@ -275,14 +285,17 @@ public class SseClientTests
         var options = new GraphClientOptions
         {
             SubscriptionProtocol = SubscriptionProtocol.ServerSentEvents,
-            SubscriptionIdleTimeout = TimeSpan.FromMilliseconds(100),
+            SubscriptionIdleTimeout = TimeSpan.FromSeconds(1),
         };
+        var time = new FakeTimeProvider();
         var handler = FakeSseHandler.Streaming(out var stream);
-        using var client = CreateClient(handler, options);
+        using var client = CreateClient(handler, options, time);
         var failures = new List<Exception>();
         client.Failures.Subscribe(failures.Add);
 
         var started = client.Start();
+        await WaitUntilAsync(() => stream.ParkedReads > 0);
+        time.Advance(TimeSpan.FromSeconds(1));
         await started.WaitAsync(TimeSpan.FromSeconds(10));
 
         var failure = Assert.Single(failures);
@@ -297,27 +310,35 @@ public class SseClientTests
         var options = new GraphClientOptions
         {
             SubscriptionProtocol = SubscriptionProtocol.ServerSentEvents,
-            SubscriptionIdleTimeout = TimeSpan.FromMilliseconds(1000),
+            SubscriptionIdleTimeout = TimeSpan.FromSeconds(1),
         };
+        // Fake clock: the idle timer only moves when the test advances it, after the reader has
+        // provably re-armed, so thread-pool load cannot make it fire early.
+        var time = new FakeTimeProvider();
         var handler = FakeSseHandler.Streaming(out var stream);
-        using var client = CreateClient(handler, options);
+        using var client = CreateClient(handler, options, time);
         var (payloads, _, failures) = Subscribe(client);
 
-        _ = client.Start();
+        var started = client.Start();
         await client.Connected.WaitAsync(TimeSpan.FromSeconds(10));
         for (var i = 0; i < 15; i++)
         {
-            stream.Push(": ka\n\n");
-            // ~1.5 s total > idle timeout, so only re-arming on comments keeps it alive; the 10x
-            // per-gap margin keeps it stable when the full suite loads the thread pool.
-            await Task.Delay(100);
+            await PushAndAwaitNextReadAsync(stream, ": ka\n\n");
+            // 15 x 900 ms is far beyond the 1 s timeout: only re-arming on comments keeps it alive.
+            time.Advance(TimeSpan.FromMilliseconds(900));
         }
 
-        stream.Push("event: next\ndata: \"alive\"\n\n");
+        await PushAndAwaitNextReadAsync(stream, "event: next\ndata: \"alive\"\n\n");
         await WaitUntilAsync(() => payloads.Count == 1);
+        Assert.Empty(failures);
+
+        // Control: the fake clock really drives the timer — silence past the timeout fails it.
+        time.Advance(TimeSpan.FromSeconds(1));
+        await started.WaitAsync(TimeSpan.FromSeconds(10));
 
         Assert.Single(payloads);
-        Assert.Empty(failures);
+        var failure = Assert.Single(failures);
+        Assert.Contains("idle", failure.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
