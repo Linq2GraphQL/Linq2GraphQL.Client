@@ -14,7 +14,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `GraphClientOptions.SubscriptionMaxBufferedEvents` and `SubscriptionOverflowPolicy`
   (`Fault`, `DropOldest`, `KeepLatest`) control the buffer between the transport and
   the observer. Each subscriber gets its own buffer.
-- `GraphClientOptions.SubscriptionIdleTimeout` (SSE) fails a stalled stream.
+- `GraphClientOptions.SubscriptionIdleTimeout` (SSE) fails a stalled stream. The timer runs
+  only while a read waits for data, so time spent handling an event between reads never
+  counts as idle; the error states the configured timeout exactly (`750 ms`, `30 s`).
 - `GraphClientOptions.SubscriptionRetryAttempts` (WebSocket, default 5) bounds reconnects.
 - `QueryExecutor.ProcessResponse(JsonElement, ...)` and `ProcessResponse(byte[], ...)`
   overloads for streaming callers.

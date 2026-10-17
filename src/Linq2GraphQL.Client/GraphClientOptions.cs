@@ -84,7 +84,9 @@ public class GraphClientOptions
 
     /// <summary>
     ///     Optional idle timeout for SSE subscriptions. If no bytes (including keep-alive
-    ///     comments) arrive within this window, the subscription fails. Null disables it.
+    ///     comments) arrive within this window, the subscription fails. The window is measured
+    ///     per read while waiting for data, so time spent handling an event never counts as idle.
+    ///     Null disables it.
     /// </summary>
     public TimeSpan? SubscriptionIdleTimeout { get; set; }
 
