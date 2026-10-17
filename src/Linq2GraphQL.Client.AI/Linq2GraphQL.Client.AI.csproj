@@ -13,6 +13,7 @@
         <Description>Agent mode for Linq2GraphQL: expose a scoped, validated GraphQL schema to AI agents</Description>
         <Copyright>Copyright 2023 (c) Joakim Dangården. All rights reserved.</Copyright>
         <PackageTags>Linq GraphQL Client AI Agent</PackageTags>
+        <PackageIcon>icon.png</PackageIcon>
     </PropertyGroup>
 
     <!--
@@ -26,6 +27,10 @@
             <NuGetPackageVersion>$(PackageVersion)</NuGetPackageVersion>
         </PropertyGroup>
     </Target>
+
+    <ItemGroup>
+        <None Include="..\..\icon.png" Pack="true" PackagePath="\" Visible="false"/>
+    </ItemGroup>
 
     <ItemGroup>
         <InternalsVisibleTo Include="Linq2GraphQL.Tests"/>

@@ -12,7 +12,12 @@
         <Description>Linq to graphql client</Description>
         <Copyright>Copyright 2023 (c) Joakim Dangården. All rights reserved.</Copyright>
         <PackageTags>Linq GraphQL Client</PackageTags>
+        <PackageIcon>icon.png</PackageIcon>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\..\icon.png" Pack="true" PackagePath="\" Visible="false"/>
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Caching.Memory"/>
