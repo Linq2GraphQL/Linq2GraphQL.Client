@@ -239,13 +239,6 @@
           "Linq2GraphQL.Client.Subscriptions": "[1.0.0, )"
         }
       },
-      "starwars.client": {
-        "type": "Project",
-        "dependencies": {
-          "Linq2GraphQL.Client": "[1.0.0, )",
-          "Linq2GraphQL.Client.Subscriptions": "[1.0.0, )"
-        }
-      },
       "Microsoft.Extensions.Caching.Memory": {
         "type": "CentralTransitive",
         "requested": "[10.0.11, )",
