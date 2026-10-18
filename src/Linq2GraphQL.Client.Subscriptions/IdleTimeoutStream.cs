@@ -15,7 +15,7 @@ internal sealed class IdleTimeoutStream : Stream
 
     /// <param name="timeProvider">Clock driving the idle timer; <see cref="TimeProvider.System" /> when null.
     /// Tests pass a fake provider so the timer only advances when they say so.</param>
-    internal IdleTimeoutStream(Stream inner, TimeSpan idleTimeout, TimeProvider? timeProvider = null)
+    internal IdleTimeoutStream(Stream inner, TimeSpan idleTimeout, TimeProvider timeProvider = null)
     {
         if (idleTimeout <= TimeSpan.Zero)
         {
