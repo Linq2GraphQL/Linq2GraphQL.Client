@@ -14,10 +14,44 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `GraphClientOptions.SubscriptionMaxBufferedEvents` and `SubscriptionOverflowPolicy`
   (`Fault`, `DropOldest`, `KeepLatest`) control the buffer between the transport and
   the observer. Each subscriber gets its own buffer.
-- `GraphClientOptions.SubscriptionIdleTimeout` (SSE) fails a stalled stream.
+- `GraphClientOptions.SubscriptionIdleTimeout` (SSE) fails a stalled stream. The timer runs
+  only while a read waits for data, so time spent handling an event between reads never
+  counts as idle; the error states the configured timeout exactly (`750 ms`, `30 s`).
 - `GraphClientOptions.SubscriptionRetryAttempts` (WebSocket, default 5) bounds reconnects.
 - `QueryExecutor.ProcessResponse(JsonElement, ...)` and `ProcessResponse(byte[], ...)`
   overloads for streaming callers.
+- **WebSocket upgrades now run the request hooks** (`ConfigureRequest`,
+  `WithRequestConfiguration`, `WithAccessToken`): the headers they produce are copied onto
+  the upgrade request of the initial connect and of every reconnect, so a refreshed token
+  is picked up on reconnect. `HttpClient.DefaultRequestHeaders` are sent too (a hook header
+  of the same name wins), as they are for queries. Handshake-owned headers (`Host`,
+  `Sec-WebSocket-*`, ...) are skipped; on browsers, where custom WebSocket headers are
+  impossible, the hooks still run and the `Authorization` value is available for
+  `SendAuthorizationInConnectionInit` (#117). The hooks count against the connect
+  timeout, which is now 30 s (Websocket.Client's 5 s default covered only the socket
+  connect). An exception thrown by a hook (or by `ConnectionInitPayload`) reaches the
+  subscription's error path (`OnError`, `WhenConnected`) as itself, not wrapped in
+  Websocket.Client's `WebsocketException`; on a reconnect it is the inner exception of the
+  terminal `IOException`.
+- `GraphClientOptions.ConnectionInitPayload` (and the matching `GraphClient` property)
+  set the WebSocket `connection_init` payload. Unlike the old option it accepts any JSON
+  object, e.g. `new Dictionary<string, object> { ["Authorization"] = $"Bearer {token}" }`
+  (the graphql-ws/Apollo connection-parameter convention) or a server-specific
+  `authToken`. Called before every (re)connect, before the socket opens (within the connect
+  timeout), so a slow token fetch cannot hit the server's `connection_init` wait.
+- `GraphClientOptions.SendAuthorizationInConnectionInit` (default off) merges the
+  `Authorization` header produced by the request hooks into the `connection_init`
+  payload — how a per-user token reaches the server on Blazor WebAssembly, where the
+  browser does not allow headers on WebSocket requests. Wins on key conflicts with the
+  `ConnectionInitPayload`, which must serialize to a JSON object (dictionary, anonymous
+  object, POCO, `JsonObject`); any other shape throws.
+
+### Deprecated
+
+- `GraphClientOptions.WSConnectionInitPayload` / `GraphClient.WSConnectionInitPayload`: use
+  `ConnectionInitPayload`, which can return any JSON object, not just a `GraphQLRequest`.
+  The old option keeps working (and falls back) until removed; `ConnectionInitPayload`
+  wins when both are set.
 
 ### Changed
 
@@ -56,6 +90,10 @@ Behaviour changes that callers may notice. None of them changes a public signatu
 - **WebSocket: unknown message types are ignored** instead of terminating the
   subscription with `InvalidDataException`. This matches the SSE transport's tolerance for
   unknown event types and keeps forward compatibility with proxies/servers.
+- **A failed initial WebSocket connect or handshake no longer retries in the background.** The
+  exception surfaces from `StartAsync`; previously the transport's `Error` disconnect
+  also started the bounded reconnect loop, re-running request hooks up to five times and
+  reporting a second, delayed error for a failure the caller had already handled.
 - **WebSocket close codes follow the graphql-ws reference client.** Fatal: `4004`, `4005`,
   `4400`, `4401`, `4406`, `4409`, `4429`, `4500` and fatal internal `1xxx` codes.
   Retryable: `4403`, `4408`, `4499` and `4504`. Previously `4408` was treated as fatal.

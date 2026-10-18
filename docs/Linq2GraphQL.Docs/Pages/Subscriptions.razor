@@ -72,10 +72,18 @@
     <CodeBlock Code="@Protocol"/>
     <p>
         Server-sent events go through the same HTTP pipeline as queries, so <code>ConfigureRequest</code>,
-        <code>WithAccessToken</code> and your <code>HttpClient</code> handlers apply to them. WebSocket connections
-        don't send those headers; when a subscription needs a per-user token, server-sent events are the simpler
-        choice.
+        <code>WithAccessToken</code> and your <code>HttpClient</code> handlers apply to them. The same hooks also
+        run for the WebSocket transports: the headers they produce are copied onto every upgrade request
+        (initial connect and each reconnect), so a refreshed token is picked up automatically.
     </p>
+    <p>
+        Blazor WebAssembly is the exception: the browser does not allow custom headers on WebSocket requests.
+        Set <code>SendAuthorizationInConnectionInit = true</code> to send the hook's
+        <code>Authorization</code> header inside the <code>connection_init</code> payload instead — the
+        graphql-ws/Apollo convention of an <code>Authorization</code> connection parameter. For any other
+        connection parameters, use <code>ConnectionInitPayload</code>:
+    </p>
+    <CodeBlock Code="@ConnectionInit"/>
 </section>
 
 <section class="doc-section">
@@ -166,6 +174,24 @@
                 options.SubscriptionProtocol = SubscriptionProtocol.ServerSentEvents;
             })
             .WithHttpClient(httpClient => httpClient.BaseAddress = new Uri("https://example.com/graphql"));
+        """;
+
+    private const string ConnectionInit = """
+        builder.Services
+            .AddSampleClient(options =>
+            {
+                // Blazor WebAssembly: headers are not allowed on WebSocket requests,
+                // so the token travels in the connection_init payload.
+                options.SendAuthorizationInConnectionInit = true;
+
+                // Any other connection parameters your server expects:
+                options.ConnectionInitPayload = (client, cancellationToken) => ValueTask.FromResult<object>(
+                    new Dictionary<string, object>
+                    {
+                        ["authToken"] = tokenService.CurrentToken,
+                        ["clientVersion"] = "1.4",
+                    });
+            });
         """;
 
     private const string WithErrors = """
