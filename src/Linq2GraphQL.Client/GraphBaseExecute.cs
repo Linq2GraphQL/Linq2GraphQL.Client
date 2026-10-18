@@ -32,7 +32,7 @@ public abstract class GraphBaseExecute<T, TResult>
         queryExecutor = new QueryExecutor<T>(client);
     }
 
-    private async Task InitQueryAsync()
+    private async Task InitQueryAsync(CancellationToken cancellationToken)
     {
         // Fast path: initialization is one-shot; skip the semaphore once done.
         if (intialized)
@@ -40,12 +40,14 @@ public abstract class GraphBaseExecute<T, TResult>
             return;
         }
 
-        await _lock.WaitAsync();
+        // Outside the try: a cancelled wait never acquired the lock, so it must not release it.
+        await _lock.WaitAsync(cancellationToken);
         try
         {
             if (!intialized)
             {
-                schema = await client.GetSchemaForSafeModeAsync();
+                // A cancelled schema fetch throws before intialized is set, so the next caller retries.
+                schema = await client.GetSchemaForSafeModeAsync(cancellationToken);
                 QueryNode.SetAllUniqueVariableNames();
                 QueryNode.AddPrimitiveChildren(true, schema);
                 intialized = true;
@@ -76,11 +78,18 @@ public abstract class GraphBaseExecute<T, TResult>
         return $"({text})";
     }
 
-    public async Task<string> GetRequestAsJsonAsync()
+    public Task<string> GetRequestAsJsonAsync()
     {
-        
+        return GetRequestAsJsonAsync(CancellationToken.None);
+    }
 
-        var request = await GetRequestAsync();
+    /// <summary>
+    /// Like <see cref="GetRequestAsJsonAsync()"/>, but the one-time safe-mode setup (waiting for
+    /// initialization and the schema query) stops when <paramref name="cancellationToken"/> is cancelled.
+    /// </summary>
+    public async Task<string> GetRequestAsJsonAsync(CancellationToken cancellationToken)
+    {
+        var request = await GetRequestAsync(cancellationToken);
 
 
         var result = request.Query;
@@ -124,9 +133,20 @@ public abstract class GraphBaseExecute<T, TResult>
         };
     }
 
-    public async Task<GraphQLRequest> GetRequestAsync()
+    public Task<GraphQLRequest> GetRequestAsync()
     {
-        await InitQueryAsync();
+        return GetRequestAsync(CancellationToken.None);
+    }
+
+    /// <summary>
+    /// Builds the request this query sends. The first call does one-time setup: with
+    /// <see cref="GraphClientOptions.UseSafeMode"/> on, that includes the schema query (unless the schema is
+    /// already cached). Cancelling <paramref name="cancellationToken"/> stops waiting for that setup and cancels
+    /// this caller's schema query; nothing is cached, so a later call starts the setup again.
+    /// </summary>
+    public async Task<GraphQLRequest> GetRequestAsync(CancellationToken cancellationToken)
+    {
+        await InitQueryAsync(cancellationToken);
 
         // Compute active arguments once for both the query string and the variables.
         var args = QueryNode.GetAllActiveArguments();

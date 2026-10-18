@@ -135,7 +135,24 @@ public class GraphClient
         };
     }
 
-    public async Task<GraphQLSchema> GetSchemaForSafeModeAsync()
+    public Task<GraphQLSchema> GetSchemaForSafeModeAsync()
+    {
+        return GetSchemaForSafeModeAsync(CancellationToken.None);
+    }
+
+    /// <summary>
+    /// The schema safe mode validates against, fetched once and cached per base address, deprecated-fields
+    /// flag and schema cache key. Returns null when <see cref="GraphClientOptions.UseSafeMode"/> is off.
+    /// </summary>
+    /// <remarks>
+    /// <paramref name="cancellationToken"/> cancels only this caller's schema query. That is safe with
+    /// <c>IMemoryCache.GetOrCreateAsync</c>: it does not share one in-flight fetch between callers (each
+    /// cache miss runs its own factory), and a factory that throws, including on cancellation, stores
+    /// nothing, so a cancelled fetch is never cached. If the fetch is ever made shared (single-flight),
+    /// it must not run on one caller's token; each caller would then stop waiting with
+    /// <c>Task.WaitAsync(cancellationToken)</c> instead.
+    /// </remarks>
+    public async Task<GraphQLSchema> GetSchemaForSafeModeAsync(CancellationToken cancellationToken)
     {
         if (!options.Value.UseSafeMode)
         {
@@ -159,7 +176,7 @@ public class GraphClient
             }
 
             var graphRequest = new GraphQLRequest { Query = query };
-            return await executor.ExecuteRequestAsync("__schema", graphRequest);
+            return await executor.ExecuteRequestAsync("__schema", graphRequest, cancellationToken);
         });
     }
 }
