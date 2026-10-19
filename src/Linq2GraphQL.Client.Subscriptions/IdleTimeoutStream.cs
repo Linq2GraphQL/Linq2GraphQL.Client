@@ -11,9 +11,12 @@ internal sealed class IdleTimeoutStream : Stream
 {
     private readonly Stream inner;
     private readonly TimeSpan idleTimeout;
+    private readonly TimeProvider timeProvider;
     private bool disposed;
 
-    internal IdleTimeoutStream(Stream inner, TimeSpan idleTimeout)
+    /// <param name="timeProvider">Clock driving the idle timer; <see cref="TimeProvider.System" /> when null.
+    /// Tests pass a fake provider so the timer only advances when they say so.</param>
+    internal IdleTimeoutStream(Stream inner, TimeSpan idleTimeout, TimeProvider timeProvider = null)
     {
         if (idleTimeout <= TimeSpan.Zero)
         {
@@ -22,6 +25,7 @@ internal sealed class IdleTimeoutStream : Stream
 
         this.inner = inner ?? throw new ArgumentNullException(nameof(inner));
         this.idleTimeout = idleTimeout;
+        this.timeProvider = timeProvider ?? TimeProvider.System;
     }
 
     public override bool CanRead => inner.CanRead;
@@ -37,20 +41,21 @@ internal sealed class IdleTimeoutStream : Stream
         // A fresh timer per read, disposed when the read completes: it runs only while waiting
         // for data, and a timer that fired during a read which still returned bytes cannot leak
         // into the next read (a CancellationTokenSource cannot be reset once cancelled).
-        // CreateLinkedTokenSource with a non-cancelable token is equivalent to a plain source.
-        using var readCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        readCts.CancelAfter(idleTimeout);
+        // The timer source is bound to the TimeProvider (a linked source cannot be), then linked
+        // with the caller's token for the read itself.
+        using var timerCts = new CancellationTokenSource(idleTimeout, timeProvider);
+        using var readCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timerCts.Token);
 
         try
         {
             return await inner.ReadAsync(buffer, readCts.Token).ConfigureAwait(false);
         }
         catch (OperationCanceledException) when (
-            readCts.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
+            timerCts.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
         {
-            // Only the idle timer or the caller can cancel readCts; it fired and the caller did
-            // not cancel, so the timer fired with no bytes received: the connection is dead. An
-            // OperationCanceledException the inner stream raised on its own propagates unchanged.
+            // The idle timer fired and the caller did not cancel, so no bytes arrived within the
+            // window: the connection is dead. An OperationCanceledException the inner stream
+            // raised on its own propagates unchanged.
             throw new IOException($"SSE idle timeout: no data received within {FormatTimeout(idleTimeout)}.");
         }
     }

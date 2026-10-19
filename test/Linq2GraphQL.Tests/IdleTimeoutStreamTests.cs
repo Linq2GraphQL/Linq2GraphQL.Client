@@ -1,5 +1,6 @@
 using System.Text;
 using Linq2GraphQL.Client.Subscriptions;
+using Microsoft.Extensions.Time.Testing;
 
 namespace Linq2GraphQL.Tests;
 
@@ -43,11 +44,12 @@ public class IdleTimeoutStreamTests
     [Fact]
     public async Task SlowButRegularData_DoesNotTimeOut()
     {
-        // One byte every 50ms for ~1s with a 750ms idle timeout: the whole read outlasts the
-        // timeout, so it only passes if the timer re-arms per read. The 15x per-gap margin keeps
-        // it stable when the full suite loads the thread pool.
-        using var stream = new IdleTimeoutStream(new DrippingStream(TimeSpan.FromMilliseconds(50), 20),
-            TimeSpan.FromMilliseconds(750));
+        // One byte every 500ms (fake clock) for 10s with a 750ms idle timeout: the whole read
+        // outlasts the timeout, so it only passes if the timer re-arms per read. The clock only
+        // moves inside each read, so scheduling delays cannot fire the timer.
+        var time = new FakeTimeProvider();
+        using var stream = new IdleTimeoutStream(new DrippingStream(time, TimeSpan.FromMilliseconds(500), 20),
+            TimeSpan.FromMilliseconds(750), time);
 
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
         var buffer = new byte[32];
@@ -346,7 +348,7 @@ public class IdleTimeoutStreamTests
         public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
     }
 
-    private sealed class DrippingStream(TimeSpan delay, int count) : Stream
+    private sealed class DrippingStream(FakeTimeProvider time, TimeSpan delay, int count) : Stream
     {
         private int remaining = count;
 
@@ -358,7 +360,10 @@ public class IdleTimeoutStreamTests
 
         public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
         {
-            await Task.Delay(delay, cancellationToken);
+            await Task.Yield();
+            // The byte "arrives" after the delay; a fired idle timer cancels this read.
+            time.Advance(delay);
+            cancellationToken.ThrowIfCancellationRequested();
             if (remaining-- <= 0)
             {
                 return 0;
