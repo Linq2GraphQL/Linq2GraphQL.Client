@@ -1,7 +1,9 @@
 using System.Net.WebSockets;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Runtime.ExceptionServices;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Websocket.Client;
 
 namespace Linq2GraphQL.Client.Subscriptions;
@@ -42,6 +44,27 @@ public class WSClient : IAsyncDisposable
     // reconnection is enabled, which this class disables (verified: no NoMessageReceived event).
     private Timer watchdog;
     private long lastMessageTicks;
+    // connection_init payload of the CURRENT connection. Resolved in the connection factory,
+    // before the socket connects, so the payload delegate runs inside ConnectTimeout and cannot
+    // hold an open socket past the server's connection_init wait (graphql-ws closes with 4408).
+    // Read by SendConnectionInit, which runs after the factory for the same generation.
+    private volatile object connectionInitPayload;
+    // The last failure of the pre-connect preparation (request hooks, payload delegate).
+    // Websocket.Client wraps any factory exception in its own WebsocketException; this lets
+    // Start() and the retry loop surface the caller's original exception instead.
+    private volatile ExceptionDispatchInfo preparationFailure;
+
+    // Headers the WebSocket handshake owns; a hook setting them must not break the upgrade.
+    private static readonly HashSet<string> HandshakeOwnedHeaders = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Host",
+        "Connection",
+        "Upgrade",
+        "Sec-WebSocket-Key",
+        "Sec-WebSocket-Version",
+        "Sec-WebSocket-Protocol",
+        "Sec-WebSocket-Extensions",
+    };
 
     public WSClient(GraphClient graphClient, GraphQLRequest payload)
     {
@@ -49,23 +72,108 @@ public class WSClient : IAsyncDisposable
         this.payload = payload;
         maxRetryAttempts = Math.Max(0, graphClient.ClientOptions.SubscriptionRetryAttempts);
 
-        var factory = new Func<ClientWebSocket>(() =>
+        // The async connection factory runs for EVERY connect, including each reconnect attempt
+        // inside the retry loop — so request hooks (WithAccessToken etc.) run per connection and
+        // a refreshed token is picked up on reconnect. It must return an already-connected socket.
+        var factory = new Func<Uri, CancellationToken, Task<WebSocket>>(async (uri, cancellationToken) =>
         {
             var socket = new ClientWebSocket();
-            socket.Options.AddSubProtocol(subprotocol ?? GetSubprotocolString());
-            return socket;
+            try
+            {
+                try
+                {
+                    socket.Options.AddSubProtocol(subprotocol ?? GetSubprotocolString());
+                    var authorization = await ApplyRequestHooksAsync(socket.Options, cancellationToken)
+                        .ConfigureAwait(false);
+                    connectionInitPayload = await BuildConnectionInitPayloadAsync(authorization, cancellationToken)
+                        .ConfigureAwait(false);
+                    preparationFailure = null;
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    // Cancellation (ConnectTimeout elapsed, disposal) stays wrapped: a bare
+                    // OperationCanceledException from Start() would read as the caller's own cancel.
+                    preparationFailure = ExceptionDispatchInfo.Capture(exception);
+                    throw;
+                }
+
+                await socket.ConnectAsync(uri, cancellationToken).ConfigureAwait(false);
+                return socket;
+            }
+            catch
+            {
+                socket.Dispose();
+                throw;
+            }
         });
 
-        client = new WebsocketClient(new Uri(graphClient.SubscriptionUrl), factory)
+        client = new WebsocketClient(new Uri(graphClient.SubscriptionUrl), null, factory)
         {
             // This class owns reconnection (bounded, with backoff) and silence detection. The
             // library's own loop retries forever and goes silent after an Error.
             ReconnectTimeout = null,
             IsReconnectionEnabled = false,
+            // The default 5 s budget covers only the socket connect; the request hooks (token
+            // fetch, e.g. an IdP round-trip) run inside the same window, so give them room.
+            ConnectTimeout = TimeSpan.FromSeconds(30),
         };
 
         messageSubscription = client.MessageReceived.Subscribe(HandleMessage, ReportFailure);
         disconnectionSubscription = client.DisconnectionHappened.Subscribe(HandleDisconnection, ReportFailure);
+    }
+
+    /// <summary>
+    ///     Runs the request hooks for one upgrade request and copies the resulting headers onto the
+    ///     socket. Returns the effective <c>Authorization</c> value (for
+    ///     <see cref="GraphClientOptions.SendAuthorizationInConnectionInit"/>), or null.
+    /// </summary>
+    private async Task<string> ApplyRequestHooksAsync(ClientWebSocketOptions socketOptions,
+        CancellationToken cancellationToken)
+    {
+        // The hooks are HttpRequestMessage-based (same shape as queries and SSE); run them on a
+        // dummy request for the subscription URL, then copy the resulting headers onto the socket.
+        using var request = new HttpRequestMessage(HttpMethod.Get, new Uri(graphClient.SubscriptionUrl));
+        await graphClient.ConfigureRequestAsync(request, cancellationToken).ConfigureAwait(false);
+
+        // Queries get HttpClient.DefaultRequestHeaders from HttpClient.SendAsync; the upgrade does
+        // not go through HttpClient, so merge them here. Same precedence as SendAsync: a header
+        // already on the request (set by a hook) wins over the default of the same name.
+        var defaults = graphClient.HttpClient?.DefaultRequestHeaders;
+        var headers = new List<(string Name, string Value)>();
+        if (defaults is not null)
+        {
+            foreach (var (key, values) in defaults)
+            {
+                if (!request.Headers.Contains(key))
+                {
+                    headers.Add((key, string.Join(", ", values)));
+                }
+            }
+        }
+
+        foreach (var (key, values) in request.Headers)
+        {
+            headers.Add((key, string.Join(", ", values)));
+        }
+
+        var authorization = request.Headers.Authorization?.ToString() ?? defaults?.Authorization?.ToString();
+
+        // Browsers do not allow custom headers on WebSocket requests: the Authorization value
+        // returned here travels in the connection_init payload instead (Blazor WebAssembly).
+        if (OperatingSystem.IsBrowser())
+        {
+            return authorization;
+        }
+
+        foreach (var (name, value) in headers)
+        {
+            if (!HandshakeOwnedHeaders.Contains(name) && !string.IsNullOrEmpty(value))
+            {
+                socketOptions.SetRequestHeader(name, value);
+            }
+        }
+
+        return authorization;
     }
 
     public IObservable<string> Subscription => subscriptionSubject.AsObservable();
@@ -78,6 +186,12 @@ public class WSClient : IAsyncDisposable
     ///     as lost and goes through the reconnect loop. Mirrors the previous 30 s ReconnectTimeout.
     /// </summary>
     internal TimeSpan NoMessageTimeout { get; set; } = TimeSpan.FromSeconds(30);
+
+    /// <summary>
+    ///     Delay before reconnect attempt n (0-based). Tests shorten it so "no background retry"
+    ///     assertions do not depend on outwaiting the real backoff.
+    /// </summary>
+    internal Func<int, TimeSpan> RetryDelay { get; set; } = BackoffDelay;
 
     public async ValueTask DisposeAsync()
     {
@@ -140,19 +254,53 @@ public class WSClient : IAsyncDisposable
         // Created before StartOrFail so an eager ack arriving during the handshake
         // completes this generation's source instead of racing a null field (L2).
         ackSource = CreateAckSource();
-        await client.StartOrFail().ConfigureAwait(false);
-
-        // Initial connect: a missing subprotocol is a protocol violation and stays terminal.
-        var negotiated = client.NativeClient?.SubProtocol;
-        if (string.IsNullOrEmpty(negotiated))
+        try
         {
-            throw new InvalidDataException("WebSocket server did not negotiate a GraphQL subprotocol.");
+            await StartTransportAsync().ConfigureAwait(false);
+
+            // Initial connect: a missing subprotocol is a protocol violation and stays terminal.
+            var negotiated = client.NativeClient?.SubProtocol;
+            if (string.IsNullOrEmpty(negotiated))
+            {
+                throw new InvalidDataException("WebSocket server did not negotiate a GraphQL subprotocol.");
+            }
+
+            subprotocol = ValidateNegotiatedSubprotocol(negotiated);
+            SendConnectionInit();
+            await WaitForAckAsync().ConfigureAwait(false);
+        }
+        catch
+        {
+            // Any failure of the initial connect/handshake propagates to the caller from Start().
+            // The transport may still surface the same failure later (e.g. the server closing on
+            // its own ack timeout); without marking it terminal the retry loop would run the
+            // full bounded budget in the background and report a second, delayed error for a
+            // failure the caller already handled.
+            Interlocked.Exchange(ref terminalFailure, 1);
+            throw;
         }
 
-        subprotocol = ValidateNegotiatedSubprotocol(negotiated);
-        await SendConnectionInitAsync().ConfigureAwait(false);
-        await WaitForAckAsync().ConfigureAwait(false);
         StartWatchdog();
+    }
+
+    /// <summary>
+    ///     <see cref="WebsocketClient.StartOrFail"/>, but a failure of our own pre-connect step
+    ///     (a request hook or the connection_init payload delegate) is rethrown as the original
+    ///     exception, with its stack, instead of Websocket.Client's <c>WebsocketException</c>
+    ///     wrapper - so callers can catch their own types (e.g. a token service's exception).
+    /// </summary>
+    private async Task StartTransportAsync()
+    {
+        preparationFailure = null;
+        try
+        {
+            await client.StartOrFail().ConfigureAwait(false);
+        }
+        catch (Exception exception) when (preparationFailure is { } failure
+                                          && ReferenceEquals(exception.InnerException, failure.SourceException))
+        {
+            failure.Throw();
+        }
     }
 
     private void StartWatchdog()
@@ -212,13 +360,14 @@ public class WSClient : IAsyncDisposable
         return new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
     }
 
-    private async Task SendConnectionInitAsync()
+    private void SendConnectionInit()
     {
-        var initRequest = new WebsocketRequest(WebsocketRequestTypes.CONNECTION_INIT);
-        if (graphClient.WSConnectionInitPayload is not null)
+        // The payload was resolved by the connection factory for this connection (before the
+        // socket opened), so nothing slow runs between the open socket and connection_init.
+        var initRequest = new WebsocketRequest(WebsocketRequestTypes.CONNECTION_INIT)
         {
-            initRequest.Payload = await graphClient.WSConnectionInitPayload(graphClient).ConfigureAwait(false);
-        }
+            Payload = connectionInitPayload
+        };
 
         SendRequest(initRequest);
         lock (stateLock)
@@ -229,6 +378,41 @@ public class WSClient : IAsyncDisposable
         // An eager server may ack before init was queued; if so, subscribe now.
         // SendSubscription is idempotent (subscriptionSent) and no-ops otherwise.
         SendSubscription();
+    }
+
+    private async ValueTask<object> BuildConnectionInitPayloadAsync(string authorization,
+        CancellationToken cancellationToken)
+    {
+        // New option wins; the obsolete WSConnectionInitPayload is the fallback (resolved inside
+        // GraphClient so the deprecation pragma lives in exactly one place).
+        var payload = await graphClient.GetConnectionInitPayloadAsync(cancellationToken).ConfigureAwait(false);
+
+        if (!graphClient.ClientOptions.SendAuthorizationInConnectionInit || string.IsNullOrEmpty(authorization))
+        {
+            return payload;
+        }
+
+        // Blazor WebAssembly path: the browser drops headers on WebSocket requests, so the token
+        // produced by the request hooks travels inside connection_init (graphql-ws/Apollo style
+        // "Authorization" connection parameter). The hook value wins on key conflicts.
+        if (payload is null)
+        {
+            return new JsonObject { ["Authorization"] = authorization };
+        }
+
+        // Merge on the JSON the payload serializes to - with the same options it would be sent
+        // with - so any shape that is a JSON object merges: dictionaries of any value type,
+        // anonymous objects, POCOs ([JsonPropertyName] honored), JsonObject and JsonElement.
+        if (JsonSerializer.SerializeToNode(payload, payload.GetType(), jsonOptions) is JsonObject merged)
+        {
+            merged["Authorization"] = authorization;
+            return merged;
+        }
+
+        throw new InvalidOperationException(
+            "SendAuthorizationInConnectionInit requires the ConnectionInitPayload to serialize to a JSON "
+            + "object (or be null) so the Authorization connection parameter can be merged; "
+            + $"it was {payload.GetType()}.");
     }
 
     private string ValidateNegotiatedSubprotocol(string negotiatedProtocol)
@@ -460,8 +644,16 @@ public class WSClient : IAsyncDisposable
                     return;
                 }
 
-                var delay = BackoffDelay(attempt);
+                var delay = RetryDelay(attempt);
                 await Task.Delay(delay, cancellationSource.Token).ConfigureAwait(false);
+
+                // Re-check after the backoff: a terminal failure (e.g. the initial connect's
+                // Start() already threw) can be flagged while this loop is sleeping, and the
+                // attempt below must not run hooks for a client that already reported failure.
+                if (Volatile.Read(ref terminalFailure) != 0)
+                {
+                    return;
+                }
 
                 try
                 {
@@ -469,12 +661,12 @@ public class WSClient : IAsyncDisposable
                     // after a failed attempt returns at once with State=Aborted and no connection (verified).
                     // Stop() resets it so every attempt opens a real socket.
                     await client.Stop(WebSocketCloseStatus.NormalClosure, string.Empty).ConfigureAwait(false);
-                    await client.StartOrFail().ConfigureAwait(false);
+                    await StartTransportAsync().ConfigureAwait(false);
                     // A fresh ack source per handshake: the previous one is already completed and would
                     // make WaitForAckAsync return without waiting for this connection's connection_ack.
                     subprotocol = ValidateNegotiatedSubprotocol(client.NativeClient?.SubProtocol);
                     ackSource = CreateAckSource();
-                    await SendConnectionInitAsync().ConfigureAwait(false);
+                    SendConnectionInit();
                     await WaitForAckAsync().ConfigureAwait(false);
                     Volatile.Write(ref lastMessageTicks, Environment.TickCount64);
                     return;

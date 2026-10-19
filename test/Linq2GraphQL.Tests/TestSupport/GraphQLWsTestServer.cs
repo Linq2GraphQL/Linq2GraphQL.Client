@@ -92,6 +92,10 @@ internal sealed class GraphQLWsTestServer : IAsyncDisposable
     public ConcurrentQueue<string> Incoming { get; } = new();
     public List<WsTestSession> Sessions { get; } = new();
 
+    /// <summary>Headers of every accepted upgrade request, in arrival order (auth tests).
+    /// Snapshot copies: Kestrel recycles the live header collection once the request ends.</summary>
+    public ConcurrentQueue<Dictionary<string, string>> UpgradeHeaders { get; } = new();
+
     /// <summary>Set when a connection_init arrives; payload is the raw message text.</summary>
     public TaskCompletionSource<string> InitReceived { get; } =
         new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -134,6 +138,8 @@ internal sealed class GraphQLWsTestServer : IAsyncDisposable
         }
 
         Interlocked.Exchange(ref RejectUpgrades, 0);
+        UpgradeHeaders.Enqueue(context.Request.Headers.ToDictionary(
+            header => header.Key, header => header.Value.ToString(), StringComparer.OrdinalIgnoreCase));
         var subProtocol = string.IsNullOrEmpty(SubProtocol) ? null : SubProtocol;
         using var socket = await context.WebSockets.AcceptWebSocketAsync(subProtocol);
         var session = new WsTestSession(socket);
@@ -214,13 +220,15 @@ internal static class WsTestGraphClientFactory
 {
     /// <summary>A GraphClient (safe mode OFF) whose SubscriptionUrl points at the test server.</summary>
     public static GraphClient Create(GraphQLWsTestServer server,
-        SubscriptionProtocol protocol = SubscriptionProtocol.GraphQLWebSocket)
+        SubscriptionProtocol protocol = SubscriptionProtocol.GraphQLWebSocket,
+        Action<GraphClientOptions>? configureOptions = null)
     {
         var options = new GraphClientOptions
         {
             SubscriptionProtocol = protocol,
             UseSafeMode = false,
         };
+        configureOptions?.Invoke(options);
         var httpClient = new HttpClient { BaseAddress = new Uri(server.HttpBaseAddress) };
         return new GraphClient(httpClient, Options.Create(options), new ServiceCollection().BuildServiceProvider());
     }

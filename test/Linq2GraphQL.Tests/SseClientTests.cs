@@ -285,7 +285,7 @@ public class SseClientTests
         var options = new GraphClientOptions
         {
             SubscriptionProtocol = SubscriptionProtocol.ServerSentEvents,
-            SubscriptionIdleTimeout = TimeSpan.FromSeconds(1),
+            SubscriptionIdleTimeout = TimeSpan.FromSeconds(30),
         };
         var time = new FakeTimeProvider();
         var handler = FakeSseHandler.Streaming(out var stream);
@@ -295,7 +295,7 @@ public class SseClientTests
 
         var started = client.Start();
         await WaitUntilAsync(() => stream.ParkedReads > 0);
-        time.Advance(TimeSpan.FromSeconds(1));
+        time.Advance(TimeSpan.FromSeconds(30));
         await started.WaitAsync(TimeSpan.FromSeconds(10));
 
         var failure = Assert.Single(failures);
@@ -310,7 +310,7 @@ public class SseClientTests
         var options = new GraphClientOptions
         {
             SubscriptionProtocol = SubscriptionProtocol.ServerSentEvents,
-            SubscriptionIdleTimeout = TimeSpan.FromSeconds(1),
+            SubscriptionIdleTimeout = TimeSpan.FromSeconds(30),
         };
         // Fake clock: the idle timer only moves when the test advances it, after the reader has
         // provably re-armed, so thread-pool load cannot make it fire early.
@@ -324,8 +324,8 @@ public class SseClientTests
         for (var i = 0; i < 15; i++)
         {
             await PushAndAwaitNextReadAsync(stream, ": ka\n\n");
-            // 15 x 900 ms is far beyond the 1 s timeout: only re-arming on comments keeps it alive.
-            time.Advance(TimeSpan.FromMilliseconds(900));
+            // 15 x 29 s is far beyond the 30 s timeout: only re-arming on comments keeps it alive.
+            time.Advance(TimeSpan.FromSeconds(29));
         }
 
         await PushAndAwaitNextReadAsync(stream, "event: next\ndata: \"alive\"\n\n");
@@ -333,7 +333,7 @@ public class SseClientTests
         Assert.Empty(failures);
 
         // Control: the fake clock really drives the timer — silence past the timeout fails it.
-        time.Advance(TimeSpan.FromSeconds(1));
+        time.Advance(TimeSpan.FromSeconds(30));
         await started.WaitAsync(TimeSpan.FromSeconds(10));
 
         Assert.Single(payloads);

@@ -2,15 +2,16 @@ namespace Linq2GraphQL.Client.Subscriptions;
 
 /// <summary>
 ///     Stream decorator that fails a read with an IOException once no bytes have
-///     arrived within the idle timeout. The timer is re-armed before every read, so
-///     keep-alives (including WHATWG <c>:</c> comments, which the SSE parser consumes
-///     invisibly) keep the stream alive.
+///     arrived within the idle timeout. Each read gets its own timer that runs only while
+///     that read waits for data, so keep-alives (including WHATWG <c>:</c> comments, which
+///     the SSE parser consumes invisibly) keep the stream alive, and time the consumer spends
+///     between reads (processing an event, waiting for a thread) never counts as idle.
 /// </summary>
 internal sealed class IdleTimeoutStream : Stream
 {
     private readonly Stream inner;
     private readonly TimeSpan idleTimeout;
-    private readonly CancellationTokenSource idleCts;
+    private readonly TimeProvider timeProvider;
     private bool disposed;
 
     /// <param name="timeProvider">Clock driving the idle timer; <see cref="TimeProvider.System" /> when null.
@@ -24,8 +25,7 @@ internal sealed class IdleTimeoutStream : Stream
 
         this.inner = inner ?? throw new ArgumentNullException(nameof(inner));
         this.idleTimeout = idleTimeout;
-        // A CTS bound to a TimeProvider uses that provider's timers for CancelAfter as well.
-        idleCts = new CancellationTokenSource(idleTimeout, timeProvider ?? TimeProvider.System);
+        this.timeProvider = timeProvider ?? TimeProvider.System;
     }
 
     public override bool CanRead => inner.CanRead;
@@ -38,34 +38,44 @@ internal sealed class IdleTimeoutStream : Stream
     {
         ObjectDisposedException.ThrowIf(disposed, this);
 
-        if (!cancellationToken.CanBeCanceled)
-        {
-            return await ReadInnerAsync(buffer, idleCts.Token, external: default).ConfigureAwait(false);
-        }
-
-        using var linked = CancellationTokenSource.CreateLinkedTokenSource(idleCts.Token, cancellationToken);
-        return await ReadInnerAsync(buffer, linked.Token, external: cancellationToken).ConfigureAwait(false);
-    }
-
-    private async ValueTask<int> ReadInnerAsync(Memory<byte> buffer, CancellationToken readToken,
-        CancellationToken external)
-    {
-        // Re-arm for this read: any bytes (data line, event boundary, comment) reset it.
-        idleCts.CancelAfter(idleTimeout);
+        // A fresh timer per read, disposed when the read completes: it runs only while waiting
+        // for data, and a timer that fired during a read which still returned bytes cannot leak
+        // into the next read (a CancellationTokenSource cannot be reset once cancelled).
+        // The timer source is bound to the TimeProvider (a linked source cannot be), then linked
+        // with the caller's token for the read itself.
+        using var timerCts = new CancellationTokenSource(idleTimeout, timeProvider);
+        using var readCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timerCts.Token);
 
         try
         {
-            return await inner.ReadAsync(buffer, readToken).ConfigureAwait(false);
+            return await inner.ReadAsync(buffer, readCts.Token).ConfigureAwait(false);
         }
         catch (OperationCanceledException) when (
-            idleCts.IsCancellationRequested &&
-            (!external.CanBeCanceled || !external.IsCancellationRequested))
+            timerCts.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
         {
-            // The idle timer fired and the caller did not cancel: the connection is dead.
-            // The linked readToken cannot be used to distinguish the sources — it is also
-            // cancelled by the idle timer — so the caller's own token is checked here.
-            throw new IOException($"SSE idle timeout: no data received within {idleTimeout.TotalSeconds:F0}s.");
+            // The idle timer fired and the caller did not cancel, so no bytes arrived within the
+            // window: the connection is dead. An OperationCanceledException the inner stream
+            // raised on its own propagates unchanged.
+            throw new IOException($"SSE idle timeout: no data received within {FormatTimeout(idleTimeout)}.");
         }
+    }
+
+    /// <summary>
+    ///     Whole seconds as "N s", anything else as "N ms" - never rounds up (750 ms is not "1s");
+    ///     a positive timeout under 1 ms is "&lt;1 ms", not "0 s". Expects a positive timeout, as
+    ///     the constructor enforces.
+    /// </summary>
+    internal static string FormatTimeout(TimeSpan timeout)
+    {
+        var milliseconds = (long)timeout.TotalMilliseconds;
+        if (milliseconds == 0)
+        {
+            return "<1 ms";
+        }
+
+        return milliseconds % 1000 == 0
+            ? FormattableString.Invariant($"{milliseconds / 1000} s")
+            : FormattableString.Invariant($"{milliseconds} ms");
     }
 
     public override void Flush() => throw new NotSupportedException();
@@ -83,7 +93,6 @@ internal sealed class IdleTimeoutStream : Stream
 
         if (disposing)
         {
-            idleCts.Dispose();
             inner.Dispose();
         }
 
@@ -97,7 +106,6 @@ internal sealed class IdleTimeoutStream : Stream
             return;
         }
 
-        idleCts.Dispose();
         await inner.DisposeAsync().ConfigureAwait(false);
         GC.SuppressFinalize(this);
     }
