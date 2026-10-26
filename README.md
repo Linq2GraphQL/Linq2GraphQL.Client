@@ -72,6 +72,7 @@ Usage:
 	  -d  --deprecated			   Include Deprecated as Obsolete
       -sc --schema                 Schema file (SDL) to generate from instead of an endpoint
       -ag --agent                  Agent mode: also emit the schema as SDL (see docs/design/agent-mode.md)
+      -sa --standalone             Write a copy of the runtime into the output, see Standalone clients below
       -cf --config                 Json settings file, see Configuration file below
 
 As an example:
@@ -139,6 +140,7 @@ file is allowed to be absent.
 | `nullable`       | bool   | `false`                  | `-nu`, `--nullable`   |
 | `deprecated`     | bool   | `false`                  | `-d`, `--deprecated`  |
 | `agent`          | bool   | `false`                  | `-ag`, `--agent`      |
+| `standalone`     | bool   | `false`                  | `-sa`, `--standalone` |
 | `scalarMappings` | object | none                     | *no equivalent*       |
 | `descriptionAttributes` | bool | `true`              | *no equivalent*       |
 
@@ -180,6 +182,24 @@ Scalar names are matched case insensitively. The target must be one of the suppo
 `TimeSpan` - written either as the C# keyword (`long`), the type name (`Int64`) or its full name
 (`System.Int64`). Anything else fails the run with an error rather than generating a client that does
 not compile.
+
+### Standalone clients
+
+A generated client normally references the `Linq2GraphQL.Client` package, and an app gets one version
+of it however many clients it uses. When clients are shipped as packages of their own by different
+teams, an app that references clients made with different generator versions ends up with whichever
+runtime NuGet picks. With `--standalone` (`-sa`) the generator instead writes a copy of the runtime into
+`Runtime/` in the output, under the namespace `<namespace>.Runtime`, so the client depends on nothing
+from Linq2GraphQL:
+
+    Linq2GraphQL https://spacex-production.up.railway.app/ -c="SpaceXClient" -n="SpaceX" -o="Generated" --standalone
+
+`Runtime/RuntimeInfo.cs` records the runtime version and the packages the copy needs, and the generator
+prints them as `PackageReference` lines to add instead of `Linq2GraphQL.Client`. Code using the client
+does not change; runtime types you name yourself (`GraphClientOptions`, `GraphQueryExecutionException`)
+come from `SpaceX.Runtime`. A runtime fix reaches the client only when you regenerate, the `Runtime`
+folder is rewritten on every run (don't edit it), and `Linq2GraphQL.Client.AI` does not work with
+standalone clients yet.
 
 ## Add Nuget
 

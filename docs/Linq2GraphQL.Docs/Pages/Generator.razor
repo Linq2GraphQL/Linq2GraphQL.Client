@@ -29,6 +29,7 @@
             <tr><td class="text-nowrap"><code>-es</code>, <code>--enum-strategy</code></td><td><code>FailIfMissing</code></td><td><code>AddUnknownOption</code> gives every enum an extra <code>Unknown</code> member, so values added to the schema later don't break deserialization.</td></tr>
             <tr><td class="text-nowrap"><code>-d</code>, <code>--deprecated</code></td><td><code>false</code></td><td>Include deprecated fields and enum values, marked <code>[Obsolete]</code>. Without it they are left out.</td></tr>
             <tr><td class="text-nowrap"><code>-ag</code>, <code>--agent</code></td><td><code>false</code></td><td>Agent mode, in preview: also emit the schema as SDL so <code>Linq2GraphQL.Client.AI</code> can expose it to AI agents.</td></tr>
+            <tr><td class="text-nowrap"><code>-sa</code>, <code>--standalone</code></td><td><code>false</code></td><td>Write a copy of the runtime into the output, so the client needs no <code>Linq2GraphQL.Client</code> package. See <a href="generator#standalone">standalone clients</a>.</td></tr>
             <tr><td class="text-nowrap"><code>-cf</code>, <code>--config</code></td><td><code>linq2graphql.json</code></td><td>A json settings file, see <a href="generator#configuration-file">below</a>.</td></tr>
             </tbody>
         </table>
@@ -86,6 +87,7 @@
             <tr><td><code>nullable</code></td><td>bool</td><td><code>false</code></td><td><code>-nu</code>, <code>--nullable</code></td></tr>
             <tr><td><code>deprecated</code></td><td>bool</td><td><code>false</code></td><td><code>-d</code>, <code>--deprecated</code></td></tr>
             <tr><td><code>agent</code></td><td>bool</td><td><code>false</code></td><td><code>-ag</code>, <code>--agent</code></td></tr>
+            <tr><td><code>standalone</code></td><td>bool</td><td><code>false</code></td><td><code>-sa</code>, <code>--standalone</code></td></tr>
             <tr><td><code>scalarMappings</code></td><td>object</td><td>none</td><td>no equivalent</td></tr>
             <tr><td><code>descriptionAttributes</code></td><td>bool</td><td><code>true</code></td><td>no equivalent</td></tr>
             </tbody>
@@ -153,6 +155,57 @@
     </p>
 </section>
 
+<section class="doc-section">
+    <h2 id="standalone">Standalone clients</h2>
+    <p>
+        A generated client normally references the <code>Linq2GraphQL.Client</code> package, and an app gets one
+        version of that package however many clients it uses. That is a problem when clients are built and
+        shipped as packages of their own, by different teams: an app that references two clients made with
+        different generator versions ends up with whichever runtime NuGet picks, which may not be the one either
+        client was generated against.
+    </p>
+    <p>
+        With <code>--standalone</code> the generator writes a copy of the runtime next to the client instead,
+        under the namespace <code>&lt;namespace&gt;.Runtime</code>. The client then depends on nothing from
+        Linq2GraphQL, so any number of standalone clients, of any generator version, can live in one app, next to
+        clients that use the package.
+    </p>
+    <CodeBlock Language="shell" Code="@Standalone"/>
+    <p>
+        The runtime lands in a <code>Runtime</code> folder in the output. <code>Runtime/Subscriptions</code> is
+        only written with <code>--subscriptions</code>. <code>Runtime/RuntimeInfo.cs</code> records the runtime
+        version the copy was taken from and the packages it needs, and the generator prints them as
+        <code>PackageReference</code> lines to add to the client's project, in place of
+        <code>Linq2GraphQL.Client</code>:
+    </p>
+    <CodeBlock Language="xml" Code="@StandalonePackages"/>
+    <p>
+        Code that uses the client does not change: <code>AddSpaceXClient()</code>, <code>Select</code> and
+        <code>ExecuteAsync</code> work as before. Runtime types you name yourself, such as
+        <code>GraphClientOptions</code> or <code>GraphQueryExecutionException</code>, come from
+        <code>SpaceX.Runtime</code> rather than <code>Linq2GraphQL.Client</code>.
+    </p>
+    <p>Things to know before choosing it:</p>
+    <ul>
+        <li>
+            A runtime fix reaches a standalone client only when the client is regenerated with a newer generator.
+            That is the point (each client keeps the runtime it was tested with), but nothing updates it for you.
+        </li>
+        <li>
+            Don't edit the files in <code>Runtime</code>. The folder belongs to the generator and is deleted and
+            rewritten on every run, and turning standalone off removes it.
+        </li>
+        <li>
+            Each client has its own runtime types, so two standalone clients throw different
+            <code>GraphQueryExecutionException</code> types; catch each one in terms of its own client.
+        </li>
+        <li>
+            <code>Linq2GraphQL.Client.AI</code> is built against the package's types and does not work with a
+            standalone client yet.
+        </li>
+    </ul>
+</section>
+
 @code {
     private const string Usage = """
         Linq2GraphQL [<endpoint>] [options]
@@ -176,6 +229,15 @@
 
     private const string Override = """
         Linq2GraphQL --config linq2graphql.json -o=SomewhereElse
+        """;
+
+    private const string Standalone = """
+        Linq2GraphQL https://spacex-production.up.railway.app/ -c=SpaceXClient -n=SpaceX -o=Generated --standalone
+        """;
+
+    private const string StandalonePackages = """
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.11" />
+        <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.11" />
         """;
 
     private const string ConfigJson = """
