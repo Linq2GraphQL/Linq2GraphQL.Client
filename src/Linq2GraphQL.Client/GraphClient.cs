@@ -186,7 +186,9 @@ public class GraphClient
             return null;
         }
 
-        var cacheKey = $"Linq2GraphQL_Schema:{HttpClient.BaseAddress}:{includeDeprecated}:{options.Value.SchemaCacheKey}";
+        // The schema type is part of the key: clients that carry their own copy of the runtime
+        // share the app's IMemoryCache but cannot read each other's GraphQLSchema.
+        var cacheKey = $"Linq2GraphQL_Schema:{typeof(GraphQLSchema).AssemblyQualifiedName}:{HttpClient.BaseAddress}:{includeDeprecated}:{options.Value.SchemaCacheKey}";
 
         return await cache.GetOrCreateAsync(cacheKey, async entry =>
         {
