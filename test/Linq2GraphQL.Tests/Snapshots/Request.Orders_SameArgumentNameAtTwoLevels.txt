@@ -1,0 +1,25 @@
+query($first_1_1: Int $name_3_1: String! $first_3_1: Int! $addressType_3_2: AddressType! ){ 
+orders(first:$first_1_1 )
+{
+nodes
+  {
+    orderHello_5ff28576c49a8f8f:orderHello(name:$name_3_1 first:$first_3_1 )
+orderAddress_36cad6e5eedd8675:orderAddress(addressType:$addressType_3_2 )
+    {
+      name
+      street
+      postalCode
+      createdDate
+    }
+    orderId
+    orderDate
+    orderDateTime
+    orderDay
+    entryTime
+    grade
+  }
+}
+
+}
+
+{"first_1_1":1,"name_3_1":"Jocke","first_3_1":2,"addressType_3_2":"INVOICE"}

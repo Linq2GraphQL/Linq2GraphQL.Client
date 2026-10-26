@@ -1,0 +1,12 @@
+query{ 
+customerListAllNullable
+{
+  customerId
+  customerName
+  status
+  created
+}
+
+}
+
+{}

@@ -1,0 +1,326 @@
+@page "/batching"
+
+<PageTitle>Batching - Linq2GraphQL</PageTitle>
+
+<h1 class="page-heading">Batching</h1>
+<p class="lead text-secondary">
+    A page often needs several unrelated queries. A batch runs them together: you add each query with a callback
+    for its result, and the batch merges them into as few requests as possible, sends those in parallel and hands
+    every result to its callback.
+</p>
+
+<section class="doc-section">
+    <h2 id="first-batch">Run queries together</h2>
+    <p>
+        Start a batch with <code>CreateBatch()</code> on the generated client, add queries with <code>Query</code>
+        and finish each with <code>OnResult</code> instead of <code>ExecuteAsync</code>. One
+        <code>ExecuteAsync</code> on the batch runs them all:
+    </p>
+    <CodeBlock Code="@FirstBatchCSharp"/>
+    <CodeBlock Title="Output" Language="text" Code="@FirstBatchOutput"/>
+    <p>
+        The three queries travel as one GraphQL operation. Each root field gets an alias, <code>b0</code>,
+        <code>b1</code> and so on, and its variables the alias as a prefix, so queries for the same field with
+        different arguments can't collide:
+    </p>
+    <CodeBlock Title="Sent (formatted)" Language="text" Code="@FirstBatchQuery"/>
+    <ul>
+        <li>
+            The lambda passed to <code>Query</code> receives the client and runs when the batch executes, not
+            when you add it. It may return <code>null</code> to add nothing.
+        </li>
+        <li>
+            Callbacks run after every response has arrived, one at a time, in the order the queries were added.
+            Assigning to local variables, as above, is safe. <code>OnResultAsync</code> takes an async callback
+            and awaits it before the next one.
+        </li>
+        <li>
+            <code>OnResult</code> wraps the query in a batch item without changing the query, so the same query can
+            still be executed on its own or added again. Each item belongs to one batch, and a batch executes once.
+        </li>
+        <li>
+            <code>CreateBatch</code> works on a generated client class. Through a client interface, such as one
+            injected as <code>IStarWarsClient</code>, use <code>GraphBatch.Create(client)</code> instead.
+        </li>
+    </ul>
+</section>
+
+<section class="doc-section">
+    <h2 id="many">Many queries</h2>
+    <p>
+        Batches are built in code, so a loop can add one query per item. <code>MaxItemsPerRequest</code> caps how
+        many queries go into one request; the rest go into further requests, which are sent in parallel:
+    </p>
+    <CodeBlock Code="@LoopCSharp"/>
+    <CodeBlock Title="Output" Language="text" Code="@LoopOutput"/>
+    <p>
+        Six films with a cap of three make two requests. Their responses can arrive in any order, but the
+        callbacks still run in the order the films were added.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="conditional">Conditional queries</h2>
+    <p>
+        <code>QueryIf</code> adds a query only when its condition holds, so the chain doesn't need <code>if</code>
+        blocks around it. The condition is a <code>bool</code>, or a <code>Func&lt;bool&gt;</code> that is
+        evaluated when the batch executes:
+    </p>
+    <CodeBlock Code="@ConditionalCSharp"/>
+    <CodeBlock Title="Output" Language="text" Code="@ConditionalOutput"/>
+</section>
+
+<section class="doc-section">
+    <h2 id="mutations">Mutations and several clients</h2>
+    <p>
+        Queries and mutations can't share an operation, so a batch that has both sends them separately. Mutations
+        are merged too, but their requests are sent one after another, and the server runs the fields of one
+        mutation in order, so a batch of mutations runs in the order you added them.
+    </p>
+    <p>
+        Each query is sent with the client it was built from. A query built from a client derived with
+        <code>WithAccessToken</code> or <code>WithRequestConfiguration</code> goes into a request of its own, with
+        that client's headers.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="errors">Errors</h2>
+    <p>
+        Like a single query, <code>ExecuteAsync</code> throws when something failed, and
+        <code>ExecuteWithResultAsync</code> returns the errors instead. Either way, a failure in one query doesn't
+        cost the others their results:
+    </p>
+    <CodeBlock Code="@ResultCSharp"/>
+    <CodeBlock Title="Output" Language="text" Code="@ResultOutput"/>
+    <p>
+        Each error's path starts with its query's alias, so <code>b1</code> above is the second query added; queries
+        that <code>QueryIf</code> skipped still count. With <code>ExecuteAsync</code> the callbacks run first and the
+        exception comes after them:
+    </p>
+    <div class="table-responsive">
+        <table class="table table-vcenter card-table border">
+            <thead>
+            <tr><th>Failure</th><th>Callback</th><th>ExecuteAsync throws</th><th>ExecuteWithResultAsync</th></tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>A field returns an error</td>
+                <td>Runs, with the data that came back (often <code>null</code>)</td>
+                <td><code>GraphQueryExecutionException</code></td>
+                <td><code>Errors</code></td>
+            </tr>
+            <tr>
+                <td>
+                    The server returns <code>"data": null</code>, because a non-null root field failed, or rejects
+                    the request before running it
+                </td>
+                <td>Doesn't run for any query in that request</td>
+                <td><code>GraphQueryExecutionException</code></td>
+                <td><code>Errors</code></td>
+            </tr>
+            <tr>
+                <td>The HTTP request fails or times out</td>
+                <td>Doesn't run for any query in that request</td>
+                <td><code>GraphQueryRequestException</code> or <code>TaskCanceledException</code></td>
+                <td><code>Failures</code></td>
+            </tr>
+            <tr>
+                <td>The batch is cancelled</td>
+                <td>No callback runs</td>
+                <td><code>OperationCanceledException</code></td>
+                <td>Throws as well</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <p>
+        In <code>Parallel</code> mode every query is its own request, so a query whose non-null root field fails
+        only loses its own result, and its callback runs with <code>null</code>.
+    </p>
+    <p>
+        When several requests of a batch fail, <code>ExecuteAsync</code> throws an <code>AggregateException</code>
+        holding one exception per request. <code>GraphBatchResult.EnsureNoErrors()</code> throws the same way.
+        See <a href="error-handling">error handling</a> for the exceptions themselves.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="limits">Server limits</h2>
+    <p>
+        Servers limit how large or how costly a request may be, and a merged request grows with every query in it.
+        GraphQL has no way to ask a server for its limits, so the batch finds out: when the server rejects a request
+        before running it (an HTTP 413, or errors without a path and no data, which is how size and cost limits
+        answer), the batch sends its queries again in two halves, down to single queries if it has to. Nothing ran,
+        so resending is safe, for mutations too.
+    </p>
+    <p>
+        When every query got through once the requests were small enough, the client remembers the largest size
+        that was accepted, and later batches on the same client start there. A query that is rejected even on its
+        own fails with the server's error, and then nothing is remembered: the rejection was about that query, not
+        about size. Set <code>SplitOnRejection</code> to <code>false</code> to report rejections without splitting.
+    </p>
+</section>
+
+<section class="doc-section">
+    <h2 id="options">Options</h2>
+    <p>Pass a callback to <code>CreateBatch</code> to change them:</p>
+    <CodeBlock Code="@OptionsCSharp"/>
+    <div class="table-responsive">
+        <table class="table table-vcenter card-table border">
+            <thead>
+            <tr><th>Option</th><th>Default</th><th>What it does</th></tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><code>Mode</code></td>
+                <td><code>SingleRequest</code></td>
+                <td>
+                    <code>SingleRequest</code> merges queries into as few requests as possible.
+                    <code>Parallel</code> sends every query as its own request, so a failure, or a slow field,
+                    affects only its own query.
+                </td>
+            </tr>
+            <tr>
+                <td><code>MaxItemsPerRequest</code></td>
+                <td>100</td>
+                <td>The most queries merged into one request.</td>
+            </tr>
+            <tr>
+                <td><code>MaxDegreeOfParallelism</code></td>
+                <td>4</td>
+                <td>The most requests in flight at once. Mutations are always sent one at a time.</td>
+            </tr>
+            <tr>
+                <td><code>SplitOnRejection</code></td>
+                <td><code>true</code></td>
+                <td>Split a request the server rejects into halves and send them again.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+@code {
+    private const string FirstBatchCSharp = """
+        string title = null;
+        string name = null;
+        List<string> planets = null;
+
+        await starWarsClient.CreateBatch()
+            .Query(c => c.Query.Film(filmID: new ID { Value = "1" })
+                .Select(f => f.Title)
+                .OnResult(r => title = r))
+            .Query(c => c.Query.Person(personID: new ID { Value = "1" })
+                .Select(p => p.Name)
+                .OnResult(r => name = r))
+            .Query(c => c.Query.AllPlanets(first: 3)
+                .Select(e => e.Planets.Select(p => p.Name).ToList())
+                .OnResult(r => planets = r))
+            .ExecuteAsync();
+
+        Console.WriteLine(title);
+        Console.WriteLine(name);
+        Console.WriteLine(string.Join(", ", planets));
+        """;
+
+    private const string FirstBatchOutput = """
+        A New Hope
+        Luke Skywalker
+        Tatooine, Alderaan, Yavin IV
+        """;
+
+    private const string FirstBatchQuery = """
+        query($b0_filmID_1_1: ID $b1_personID_1_1: ID $b2_first_1_1: Int) {
+          b0: film(filmID: $b0_filmID_1_1) { title }
+          b1: person(personID: $b1_personID_1_1) { name }
+          b2: allPlanets(first: $b2_first_1_1) { planets { name } }
+        }
+        """;
+
+    private const string LoopCSharp = """
+        var titles = new Dictionary<string, string>();
+        var batch = starWarsClient.CreateBatch(o => o.MaxItemsPerRequest = 3);
+
+        foreach (var id in new[] { "1", "2", "3", "4", "5", "6" })
+        {
+            batch.Query(c => c.Query.Film(filmID: new ID { Value = id })
+                .Select(f => f.Title)
+                .OnResult(r => titles[id] = r));
+        }
+
+        await batch.ExecuteAsync();
+
+        foreach (var (id, title) in titles)
+        {
+            Console.WriteLine($"{id}: {title}");
+        }
+        """;
+
+    private const string LoopOutput = """
+        1: A New Hope
+        2: The Empire Strikes Back
+        3: Return of the Jedi
+        4: The Phantom Menace
+        5: Attack of the Clones
+        6: Revenge of the Sith
+        """;
+
+    private const string ConditionalCSharp = """
+        var includeCrawl = false;
+        string director = null;
+        string crawl = null;
+
+        await starWarsClient.CreateBatch()
+            .Query(c => c.Query.Film(filmID: new ID { Value = "1" })
+                .Select(f => f.Director)
+                .OnResult(r => director = r))
+            .QueryIf(c => c.Query.Film(filmID: new ID { Value = "1" })
+                .Select(f => f.OpeningCrawl)
+                .OnResult(r => crawl = r), includeCrawl)
+            .ExecuteAsync();
+
+        Console.WriteLine($"{director} / crawl loaded: {crawl != null}");
+        """;
+
+    private const string ConditionalOutput = """
+        George Lucas / crawl loaded: False
+        """;
+
+    private const string ResultCSharp = """
+        string found = null;
+        string missing = "not called";
+
+        var result = await starWarsClient.CreateBatch()
+            .Query(c => c.Query.Film(filmID: new ID { Value = "1" })
+                .Select(f => f.Title)
+                .OnResult(r => found = r))
+            .Query(c => c.Query.Film(filmID: new ID { Value = "99" })
+                .Select(f => f.Title)
+                .OnResult(r => missing = r))
+            .ExecuteWithResultAsync();
+
+        Console.WriteLine(found);
+        Console.WriteLine(missing ?? "null");
+        foreach (var error in result.Errors)
+        {
+            Console.WriteLine($"{error.Message} (path: {string.Join("/", error.Path)})");
+        }
+        """;
+
+    private const string ResultOutput = """
+        A New Hope
+        null
+        No entry in local cache for https://www.swapi.tech/api/films/99 (path: b1)
+        """;
+
+    private const string OptionsCSharp = """
+        var batch = starWarsClient.CreateBatch(options =>
+        {
+            options.Mode = GraphBatchMode.SingleRequest;
+            options.MaxItemsPerRequest = 50;
+            options.MaxDegreeOfParallelism = 2;
+            options.SplitOnRejection = true;
+        });
+        """;
+}

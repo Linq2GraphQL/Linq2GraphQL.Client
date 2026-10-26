@@ -1,0 +1,33 @@
+query($first_1_1: Int ){ 
+orders(first:$first_1_1 )
+{
+nodes
+  {
+customer
+    {
+orders
+      {
+        orderId
+        orderDate
+        orderDateTime
+        orderDay
+        entryTime
+        grade
+      }
+      customerId
+      customerName
+      status
+      created
+    }
+    orderId
+    orderDate
+    orderDateTime
+    orderDay
+    entryTime
+    grade
+  }
+}
+
+}
+
+{"first_1_1":1}

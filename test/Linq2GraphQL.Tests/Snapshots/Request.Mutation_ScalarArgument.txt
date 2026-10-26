@@ -1,0 +1,6 @@
+mutation($name_1_1: String ){ 
+setName(name:$name_1_1 )
+
+}
+
+{"name_1_1":"Magnus"}
