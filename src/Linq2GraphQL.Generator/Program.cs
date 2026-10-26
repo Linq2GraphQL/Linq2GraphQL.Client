@@ -28,6 +28,9 @@ internal class Program
             "Schema file (SDL) to generate from instead of an endpoint, relative to current location");
         var agent = new Option<bool>(new[] { "--agent", "-ag" },
             "Agent mode: also emit the schema as SDL and implement IGraphSchemaSource on the client");
+        var standalone = new Option<bool>(new[] { "--standalone", "-sa" },
+            "Standalone: write a copy of the runtime into the output (namespace <namespace>.Runtime) instead of " +
+            "depending on the Linq2GraphQL.Client packages");
 
         var rootCommand = new RootCommand("Generate GraphQL client")
         {
@@ -42,7 +45,8 @@ internal class Program
             nullable,
             includeDeprecated,
             schemaFile,
-            agent
+            agent,
+            standalone
         };
 
         rootCommand.SetHandler(async context =>
@@ -70,10 +74,11 @@ internal class Program
 
                     var descriptionAttributesValue = config.DescriptionAttributes ?? true;
                     var agentValue = Resolve(result, agent, config.Agent, false);
+                    var standaloneValue = Resolve(result, standalone, config.Standalone, false);
 
                     await GenerateClientAsync(uriValue, schemaFileValue, outputFolderValue, namespaceValue, clientNameValue,
                         includeSubscriptionsValue, authTokenValue, enumStrategyValue, nullableValue, deprecatedValue,
-                        scalarMappings, descriptionAttributesValue, agentValue);
+                        scalarMappings, descriptionAttributesValue, agentValue, standaloneValue);
                 }
                 catch (GeneratorConfigurationException ex)
                 {
@@ -156,7 +161,8 @@ internal class Program
 
     private static async Task GenerateClientAsync(Uri uri, string schemaFile, string outputFolder, string namespaceName, string name,
         bool includeSubscriptions, string authToken, string enumStrategy, bool nullable, bool includeDeprecated,
-        IReadOnlyDictionary<string, (string Name, Type type)?> scalarMappings, bool descriptionAttributes, bool agent)
+        IReadOnlyDictionary<string, (string Name, Type type)?> scalarMappings, bool descriptionAttributes, bool agent,
+        bool standalone)
     {
         var enumStrat = enumStrategy != null &&
                         enumStrategy.Equals("AddUnknownOption", StringComparison.InvariantCultureIgnoreCase)
@@ -164,7 +170,7 @@ internal class Program
             : EnumGeneratorStrategy.FailIfMissing;
 
         var generator = new ClientGenerator(namespaceName, name, includeSubscriptions, enumStrat, nullable,
-            includeDeprecated, scalarMappings, descriptionAttributes, agent);
+            includeDeprecated, scalarMappings, descriptionAttributes, agent, standalone);
         List<FileEntry> entries;
         if (schemaFile != null)
         {
@@ -184,6 +190,15 @@ internal class Program
 
         var outputPath = Path.GetFullPath(outputFolder, Environment.CurrentDirectory);
         Console.WriteLine($"Output path is set to: {outputPath}");
+
+        // A runtime copy from an earlier standalone run is the generator's own output: clear it, so files
+        // dropped from the runtime do not linger and turning standalone off does not leave a second runtime.
+        var runtimePath = Path.Combine(outputPath, StandaloneRuntime.DirectoryName);
+        if (File.Exists(Path.Combine(runtimePath, StandaloneRuntime.InfoFileName)))
+        {
+            Directory.Delete(runtimePath, true);
+        }
+
         foreach (var dirName in entries.GroupBy(e => e.DirectoryName))
         {
             var directory = Path.Combine(outputPath, dirName.Key);
@@ -193,6 +208,17 @@ internal class Program
             {
                 var filePath = Path.Combine(directory, entry.FileName);
                 await File.WriteAllTextAsync(filePath, entry.Content.ReplaceLineEndings("\n"));
+            }
+        }
+
+        if (standalone)
+        {
+            Console.WriteLine("");
+            Console.WriteLine($"Standalone: runtime {StandaloneRuntime.Version} written to {runtimePath}. " +
+                              "Don't reference the Linq2GraphQL.Client packages; the project needs:");
+            foreach (var (packageName, version) in StandaloneRuntime.GetPackages(includeSubscriptions))
+            {
+                Console.WriteLine($"  <PackageReference Include=\"{packageName}\" Version=\"{version}\" />");
             }
         }
     }

@@ -4,10 +4,11 @@
     Regenerates the checked-in test clients from the test servers' live schemas.
 
 .DESCRIPTION
-    test/Linq2GraphQL.TestClient and test/Linq2GraphQL.TestClientNullable hold
-    generated output that the test suite compiles against. Nothing in the normal
-    build refreshes it, so it silently drifts whenever a template or the test
-    schema changes.
+    test/Linq2GraphQL.TestClient, test/Linq2GraphQL.TestClientNullable and
+    test/Linq2GraphQL.TestClientStandalone (standalone mode, with its own copy of
+    the runtime) hold generated output that the test suites compile against.
+    Nothing in the normal build refreshes it, so it silently drifts whenever a
+    template, the runtime or the test schema changes.
 
     This script boots each test server over plain HTTP, runs the generator
     against it with the flags that produced the checked-in output, and writes
@@ -46,6 +47,15 @@ $clients = @(
         Namespace = 'Linq2GraphQL.TestClientNullable'
         Port      = 5181
         Nullable  = $true
+    }
+    @{
+        Name       = 'SampleClient'
+        Server     = 'test/Linq2GraphQL.TestServer'
+        Output     = 'test/Linq2GraphQL.TestClientStandalone/Generated'
+        Namespace  = 'Linq2GraphQL.TestClientStandalone'
+        Port       = 5182
+        Nullable   = $false
+        Standalone = $true
     }
 )
 
@@ -99,6 +109,7 @@ try {
                 '--agent=true'
             )
             if ($client.Nullable) { $arguments += '-nu=true' }
+            if ($client.Standalone) { $arguments += '--standalone=true' }
 
             $sentinel = Join-Path $repoRoot "$($client.Output)/Client/$($client.Name).cs"
             $generatedAt = Get-Date
@@ -131,7 +142,10 @@ try {
     # so git status reports every regenerated file as modified even when its content is
     # unchanged. git diff applies the same normalization git would apply on checkin, so
     # it reports only real drift.
-    $diff = @(git diff --stat -- @paths)
+    #
+    # The standalone client's RuntimeInfo.cs records the generator version, which changes with every
+    # commit; -I ignores a change made only of lines matching that one.
+    $diff = @(git diff --stat -I '^\s*public const string Version = ' -- @paths)
 
     # git diff only compares tracked files, so a newly generated file needs its own check.
     $added = @(git ls-files --others --exclude-standard -- @paths)

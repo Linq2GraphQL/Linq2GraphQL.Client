@@ -10,10 +10,12 @@
       "test\\Linq2GraphQL.Agent.Sample\\Linq2GraphQL.Agent.Sample.csproj",
       "test\\Linq2GraphQL.TestClient\\Linq2GraphQL.TestClient.csproj",
       "test\\Linq2GraphQL.TestClientNullable\\Linq2GraphQL.TestClientNullable.csproj",
+      "test\\Linq2GraphQL.TestClientStandalone\\Linq2GraphQL.TestClientStandalone.csproj",
       "test\\Linq2GraphQL.TestServer\\Linq2GraphQL.TestServer.csproj",
       "test\\Linq2GraphQL.TestServer.Shared\\Linq2GraphQL.TestServer.Shared.csproj",
       "test\\Linq2GraphQL.TestServerNullable\\Linq2GraphQL.TestServerNullable.csproj",
-      "test\\Linq2GraphQL.Tests\\Linq2GraphQL.Tests.csproj"
+      "test\\Linq2GraphQL.Tests\\Linq2GraphQL.Tests.csproj",
+      "test\\Linq2GraphQL.Tests.Standalone\\Linq2GraphQL.Tests.Standalone.csproj"
     ]
   }
 }

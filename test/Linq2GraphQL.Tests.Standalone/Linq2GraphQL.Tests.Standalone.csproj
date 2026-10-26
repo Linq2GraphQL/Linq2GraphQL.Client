@@ -1,7 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <!-- Spike: the end-to-end tests, rewritten by scripts/spike-standalone.ps1 to run against
-         the standalone SampleClient. -->
+    <!--
+      The Linq2GraphQL.Tests suite, compiled a second time against the standalone SampleClient
+      (Linq2GraphQL.TestClientStandalone), which carries its own copy of the runtime. Nothing here
+      references the runtime packages, so a passing run proves the copy works on its own.
+      StandaloneNamespaces.cs points the namespaces the tests import at the copy.
+    -->
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
@@ -27,8 +31,30 @@
     <ItemGroup>
         <ProjectReference Include="..\Linq2GraphQL.TestClientStandalone\Linq2GraphQL.TestClientStandalone.csproj"/>
         <ProjectReference Include="..\Linq2GraphQL.TestServer\Linq2GraphQL.TestServer.csproj"/>
-        <ProjectReference Include="..\Linq2GraphQL.TestClientLegacy\Linq2GraphQL.TestClientLegacy.csproj"/>
-        <ProjectReference Include="..\Linq2GraphQL.TestClientSecond\Linq2GraphQL.TestClientSecond.csproj"/>
+    </ItemGroup>
+
+    <!--
+      Left out: tests of the generator, the AI package and the nullable client, which need those
+      projects, and CoexistenceTests, which needs the package-based client next to the standalone one.
+    -->
+    <ItemGroup>
+        <Compile Include="..\Linq2GraphQL.Tests\**\*.cs"
+                 Exclude="..\Linq2GraphQL.Tests\bin\**;..\Linq2GraphQL.Tests\obj\**;
+                          ..\Linq2GraphQL.Tests\Agent*Tests.cs;
+                          ..\Linq2GraphQL.Tests\CoexistenceTests.cs;
+                          ..\Linq2GraphQL.Tests\DescriptionAttributeTests.cs;
+                          ..\Linq2GraphQL.Tests\ExampleFormatterTests.cs;
+                          ..\Linq2GraphQL.Tests\GeneratorCollection.cs;
+                          ..\Linq2GraphQL.Tests\QueryNullableTests.cs;
+                          ..\Linq2GraphQL.Tests\QueryValidatorTests.cs;
+                          ..\Linq2GraphQL.Tests\SampleClientNullableFixture.cs;
+                          ..\Linq2GraphQL.Tests\ScalarMappingTests.cs;
+                          ..\Linq2GraphQL.Tests\ScalarTests.cs;
+                          ..\Linq2GraphQL.Tests\SchemaRendererTests.cs;
+                          ..\Linq2GraphQL.Tests\ScopedSchemaTests.cs;
+                          ..\Linq2GraphQL.Tests\Sdl*Tests.cs;
+                          ..\Linq2GraphQL.Tests\StandaloneGeneratorTests.cs"
+                 Link="Tests\%(RecursiveDir)%(Filename)%(Extension)"/>
     </ItemGroup>
 
 </Project>

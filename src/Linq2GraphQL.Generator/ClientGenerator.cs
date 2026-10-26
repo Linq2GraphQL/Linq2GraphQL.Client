@@ -19,7 +19,8 @@ namespace Linq2GraphQL.Generator
         bool includeDeprecated,
         IReadOnlyDictionary<string, (string Name, Type type)?> scalarMappings = null,
         bool descriptionAttributes = true,
-        bool agent = false)
+        bool agent = false,
+        bool standalone = false)
     {
         private static readonly Dictionary<string, (string Name, Type type)?> EmptyScalarMappings = new();
 
@@ -238,6 +239,17 @@ namespace Linq2GraphQL.Generator
                 new ClientExtensionsTemplate(namespaceName, clientName, includeSubscriptions).TransformText();
             fileName = clientName + "Extensions" + ".cs";
             AddFile(clientDirName, fileName, clientExtensionsTemplateText);
+
+            if (standalone)
+            {
+                Console.WriteLine("Generate Runtime (standalone)...");
+                foreach (var entry in entries)
+                {
+                    entry.Content = StandaloneRuntime.RewriteNamespaces(entry.Content, namespaceName);
+                }
+
+                entries.AddRange(StandaloneRuntime.GetFiles(namespaceName, includeSubscriptions));
+            }
 
             return entries;
         }

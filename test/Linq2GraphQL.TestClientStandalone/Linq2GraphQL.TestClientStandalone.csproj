@@ -1,7 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <!-- Spike: SampleClient with its own copy of the runtime, written by scripts/spike-standalone.ps1.
-         Deliberately no reference to Linq2GraphQL.Client or Linq2GraphQL.Client.Subscriptions. -->
+    <!--
+      SampleClient generated with standalone mode (scripts/regenerate-test-clients.ps1): it carries its
+      own copy of the runtime under Linq2GraphQL.TestClientStandalone.Runtime, so there is deliberately
+      no reference to Linq2GraphQL.Client or Linq2GraphQL.Client.Subscriptions.
+    -->
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
@@ -15,6 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <!-- The suite covers runtime internals too. -->
         <InternalsVisibleTo Include="Linq2GraphQL.Tests.Standalone"/>
     </ItemGroup>
 
