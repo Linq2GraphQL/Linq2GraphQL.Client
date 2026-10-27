@@ -11,7 +11,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   generator writes a copy of the runtime into `Runtime/` under `<namespace>.Runtime`, so the client
   references no Linq2GraphQL package. Clients generated with different generator versions can then be
   used in one app. `Runtime/RuntimeInfo.cs` records the runtime version and the packages it needs, which
-  the generator also prints. `Linq2GraphQL.Client.AI` does not support standalone clients yet.
+  the generator also prints. With `--agent` the copy includes the agent tools from
+  `Linq2GraphQL.Client.AI` too, in `<namespace>.Runtime.AI`.
 
 - `GraphSubscriptionExecute.StartWithErrorsAsync()` returns `IObservable<GraphResult<T>>`.
   Each event carries its data AND its GraphQL `errors`. A `next` event with field errors

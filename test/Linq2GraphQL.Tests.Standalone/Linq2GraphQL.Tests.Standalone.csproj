@@ -17,6 +17,7 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing"/>
+        <PackageReference Include="Microsoft.Extensions.AI"/>
         <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk"/>
         <PackageReference Include="Moq"/>
@@ -34,24 +35,20 @@
     </ItemGroup>
 
     <!--
-      Left out: tests of the generator, the AI package and the nullable client, which need those
-      projects, and CoexistenceTests, which needs the package-based client next to the standalone one.
+      Left out: tests of the generator and the nullable client, which need those projects, and
+      CoexistenceTests, which needs the package-based client next to the standalone one. The AI package
+      tests run against the agent tools in the copy.
     -->
     <ItemGroup>
         <Compile Include="..\Linq2GraphQL.Tests\**\*.cs"
                  Exclude="..\Linq2GraphQL.Tests\bin\**;..\Linq2GraphQL.Tests\obj\**;
-                          ..\Linq2GraphQL.Tests\Agent*Tests.cs;
                           ..\Linq2GraphQL.Tests\CoexistenceTests.cs;
                           ..\Linq2GraphQL.Tests\DescriptionAttributeTests.cs;
-                          ..\Linq2GraphQL.Tests\ExampleFormatterTests.cs;
                           ..\Linq2GraphQL.Tests\GeneratorCollection.cs;
                           ..\Linq2GraphQL.Tests\QueryNullableTests.cs;
-                          ..\Linq2GraphQL.Tests\QueryValidatorTests.cs;
                           ..\Linq2GraphQL.Tests\SampleClientNullableFixture.cs;
                           ..\Linq2GraphQL.Tests\ScalarMappingTests.cs;
                           ..\Linq2GraphQL.Tests\ScalarTests.cs;
-                          ..\Linq2GraphQL.Tests\SchemaRendererTests.cs;
-                          ..\Linq2GraphQL.Tests\ScopedSchemaTests.cs;
                           ..\Linq2GraphQL.Tests\Sdl*Tests.cs;
                           ..\Linq2GraphQL.Tests\StandaloneGeneratorTests.cs"
                  Link="Tests\%(RecursiveDir)%(Filename)%(Extension)"/>

@@ -12,9 +12,11 @@ namespace Linq2GraphQL.TestClientStandalone.Runtime;
 /// <item><description>Microsoft.Extensions.Caching.Memory 10.0.11</description></item>
 /// <item><description>Microsoft.Extensions.Http 10.0.11</description></item>
 /// <item><description>Websocket.Client 5.3.0</description></item>
+/// <item><description>GraphQL-Parser 9.5.1</description></item>
+/// <item><description>Microsoft.Extensions.AI.Abstractions 10.10.0</description></item>
 /// </list>
 /// </summary>
 public static class RuntimeInfo
 {
-    public const string Version = "1.0.81-prerelease";
+    public const string Version = "1.0.84-prerelease";
 }

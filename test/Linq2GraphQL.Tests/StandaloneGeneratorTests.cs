@@ -50,6 +50,29 @@ public class StandaloneGeneratorTests
     }
 
     [Fact]
+    public void Standalone_InAgentMode_CopiesTheAgentTools()
+    {
+        var entries = NewGenerator(standalone: true, includeSubscriptions: false, agent: true).GenerateFromSdl(Sdl);
+
+        Content(entries, "Runtime/AI", "AgentToolsExtensions.cs").ShouldContain("namespace TestNs.Runtime.AI;");
+        Content(entries, "Runtime/AI/Schema", "SdlReader.cs").ShouldContain("namespace TestNs.Runtime.AI.Schema;");
+        entries.ShouldAllBe(e => !e.Content.Contains("Linq2GraphQL.Client"));
+
+        var info = Content(entries, "Runtime", "RuntimeInfo.cs");
+        info.ShouldContain("GraphQL-Parser");
+        info.ShouldContain("Microsoft.Extensions.AI.Abstractions");
+    }
+
+    [Fact]
+    public void Standalone_WithoutAgentMode_LeavesOutTheAgentTools()
+    {
+        var entries = NewGenerator(standalone: true, includeSubscriptions: true).GenerateFromSdl(Sdl);
+
+        entries.ShouldNotContain(e => e.DirectoryName.StartsWith("Runtime/AI"));
+        Content(entries, "Runtime", "RuntimeInfo.cs").ShouldNotContain("Microsoft.Extensions.AI");
+    }
+
+    [Fact]
     public void Standalone_RuntimeInfo_RecordsVersionAndPackages()
     {
         var info = Content(NewGenerator(standalone: true, includeSubscriptions: true).GenerateFromSdl(Sdl),
@@ -78,9 +101,9 @@ public class StandaloneGeneratorTests
         }
     }
 
-    private static ClientGenerator NewGenerator(bool standalone, bool includeSubscriptions) =>
+    private static ClientGenerator NewGenerator(bool standalone, bool includeSubscriptions, bool agent = false) =>
         new("TestNs", "TestClient", includeSubscriptions, EnumGeneratorStrategy.FailIfMissing, false, false,
-            standalone: standalone);
+            agent: agent, standalone: standalone);
 
     private static string Content(List<FileEntry> entries, string directory, string fileName) =>
         entries.Single(e => e.DirectoryName == directory && e.FileName == fileName).Content;

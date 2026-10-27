@@ -3,7 +3,8 @@
     <!--
       SampleClient generated with standalone mode (scripts/regenerate-test-clients.ps1): it carries its
       own copy of the runtime under Linq2GraphQL.TestClientStandalone.Runtime, so there is deliberately
-      no reference to Linq2GraphQL.Client or Linq2GraphQL.Client.Subscriptions.
+      no reference to Linq2GraphQL.Client, Linq2GraphQL.Client.Subscriptions or Linq2GraphQL.Client.AI
+      (it is generated in agent mode, so the copy includes the agent tools).
     -->
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
@@ -12,6 +13,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="GraphQL-Parser"/>
+        <PackageReference Include="Microsoft.Extensions.AI.Abstractions"/>
         <PackageReference Include="Microsoft.Extensions.Caching.Memory"/>
         <PackageReference Include="Microsoft.Extensions.Http"/>
         <PackageReference Include="Websocket.Client"/>

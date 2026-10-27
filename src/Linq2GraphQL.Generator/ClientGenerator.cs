@@ -248,7 +248,7 @@ namespace Linq2GraphQL.Generator
                     entry.Content = StandaloneRuntime.RewriteNamespaces(entry.Content, namespaceName);
                 }
 
-                entries.AddRange(StandaloneRuntime.GetFiles(namespaceName, includeSubscriptions));
+                entries.AddRange(StandaloneRuntime.GetFiles(namespaceName, includeSubscriptions, agent));
             }
 
             return entries;

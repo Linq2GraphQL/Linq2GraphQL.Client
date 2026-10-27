@@ -216,7 +216,7 @@ internal class Program
             Console.WriteLine("");
             Console.WriteLine($"Standalone: runtime {StandaloneRuntime.Version} written to {runtimePath}. " +
                               "Don't reference the Linq2GraphQL.Client packages; the project needs:");
-            foreach (var (packageName, version) in StandaloneRuntime.GetPackages(includeSubscriptions))
+            foreach (var (packageName, version) in StandaloneRuntime.GetPackages(includeSubscriptions, agent))
             {
                 Console.WriteLine($"  <PackageReference Include=\"{packageName}\" Version=\"{version}\" />");
             }

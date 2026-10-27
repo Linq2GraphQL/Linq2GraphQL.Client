@@ -25,11 +25,13 @@ internal static class StandaloneRuntime
 
     private const string ResourcePrefix = DirectoryName + "/";
     private const string SubscriptionsPrefix = ResourcePrefix + "Subscriptions/";
+    private const string AgentPrefix = ResourcePrefix + "AI/";
 
     private static readonly Regex RuntimeNamespace = new(@"\bLinq2GraphQL\.Client\b", RegexOptions.Compiled);
 
     private static readonly string[] ClientPackages = ["Microsoft.Extensions.Caching.Memory", "Microsoft.Extensions.Http"];
     private static readonly string[] SubscriptionsPackages = ["Websocket.Client"];
+    private static readonly string[] AgentPackages = ["GraphQL-Parser", "Microsoft.Extensions.AI.Abstractions"];
 
     /// <summary>
     /// The runtime project has ImplicitUsings enabled, the project the copy lands in might not.
@@ -55,12 +57,18 @@ internal static class StandaloneRuntime
     /// <summary>
     /// The packages the copied runtime needs, with the versions it was built against.
     /// </summary>
-    public static IReadOnlyList<(string Name, string Version)> GetPackages(bool includeSubscriptions) =>
-        (includeSubscriptions ? ClientPackages.Concat(SubscriptionsPackages) : ClientPackages)
+    public static IReadOnlyList<(string Name, string Version)> GetPackages(bool includeSubscriptions, bool includeAgent) =>
+        ClientPackages
+        .Concat(includeSubscriptions ? SubscriptionsPackages : [])
+        .Concat(includeAgent ? AgentPackages : [])
         .Select(e => (e, PackageVersions.All.GetValueOrDefault(e, "unknown")))
         .ToList();
 
-    public static IEnumerable<FileEntry> GetFiles(string namespaceName, bool includeSubscriptions)
+    /// <summary>
+    /// The runtime files: Client always, Subscriptions with subscriptions, and the agent tools
+    /// (Linq2GraphQL.Client.AI) for a client generated in agent mode.
+    /// </summary>
+    public static IEnumerable<FileEntry> GetFiles(string namespaceName, bool includeSubscriptions, bool includeAgent)
     {
         var assembly = typeof(StandaloneRuntime).Assembly;
 
@@ -69,6 +77,7 @@ internal static class StandaloneRuntime
             .Select(e => (Resource: e, Path: e.Replace('\\', '/')))
             .Where(e => e.Path.StartsWith(ResourcePrefix, StringComparison.Ordinal))
             .Where(e => includeSubscriptions || !e.Path.StartsWith(SubscriptionsPrefix, StringComparison.Ordinal))
+            .Where(e => includeAgent || !e.Path.StartsWith(AgentPrefix, StringComparison.Ordinal))
             .OrderBy(e => e.Path, StringComparer.Ordinal);
 
         foreach (var (resource, path) in resources)
@@ -87,7 +96,7 @@ internal static class StandaloneRuntime
 
         yield return new FileEntry
         {
-            DirectoryName = DirectoryName, FileName = InfoFileName, Content = InfoFile(namespaceName, includeSubscriptions)
+            DirectoryName = DirectoryName, FileName = InfoFileName, Content = InfoFile(namespaceName, includeSubscriptions, includeAgent)
         };
     }
 
@@ -112,9 +121,9 @@ internal static class StandaloneRuntime
         return string.Concat(missing);
     }
 
-    private static string InfoFile(string namespaceName, bool includeSubscriptions)
+    private static string InfoFile(string namespaceName, bool includeSubscriptions, bool includeAgent)
     {
-        var packages = string.Join("\n", GetPackages(includeSubscriptions)
+        var packages = string.Join("\n", GetPackages(includeSubscriptions, includeAgent)
             .Select(e => $"/// <item><description>{e.Name} {e.Version}</description></item>"));
 
         return $$"""

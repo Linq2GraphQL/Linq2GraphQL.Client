@@ -194,12 +194,13 @@ from Linq2GraphQL:
 
     Linq2GraphQL https://spacex-production.up.railway.app/ -c="SpaceXClient" -n="SpaceX" -o="Generated" --standalone
 
-`Runtime/RuntimeInfo.cs` records the runtime version and the packages the copy needs, and the generator
-prints them as `PackageReference` lines to add instead of `Linq2GraphQL.Client`. Code using the client
-does not change; runtime types you name yourself (`GraphClientOptions`, `GraphQueryExecutionException`)
-come from `SpaceX.Runtime`. A runtime fix reaches the client only when you regenerate, the `Runtime`
-folder is rewritten on every run (don't edit it), and `Linq2GraphQL.Client.AI` does not work with
-standalone clients yet.
+With `--agent` the copy also includes the agent tools from `Linq2GraphQL.Client.AI`, in
+`<namespace>.Runtime.AI`. `Runtime/RuntimeInfo.cs` records the runtime version and the packages the
+copy needs, and the generator prints them as `PackageReference` lines to add instead of the
+Linq2GraphQL packages. Code using the client does not change; runtime types you name yourself
+(`GraphClientOptions`, `GraphQueryExecutionException`) come from `SpaceX.Runtime`. A runtime fix
+reaches the client only when you regenerate, and the `Runtime` folder is rewritten on every run (don't
+edit it).
 
 ## Add Nuget
 

@@ -13,6 +13,19 @@
           "Microsoft.Extensions.Hosting": "10.0.11"
         }
       },
+      "Microsoft.Extensions.AI": {
+        "type": "Direct",
+        "requested": "[10.10.0, )",
+        "resolved": "10.10.0",
+        "contentHash": "XKvtDUD3KySkvA5UpS+UF67M5rcqiXjAQchTZZ26WnavVKXxwlUTVdK/Ju0tc/25+16AVUdNl8cnVVGX/tx03A==",
+        "dependencies": {
+          "Microsoft.Extensions.AI.Abstractions": "10.10.0",
+          "Microsoft.Extensions.Caching.Abstractions": "10.0.12",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.12",
+          "Microsoft.Extensions.Logging.Abstractions": "10.0.12",
+          "System.Numerics.Tensors": "10.0.12"
+        }
+      },
       "Microsoft.Extensions.TimeProvider.Testing": {
         "type": "Direct",
         "requested": "[10.10.0, )",
@@ -542,10 +555,10 @@
       },
       "Microsoft.Extensions.Caching.Abstractions": {
         "type": "Transitive",
-        "resolved": "10.0.11",
-        "contentHash": "vUl798SmruTqqlt/xH2gDk3tJlhk6k3HdOXAHirlRfbNKDym4g/kRpUL9S4sl6F6FsOTOMW+ZsDapqlZMOOiEw==",
+        "resolved": "10.0.12",
+        "contentHash": "sI3A6MUAyZwccLnwq0cXuRmC3WBtXieimBWafXSfhRJ4jnM2uGVXrqImDDVyW27u4vVaTOGlJxNJd8d1FGvCNQ==",
         "dependencies": {
-          "Microsoft.Extensions.Primitives": "10.0.11"
+          "Microsoft.Extensions.Primitives": "10.0.12"
         }
       },
       "Microsoft.Extensions.Configuration.Abstractions": {
@@ -576,8 +589,8 @@
       },
       "Microsoft.Extensions.DependencyInjection.Abstractions": {
         "type": "Transitive",
-        "resolved": "10.0.11",
-        "contentHash": "/a1aJz4m7ylhEDf25ugQChLQoN5XwoGjWw/BoR/ZWWKsO1v4DdJElS1uyngahz4B/eOzjFk1KNTkarRLE5wsIg=="
+        "resolved": "10.0.12",
+        "contentHash": "9/qymSh7hVDMGTGwrLz8MRp5zRyXy9adGDOs4HwRdnLil3oZGYuWeZjbmHgCQ9BL1qBroVfgUK3U/nb61617Cw=="
       },
       "Microsoft.Extensions.DependencyModel": {
         "type": "Transitive",
@@ -669,10 +682,10 @@
       },
       "Microsoft.Extensions.Logging.Abstractions": {
         "type": "Transitive",
-        "resolved": "10.0.11",
-        "contentHash": "Ljd0Uxoq5XpScD2Bg0nM/r3mwx7Ao5Uq24eo2ARxbGvqJ7Zht6rt2cJtwVRH4Cv+1ZVMdXz6TB43KbpmsxRrvQ==",
+        "resolved": "10.0.12",
+        "contentHash": "+24lC4plfbEDNfLAdTV/SWKS7dW+16X4HdydO3R++134kSNTzcbYA4KpR1Hdh6uWisB8Za3AzwyOn+K+NxWIug==",
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.11"
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.12"
         }
       },
       "Microsoft.Extensions.Logging.Configuration": {
@@ -752,8 +765,8 @@
       },
       "Microsoft.Extensions.Primitives": {
         "type": "Transitive",
-        "resolved": "10.0.11",
-        "contentHash": "SXcz+kF+4Oo9b1+55zntpJFYfwb1jw66ioxptyNOOTDc8g2FHnBFWjZpsWfCvZIhzr0x+4e2trVTs4OKwQfBtw=="
+        "resolved": "10.0.12",
+        "contentHash": "dYfCLR52UA+3DL7C4I/pvSaRPkNqxrUAQmbFL2u0zvYKKzqgrFCJl08Df+F1aYc8leu9JvpC9bsURUdpExcBXQ=="
       },
       "Microsoft.IO.RecyclableMemoryStream": {
         "type": "Transitive",
@@ -796,6 +809,11 @@
         "dependencies": {
           "System.CodeDom": "6.0.0"
         }
+      },
+      "System.Numerics.Tensors": {
+        "type": "Transitive",
+        "resolved": "10.0.12",
+        "contentHash": "17brFrnQHV/XMMazXNqFq4GkvzWy8yzDPo5Gb8TT8zJtMFbUqDycOCyPCp9F+eMc4L75kcCKRZqaeBHMwLCL9Q=="
       },
       "System.Reactive": {
         "type": "Transitive",
@@ -850,25 +868,11 @@
           "System.IO.Hashing": "8.0.0"
         }
       },
-      "linq2graphql.testclientlegacy": {
-        "type": "Project",
-        "dependencies": {
-          "Microsoft.Extensions.Caching.Memory": "[10.0.11, )",
-          "Microsoft.Extensions.Http": "[10.0.11, )",
-          "Websocket.Client": "[5.3.0, )"
-        }
-      },
-      "linq2graphql.testclientsecond": {
-        "type": "Project",
-        "dependencies": {
-          "Microsoft.Extensions.Caching.Memory": "[10.0.11, )",
-          "Microsoft.Extensions.Http": "[10.0.11, )",
-          "Websocket.Client": "[5.3.0, )"
-        }
-      },
       "linq2graphql.testclientstandalone": {
         "type": "Project",
         "dependencies": {
+          "GraphQL-Parser": "[9.5.1, )",
+          "Microsoft.Extensions.AI.Abstractions": "[10.10.0, )",
           "Microsoft.Extensions.Caching.Memory": "[10.0.11, )",
           "Microsoft.Extensions.Http": "[10.0.11, )",
           "Websocket.Client": "[5.3.0, )"
@@ -889,6 +893,12 @@
           "HotChocolate.AspNetCore": "[16.6.4, )",
           "HotChocolate.Data": "[16.6.4, )"
         }
+      },
+      "GraphQL-Parser": {
+        "type": "CentralTransitive",
+        "requested": "[9.5.1, )",
+        "resolved": "9.5.1",
+        "contentHash": "pUYpupTsVyNcKemko8f0iknJa2z/oZsfzwb4crgEFN9/pKf3k35gxVXDDOkD3NVPF1ea6GUV0jgxkjCozFj7Fg=="
       },
       "HotChocolate.AspNetCore": {
         "type": "CentralTransitive",
@@ -926,6 +936,12 @@
         "requested": "[16.6.4, )",
         "resolved": "16.6.4",
         "contentHash": "bigjWuAkEQvxoQCrUzAvowiqS7YrTciape6++hB9YpA2cFH5RQnG+xyTo/MvWCN5jSvnW4izvdae9mhxtfhZZA=="
+      },
+      "Microsoft.Extensions.AI.Abstractions": {
+        "type": "CentralTransitive",
+        "requested": "[10.10.0, )",
+        "resolved": "10.10.0",
+        "contentHash": "frBHj2ckpevA+KdDLikxv8oxGPrJiyTvaiblYp+vtVEt0q6J73XP5m2SICm86nFK6rl+L1GCKxIy4S5Lb3p2kQ=="
       },
       "Microsoft.Extensions.Caching.Memory": {
         "type": "CentralTransitive",

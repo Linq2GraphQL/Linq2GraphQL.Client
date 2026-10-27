@@ -173,7 +173,8 @@
     <CodeBlock Language="shell" Code="@Standalone"/>
     <p>
         The runtime lands in a <code>Runtime</code> folder in the output. <code>Runtime/Subscriptions</code> is
-        only written with <code>--subscriptions</code>. <code>Runtime/RuntimeInfo.cs</code> records the runtime
+        only written with <code>--subscriptions</code>, and <code>Runtime/AI</code>, a copy of the agent tools
+        from <code>Linq2GraphQL.Client.AI</code>, only with <code>--agent</code>. <code>Runtime/RuntimeInfo.cs</code> records the runtime
         version the copy was taken from and the packages it needs, and the generator prints them as
         <code>PackageReference</code> lines to add to the client's project, in place of
         <code>Linq2GraphQL.Client</code>:
@@ -183,7 +184,9 @@
         Code that uses the client does not change: <code>AddSpaceXClient()</code>, <code>Select</code> and
         <code>ExecuteAsync</code> work as before. Runtime types you name yourself, such as
         <code>GraphClientOptions</code> or <code>GraphQueryExecutionException</code>, come from
-        <code>SpaceX.Runtime</code> rather than <code>Linq2GraphQL.Client</code>.
+        <code>SpaceX.Runtime</code> rather than <code>Linq2GraphQL.Client</code>. In agent mode,
+        <code>AsAgentTools</code> comes from <code>SpaceX.Runtime.AI</code>, so don't add the
+        <code>Linq2GraphQL.Client.AI</code> package either.
     </p>
     <p>Things to know before choosing it:</p>
     <ul>
@@ -200,8 +203,10 @@
             <code>GraphQueryExecutionException</code> types; catch each one in terms of its own client.
         </li>
         <li>
-            <code>Linq2GraphQL.Client.AI</code> is built against the package's types and does not work with a
-            standalone client yet.
+            The packages the copy needs (<code>Microsoft.Extensions.*</code>, <code>Websocket.Client</code> and,
+            in agent mode, <code>GraphQL-Parser</code> and <code>Microsoft.Extensions.AI.Abstractions</code>) are
+            still ordinary NuGet references, so an app gets one version of each. They keep to semantic
+            versioning, so the highest one requested works for every client.
         </li>
     </ul>
 </section>
