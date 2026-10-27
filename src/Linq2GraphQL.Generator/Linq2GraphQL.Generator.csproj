@@ -71,4 +71,41 @@
         <ProjectReference Include="..\Linq2GraphQL.Client\Linq2GraphQL.Client.csproj"/>
     </ItemGroup>
 
+    <!--
+      Standalone mode writes a copy of the runtime next to the generated client. The
+      runtime source is embedded from the same commit as the templates, so the two always match.
+      Assembly.cs only holds InternalsVisibleTo for the package assemblies and is not copied. The
+      agent tools (Linq2GraphQL.Client.AI) are copied only for clients generated in agent mode.
+    -->
+    <ItemGroup>
+        <EmbeddedResource Include="..\Linq2GraphQL.Client\**\*.cs"
+                          Exclude="..\Linq2GraphQL.Client\bin\**;..\Linq2GraphQL.Client\obj\**;..\Linq2GraphQL.Client\Assembly.cs"
+                          LogicalName="Runtime/Client/%(RecursiveDir)%(Filename)%(Extension)"/>
+        <EmbeddedResource Include="..\Linq2GraphQL.Client.Subscriptions\**\*.cs"
+                          Exclude="..\Linq2GraphQL.Client.Subscriptions\bin\**;..\Linq2GraphQL.Client.Subscriptions\obj\**;..\Linq2GraphQL.Client.Subscriptions\Assembly.cs"
+                          LogicalName="Runtime/Subscriptions/%(RecursiveDir)%(Filename)%(Extension)"/>
+        <EmbeddedResource Include="..\Linq2GraphQL.Client.AI\**\*.cs"
+                          Exclude="..\Linq2GraphQL.Client.AI\bin\**;..\Linq2GraphQL.Client.AI\obj\**"
+                          LogicalName="Runtime/AI/%(RecursiveDir)%(Filename)%(Extension)"/>
+    </ItemGroup>
+
+    <!--
+      The package versions the runtime is built against (Directory.Packages.props), so standalone mode
+      can tell the user which packages the copied runtime needs.
+    -->
+    <Target Name="WritePackageVersions" BeforeTargets="BeforeCompile">
+        <PropertyGroup>
+            <PackageVersionsFile>$(IntermediateOutputPath)PackageVersions.g.cs</PackageVersionsFile>
+        </PropertyGroup>
+        <ItemGroup>
+            <_PackageVersionLine Include="@(PackageVersion->'        [&quot;%(Identity)&quot;] = &quot;%(Version)&quot;,')"/>
+        </ItemGroup>
+        <WriteLinesToFile File="$(PackageVersionsFile)" Overwrite="true" WriteOnlyWhenDifferent="true"
+                          Lines="namespace Linq2GraphQL.Generator%3B;internal static class PackageVersions;{;    public static readonly Dictionary&lt;string, string&gt; All = new();    {;@(_PackageVersionLine);    }%3B;}"/>
+        <ItemGroup>
+            <Compile Include="$(PackageVersionsFile)"/>
+            <FileWrites Include="$(PackageVersionsFile)"/>
+        </ItemGroup>
+    </Target>
+
 </Project>

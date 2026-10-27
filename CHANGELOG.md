@@ -7,6 +7,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- **Standalone clients** (`--standalone`, `-sa`, or `"standalone": true` in the settings file): the
+  generator writes a copy of the runtime into `Runtime/` under `<namespace>.Runtime`, so the client
+  references no Linq2GraphQL package. Clients generated with different generator versions can then be
+  used in one app. `Runtime/RuntimeInfo.cs` records the runtime version and the packages it needs, which
+  the generator also prints. With `--agent` the copy includes the agent tools from
+  `Linq2GraphQL.Client.AI` too, in `<namespace>.Runtime.AI`.
+
 - `GraphSubscriptionExecute.StartWithErrorsAsync()` returns `IObservable<GraphResult<T>>`.
   Each event carries its data AND its GraphQL `errors`. A `next` event with field errors
   no longer terminates the subscription: partial data and later events keep flowing.
@@ -111,6 +118,9 @@ Behaviour changes that callers may notice. None of them changes a public signatu
 
 ### Fixed
 
+- The safe-mode schema cache key includes the schema type, so clients with their own runtime copy
+  that share an `IMemoryCache` and an endpoint no longer read each other's cached schema
+  (`InvalidCastException`).
 - A server `complete` frame now completes the typed subscription observable. Previously
   the observable stayed open after the server finished the stream.
 - A `Fault` overflow in one subscriber no longer starves other subscribers of the same

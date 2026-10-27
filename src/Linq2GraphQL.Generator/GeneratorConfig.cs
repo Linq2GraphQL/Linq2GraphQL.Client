@@ -57,6 +57,12 @@ public class GeneratorConfig
     public bool? Agent { get; set; }
 
     /// <summary>
+    /// Standalone: write a copy of the runtime into the output instead of depending on the
+    /// Linq2GraphQL.Client packages.
+    /// </summary>
+    public bool? Standalone { get; set; }
+
+    /// <summary>
     /// Emit <c>[Description]</c> attributes from schema descriptions. On by default; set to false to
     /// opt out. Settings file only, there is no command line flag for it.
     /// </summary>

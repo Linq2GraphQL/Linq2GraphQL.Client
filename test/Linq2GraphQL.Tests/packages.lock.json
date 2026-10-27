@@ -926,6 +926,16 @@
           "Linq2GraphQL.Client.Subscriptions": "[1.0.0, )"
         }
       },
+      "linq2graphql.testclientstandalone": {
+        "type": "Project",
+        "dependencies": {
+          "GraphQL-Parser": "[9.5.1, )",
+          "Microsoft.Extensions.AI.Abstractions": "[10.10.0, )",
+          "Microsoft.Extensions.Caching.Memory": "[10.0.11, )",
+          "Microsoft.Extensions.Http": "[10.0.11, )",
+          "Websocket.Client": "[5.3.0, )"
+        }
+      },
       "linq2graphql.testserver": {
         "type": "Project",
         "dependencies": {
