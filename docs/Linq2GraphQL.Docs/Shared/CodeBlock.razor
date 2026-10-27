@@ -1,29 +1,43 @@
-@using ColorCode
+@using TabBlazor.Services
+@inject TablerService TablerService
 
-@* A code sample. C# is syntax highlighted with ColorCode, anything else is shown as plain text. *@
-<div class="code-block">
-    @if (!string.IsNullOrEmpty(Title))
-    {
-        <div class="code-block-title">@Title</div>
-    }
-    @if (Language == "csharp")
-    {
-        @((MarkupString)new HtmlClassFormatter().GetHtmlString(Text, Languages.CSharp))
-    }
-    else
-    {
-        <pre>@Text</pre>
-    }
-</div>
+<figure class="code-block">
+    <figcaption class="code-block-header">
+        <span class="code-block-language">@SyntaxHighlighter.Label(Language)</span>
+        @if (!string.IsNullOrEmpty(Title))
+        {
+            <span class="code-block-title">@Title</span>
+        }
+        <button type="button" class="code-block-copy @(copied ? "copied" : "")" @onclick="CopyAsync"
+                aria-label="Copy code">
+            <Icon class="icon" IconType="@(copied ? Icons.Check : Icons.Copy)"/>
+            <span>@(copied ? "Copied" : "Copy")</span>
+        </button>
+    </figcaption>
+    <div class="code-block-body">
+        @((MarkupString)SyntaxHighlighter.ToHtml(Text, Language))
+    </div>
+</figure>
 
 @code {
+    private bool copied;
+
     private string Text => Code.Trim('\r', '\n').ReplaceLineEndings("\n");
 
-    /// <summary>"csharp" for highlighting; any other value renders plain text.</summary>
+    /// <summary>csharp, graphql, json, shell or xml are highlighted; any other value renders plain text.</summary>
     [Parameter] public string Language { get; set; } = "csharp";
 
     [Parameter] public string Title { get; set; }
 
     /// <summary>The code. Pass a raw string literal, Razor would otherwise parse the braces and at signs.</summary>
     [Parameter, EditorRequired] public string Code { get; set; }
+
+    private async Task CopyAsync()
+    {
+        await TablerService.CopyToClipboard(Text);
+        copied = true;
+        StateHasChanged();
+        await Task.Delay(TimeSpan.FromSeconds(2));
+        copied = false;
+    }
 }

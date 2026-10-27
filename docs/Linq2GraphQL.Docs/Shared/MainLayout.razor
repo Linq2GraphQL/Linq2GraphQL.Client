@@ -4,14 +4,117 @@
 <ToastContainer/>
 <OffcanvasContainer/>
 
+<a class="docs-skip-link" href="@($"{CurrentPath}#content")">Skip to content</a>
 
-<div class="page">
-    <MainNavigation/>
+<header class="docs-topbar">
+    <div class="docs-topbar-inner">
+        <button type="button" class="docs-icon-button docs-menu-button" @onclick="ToggleMenu"
+                aria-label="Toggle navigation" aria-expanded="@(menuOpen ? "true" : "false")">
+            <Icon class="icon" IconType="@(menuOpen ? Icons.X : Icons.Menu)"/>
+        </button>
 
-    <div class="page-wrapper">
-        <div class="container-xl mt-2 doc-page">
-            @Body
+        <a href="" class="docs-brand" aria-label="Linq2GraphQL home">
+            <BrandMark Size="30"/>
+            <span class="docs-wordmark">Linq<span class="docs-wordmark-accent">2</span>GraphQL</span>
+        </a>
+        <span class="docs-version" title="Documentation built from version @Version">v@(Version)</span>
+
+        <nav class="docs-topnav" aria-label="Primary">
+            <a href="getting-started" class="@(IsGuidePage ? "active" : "")">Docs</a>
+            <a href="generate-client" class="@(CurrentPath == "generate-client" ? "active" : "")">Online generator</a>
+        </nav>
+
+        <div class="docs-topbar-actions">
+            <a class="docs-icon-button" href="@DocsNav.NuGetUrl" target="_blank" rel="noopener" aria-label="NuGet package" title="NuGet">
+                <Icon class="icon" IconType="Icons.Package"/>
+            </a>
+            <a class="docs-icon-button" href="@DocsNav.RepositoryUrl" target="_blank" rel="noopener" aria-label="GitHub repository" title="GitHub">
+                <Icon class="icon" IconType="Icons.BrandGithub"/>
+            </a>
+            <button type="button" class="docs-icon-button" @onclick="ToggleThemeAsync"
+                    aria-label="@(theme == "dark" ? "Switch to light theme" : "Switch to dark theme")"
+                    title="@(theme == "dark" ? "Light theme" : "Dark theme")">
+                <Icon class="icon" IconType="@(theme == "dark" ? Icons.Sun : Icons.Moon)"/>
+            </button>
         </div>
     </div>
-</div>
+</header>
 
+@if (IsLanding)
+{
+    <div class="docs-backdrop @(menuOpen ? "show" : "")" @onclick="CloseMenu"></div>
+    <DocsSidebar Open="menuOpen" MobileOnly="true"/>
+    <main id="content" class="docs-landing">
+        @Body
+    </main>
+}
+else
+{
+    <div class="docs-layout">
+        <div class="docs-backdrop @(menuOpen ? "show" : "")" @onclick="CloseMenu"></div>
+
+        <DocsSidebar Open="menuOpen"/>
+
+        <main id="content" class="docs-main">
+            <article class="doc-content">
+                @Body
+            </article>
+
+            @if (CurrentPage is not null)
+            {
+                <div class="docs-page-meta">
+                    <a href="@DocsNav.SourceUrl(CurrentPage)" target="_blank" rel="noopener">
+                        <Icon class="icon" IconType="Icons.Pencil"/> Edit this page on GitHub
+                    </a>
+                </div>
+
+                <nav class="docs-pager" aria-label="Previous and next page">
+                    @if (PreviousPage is not null)
+                    {
+                        <a class="docs-pager-link" href="@PreviousPage.Href">
+                            <span class="docs-pager-label"><Icon class="icon" IconType="Icons.ArrowLeft"/> Previous</span>
+                            <span class="docs-pager-title">@PreviousPage.Title</span>
+                        </a>
+                    }
+                    @if (NextPage is not null)
+                    {
+                        <a class="docs-pager-link next" href="@NextPage.Href">
+                            <span class="docs-pager-label">Next <Icon class="icon" IconType="Icons.ArrowRight"/></span>
+                            <span class="docs-pager-title">@NextPage.Title</span>
+                        </a>
+                    }
+                </nav>
+            }
+        </main>
+
+        <aside class="docs-toc" aria-label="On this page">
+            @if (headings.Count > 0)
+            {
+                <div class="docs-toc-heading">On this page</div>
+                <ul>
+                    @foreach (var heading in headings)
+                    {
+                        <li>
+                            <a href="@($"{CurrentPath}#{heading.Id}")" data-heading="@heading.Id"
+                               @onclick="() => ScrollToHeadingAsync(heading.Id)" @onclick:preventDefault>@heading.Text</a>
+                        </li>
+                    }
+                </ul>
+            }
+        </aside>
+    </div>
+}
+
+<footer class="docs-footer">
+    <div class="docs-footer-inner">
+        <div class="docs-footer-brand">
+            <BrandMark Size="22"/>
+            <span>Linq2GraphQL is open source under the MIT license.</span>
+        </div>
+        <div class="docs-footer-links">
+            <a href="@DocsNav.RepositoryUrl" target="_blank" rel="noopener">GitHub</a>
+            <a href="@($"{DocsNav.RepositoryUrl}/issues")" target="_blank" rel="noopener">Issues</a>
+            <a href="@DocsNav.NuGetUrl" target="_blank" rel="noopener">NuGet</a>
+        </div>
+    </div>
+</footer>
