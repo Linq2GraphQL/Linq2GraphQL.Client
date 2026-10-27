@@ -1,11 +1,11 @@
 <Project>
   <!--
     dotnet pack fails when a runtime package breaks the public API of this published release, so apps that update
-    the package without regenerating or recompiling their client keep working. Raise the baseline after a release.
+    the package without regenerating or recompiling their client keep working. The baseline is set in Directory.Build.props.
     An intended break: pack with -p:ApiCompatGenerateSuppressionFile=true and commit CompatibilitySuppressions.xml.
   -->
   <PropertyGroup Condition="'$(PackAsTool)' != 'true'">
     <EnablePackageValidation>true</EnablePackageValidation>
-    <PackageValidationBaselineVersion>1.0.67-prerelease</PackageValidationBaselineVersion>
+    <PackageValidationBaselineVersion>$(Linq2GraphQLBaselineVersion)</PackageValidationBaselineVersion>
   </PropertyGroup>
 </Project>

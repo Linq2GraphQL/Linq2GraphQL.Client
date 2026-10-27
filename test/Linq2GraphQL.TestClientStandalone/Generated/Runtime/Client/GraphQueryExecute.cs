@@ -46,8 +46,13 @@ public class GraphQueryExecute<T, TResult> : GraphBaseExecute<T, TResult>
 
     public async Task<GraphResult<T>> ExecuteBaseWithResultAsync(CancellationToken cancellationToken = default)
     {
-        var result = await queryExecutor.ExecuteRawAsync(QueryNode.Name, await GetRequestAsync(cancellationToken),
-            cancellationToken);
+        return await ExecuteBaseWithResultAsync(await GetRequestAsync(cancellationToken), cancellationToken);
+    }
+
+    internal async Task<GraphResult<T>> ExecuteBaseWithResultAsync(GraphQLRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await queryExecutor.ExecuteRawAsync(QueryNode.Name, request, cancellationToken);
         BaseResult = result.Data;
         return result;
     }
@@ -60,5 +65,26 @@ public class GraphQueryExecute<T, TResult> : GraphBaseExecute<T, TResult>
     public async Task<GraphResult<TResult>> ExecuteWithResultAsync(CancellationToken cancellationToken = default)
     {
         return ConvertResultFull(await ExecuteBaseWithResultAsync(cancellationToken));
+    }
+
+    /// <summary>
+    /// Makes this query an item of a batch (see <see cref="GraphBatch"/>). Once the batch has executed,
+    /// <paramref name="onResult"/> receives the result; it is not called when no response arrived for the item.
+    /// </summary>
+    public GraphBatchItem OnResult(Action<TResult> onResult)
+    {
+        ArgumentNullException.ThrowIfNull(onResult);
+        return new QueryBatchItem<T, TResult>(this, result =>
+        {
+            onResult(result);
+            return Task.CompletedTask;
+        });
+    }
+
+    /// <inheritdoc cref="OnResult"/>
+    public GraphBatchItem OnResultAsync(Func<TResult, Task> onResult)
+    {
+        ArgumentNullException.ThrowIfNull(onResult);
+        return new QueryBatchItem<T, TResult>(this, onResult);
     }
 }

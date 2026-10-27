@@ -35,17 +35,21 @@
     </ItemGroup>
 
     <!--
-      Left out: tests of the generator and the nullable client, which need those projects, and
-      CoexistenceTests, which needs the package-based client next to the standalone one. The AI package
+      Left out: tests of the generator and the nullable client, which need those projects,
+      CoexistenceTests, which needs the package-based client next to the standalone one, and request
+      snapshots whose aliases hash enum type names, which carry the client namespace. The AI package
       tests run against the agent tools in the copy.
     -->
     <ItemGroup>
         <Compile Include="..\Linq2GraphQL.Tests\**\*.cs"
                  Exclude="..\Linq2GraphQL.Tests\bin\**;..\Linq2GraphQL.Tests\obj\**;
+                          ..\Linq2GraphQL.Tests\Batch\BatchNullableClientTests.cs;
+                          ..\Linq2GraphQL.Tests\Batch\BatchRequestSnapshotTests.cs;
                           ..\Linq2GraphQL.Tests\CoexistenceTests.cs;
                           ..\Linq2GraphQL.Tests\DescriptionAttributeTests.cs;
                           ..\Linq2GraphQL.Tests\GeneratorCollection.cs;
                           ..\Linq2GraphQL.Tests\QueryNullableTests.cs;
+                          ..\Linq2GraphQL.Tests\RequestSnapshotTests.cs;
                           ..\Linq2GraphQL.Tests\SampleClientNullableFixture.cs;
                           ..\Linq2GraphQL.Tests\ScalarMappingTests.cs;
                           ..\Linq2GraphQL.Tests\ScalarTests.cs;

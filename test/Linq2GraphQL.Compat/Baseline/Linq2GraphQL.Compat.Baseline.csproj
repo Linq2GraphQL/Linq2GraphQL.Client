@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Runs the compatibility scenarios against the published packages of the baseline release (Linq2GraphQLBaselineVersion)
+    and writes the records to the file named by its argument. Linq2GraphQL.Compat.Tests compares them with this code's.
+  -->
+  <Import Project="../Compat.props" />
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Private, so the old packages do not flow into the tests project, which references this one for build order. -->
+    <PackageReference Include="Linq2GraphQL.Client" PrivateAssets="all" />
+    <PackageReference Include="Linq2GraphQL.Client.Subscriptions" PrivateAssets="all" />
+  </ItemGroup>
+</Project>

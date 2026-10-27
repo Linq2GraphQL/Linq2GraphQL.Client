@@ -16,6 +16,9 @@
     <PackageVersion Include="HotChocolate.Data" Version="16.6.4" />
     <PackageVersion Include="HotChocolate.Types.Scalars" Version="16.6.4" />
     <PackageVersion Include="HotChocolate.Types.Analyzers" Version="16.6.4" />
+    <!-- Only the compatibility baseline runner (test/Linq2GraphQL.Compat) uses the published packages. -->
+    <PackageVersion Include="Linq2GraphQL.Client" Version="$(Linq2GraphQLBaselineVersion)" />
+    <PackageVersion Include="Linq2GraphQL.Client.Subscriptions" Version="$(Linq2GraphQLBaselineVersion)" />
     <PackageVersion Include="Macross.Json.Extensions" Version="3.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.11" />
     <PackageVersion Include="Azure.Identity" Version="1.21.0" />

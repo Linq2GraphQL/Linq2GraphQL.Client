@@ -1,0 +1,25 @@
+<Project>
+  <!-- Shared by the baseline runner and the tests: the frozen clients and the scenarios, compiled against two runtimes. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- One setting for both frozen clients: annotations accepts the nullable client's ? without flow warnings. -->
+    <Nullable>annotations</Nullable>
+    <IsPackable>false</IsPackable>
+    <NoWarn>$(NoWarn);CS0618</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)FrozenClients/**/*.cs" LinkBase="FrozenClients" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenarios/**/*.cs" LinkBase="Scenarios" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)../Linq2GraphQL.TestServer/Linq2GraphQL.TestServer.csproj" />
+    <ProjectReference Include="$(MSBuildThisFileDirectory)../Linq2GraphQL.TestServerNullable/Linq2GraphQL.TestServerNullable.csproj" />
+  </ItemGroup>
+</Project>
