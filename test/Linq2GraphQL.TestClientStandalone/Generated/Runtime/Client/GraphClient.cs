@@ -113,6 +113,27 @@ public class GraphClient
 
     internal GraphClientOptions ClientOptions => options.Value;
 
+    private int acceptedBatchSize;
+
+    /// <summary>
+    /// The largest number of merged queries the server accepted after rejecting a bigger batch request, or null
+    /// when no batch request has been rejected yet.
+    /// </summary>
+    internal int? AcceptedBatchSize => acceptedBatchSize == 0 ? null : acceptedBatchSize;
+
+    internal void RememberAcceptedBatchSize(int size)
+    {
+        int current;
+        do
+        {
+            current = acceptedBatchSize;
+            if (current != 0 && current <= size)
+            {
+                return;
+            }
+        } while (Interlocked.CompareExchange(ref acceptedBatchSize, size, current) != current);
+    }
+
 
     /// <summary>
     ///     The <c>connection_init</c> payload delegate from <see cref="GraphClientOptions.ConnectionInitPayload"/>,

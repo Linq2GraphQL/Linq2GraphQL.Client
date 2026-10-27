@@ -18,5 +18,5 @@ namespace Linq2GraphQL.TestClientStandalone.Runtime;
 /// </summary>
 public static class RuntimeInfo
 {
-    public const string Version = "1.0.84-prerelease";
+    public const string Version = "1.0.96-prerelease";
 }

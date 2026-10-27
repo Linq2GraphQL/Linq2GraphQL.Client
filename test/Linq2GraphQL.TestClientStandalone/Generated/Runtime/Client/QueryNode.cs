@@ -198,7 +198,7 @@ public class QueryNode
         return allArguments;
     }
 
-    private string GetArgumentString()
+    private string GetArgumentString(string variablePrefix)
     {
         var args = GetActiveArguments();
         ;
@@ -210,7 +210,7 @@ public class QueryNode
         var argString = "(";
         foreach (var arg in args)
         {
-            argString += arg.GraphName + ":$" + arg.VariableName + " ";
+            argString += arg.GraphName + ":$" + variablePrefix + arg.VariableName + " ";
         }
 
         argString.TrimEnd();
@@ -220,22 +220,25 @@ public class QueryNode
     }
 
 
-    internal string GetQueryString(string indent = "")
+    /// <param name="variablePrefix">Put in front of every variable name, so several queries can share one document.</param>
+    /// <param name="alias">The alias of this node, in place of <see cref="Alias"/>.</param>
+    internal string GetQueryString(string indent = "", string variablePrefix = "", string alias = null)
     {
         string query;
         var memberType = Member.GetUnderlyingType();
+        alias ??= Alias;
 
         if (InterfaceProperty)
         {
-            query = "... on " + Name + GetArgumentString() + Environment.NewLine;
+            query = "... on " + Name + GetArgumentString(variablePrefix) + Environment.NewLine;
         }
-        else if (!string.IsNullOrWhiteSpace(Alias))
+        else if (!string.IsNullOrWhiteSpace(alias))
         {
-            query = Alias + ":" + Name + GetArgumentString() + Environment.NewLine;
+            query = alias + ":" + Name + GetArgumentString(variablePrefix) + Environment.NewLine;
         }
         else
         {
-            query = Name + GetArgumentString() + Environment.NewLine;
+            query = Name + GetArgumentString(variablePrefix) + Environment.NewLine;
         }
 
         if (memberType.IsListOfPrimitiveTypeOrString())
@@ -250,7 +253,7 @@ public class QueryNode
             var newIndent = "  " + indent;
             foreach (var childNode in ChildNodes)
             {
-                query += childNode.GetQueryString(newIndent);
+                query += childNode.GetQueryString(newIndent, variablePrefix);
             }
         }
 
