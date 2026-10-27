@@ -66,6 +66,26 @@ public class Schema
         return GetAllTypesExceptSystemTypes().Where(e => e.Kind == TypeKind.Enum).ToList();
     }
 
+    /// <summary>
+    ///     Every scalar in the schema with the C# type it maps to by default, before any scalarMappings
+    ///     override, sorted by name.
+    /// </summary>
+    public List<ScalarInfo> GetScalars()
+    {
+        if (Types == null) return new();
+
+        return Types.Where(e => e.Kind == TypeKind.Scalar && !e.Name.StartsWith("__"))
+            .OrderBy(e => e.Name, StringComparer.Ordinal)
+            .Select(e => new ScalarInfo
+            {
+                Name = e.Name,
+                Description = e.Description,
+                IsBuiltIn = BuiltInTypes.Contains(e.Name),
+                DefaultTarget = Helpers.DefaultTypeMapping.TryGetValue(e.Name, out var mapping) ? mapping.Name : null
+            })
+            .ToList();
+    }
+
     public List<GraphqlType> GetCustomScalars()
     {
         var mappers = Helpers.EffectiveTypeMapping;

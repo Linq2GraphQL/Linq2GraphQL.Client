@@ -51,29 +51,6 @@
                         <Checkbox Switch @bind-Value="options.Agent"/>
                     </DataGridItem>
 
-                    <DataGridItem Title="Scalar mappings">
-                        @foreach (var mapping in options.ScalarMappings)
-                        {
-                            <div class="d-flex gap-2 mb-2">
-                                <InputText class="form-control" placeholder="Scalar, e.g. Long"
-                                           @bind-Value="mapping.Scalar"/>
-                                <InputSelect class="form-select" @bind-Value="mapping.Target">
-                                    <option value="">CustomScalar class</option>
-                                    @foreach (var target in Linq2GraphQL.Generator.Helpers.SupportedTargetTypeNames)
-                                    {
-                                        <option value="@target">@target</option>
-                                    }
-                                </InputSelect>
-                                <Button OnClick="() => options.ScalarMappings.Remove(mapping)">Remove</Button>
-                            </div>
-                        }
-                        <Button OnClick="() => options.ScalarMappings.Add(new())">Add mapping</Button>
-                        <div class="form-hint mt-1">
-                            Maps a GraphQL scalar to a C# type, overriding the built-in mapping. Choose
-                            CustomScalar class to generate a class for a scalar that is mapped by default.
-                        </div>
-                    </DataGridItem>
-
                 </DataGrid>
 
                 <div class="mt-3"/>
@@ -89,8 +66,10 @@
                         </DataGrid>
 
 
-                        <Button class="mt-3" BackgroundColor="TablerColor.Primary" OnClick="GenerateClientAsync">Generate
-                        </Button>
+                        <div class="mt-3 d-flex gap-2">
+                            <Button OnClick="LoadFromUrlAsync">Load schema</Button>
+                            <Button BackgroundColor="TablerColor.Primary" OnClick="GenerateClientAsync">Generate</Button>
+                        </div>
 
                     </Tab>
 
@@ -108,12 +87,30 @@
                         <InputTextArea class="form-control font-monospace" @bind-Value="options.Schema" rows="20"
                                        placeholder="type Query { ... }"/>
 
-                        <Button class="mt-3" BackgroundColor="TablerColor.Primary" OnClick="GenerateClientFromSchema">
-                            Generate @(IsIntrospectionJson(options.Schema) ? "from introspection JSON" : "from SDL")
-                        </Button>
+                        <div class="mt-3 d-flex gap-2">
+                            <Button OnClick="LoadFromSchemaAsync">Load schema</Button>
+                            <Button BackgroundColor="TablerColor.Primary" OnClick="GenerateClientFromSchema">
+                                Generate @(IsIntrospectionJson(options.Schema) ? "from introspection JSON" : "from SDL")
+                            </Button>
+                        </div>
                     </Tab>
 
                 </Tabs>
+
+                <div class="mt-3 text-secondary">
+                    @if (IsLoaded)
+                    {
+                        <span>
+                            Scalars: @CustomScalars.Count() of @MappableScalars.Count() generate a CustomScalar class,
+                            @OverrideCount changed from the default.
+                        </span>
+                        <Button class="ms-2" Size="ButtonSize.Small" OnClick="ReviewScalarsAsync">Review scalar mappings</Button>
+                    }
+                    else
+                    {
+                        <span>Load the schema to review how its scalars map to C# types before generating.</span>
+                    }
+                </div>
 
 
             </CardBody>

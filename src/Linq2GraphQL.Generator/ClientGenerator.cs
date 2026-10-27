@@ -44,6 +44,15 @@ namespace Linq2GraphQL.Generator
         public async Task<List<FileEntry>> GenerateAsync(Uri uri, string authToken = null)
         {
             Console.WriteLine($"Start generating client for endpoint {uri.AbsoluteUri}");
+            return Generate(await ReadSchemaAsync(uri, authToken));
+        }
+
+        /// <summary>
+        /// Reads the schema of a live endpoint with an introspection query, without generating anything, so it
+        /// can be inspected (see <see cref="Schema.GetScalars"/>) and then passed to <see cref="Generate(RootSchema)"/>.
+        /// </summary>
+        public async Task<RootSchema> ReadSchemaAsync(Uri uri, string authToken = null)
+        {
             using var httpClient = new HttpClient();
 
             if (!string.IsNullOrWhiteSpace(authToken))
@@ -71,17 +80,21 @@ namespace Linq2GraphQL.Generator
             }
 
             Console.WriteLine("Reading and deserializing schema information ...");
-            var schemaJson = await response.Content.ReadAsStringAsync();
-
-            return Generate(schemaJson);
+            return ReadSchema(await response.Content.ReadAsStringAsync());
         }
 
         public List<FileEntry> Generate(string schemaJson)
         {
-            var rootSchema = JsonSerializer.Deserialize<RootSchema>(schemaJson,
-                new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            return Generate(ReadSchema(schemaJson));
+        }
 
-            return Generate(rootSchema);
+        /// <summary>
+        /// Reads an introspection result without generating anything.
+        /// </summary>
+        public RootSchema ReadSchema(string schemaJson)
+        {
+            return JsonSerializer.Deserialize<RootSchema>(schemaJson,
+                new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
         }
 
         /// <summary>
@@ -89,11 +102,23 @@ namespace Linq2GraphQL.Generator
         /// </summary>
         public List<FileEntry> GenerateFromSdl(string sdl)
         {
-            Console.WriteLine("Reading schema from SDL ...");
-            return Generate(SdlSchemaReader.Read(sdl, includeDeprecated));
+            return Generate(ReadSchemaFromSdl(sdl));
         }
 
-        private List<FileEntry> Generate(RootSchema rootSchema)
+        /// <summary>
+        /// Reads a schema written in SDL without generating anything.
+        /// </summary>
+        public RootSchema ReadSchemaFromSdl(string sdl)
+        {
+            Console.WriteLine("Reading schema from SDL ...");
+            return SdlSchemaReader.Read(sdl, includeDeprecated);
+        }
+
+        /// <summary>
+        /// Generates the client from a schema read with one of the <c>ReadSchema</c> methods. The same schema can
+        /// be generated from more than once, with different settings.
+        /// </summary>
+        public List<FileEntry> Generate(RootSchema rootSchema)
         {
             entries.Clear();
 

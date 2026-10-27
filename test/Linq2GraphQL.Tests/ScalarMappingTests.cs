@@ -147,6 +147,53 @@ public class ScalarMappingTests
     }
 
     [Fact]
+    public void GetScalars_ListsEveryScalarWithItsDefaultMapping()
+    {
+        var generator = new ClientGenerator("TestNs", "TestClient", false, EnumGeneratorStrategy.FailIfMissing,
+            false, false);
+
+        var scalars = generator.ReadSchema(SchemaJson).Data.Schema.GetScalars();
+
+        scalars.Select(e => (e.Name, e.DefaultTarget, e.IsBuiltIn)).ShouldBe(new (string, string?, bool)[]
+        {
+            ("BigInt", null, false),
+            ("DateTime", "DateTimeOffset", false),
+            ("Json", null, false),
+            ("String", "string", true)
+        });
+    }
+
+    [Fact]
+    public void GetScalars_FromSdl_MatchesDefaultsCaseInsensitively()
+    {
+        var generator = new ClientGenerator("TestNs", "TestClient", false, EnumGeneratorStrategy.FailIfMissing,
+            false, false);
+
+        var scalars = generator.ReadSchemaFromSdl("scalar UUID scalar Long type Query { id: UUID big: Long }")
+            .Data.Schema.GetScalars();
+
+        scalars.Single(e => e.Name == "UUID").DefaultTarget.ShouldBe("Guid");
+        scalars.Single(e => e.Name == "Long").DefaultTarget.ShouldBe("long");
+    }
+
+    [Fact]
+    public void ReadSchema_CanBeGeneratedFromMoreThanOnce()
+    {
+        var reader = new ClientGenerator("TestNs", "TestClient", false, EnumGeneratorStrategy.FailIfMissing,
+            false, false);
+        var rootSchema = reader.ReadSchema(SchemaJson);
+
+        var mapped = new ClientGenerator("TestNs", "TestClient", false, EnumGeneratorStrategy.FailIfMissing,
+            false, false, Helpers.ResolveScalarMappings(new Dictionary<string, string> { ["BigInt"] = "long" }))
+            .Generate(rootSchema);
+        var unmapped = new ClientGenerator("TestNs", "TestClient", false, EnumGeneratorStrategy.FailIfMissing,
+            false, false).Generate(rootSchema);
+
+        ThingType(mapped).ShouldContain("long? Id");
+        unmapped.Select(e => e.Content).ShouldBe(Generate().Select(e => e.Content));
+    }
+
+    [Fact]
     public void ConfigFile_RoundTripsEverySetting()
     {
         var json = """
