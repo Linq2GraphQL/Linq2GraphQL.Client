@@ -39,6 +39,14 @@
                         <Checkbox Switch @bind-Value="options.IncludeDeprecated"/>
                     </DataGridItem>
 
+                    <DataGridItem Title="Standalone">
+                        <Checkbox Switch @bind-Value="options.Standalone"/>
+                    </DataGridItem>
+
+                    <DataGridItem Title="Agent mode (preview)">
+                        <Checkbox Switch @bind-Value="options.Agent"/>
+                    </DataGridItem>
+
                 </DataGrid>
 
                 <div class="mt-3"/>

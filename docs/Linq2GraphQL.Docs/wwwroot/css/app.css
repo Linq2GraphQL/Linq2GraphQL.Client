@@ -7,6 +7,10 @@
     color: #ff8383;
 }
 
+/* FocusOnNavigate focuses the page's h1 for screen readers; don't draw a focus ring around it. */
+h1:focus {
+    outline: none;
+}
 
 #blazor-error-ui {
     background: lightyellow;
