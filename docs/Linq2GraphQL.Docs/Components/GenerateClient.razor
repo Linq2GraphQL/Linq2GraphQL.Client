@@ -51,6 +51,29 @@
                         <Checkbox Switch @bind-Value="options.Agent"/>
                     </DataGridItem>
 
+                    <DataGridItem Title="Scalar mappings">
+                        @foreach (var mapping in options.ScalarMappings)
+                        {
+                            <div class="d-flex gap-2 mb-2">
+                                <InputText class="form-control" placeholder="Scalar, e.g. Long"
+                                           @bind-Value="mapping.Scalar"/>
+                                <InputSelect class="form-select" @bind-Value="mapping.Target">
+                                    <option value="">CustomScalar class</option>
+                                    @foreach (var target in Linq2GraphQL.Generator.Helpers.SupportedTargetTypeNames)
+                                    {
+                                        <option value="@target">@target</option>
+                                    }
+                                </InputSelect>
+                                <Button OnClick="() => options.ScalarMappings.Remove(mapping)">Remove</Button>
+                            </div>
+                        }
+                        <Button OnClick="() => options.ScalarMappings.Add(new())">Add mapping</Button>
+                        <div class="form-hint mt-1">
+                            Maps a GraphQL scalar to a C# type, overriding the built-in mapping. Choose
+                            CustomScalar class to generate a class for a scalar that is mapped by default.
+                        </div>
+                    </DataGridItem>
+
                 </DataGrid>
 
                 <div class="mt-3"/>

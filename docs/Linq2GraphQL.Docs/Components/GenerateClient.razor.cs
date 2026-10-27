@@ -123,6 +123,32 @@ public partial class GenerateClient
     /// </summary>
     private static bool IsIntrospectionJson(string schema) => schema?.TrimStart().StartsWith('{') == true;
 
+    private ClientGenerator CreateGenerator()
+    {
+        return new ClientGenerator(options.Namespace, options.ClientName, options.IncludeSubscriptions,
+            options.EnumGeneratorStrategy, options.Nullable, options.IncludeDeprecated,
+            ResolveScalarMappings(), options.DescriptionAttributes, options.Agent, options.Standalone);
+    }
+
+    /// <summary>
+    /// The mapping rows as the config file's scalarMappings, validated the same way the command line does.
+    /// An empty target means "generate a CustomScalar class", like null in the config file.
+    /// </summary>
+    private IReadOnlyDictionary<string, (string Name, Type type)?> ResolveScalarMappings()
+    {
+        var mappings = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+
+        foreach (var mapping in options.ScalarMappings.Where(e => !string.IsNullOrWhiteSpace(e.Scalar)))
+        {
+            if (!mappings.TryAdd(mapping.Scalar.Trim(), mapping.Target))
+            {
+                throw new InvalidOperationException($"The scalar '{mapping.Scalar.Trim()}' is mapped more than once.");
+            }
+        }
+
+        return Helpers.ResolveScalarMappings(mappings);
+    }
+
     private async Task GenerateClientFromSchema()
     {
         try
@@ -133,10 +159,7 @@ public partial class GenerateClient
             }
 
             isLoading = true;
-            var generator = new ClientGenerator(options.Namespace, options.ClientName, options.IncludeSubscriptions,
-                options.EnumGeneratorStrategy, options.Nullable, options.IncludeDeprecated,
-                descriptionAttributes: options.DescriptionAttributes, agent: options.Agent,
-                standalone: options.Standalone);
+            var generator = CreateGenerator();
             var entries = IsIntrospectionJson(options.Schema)
                 ? generator.Generate(options.Schema)
                 : generator.GenerateFromSdl(options.Schema);
@@ -159,10 +182,7 @@ public partial class GenerateClient
         try
         {
             isLoading = true;
-            var generator = new ClientGenerator(options.Namespace, options.ClientName, options.IncludeSubscriptions,
-                options.EnumGeneratorStrategy, options.Nullable, options.IncludeDeprecated,
-                descriptionAttributes: options.DescriptionAttributes, agent: options.Agent,
-                standalone: options.Standalone);
+            var generator = CreateGenerator();
             var entries = await generator.GenerateAsync(new(options.Url), options.Token);
             await SaveEntriesAsync(entries);
         }
@@ -193,4 +213,12 @@ public class GenerateOptions
     public EnumGeneratorStrategy EnumGeneratorStrategy { get; set; }
 
     public string Schema { get; set; }
+
+    public List<ScalarMapping> ScalarMappings { get; set; } = new();
+}
+
+public class ScalarMapping
+{
+    public string Scalar { get; set; }
+    public string Target { get; set; } = "string";
 }
