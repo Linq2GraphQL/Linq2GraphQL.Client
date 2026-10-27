@@ -171,12 +171,20 @@ public class BaseField
     public BaseType Type { get; set; }
 
     private CoreType coreType;
+    private GeneratorSettings coreTypeSettings;
 
     public CoreType CoreType
     {
         get
         {
-            coreType ??= Type.GetCoreType();
+            // GetCoreType depends on the run's settings (type mapping, nullable), so a schema generated from
+            // more than once must not keep the first run's result.
+            if (coreType == null || coreTypeSettings != GeneratorSettings.Current)
+            {
+                coreType = Type.GetCoreType();
+                coreTypeSettings = GeneratorSettings.Current;
+            }
+
             return coreType;
         }
     }

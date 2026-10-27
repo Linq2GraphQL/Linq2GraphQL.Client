@@ -144,6 +144,13 @@ public static class Helpers
 
 
     /// <summary>
+    /// GraphQL's own scalars, apart from ID. They are always mapped to a simple type and never get a
+    /// CustomScalar class, so they cannot be opted out of the mapping - only mapped to another type.
+    /// </summary>
+    public static readonly IReadOnlySet<string> BuiltInScalars =
+        new HashSet<string>(StringComparer.Ordinal) { "Int", "Float", "String", "Boolean" };
+
+    /// <summary>
     /// The built-in GraphQL scalar to CLR type mapping. Copied per generator run so that user
     /// supplied overrides never leak between runs - see <see cref="CreateTypeMapping"/>.
     /// </summary>
@@ -253,6 +260,14 @@ public static class Helpers
 
             if (string.IsNullOrWhiteSpace(targetTypeName))
             {
+                // Mapping names match case insensitively, so "int": null would remove Int from the table too.
+                if (BuiltInScalars.Contains(scalarName.Trim(), StringComparer.InvariantCultureIgnoreCase))
+                {
+                    throw new GeneratorConfigurationException(
+                        $"The scalar '{scalarName.Trim()}' is built into GraphQL and cannot be opted out of the type " +
+                        "mapping, because no CustomScalar class is generated for it. Map it to another type instead.");
+                }
+
                 result[scalarName.Trim()] = null;
                 continue;
             }

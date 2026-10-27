@@ -39,6 +39,10 @@
                         <Checkbox Switch @bind-Value="options.IncludeDeprecated"/>
                     </DataGridItem>
 
+                    <DataGridItem Title="Description attributes">
+                        <Checkbox Switch @bind-Value="options.DescriptionAttributes"/>
+                    </DataGridItem>
+
                     <DataGridItem Title="Standalone">
                         <Checkbox Switch @bind-Value="options.Standalone"/>
                     </DataGridItem>
@@ -62,8 +66,10 @@
                         </DataGrid>
 
 
-                        <Button class="mt-3" BackgroundColor="TablerColor.Primary" OnClick="GenerateClientAsync">Generate
-                        </Button>
+                        <div class="mt-3 d-flex gap-2">
+                            <Button OnClick="LoadFromUrlAsync">Load schema</Button>
+                            <Button BackgroundColor="TablerColor.Primary" OnClick="GenerateClientAsync">Generate</Button>
+                        </div>
 
                     </Tab>
 
@@ -81,12 +87,30 @@
                         <InputTextArea class="form-control font-monospace" @bind-Value="options.Schema" rows="20"
                                        placeholder="type Query { ... }"/>
 
-                        <Button class="mt-3" BackgroundColor="TablerColor.Primary" OnClick="GenerateClientFromSchema">
-                            Generate @(IsIntrospectionJson(options.Schema) ? "from introspection JSON" : "from SDL")
-                        </Button>
+                        <div class="mt-3 d-flex gap-2">
+                            <Button OnClick="LoadFromSchemaAsync">Load schema</Button>
+                            <Button BackgroundColor="TablerColor.Primary" OnClick="GenerateClientFromSchema">
+                                Generate @(IsIntrospectionJson(options.Schema) ? "from introspection JSON" : "from SDL")
+                            </Button>
+                        </div>
                     </Tab>
 
                 </Tabs>
+
+                <div class="mt-3 text-secondary">
+                    @if (IsLoaded)
+                    {
+                        <span>
+                            @scalars.Count scalars: @CustomScalars.Count() generate a CustomScalar class,
+                            @OverrideCount changed from the default.
+                        </span>
+                        <Button class="ms-2" Size="ButtonSize.Small" OnClick="ReviewScalarsAsync">Review scalar mappings</Button>
+                    }
+                    else
+                    {
+                        <span>Load the schema to review how its scalars map to C# types before generating.</span>
+                    }
+                </div>
 
 
             </CardBody>

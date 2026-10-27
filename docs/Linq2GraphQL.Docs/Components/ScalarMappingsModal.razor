@@ -1,0 +1,111 @@
+@using Linq2GraphQL.Generator
+@using TabBlazor.Services
+
+<p class="text-secondary">
+    Every scalar in the schema and the C# type it becomes. Change a row to override the default, or choose
+    <em>CustomScalar class</em> to generate a class for the scalar instead. GraphQL's own scalars can be mapped
+    to another type but not to a class.
+</p>
+
+<div class="table-responsive">
+    <table class="table table-vcenter card-table border">
+        <thead>
+        <tr><th>Scalar</th><th>C# type</th><th></th></tr>
+        </thead>
+        <tbody>
+        @foreach (var scalar in Scalars.OrderBy(e => e.IsBuiltIn))
+        {
+            <tr>
+                <td>
+                    <code>@scalar.Name</code>
+                    @if (scalar.IsBuiltIn)
+                    {
+                        <span class="badge bg-secondary-lt ms-1">GraphQL built-in</span>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(scalar.Description))
+                    {
+                        <div class="text-secondary small">@scalar.Description</div>
+                    }
+                </td>
+                <td>
+                    <select class="form-select form-select-sm" value="@Target(scalar)"
+                            @onchange="e => SetTarget(scalar, (string)e.Value)">
+                        @if (!scalar.IsBuiltIn)
+                        {
+                            <option value="">CustomScalar class</option>
+                        }
+                        @foreach (var target in Helpers.SupportedTargetTypeNames)
+                        {
+                            <option value="@target">@target</option>
+                        }
+                    </select>
+                </td>
+                <td class="text-nowrap">
+                    @if (Overrides.ContainsKey(scalar.Name))
+                    {
+                        <span class="badge bg-blue-lt">changed</span>
+                        <a href="" class="ms-2" @onclick:preventDefault @onclick="() => Overrides.Remove(scalar.Name)">
+                            reset
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="text-secondary">default</span>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+<div class="d-flex gap-2 mt-3">
+    <Button OnClick="CopyConfigAsync">Copy as linq2graphql.json</Button>
+    <Button OnClick="() => Overrides.Clear()" Disabled="Overrides.Count == 0">Reset all</Button>
+    <Button class="ms-auto" BackgroundColor="TablerColor.Primary" OnClick="() => modalService.Close()">Done</Button>
+</div>
+
+@code {
+    [Parameter] public List<ScalarInfo> Scalars { get; set; }
+
+    /// <summary>
+    /// Scalar name to C# type, edited in place. An empty type means "generate a CustomScalar class", like null
+    /// in the config file. Only scalars that differ from their default are in here.
+    /// </summary>
+    [Parameter] public Dictionary<string, string> Overrides { get; set; }
+
+    /// <summary>
+    /// The page's settings, these overrides included, as the contents of a linq2graphql.json file.
+    /// </summary>
+    [Parameter] public Func<string> ConfigJson { get; set; }
+
+    [Inject] private IModalService modalService { get; set; }
+    [Inject] private TablerService tablerService { get; set; }
+    [Inject] private ToastService toastService { get; set; }
+
+    private string Target(ScalarInfo scalar)
+    {
+        return Overrides.TryGetValue(scalar.Name, out var target) ? target : scalar.DefaultTarget ?? "";
+    }
+
+    private void SetTarget(ScalarInfo scalar, string target)
+    {
+        if (target == (scalar.DefaultTarget ?? ""))
+        {
+            Overrides.Remove(scalar.Name);
+        }
+        else
+        {
+            Overrides[scalar.Name] = target;
+        }
+    }
+
+    private async Task CopyConfigAsync()
+    {
+        await tablerService.CopyToClipboard(ConfigJson());
+        await toastService.AddToastAsync(new()
+        {
+            Title = "Copy Complete", Message = "The settings have been copied to the clipboard as linq2graphql.json"
+        });
+    }
+}

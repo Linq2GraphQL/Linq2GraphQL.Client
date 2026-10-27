@@ -134,6 +134,34 @@ public class ScalarMappingTests
         ex.Message.ShouldContain("DateTimeOffset");
     }
 
+    // No CustomScalar class is generated for GraphQL's own scalars, so opting one out would leave the client
+    // referring to a type that does not exist.
+    [Theory]
+    [InlineData("Int")]
+    [InlineData("float")]
+    [InlineData("String")]
+    [InlineData("Boolean")]
+    public void Override_ToNull_ForABuiltInScalar_Fails(string scalarName)
+    {
+        var ex = Should.Throw<GeneratorConfigurationException>(() =>
+            Helpers.ResolveScalarMappings(new Dictionary<string, string> { [scalarName] = null! }));
+
+        ex.Message.ShouldContain(scalarName);
+        ex.Message.ShouldContain("built into GraphQL");
+    }
+
+    [Fact]
+    public void Override_ABuiltInScalar_ToAnotherType_Works()
+    {
+        var generator = new ClientGenerator("TestNs", "TestClient", false, EnumGeneratorStrategy.FailIfMissing,
+            false, false, Helpers.ResolveScalarMappings(new Dictionary<string, string> { ["Int"] = "long" }));
+
+        var entries = generator.GenerateFromSdl("type Query { count: Int }");
+
+        entries.Single(e => e.FileName == "QueryMethods.cs").Content.ShouldContain("GraphQuery<long?> Count()");
+        ScalarFiles(entries).ShouldBeEmpty();
+    }
+
     [Fact]
     public void Overrides_DoNotLeakBetweenRuns()
     {
@@ -144,6 +172,53 @@ public class ScalarMappingTests
         ThingType(entries).ShouldContain("BigInt Id");
         ScalarFiles(entries).ShouldBe(new[] { "BigInt.cs", "Json.cs" }, ignoreOrder: true);
         Helpers.DefaultTypeMapping.ContainsKey("BigInt").ShouldBeFalse();
+    }
+
+    [Fact]
+    public void GetScalars_ListsEveryScalarWithItsDefaultMapping()
+    {
+        var generator = new ClientGenerator("TestNs", "TestClient", false, EnumGeneratorStrategy.FailIfMissing,
+            false, false);
+
+        var scalars = generator.ReadSchema(SchemaJson).Data.Schema.GetScalars();
+
+        scalars.Select(e => (e.Name, e.DefaultTarget, e.IsBuiltIn)).ShouldBe(new (string, string?, bool)[]
+        {
+            ("BigInt", null, false),
+            ("DateTime", "DateTimeOffset", false),
+            ("Json", null, false),
+            ("String", "string", true)
+        });
+    }
+
+    [Fact]
+    public void GetScalars_FromSdl_MatchesDefaultsCaseInsensitively()
+    {
+        var generator = new ClientGenerator("TestNs", "TestClient", false, EnumGeneratorStrategy.FailIfMissing,
+            false, false);
+
+        var scalars = generator.ReadSchemaFromSdl("scalar UUID scalar Long type Query { id: UUID big: Long }")
+            .Data.Schema.GetScalars();
+
+        scalars.Single(e => e.Name == "UUID").DefaultTarget.ShouldBe("Guid");
+        scalars.Single(e => e.Name == "Long").DefaultTarget.ShouldBe("long");
+    }
+
+    [Fact]
+    public void ReadSchema_CanBeGeneratedFromMoreThanOnce()
+    {
+        var reader = new ClientGenerator("TestNs", "TestClient", false, EnumGeneratorStrategy.FailIfMissing,
+            false, false);
+        var rootSchema = reader.ReadSchema(SchemaJson);
+
+        var mapped = new ClientGenerator("TestNs", "TestClient", false, EnumGeneratorStrategy.FailIfMissing,
+            false, false, Helpers.ResolveScalarMappings(new Dictionary<string, string> { ["BigInt"] = "long" }))
+            .Generate(rootSchema);
+        var unmapped = new ClientGenerator("TestNs", "TestClient", false, EnumGeneratorStrategy.FailIfMissing,
+            false, false).Generate(rootSchema);
+
+        ThingType(mapped).ShouldContain("long? Id");
+        unmapped.Select(e => e.Content).ShouldBe(Generate().Select(e => e.Content));
     }
 
     [Fact]

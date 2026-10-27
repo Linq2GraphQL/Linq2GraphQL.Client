@@ -1,4 +1,6 @@
 ﻿using System.IO.Compression;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Linq2GraphQL.Generator;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -123,51 +125,140 @@ public partial class GenerateClient
     /// </summary>
     private static bool IsIntrospectionJson(string schema) => schema?.TrimStart().StartsWith('{') == true;
 
-    private async Task GenerateClientFromSchema()
-    {
-        try
-        {
-            if (string.IsNullOrWhiteSpace(options.Schema))
-            {
-                throw new InvalidOperationException("Upload or paste a schema first.");
-            }
+    /// <summary>
+    /// Where a schema was read from. A schema is reused only while all of these are unchanged; deprecated fields
+    /// are part of what is read, so toggling them needs a new read too.
+    /// </summary>
+    private record SchemaSource(string Url, string Token, string Schema, bool IncludeDeprecated);
 
-            isLoading = true;
-            var generator = new ClientGenerator(options.Namespace, options.ClientName, options.IncludeSubscriptions,
-                options.EnumGeneratorStrategy, options.Nullable, options.IncludeDeprecated,
-                agent: options.Agent, standalone: options.Standalone);
-            var entries = IsIntrospectionJson(options.Schema)
-                ? generator.Generate(options.Schema)
-                : generator.GenerateFromSdl(options.Schema);
-            await SaveEntriesAsync(entries);
-        }
-        catch (Exception ex)
+    private RootSchema loadedSchema;
+    private SchemaSource loadedFrom;
+    private List<ScalarInfo> scalars = new();
+
+    private SchemaSource UrlSource => new(options.Url, options.Token, null, options.IncludeDeprecated);
+    private SchemaSource TextSource => new(null, null, options.Schema, options.IncludeDeprecated);
+
+    private bool IsLoaded => loadedSchema != null && (loadedFrom == UrlSource || loadedFrom == TextSource);
+
+    private IEnumerable<ScalarInfo> CustomScalars => scalars.Where(e =>
+        (options.ScalarOverrides.TryGetValue(e.Name, out var target) ? target : e.DefaultTarget ?? "") == "");
+
+    private int OverrideCount => scalars.Count(e => options.ScalarOverrides.ContainsKey(e.Name));
+
+    private Task LoadFromUrlAsync() => RunAsync(() => EnsureLoadedAsync(UrlSource));
+
+    private Task LoadFromSchemaAsync() => RunAsync(() => EnsureLoadedAsync(TextSource));
+
+    private Task GenerateClientAsync() => GenerateAsync(UrlSource);
+
+    private Task GenerateClientFromSchema() => GenerateAsync(TextSource);
+
+    private Task GenerateAsync(SchemaSource source) => RunAsync(async () =>
+    {
+        await EnsureLoadedAsync(source);
+        await SaveEntriesAsync(CreateGenerator().Generate(loadedSchema));
+    });
+
+    private async Task EnsureLoadedAsync(SchemaSource source)
+    {
+        if (loadedSchema != null && loadedFrom == source)
         {
-            var component = new RenderComponent<ExceptionModal>().Set(e => e.Exception, ex);
-            var result = await modalService.ShowAsync("Error", component, new() { Size = ModalSize.Large });
+            return;
         }
-        finally
+
+        var reader = CreateGenerator();
+        RootSchema schema;
+
+        if (source.Url != null)
         {
-            isLoading = false;
+            schema = await reader.ReadSchemaAsync(new(source.Url), source.Token);
         }
+        else if (string.IsNullOrWhiteSpace(source.Schema))
+        {
+            throw new InvalidOperationException("Upload or paste a schema first.");
+        }
+        else
+        {
+            schema = IsIntrospectionJson(source.Schema)
+                ? reader.ReadSchema(source.Schema)
+                : reader.ReadSchemaFromSdl(source.Schema);
+        }
+
+        loadedSchema = schema;
+        loadedFrom = source;
+        scalars = schema.Data.Schema.GetScalars();
     }
 
+    private async Task ReviewScalarsAsync()
+    {
+        var component = new RenderComponent<ScalarMappingsModal>()
+            .Set(e => e.Scalars, scalars)
+            .Set(e => e.Overrides, options.ScalarOverrides)
+            .Set(e => e.ConfigJson, ConfigJson);
+        await modalService.ShowAsync("Scalar mappings", component, new() { Size = ModalSize.Large });
+    }
 
-    private async Task GenerateClientAsync()
+    private ClientGenerator CreateGenerator()
+    {
+        return new ClientGenerator(options.Namespace, options.ClientName, options.IncludeSubscriptions,
+            options.EnumGeneratorStrategy, options.Nullable, options.IncludeDeprecated,
+            Helpers.ResolveScalarMappings(ScalarMappings()), options.DescriptionAttributes, options.Agent,
+            options.Standalone);
+    }
+
+    /// <summary>
+    /// The overrides for the scalars of the loaded schema, as the config file's scalarMappings: an empty target
+    /// becomes null, "generate a CustomScalar class". Overrides kept from another schema are left out.
+    /// </summary>
+    private Dictionary<string, string> ScalarMappings()
+    {
+        return scalars.Where(e => options.ScalarOverrides.ContainsKey(e.Name))
+            .ToDictionary(e => e.Name, e => options.ScalarOverrides[e.Name] is "" ? null : options.ScalarOverrides[e.Name]);
+    }
+
+    /// <summary>
+    /// The page's settings as a linq2graphql.json file for the command line, leaving out settings that have their
+    /// default value. The token is never included.
+    /// </summary>
+    private string ConfigJson()
+    {
+        var mappings = ScalarMappings();
+        var config = new GeneratorConfig
+        {
+            Endpoint = loadedFrom?.Url,
+            Namespace = options.Namespace,
+            Client = options.ClientName,
+            Subscriptions = options.IncludeSubscriptions ? true : null,
+            EnumStrategy = options.EnumGeneratorStrategy == EnumGeneratorStrategy.FailIfMissing
+                ? null
+                : options.EnumGeneratorStrategy.ToString(),
+            Nullable = options.Nullable ? true : null,
+            Deprecated = options.IncludeDeprecated ? true : null,
+            Agent = options.Agent ? true : null,
+            Standalone = options.Standalone ? true : null,
+            DescriptionAttributes = options.DescriptionAttributes ? null : false,
+            ScalarMappings = mappings.Count > 0 ? mappings : null
+        };
+
+        return JsonSerializer.Serialize(config, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            WriteIndented = true
+        });
+    }
+
+    private async Task RunAsync(Func<Task> action)
     {
         try
         {
             isLoading = true;
-            var generator = new ClientGenerator(options.Namespace, options.ClientName, options.IncludeSubscriptions,
-                options.EnumGeneratorStrategy, options.Nullable, options.IncludeDeprecated,
-                agent: options.Agent, standalone: options.Standalone);
-            var entries = await generator.GenerateAsync(new(options.Url), options.Token);
-            await SaveEntriesAsync(entries);
+            await action();
         }
         catch (Exception ex)
         {
             var component = new RenderComponent<ExceptionModal>().Set(e => e.Exception, ex);
-            var result = await modalService.ShowAsync("Error", component, new() { Size = ModalSize.Large });
+            await modalService.ShowAsync("Error", component, new() { Size = ModalSize.Large });
         }
         finally
         {
@@ -187,7 +278,14 @@ public class GenerateOptions
     public bool IncludeDeprecated { get; set; }
     public bool Standalone { get; set; }
     public bool Agent { get; set; }
+    public bool DescriptionAttributes { get; set; } = true;
     public EnumGeneratorStrategy EnumGeneratorStrategy { get; set; }
 
     public string Schema { get; set; }
+
+    /// <summary>
+    /// Scalar name to C# type for the scalars whose mapping was changed in the review; an empty type means
+    /// "generate a CustomScalar class". Kept per example, so a reloaded schema keeps its changes.
+    /// </summary>
+    public Dictionary<string, string> ScalarOverrides { get; set; } = new(StringComparer.InvariantCultureIgnoreCase);
 }

@@ -4,12 +4,6 @@ namespace Linq2GraphQL.Generator;
 
 public class Schema
 {
-    private static readonly List<string> BuiltInTypes = new()
-    {
-        //   "ID",
-        "Int", "Float", "String", "Boolean"
-    };
-
     public List<GraphqlType> Types { get; set; }
 
     [JsonPropertyName("queryType")] public GraphqlSchemaType SchemaQueryType { get; set; }
@@ -31,7 +25,7 @@ public class Schema
 
         return Types.Where(e => e.Name != SchemaQueryType?.Name &&
                                 !e.Name.StartsWith("__") &&
-                                !BuiltInTypes.Contains(e.Name) &&
+                                !Helpers.BuiltInScalars.Contains(e.Name) &&
                                 e.Name != SchemaMutationType?.Name &&
                                 e.Name != SchemaSubscriptionType?.Name)
             .ToList();
@@ -64,6 +58,26 @@ public class Schema
     public List<GraphqlType> GetEnums()
     {
         return GetAllTypesExceptSystemTypes().Where(e => e.Kind == TypeKind.Enum).ToList();
+    }
+
+    /// <summary>
+    ///     Every scalar in the schema with the C# type it maps to by default, before any scalarMappings
+    ///     override, sorted by name.
+    /// </summary>
+    public List<ScalarInfo> GetScalars()
+    {
+        if (Types == null) return new();
+
+        return Types.Where(e => e.Kind == TypeKind.Scalar && !e.Name.StartsWith("__"))
+            .OrderBy(e => e.Name, StringComparer.Ordinal)
+            .Select(e => new ScalarInfo
+            {
+                Name = e.Name,
+                Description = e.Description,
+                IsBuiltIn = Helpers.BuiltInScalars.Contains(e.Name),
+                DefaultTarget = Helpers.DefaultTypeMapping.TryGetValue(e.Name, out var mapping) ? mapping.Name : null
+            })
+            .ToList();
     }
 
     public List<GraphqlType> GetCustomScalars()

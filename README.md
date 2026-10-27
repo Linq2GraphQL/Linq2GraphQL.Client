@@ -174,7 +174,8 @@ recognise. `scalarMappings` lets you override both halves of that:
 * Change an existing mapping the same way. `"DateTime": "System.DateTime"` emits `DateTime` instead
   of the default `DateTimeOffset`.
 * Map a scalar to **null** to opt it out of the built-in mapping, so a `CustomScalar` class is
-  generated for it instead and you control the conversion yourself.
+  generated for it instead and you control the conversion yourself. GraphQL's own `Int`, `Float`,
+  `String` and `Boolean` can be mapped to another type but not opted out.
 
 Scalar names are matched case insensitively. The target must be one of the supported simple types -
 `bool`, `byte`, `sbyte`, `char`, `short`, `ushort`, `int`, `uint`, `long`, `ulong`, `float`,
