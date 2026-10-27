@@ -88,8 +88,10 @@
             parameters.
         </li>
         <li>
-            <strong><code>Include</code>, optional and repeatable.</strong> Scalar fields are always fetched.
-            Related objects and lists of scalars are fetched only when you include them, to any depth. A field
+            <strong><code>Include</code>, optional and repeatable.</strong> The object you select is always
+            fetched with its scalar fields. Related objects and lists of scalars are fetched only when you
+            include them, to any depth; the object at the end of an include path gets its scalar fields, the
+            ones it passes through don't (see <a href="selecting-fields#include-paths">selecting fields</a>). A field
             that takes arguments is a method. C# doesn't allow named arguments out of position inside a lambda
             that becomes an expression tree, so pass them by position: <code>f.CharacterConnection(null, 5)</code>
             sends <code>first: 5</code> to that nested field.
