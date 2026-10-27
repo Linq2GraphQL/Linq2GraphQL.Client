@@ -8,8 +8,8 @@ namespace Linq2GraphQL.Client.Common;
 ///     <c>extensions</c>). Reads directly from UTF-8 bytes: only the requested field under
 ///     "data" is deserialized; sibling root fields are skipped without materializing a typed
 ///     value. No JsonDocument and no UTF-16 round trip. Every response path (typed queries,
-///     raw GraphClient.ExecuteAsync, the public ProcessResponse overloads and subscription
-///     payloads) goes through here, so they cannot drift apart.
+///     raw GraphClient.ExecuteAsync, the public ProcessResponse overloads, subscription
+///     payloads and batches) goes through here, so they cannot drift apart.
 /// </summary>
 internal static class GraphEnvelopeReader
 {
@@ -36,15 +36,36 @@ internal static class GraphEnvelopeReader
         return ReadCore<JsonElement>(utf8, null, options, out isEnvelope);
     }
 
+    /// <summary>
+    ///     Reads the envelope of a batch response: each root field under <c>data</c> whose name is a key of
+    ///     <paramref name="slots"/> is handed to that slot; other fields are skipped.
+    /// </summary>
+    internal static BatchEnvelope ReadBatch(ReadOnlySpan<byte> utf8, IReadOnlyDictionary<string, IGraphBatchSlot> slots,
+        JsonSerializerOptions options)
+    {
+        var sink = new BatchDataSink(slots);
+        var (errors, extensions) = ReadEnvelope(utf8, ref sink, options, out var isEnvelope);
+        return new BatchEnvelope(isEnvelope, sink.HasData, errors ?? [], extensions);
+    }
+
     /// <param name="name">Root field to read, or <c>null</c> to read the whole <c>data</c> value.</param>
     private static GraphResult<T> ReadCore<T>(ReadOnlySpan<byte> utf8, string name, JsonSerializerOptions options,
         out bool isEnvelope)
+    {
+        var sink = new SingleDataSink<T>(name);
+        var (errors, extensions) = ReadEnvelope(utf8, ref sink, options, out isEnvelope);
+        return new GraphResult<T> { Data = sink.Data, Errors = errors, Extensions = extensions };
+    }
+
+    private static (List<GraphQueryError> Errors, Dictionary<string, object> Extensions) ReadEnvelope<TSink>(
+        ReadOnlySpan<byte> utf8, ref TSink sink, JsonSerializerOptions options, out bool isEnvelope)
+        where TSink : struct, IDataSink
     {
         isEnvelope = false;
 
         if (utf8.Length == 0)
         {
-            return new GraphResult<T> { Data = default };
+            return (null, null);
         }
 
         var reader = new Utf8JsonReader(utf8, isFinalBlock: true, state: default);
@@ -53,7 +74,6 @@ internal static class GraphEnvelopeReader
         {
             List<GraphQueryError> errors = null;
             Dictionary<string, object> extensions = null;
-            T data = default;
 
             while (reader.Read())
             {
@@ -69,9 +89,7 @@ internal static class GraphEnvelopeReader
                 {
                     case "data":
                         isEnvelope = true;
-                        data = name == null
-                            ? JsonSerializer.Deserialize<T>(ref reader, options)
-                            : ReadData<T>(ref reader, name, options);
+                        sink.ReadData(ref reader, options);
                         break;
                     case "errors":
                         isEnvelope = true;
@@ -87,7 +105,7 @@ internal static class GraphEnvelopeReader
                 }
             }
 
-            return new GraphResult<T> { Data = data, Errors = errors, Extensions = extensions };
+            return (errors, extensions);
         }
 
         throw new JsonException("GraphQL response envelope must be a JSON object.");
@@ -136,4 +154,75 @@ internal static class GraphEnvelopeReader
 
         return result;
     }
+
+    private interface IDataSink
+    {
+        void ReadData(ref Utf8JsonReader reader, JsonSerializerOptions options);
+    }
+
+    private struct SingleDataSink<T>(string name) : IDataSink
+    {
+        public T Data { get; private set; }
+
+        public void ReadData(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        {
+            Data = name == null
+                ? JsonSerializer.Deserialize<T>(ref reader, options)
+                : ReadData<T>(ref reader, name, options);
+        }
+    }
+
+    private struct BatchDataSink(IReadOnlyDictionary<string, IGraphBatchSlot> slots) : IDataSink
+    {
+        public bool HasData { get; private set; }
+
+        public void ReadData(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        {
+            if (reader.TokenType == JsonTokenType.Null)
+            {
+                return;
+            }
+
+            if (reader.TokenType != JsonTokenType.StartObject)
+            {
+                throw new JsonException("The 'data' property must be a JSON object or null.");
+            }
+
+            HasData = true;
+            while (reader.Read())
+            {
+                if (reader.TokenType == JsonTokenType.EndObject)
+                {
+                    break;
+                }
+
+                var fieldName = reader.GetString();
+                reader.Read();
+
+                if (fieldName != null && slots.TryGetValue(fieldName, out var slot))
+                {
+                    slot.ReadData(ref reader, options);
+                }
+                else
+                {
+                    reader.Skip();
+                }
+            }
+        }
+    }
 }
+
+/// <summary>A root field of a batch response, deserialized by the item that asked for it.</summary>
+internal interface IGraphBatchSlot
+{
+    /// <summary>Reads the field's value; the reader is on its first token, which may be <c>null</c>.</summary>
+    void ReadData(ref Utf8JsonReader reader, JsonSerializerOptions options);
+}
+
+/// <param name="IsEnvelope">The body carried <c>data</c> or <c>errors</c>: it is a GraphQL response.</param>
+/// <param name="HasData"><c>data</c> was an object, so the operation executed (fully or in part).</param>
+internal sealed record BatchEnvelope(
+    bool IsEnvelope,
+    bool HasData,
+    List<GraphQueryError> Errors,
+    Dictionary<string, object> Extensions);

@@ -1,0 +1,12 @@
+query{ 
+customerListInList
+{
+  customerId
+  customerName
+  status
+  created
+}
+
+}
+
+{}

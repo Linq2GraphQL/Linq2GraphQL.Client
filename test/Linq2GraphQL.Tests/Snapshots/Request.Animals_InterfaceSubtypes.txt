@@ -1,0 +1,30 @@
+query{ 
+animals
+{
+nodes
+  {
+... on Pig
+    {
+      spices
+      name
+      numberOfLegs
+      speed
+      __typename
+    }
+... on Spider
+    {
+      poisonous
+      name
+      numberOfLegs
+      speed
+      __typename
+    }
+    name
+    numberOfLegs
+    __typename
+  }
+}
+
+}
+
+{}

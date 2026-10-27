@@ -1,0 +1,7 @@
+mutation($b0_name_1_1: String $b1_name_1_1: String ){ 
+b0:setName(name:$b0_name_1_1 )
+b1:setName(name:$b1_name_1_1 )
+
+}
+
+{"b0_name_1_1":"A","b1_name_1_1":"B"}

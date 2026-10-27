@@ -40,6 +40,10 @@ jobs:
       - name: Test
         run: dotnet test Linq2GraphQL.CI.slnf --no-build --verbosity normal
 
+      # Package validation (src/Directory.Build.targets) fails here on a public API break.
+      - name: Pack
+        run: dotnet pack Linq2GraphQL.Release.slnf --no-build -c Debug -o artifacts
+
   generated-clients:
 
     name: Test clients up to date

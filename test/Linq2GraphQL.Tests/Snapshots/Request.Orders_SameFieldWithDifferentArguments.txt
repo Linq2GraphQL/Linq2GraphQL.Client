@@ -1,0 +1,13 @@
+query($name_3_1: String! $first_3_1: Int! $name_3_2: String! $first_3_2: Int! ){ 
+orders
+{
+nodes
+  {
+    orderHello_99bd189de534313d:orderHello(name:$name_3_1 first:$first_3_1 )
+    orderHello_f3e72219bd8446aa:orderHello(name:$name_3_2 first:$first_3_2 )
+  }
+}
+
+}
+
+{"name_3_1":"Jocke","first_3_1":22,"name_3_2":"Kalle","first_3_2":11}

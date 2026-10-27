@@ -1,7 +1,6 @@
 using Linq2GraphQL.Client.Schema;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
 using System.Text.Json;
 
 namespace Linq2GraphQL.Client;
@@ -62,20 +61,14 @@ public abstract class GraphBaseExecute<T, TResult>
 
     public GraphQLSchema Schema => schema;
 
-    private string GetQueryVariablesString(IReadOnlyList<ArgumentValue> args)
+    internal GraphClient Client => client;
+
+    internal OperationType OperationType => operationType;
+
+    /// <summary>The one-time setup a request needs, done for a batch that renders the query itself.</summary>
+    internal Task InitializeAsync(CancellationToken cancellationToken)
     {
-        if (args.Count == 0)
-        {
-            return "";
-        }
-
-        var text = new StringBuilder(args.Count * 32);
-        foreach (var argument in args)
-        {
-            text.Append('$').Append(argument.VariableName).Append(": ").Append(argument.GraphType).Append(' ');
-        }
-
-        return $"({text})";
+        return InitQueryAsync(cancellationToken);
     }
 
     public Task<string> GetRequestAsJsonAsync()
@@ -160,13 +153,7 @@ public abstract class GraphBaseExecute<T, TResult>
 
     private string GetGraphQLQuery(IReadOnlyList<ArgumentValue> args)
     {
-        return GetOperationType() + GetQueryVariablesString(args) + "{ " + Environment.NewLine +
-               QueryNode.GetQueryString() + Environment.NewLine + "}";
-    }
-
-    private string GetOperationType()
-    {
-        return operationType.ToString().ToLower();
+        return Utilities.GetOperationText(operationType, args, QueryNode.GetQueryString());
     }
 
     public TResult ConvertResult(T result)

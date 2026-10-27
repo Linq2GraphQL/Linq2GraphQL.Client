@@ -1,0 +1,6 @@
+query($name_1_1: String ){ 
+hello(name:$name_1_1 )
+
+}
+
+{"name_1_1":"Magnus"}

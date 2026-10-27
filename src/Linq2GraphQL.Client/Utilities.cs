@@ -15,6 +15,41 @@ public static class Utilities
     private const char Separator = (char)31;
 
     /// <summary>
+    ///     The GraphQL document for one operation: its keyword, the declarations of <paramref name="arguments"/>
+    ///     and <paramref name="selections"/>, the root fields as rendered by <see cref="QueryNode"/>.
+    /// </summary>
+    internal static string GetOperationText(OperationType operationType, IReadOnlyList<ArgumentValue> arguments,
+        string selections)
+    {
+        return GetOperationText(operationType,
+            arguments.Select(argument => (argument.VariableName, argument.GraphType)).ToList(), selections);
+    }
+
+    /// <param name="variables">The declared variables: their names as the selections use them, and their GraphQL types.</param>
+    internal static string GetOperationText(OperationType operationType,
+        IReadOnlyList<(string Name, string GraphType)> variables, string selections)
+    {
+        return operationType.ToString().ToLower() + GetVariableDeclarations(variables) + "{ " + Environment.NewLine +
+               selections + Environment.NewLine + "}";
+    }
+
+    private static string GetVariableDeclarations(IReadOnlyList<(string Name, string GraphType)> variables)
+    {
+        if (variables.Count == 0)
+        {
+            return "";
+        }
+
+        var text = new StringBuilder(variables.Count * 32);
+        foreach (var (name, graphType) in variables)
+        {
+            text.Append('$').Append(name).Append(": ").Append(graphType).Append(' ');
+        }
+
+        return $"({text})";
+    }
+
+    /// <summary>
     ///     Identifies a set of field arguments so that the same field requested with different arguments becomes
     ///     several aliased selections. The result is derived from the argument values only, because the alias has
     ///     to be recomputed from the same values when the response is read back.

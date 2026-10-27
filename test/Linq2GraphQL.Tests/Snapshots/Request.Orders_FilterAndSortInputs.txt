@@ -1,0 +1,13 @@
+query($first_1_1: Int $after_1_1: String $where_1_1: OrderFilterInput $order_1_1: [OrderSortInput!] ){ 
+orders(first:$first_1_1 after:$after_1_1 where:$where_1_1 order:$order_1_1 )
+{
+nodes
+  {
+    orderId
+    orderDate
+  }
+}
+
+}
+
+{"first_1_1":2,"after_1_1":"cursor","where_1_1":{"customer":{"customerName":{"startsWith":"A"}}},"order_1_1":[{"orderDate":"DESC"}]}

@@ -1,0 +1,9 @@
+mutation($customer_1_1: CustomerInput ){ 
+addCustomer(customer:$customer_1_1 )
+{
+  customerId
+}
+
+}
+
+{"customer_1_1":{"status":"ACTIVE","customerName":"New Customer","orders":[],"customerId":"0190a4c2-7b3e-7c1a-9d2f-3e4b5a6c7d8e"}}

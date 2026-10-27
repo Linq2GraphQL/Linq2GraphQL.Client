@@ -1,0 +1,35 @@
+query($b0_name_1_1: String $b2_first_1_1: Int $b2_name_3_1: String! $b2_first_3_1: Int! $b2_addressType_3_2: AddressType! $b3_name_3_1: String! $b3_first_3_1: Int! $b3_name_3_2: String! $b3_first_3_2: Int! ){ 
+b0:hello(name:$b0_name_1_1 )
+b1:hello
+b2:orders(first:$b2_first_1_1 )
+{
+nodes
+  {
+    orderHello_5ff28576c49a8f8f:orderHello(name:$b2_name_3_1 first:$b2_first_3_1 )
+orderAddress_36cad6e5eedd8675:orderAddress(addressType:$b2_addressType_3_2 )
+    {
+      name
+      street
+      postalCode
+      createdDate
+    }
+    orderId
+    orderDate
+    orderDateTime
+    orderDay
+    entryTime
+    grade
+  }
+}
+b3:orders
+{
+nodes
+  {
+    orderHello_afcc6be86742ac9d:orderHello(name:$b3_name_3_1 first:$b3_first_3_1 )
+    orderHello_7634295004c92665:orderHello(name:$b3_name_3_2 first:$b3_first_3_2 )
+  }
+}
+
+}
+
+{"b0_name_1_1":"Jocke","b2_first_1_1":1,"b2_name_3_1":"Jocke","b2_first_3_1":2,"b2_addressType_3_2":"INVOICE","b3_name_3_1":"A","b3_first_3_1":1,"b3_name_3_2":"B","b3_first_3_2":2}
