@@ -42,6 +42,44 @@
 </section>
 
 <section class="doc-section">
+    <h2 id="include-paths">Include: only the end of a path gets its fields</h2>
+    <p>
+        An <code>Include</code> path names the object you want; the fields it passes through are only the way
+        there. The object at the end of the path is fetched with all its scalar fields, and the objects along
+        the way get only what is needed to reach it:
+    </p>
+    <CodeBlock Code="@IncludeCSharp"/>
+    <p>
+        Each film gets its scalar fields because it is the end of <code>Select(e => e.Films)</code>, and each
+        character gets its scalar fields because it is the end of the <code>Include</code> path.
+        <code>characterConnection</code> is in the middle of the path, so none of its own fields, such as
+        <code>totalCount</code>, are requested. To fetch an object in the middle as well, include it on its own:
+    </p>
+    <CodeBlock Code="@IncludeBothCSharp"/>
+    <p>
+        A field that wasn't requested keeps its C# default value in the generated type: <code>null</code>
+        for references and nullable types, but <code>0</code>, <code>false</code> or <code>Guid.Empty</code> for
+        non-nullable value types. In those cases you can't tell a field that was left out from one the server
+        really returned as zero. If you depend on which fields are present, project instead: a projection
+        requests exactly the fields it reads.
+    </p>
+    <p>
+        Why it works this way: a GraphQL query asks only for what it names, and a path names its last field.
+        The levels in between are often just structure, such as connections and <code>nodes</code> lists, with
+        little worth fetching. With this rule you can always add a level by including it, while the opposite
+        rule (fetch every level) would need a way to leave levels out, and LINQ has no syntax for that. It is
+        also how projections work: you get what you name.
+    </p>
+    <p>
+        Coming from Entity Framework Core? There is no <code>ThenInclude</code>; continue the path with
+        <code>Select</code> instead: <code>.Include(c => c.Orders).ThenInclude(o => o.Lines)</code> is written
+        <code>.Include(c => c.Orders.Select(o => o.Lines))</code>. Unlike EF, that fetches the scalar fields of
+        the lines only, not of the orders they are reached through; add <code>.Include(c => c.Orders)</code>
+        if you want both.
+    </p>
+</section>
+
+<section class="doc-section">
     <h2 id="anonymous">Pick a few fields</h2>
     <p>Project into an anonymous type with the fields you want:</p>
     <div class="row g-3">
@@ -118,6 +156,24 @@
 </section>
 
 @code {
+    private const string IncludeCSharp = """
+        var films = await starWarsClient
+            .Query
+            .AllFilms(first: 3)
+            .Include(e => e.Films.Select(f => f.CharacterConnection().Characters))
+            .Select(e => e.Films)
+            .ExecuteAsync();
+
+        // films[0].Title                                    fetched: end of Select
+        // films[0].CharacterConnection().Characters[0].Name fetched: end of the Include path
+        // films[0].CharacterConnection().TotalCount         not fetched: in the middle of the path
+        """;
+
+    private const string IncludeBothCSharp = """
+        .Include(e => e.Films.Select(f => f.CharacterConnection()))
+        .Include(e => e.Films.Select(f => f.CharacterConnection().Characters))
+        """;
+
     private const string AnonymousCSharp = """
         var films = await starWarsClient
             .Query
