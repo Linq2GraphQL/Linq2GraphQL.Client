@@ -135,7 +135,8 @@ public partial class GenerateClient
             isLoading = true;
             var generator = new ClientGenerator(options.Namespace, options.ClientName, options.IncludeSubscriptions,
                 options.EnumGeneratorStrategy, options.Nullable, options.IncludeDeprecated,
-                agent: options.Agent, standalone: options.Standalone);
+                descriptionAttributes: options.DescriptionAttributes, agent: options.Agent,
+                standalone: options.Standalone);
             var entries = IsIntrospectionJson(options.Schema)
                 ? generator.Generate(options.Schema)
                 : generator.GenerateFromSdl(options.Schema);
@@ -160,7 +161,8 @@ public partial class GenerateClient
             isLoading = true;
             var generator = new ClientGenerator(options.Namespace, options.ClientName, options.IncludeSubscriptions,
                 options.EnumGeneratorStrategy, options.Nullable, options.IncludeDeprecated,
-                agent: options.Agent, standalone: options.Standalone);
+                descriptionAttributes: options.DescriptionAttributes, agent: options.Agent,
+                standalone: options.Standalone);
             var entries = await generator.GenerateAsync(new(options.Url), options.Token);
             await SaveEntriesAsync(entries);
         }
@@ -187,6 +189,7 @@ public class GenerateOptions
     public bool IncludeDeprecated { get; set; }
     public bool Standalone { get; set; }
     public bool Agent { get; set; }
+    public bool DescriptionAttributes { get; set; } = true;
     public EnumGeneratorStrategy EnumGeneratorStrategy { get; set; }
 
     public string Schema { get; set; }
