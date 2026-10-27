@@ -2,8 +2,9 @@
 @using TabBlazor.Services
 
 <p class="text-secondary">
-    How each scalar in the schema becomes a C# type. Change a row to override the built-in mapping, or choose
-    <em>CustomScalar class</em> to generate a class for the scalar instead.
+    Every scalar in the schema and the C# type it becomes. Change a row to override the default, or choose
+    <em>CustomScalar class</em> to generate a class for the scalar instead. GraphQL's own scalars can be mapped
+    to another type but not to a class.
 </p>
 
 <div class="table-responsive">
@@ -12,11 +13,15 @@
         <tr><th>Scalar</th><th>C# type</th><th></th></tr>
         </thead>
         <tbody>
-        @foreach (var scalar in Scalars.Where(e => !e.IsBuiltIn))
+        @foreach (var scalar in Scalars.OrderBy(e => e.IsBuiltIn))
         {
             <tr>
                 <td>
                     <code>@scalar.Name</code>
+                    @if (scalar.IsBuiltIn)
+                    {
+                        <span class="badge bg-secondary-lt ms-1">GraphQL built-in</span>
+                    }
                     @if (!string.IsNullOrWhiteSpace(scalar.Description))
                     {
                         <div class="text-secondary small">@scalar.Description</div>
@@ -25,7 +30,10 @@
                 <td>
                     <select class="form-select form-select-sm" value="@Target(scalar)"
                             @onchange="e => SetTarget(scalar, (string)e.Value)">
-                        <option value="">CustomScalar class</option>
+                        @if (!scalar.IsBuiltIn)
+                        {
+                            <option value="">CustomScalar class</option>
+                        }
                         @foreach (var target in Helpers.SupportedTargetTypeNames)
                         {
                             <option value="@target">@target</option>
@@ -50,14 +58,6 @@
         </tbody>
     </table>
 </div>
-
-@if (Scalars.Any(e => e.IsBuiltIn))
-{
-    <p class="text-secondary small mt-2">
-        GraphQL's own scalars always map the same way:
-        @string.Join(", ", Scalars.Where(e => e.IsBuiltIn).Select(e => $"{e.Name} → {e.DefaultTarget}")).
-    </p>
-}
 
 <div class="d-flex gap-2 mt-3">
     <Button OnClick="CopyConfigAsync">Copy as linq2graphql.json</Button>

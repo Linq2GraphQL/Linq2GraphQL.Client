@@ -101,7 +101,7 @@
                     @if (IsLoaded)
                     {
                         <span>
-                            Scalars: @CustomScalars.Count() of @MappableScalars.Count() generate a CustomScalar class,
+                            @scalars.Count scalars: @CustomScalars.Count() generate a CustomScalar class,
                             @OverrideCount changed from the default.
                         </span>
                         <Button class="ms-2" Size="ButtonSize.Small" OnClick="ReviewScalarsAsync">Review scalar mappings</Button>

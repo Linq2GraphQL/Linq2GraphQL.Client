@@ -4,12 +4,6 @@ namespace Linq2GraphQL.Generator;
 
 public class Schema
 {
-    private static readonly List<string> BuiltInTypes = new()
-    {
-        //   "ID",
-        "Int", "Float", "String", "Boolean"
-    };
-
     public List<GraphqlType> Types { get; set; }
 
     [JsonPropertyName("queryType")] public GraphqlSchemaType SchemaQueryType { get; set; }
@@ -31,7 +25,7 @@ public class Schema
 
         return Types.Where(e => e.Name != SchemaQueryType?.Name &&
                                 !e.Name.StartsWith("__") &&
-                                !BuiltInTypes.Contains(e.Name) &&
+                                !Helpers.BuiltInScalars.Contains(e.Name) &&
                                 e.Name != SchemaMutationType?.Name &&
                                 e.Name != SchemaSubscriptionType?.Name)
             .ToList();
@@ -80,7 +74,7 @@ public class Schema
             {
                 Name = e.Name,
                 Description = e.Description,
-                IsBuiltIn = BuiltInTypes.Contains(e.Name),
+                IsBuiltIn = Helpers.BuiltInScalars.Contains(e.Name),
                 DefaultTarget = Helpers.DefaultTypeMapping.TryGetValue(e.Name, out var mapping) ? mapping.Name : null
             })
             .ToList();

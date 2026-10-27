@@ -10,8 +10,8 @@ public class ScalarInfo
     public string Description { get; init; }
 
     /// <summary>
-    ///     GraphQL's own Int, Float, String and Boolean. They are always mapped and never get a CustomScalar
-    ///     class, so an override that opts one of them out has nothing to generate.
+    ///     GraphQL's own Int, Float, String and Boolean (see <see cref="Helpers.BuiltInScalars" />). They can be
+    ///     mapped to another type but not opted out to a CustomScalar class.
     /// </summary>
     public bool IsBuiltIn { get; init; }
 

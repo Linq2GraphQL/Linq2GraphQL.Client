@@ -140,12 +140,10 @@ public partial class GenerateClient
 
     private bool IsLoaded => loadedSchema != null && (loadedFrom == UrlSource || loadedFrom == TextSource);
 
-    private IEnumerable<ScalarInfo> MappableScalars => scalars.Where(e => !e.IsBuiltIn);
-
-    private IEnumerable<ScalarInfo> CustomScalars => MappableScalars.Where(e =>
+    private IEnumerable<ScalarInfo> CustomScalars => scalars.Where(e =>
         (options.ScalarOverrides.TryGetValue(e.Name, out var target) ? target : e.DefaultTarget ?? "") == "");
 
-    private int OverrideCount => MappableScalars.Count(e => options.ScalarOverrides.ContainsKey(e.Name));
+    private int OverrideCount => scalars.Count(e => options.ScalarOverrides.ContainsKey(e.Name));
 
     private Task LoadFromUrlAsync() => RunAsync(() => EnsureLoadedAsync(UrlSource));
 
@@ -214,7 +212,7 @@ public partial class GenerateClient
     /// </summary>
     private Dictionary<string, string> ScalarMappings()
     {
-        return MappableScalars.Where(e => options.ScalarOverrides.ContainsKey(e.Name))
+        return scalars.Where(e => options.ScalarOverrides.ContainsKey(e.Name))
             .ToDictionary(e => e.Name, e => options.ScalarOverrides[e.Name] is "" ? null : options.ScalarOverrides[e.Name]);
     }
 

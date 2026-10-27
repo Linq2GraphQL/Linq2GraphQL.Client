@@ -134,6 +134,34 @@ public class ScalarMappingTests
         ex.Message.ShouldContain("DateTimeOffset");
     }
 
+    // No CustomScalar class is generated for GraphQL's own scalars, so opting one out would leave the client
+    // referring to a type that does not exist.
+    [Theory]
+    [InlineData("Int")]
+    [InlineData("float")]
+    [InlineData("String")]
+    [InlineData("Boolean")]
+    public void Override_ToNull_ForABuiltInScalar_Fails(string scalarName)
+    {
+        var ex = Should.Throw<GeneratorConfigurationException>(() =>
+            Helpers.ResolveScalarMappings(new Dictionary<string, string> { [scalarName] = null! }));
+
+        ex.Message.ShouldContain(scalarName);
+        ex.Message.ShouldContain("built into GraphQL");
+    }
+
+    [Fact]
+    public void Override_ABuiltInScalar_ToAnotherType_Works()
+    {
+        var generator = new ClientGenerator("TestNs", "TestClient", false, EnumGeneratorStrategy.FailIfMissing,
+            false, false, Helpers.ResolveScalarMappings(new Dictionary<string, string> { ["Int"] = "long" }));
+
+        var entries = generator.GenerateFromSdl("type Query { count: Int }");
+
+        entries.Single(e => e.FileName == "QueryMethods.cs").Content.ShouldContain("GraphQuery<long?> Count()");
+        ScalarFiles(entries).ShouldBeEmpty();
+    }
+
     [Fact]
     public void Overrides_DoNotLeakBetweenRuns()
     {
