@@ -1,0 +1,24 @@
+<aside class="docs-sidebar @(Open ? "open" : "") @(MobileOnly ? "mobile-only" : "")" aria-label="Documentation">
+    <nav>
+        @foreach (var navSection in DocsNav.Sections)
+        {
+            <div class="docs-nav-section">
+                <div class="docs-nav-heading">@navSection.Title</div>
+                <ul>
+                    @foreach (var navPage in navSection.Pages)
+                    {
+                        <li>
+                            <NavLink class="docs-nav-link" href="@navPage.Href" Match="NavLinkMatch.All">@navPage.Title</NavLink>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+    </nav>
+</aside>
+
+@code {
+    [Parameter] public bool Open { get; set; }
+
+    [Parameter] public bool MobileOnly { get; set; }
+}

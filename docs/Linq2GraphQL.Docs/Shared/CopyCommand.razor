@@ -1,0 +1,25 @@
+@using TabBlazor.Services
+@inject TablerService TablerService
+
+<div class="copy-command">
+    <span class="copy-command-prompt">$</span>
+    <code class="copy-command-text">@Command</code>
+    <button type="button" class="docs-icon-button" @onclick="CopyAsync" aria-label="Copy command" title="Copy">
+        <Icon class="icon" IconType="@(copied ? Icons.Check : Icons.Copy)"/>
+    </button>
+</div>
+
+@code {
+    private bool copied;
+
+    [Parameter, EditorRequired] public string Command { get; set; }
+
+    private async Task CopyAsync()
+    {
+        await TablerService.CopyToClipboard(Command);
+        copied = true;
+        StateHasChanged();
+        await Task.Delay(TimeSpan.FromSeconds(2));
+        copied = false;
+    }
+}

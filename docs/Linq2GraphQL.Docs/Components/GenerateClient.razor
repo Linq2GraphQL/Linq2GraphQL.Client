@@ -1,8 +1,14 @@
 ﻿@page "/generate-client"
 
-<h3>Generate Client</h3>
+<PageTitle>Online generator - Linq2GraphQL</PageTitle>
 
-<div class="dimmer @(isLoading ? "active" : "")">
+<h1 class="page-heading">Online generator</h1>
+<p class="lead text-secondary">
+    Generate a client in the browser from a GraphQL endpoint or a schema, without installing anything. The
+    result is the same code the <a href="generator">generator</a> writes, downloaded as a zip file.
+</p>
+
+<div class="dimmer doc-wide mt-4 @(isLoading ? "active" : "")">
     <div class="loader"></div>
     <div class="dimmer-content">
 
