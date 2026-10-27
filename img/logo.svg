@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <title>Linq2GraphQL</title>
+  <style>
+    .hex { stroke: #0B4F6C; }
+    .edge { stroke: #D97706; }
+    .node { fill: #D97706; }
+    .hub { fill: #0B4F6C; }
+    @media (prefers-color-scheme: dark) {
+      .hex { stroke: #5CC8E8; }
+      .edge { stroke: #FFB938; }
+      .node { fill: #FFB938; }
+      .hub { fill: #1A6E92; }
+    }
+  </style>
+  <path class="hex" d="M64 16L105.6 40V88L64 112L22.4 88V40Z" fill="none" stroke-width="5" stroke-linejoin="round"/>
+  <g class="edge" stroke-width="4" stroke-linecap="round">
+    <path d="M64 64V16"/>
+    <path d="M64 64L22.4 88"/>
+    <path d="M64 64L105.6 88"/>
+  </g>
+  <g class="node">
+    <circle cx="64" cy="16" r="7"/>
+    <circle cx="105.6" cy="40" r="5"/>
+    <circle cx="105.6" cy="88" r="7"/>
+    <circle cx="64" cy="112" r="5"/>
+    <circle cx="22.4" cy="88" r="7"/>
+    <circle cx="22.4" cy="40" r="5"/>
+  </g>
+  <circle class="hub" cx="64" cy="64" r="22"/>
+  <path d="M55 51Q60 51 63 58L73 78M65.5 63L55 78" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
