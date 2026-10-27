@@ -3,14 +3,15 @@
 
 <p class="text-secondary">
     Every scalar in the schema and the C# type it becomes. Change a row to override the default, or choose
-    <em>CustomScalar class</em> to generate a class for the scalar instead. GraphQL's own scalars can be mapped
+    <em>CustomScalar</em> to generate a class for the scalar instead. GraphQL's own scalars can be mapped
     to another type but not to a class.
 </p>
 
 <div class="table-responsive">
     <table class="table table-vcenter card-table border">
         <thead>
-        <tr><th>Scalar</th><th>C# type</th><th></th></tr>
+        @* A fixed width keeps the type readable next to long scalar descriptions. *@
+        <tr><th>Scalar</th><th style="width: 12rem; min-width: 12rem">C# type</th><th></th></tr>
         </thead>
         <tbody>
         @foreach (var scalar in Scalars.OrderBy(e => e.IsBuiltIn))
@@ -32,7 +33,7 @@
                             @onchange="e => SetTarget(scalar, (string)e.Value)">
                         @if (!scalar.IsBuiltIn)
                         {
-                            <option value="">CustomScalar class</option>
+                            <option value="">CustomScalar</option>
                         }
                         @foreach (var target in Helpers.SupportedTargetTypeNames)
                         {
